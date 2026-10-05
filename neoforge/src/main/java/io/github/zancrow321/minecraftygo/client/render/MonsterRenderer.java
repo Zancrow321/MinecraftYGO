@@ -1,5 +1,6 @@
 package io.github.zancrow321.minecraftygo.client.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.zancrow321.minecraftygo.entity.MonsterEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -9,9 +10,26 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.util.Color;
 
 public final class MonsterRenderer extends GeoEntityRenderer<MonsterEntity> {
+    private final MonsterModel model;
+
     public MonsterRenderer(EntityRendererProvider.Context context) {
-        super(context, new MonsterModel());
+        this(context, new MonsterModel());
+    }
+
+    private MonsterRenderer(EntityRendererProvider.Context context, MonsterModel model) {
+        super(context, model);
+        this.model = model;
         shadowRadius = 0.5f;
+    }
+
+    @Override
+    public void render(MonsterEntity monster, float yaw, float partialTick, PoseStack poses, MultiBufferSource buffers,
+                       int light) {
+        try {
+            super.render(monster, yaw, partialTick, poses, buffers, light);
+        } finally {
+            model.undoPose();
+        }
     }
 
     /** Fading monsters (summons, departures) need a translucent pass. */

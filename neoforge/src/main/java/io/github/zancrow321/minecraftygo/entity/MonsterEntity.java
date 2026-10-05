@@ -6,6 +6,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -32,6 +34,13 @@ public final class MonsterEntity extends Entity implements GeoEntity {
     /** Client-only drawing state for duel field stand-ins: opacity and an RGB tint (white = none). */
     public float alpha = 1;
     public int tint = 0xFFFFFF;
+    /** Client-only: how far through an attack this monster is, 0 to 1, or negative when it isn't attacking. */
+    public float attack = -1;
+    /** Client-only: the tick a gallery monster was last clicked, to show off its attack. */
+    private int attackClicked = Integer.MIN_VALUE;
+
+    /** How long a gallery monster's attack plays, matching an attack on the field. */
+    public static final int ATTACK_TICKS = 28;
 
     public MonsterEntity(EntityType<? extends MonsterEntity> type, Level level) {
         super(type, level);
@@ -69,6 +78,24 @@ public final class MonsterEntity extends Entity implements GeoEntity {
     @Override
     public boolean isPickable() {
         return true;
+    }
+
+    /** Clicking a gallery monster plays its attack. */
+    @Override
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        if (level().isClientSide && hand == InteractionHand.MAIN_HAND) {
+            attackClicked = tickCount;
+        }
+        return InteractionResult.sidedSuccess(level().isClientSide);
+    }
+
+    /** @return the attack's progress this frame, 0 to 1, or negative when not attacking */
+    public float attackProgress(float partialTick) {
+        if (attack >= 0) {
+            return attack;
+        }
+        float t = (tickCount - attackClicked + partialTick) / ATTACK_TICKS;
+        return t >= 0 && t <= 1 ? t : -1;
     }
 
     /** Creative players can knock gallery monsters away with one hit. */

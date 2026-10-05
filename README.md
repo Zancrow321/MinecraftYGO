@@ -64,6 +64,11 @@ In game:
   second, the middle column shared. The second partner's half is drawn in green (orange for the opponents), and each
   half shows its owner's card sleeves. Anyone can attack any opponent's monster, and each team shares life points,
   since OCG-Core only knows two players (see the research note in the PR).
+- **Attacks and signature moves:** every monster rears back and strikes when it attacks (head, jaw, arms and wings
+  are posed from the model's bone names). Fan favourites have their own moves: Blue-Eyes' White Lightning (three beams
+  for the Ultimate Dragon), Red-Eyes' Inferno Fire Blast, Dark Magic Attack and Summoned Skull's Lightning Strike, and
+  Raigeki, Dark Hole, Mirror Force, Monster Reborn, Pot of Greed and Swords of Revealing Light have their own spell
+  effects. Right-click a gallery monster to see its attack.
 - **Rules:** `ruleset` in `serverconfig/minecraftygo-server.toml` is `mr1` (original, the default), `goat` or
   `modern`; `startingLifePoints` defaults to 8000.
 - **Duel Dome:** craft a **Duel Dome Kit** (a Duel Dome Core, two Duelist Platforms, two quartz blocks, a sea lantern

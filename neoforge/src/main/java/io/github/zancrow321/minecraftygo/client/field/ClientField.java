@@ -6,8 +6,10 @@ import net.minecraft.resources.ResourceLocation;
 import io.github.zancrow321.minecraftygo.client.ClientDuel;
 import io.github.zancrow321.minecraftygo.client.DuelScreen;
 import io.github.zancrow321.minecraftygo.client.disk.DiskClient;
+import io.github.zancrow321.minecraftygo.engine.duel.Board;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
 import io.github.zancrow321.minecraftygo.engine.duel.FieldEvent;
+import io.github.zancrow321.minecraftygo.engine.protocol.CardState;
 import io.github.zancrow321.minecraftygo.engine.protocol.Loc;
 import io.github.zancrow321.minecraftygo.engine.text.PromptView;
 import io.github.zancrow321.minecraftygo.network.DuelFieldPayload;
@@ -39,6 +41,8 @@ public final class ClientField {
     private static long revealAt;
     private static double scale = 1;
     private static final List<FieldAnimation> animations = new ArrayList<>();
+    /** The board as of the previous view, to find attackers that the new view no longer shows. */
+    private static Board lastBoard;
     private static Loc hovered;
     /** Card backs per team, or per duelist (team * 2 + partner) on a split field. */
     private static final List<ResourceLocation> sleeves = new ArrayList<>();
@@ -60,6 +64,7 @@ public final class ClientField {
         right = new Vec3(-forward.z, 0, forward.x);
         endsAt = -1;
         animations.clear();
+        lastBoard = null;
         // Wait for the duel disk to unfold, then grow the field; queued effects start once it is full size.
         revealAt = tick + DiskClient.deployTicks();
         queueFree = revealAt + GROW_TICKS;
@@ -71,6 +76,7 @@ public final class ClientField {
         center = null;
         hovered = null;
         animations.clear();
+        lastBoard = null;
         FieldRenderer.reset();
     }
 
@@ -144,13 +150,31 @@ public final class ClientField {
         return animations;
     }
 
+    /**
+     * The card behind an event. Attacks carry no code, so the attacker is looked up on the board from before the
+     * view (it may not survive the battle), then on the new one.
+     */
+    private static int actor(FieldEvent event, DuelView view) {
+        if (event.kind() != FieldEvent.Kind.ATTACK) {
+            return event.code();
+        }
+        for (Board board : new Board[]{lastBoard, view.board()}) {
+            CardState card = board == null ? null : FieldRenderer.cardAt(board, event.from());
+            if (card != null && card.code() != 0) {
+                return card.code();
+            }
+        }
+        return 0;
+    }
+
     /** Called for each new view: queues its events. */
     public static void onView(DuelView view) {
         long start = Math.max(queueFree, tick);
         for (FieldEvent event : view.events()) {
-            animations.add(new FieldAnimation(event, start, FieldAnimation.duration(event.kind())));
-            start += FieldAnimation.spacing(event.kind());
+            animations.add(new FieldAnimation(event, start, FieldAnimation.duration(event), actor(event, view)));
+            start += FieldAnimation.spacing(event);
         }
+        lastBoard = view.board();
         queueFree = start;
         if (view.result() != null) {
             endsAt = start + LINGER_TICKS;
