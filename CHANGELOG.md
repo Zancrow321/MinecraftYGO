@@ -1,16 +1,5 @@
 # Changelog
 
-## Unreleased
-
-### Duel mode
-- A duel now feels like its own mode: you stand still and safe at your end of the field (no damage, mobs leave you
-  alone), the camera looks down on the field, and you play with the mouse cursor. Click a glowing card in your hand
-  or a glowing zone on the field.
-- V switches between the top-down camera and your own eyes; hold the right mouse button to look around.
-- Escape opens the duel menu: back to the duel, every choice as a list (for emergencies), camera, surrender and the
-  game menu. The Y key is gone.
-- Monster models face the opponent.
-
 ## 0.1.0 (first public beta)
 
 Minecraft 1.21.1, NeoForge 21.1. Requires GeckoLib 4.9 or newer; Curios and Figura are optional.
@@ -26,6 +15,15 @@ Minecraft 1.21.1, NeoForge 21.1. Requires GeckoLib 4.9 or newer; Curios and Figu
 - Rulesets: original (MR1), Goat and modern, with configurable starting life points and an era banlist.
 - Ante duels: each duelist puts up a random card from their deck and the winner takes both.
 - The Duel Dome: a buildable arena kit with platforms; the field appears over the core.
+
+### Duel mode
+- A duel is its own mode: you stand still and safe at your end of the field (no damage, mobs leave you
+  alone), the camera looks down on the field, and you play with the mouse cursor. Click a glowing card in your hand
+  or a glowing zone on the field.
+- V switches between the top-down camera and your own eyes; hold the right mouse button to look around.
+- Escape opens the duel menu: back to the duel, every choice as a list (for emergencies), camera, surrender and the
+  game menu.
+- Monster models face their opponent.
 
 ### Collecting
 - Booster packs from the era's sets, found in chests and dropped by mobs, with rarities.
