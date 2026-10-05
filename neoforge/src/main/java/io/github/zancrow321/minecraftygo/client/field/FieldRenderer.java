@@ -86,6 +86,9 @@ public final class FieldRenderer {
             if (a.started(now) && started.add(a)) {
                 onStart(a);
             }
+            if (a.started(now) && !a.finished(now)) {
+                SignatureEffects.tick(a, (int) (now - a.start()));
+            }
         }
     }
 
@@ -132,7 +135,7 @@ public final class FieldRenderer {
         return ClientField.toWorld(0, (player == 0 ? -1 : 1) * HALF_LENGTH, 1);
     }
 
-    private static void burst(ParticleOptions particle, Vec3 at, int count, double spread, double speed) {
+    static void burst(ParticleOptions particle, Vec3 at, int count, double spread, double speed) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level == null) {
             return;
@@ -145,7 +148,7 @@ public final class FieldRenderer {
         }
     }
 
-    private static void sound(SoundEvent sound, Vec3 at, float pitch) {
+    static void sound(SoundEvent sound, Vec3 at, float pitch) {
         ClientLevel level = Minecraft.getInstance().level;
         if (level != null) {
             level.playLocalSound(at.x, at.y, at.z, sound, SoundSource.PLAYERS, 0.8f, pitch, false);
@@ -199,7 +202,7 @@ public final class FieldRenderer {
     }
 
     /** Camera-relative quad drawing in the view-rotated pose. */
-    private record Draw(PoseStack.Pose pose, Vec3 cam, MultiBufferSource.BufferSource buffers) {
+    record Draw(PoseStack.Pose pose, Vec3 cam, MultiBufferSource.BufferSource buffers) {
         void colorQuad(VertexConsumer vc, Vec3 a, Vec3 b, Vec3 c, Vec3 d, int argb) {
             int alpha = argb >>> 24, r = (argb >> 16) & 0xFF, g = (argb >> 8) & 0xFF, bl = argb & 0xFF;
             for (Vec3 v : new Vec3[]{a, b, c, d}) {
@@ -406,6 +409,7 @@ public final class FieldRenderer {
             if (!a.started(now)) {
                 continue;
             }
+            SignatureEffects.draw(draw, vc, a, now, partial);
             float p = a.progress(now, partial);
             FieldEvent e = a.event();
             Slot s = e.from() == null || e.from().isNone() ? null : slot(e.from());
@@ -469,6 +473,8 @@ public final class FieldRenderer {
                     proxy.alpha = summon != null ? 0.4f + 0.6f * grow : 1;
                     proxy.tint = flash(loc, now, partial) ? 0xFF5050 : 0xFFFFFF;
                     Vec3 offset = lunge(loc, now, partial);
+                    FieldAnimation attack = ClientField.pending(FieldEvent.Kind.ATTACK, loc);
+                    proxy.attack = attack != null && attack.started(now) ? attack.progress(now, partial) : -1;
                     drawModel(draw, poses, dispatcher, proxy, model, player, seq, defense(card), grow, offset, now,
                             partial);
                 }
@@ -487,6 +493,7 @@ public final class FieldRenderer {
                 MonsterEntity ghost = proxy(1000 + e.from().controller() * 16 + e.from().sequence(), e.code());
                 ghost.alpha = 1 - p;
                 ghost.tint = 0xA0E8FF;
+                ghost.attack = -1;
                 drawModel(draw, poses, dispatcher, ghost, model, e.from().controller(), e.from().sequence(), false,
                         1 - p * 0.5f, new Vec3(0, p * 1.5, 0), now, partial);
             }
