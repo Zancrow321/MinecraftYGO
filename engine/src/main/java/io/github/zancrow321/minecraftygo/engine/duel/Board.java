@@ -1,0 +1,61 @@
+package io.github.zancrow321.minecraftygo.engine.duel;
+
+import io.github.zancrow321.minecraftygo.engine.protocol.CardState;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.UnaryOperator;
+
+/**
+ * A snapshot of both players' cards. The server holds the full board; {@link #viewedBy(int)} removes what a
+ * player isn't allowed to see before it is sent anywhere.
+ */
+public record Board(int turn, int turnPlayer, int phase, List<Side> sides) {
+    /**
+     * One player's cards. Zone lists are fixed-size (7 monster, 8 spell/trap) with {@code null} for empty zones;
+     * hidden cards keep their slot but have code 0.
+     */
+    public record Side(int lifePoints, int deckCount, List<CardState> hand, List<CardState> monsters,
+                       List<CardState> spells, List<CardState> graveyard, List<CardState> banished,
+                       List<CardState> extra) {
+    }
+
+    public Side side(int player) {
+        return sides.get(player);
+    }
+
+    /** @return a copy with every card {@code viewer} may not see replaced by a blank (code 0) card */
+    public Board viewedBy(int viewer) {
+        List<Side> censored = new ArrayList<>(2);
+        for (int player = 0; player < 2; player++) {
+            Side s = sides.get(player);
+            boolean own = player == viewer;
+            censored.add(new Side(s.lifePoints(), s.deckCount(),
+                    map(s.hand(), c -> own || c.isPublic() ? c : hidden(c)),
+                    map(s.monsters(), c -> own || isFaceUp(c) ? c : hidden(c)),
+                    map(s.spells(), c -> own || isFaceUp(c) ? c : hidden(c)),
+                    s.graveyard(),
+                    map(s.banished(), c -> own || isFaceUp(c) ? c : hidden(c)),
+                    map(s.extra(), c -> own || isFaceUp(c) ? c : hidden(c))));
+        }
+        return new Board(turn, turnPlayer, phase, List.copyOf(censored));
+    }
+
+    private static boolean isFaceUp(CardState card) {
+        return (card.position() & 0x5) != 0;
+    }
+
+    /** Keeps only the position, so the viewer sees a face-down card in that slot. */
+    private static CardState hidden(CardState card) {
+        return new CardState(0, card.position(), 0, 0, 0, 0, 0, 0, 0, 0, card.owner(), false, true, List.of());
+    }
+
+    private static List<CardState> map(List<CardState> cards, UnaryOperator<CardState> f) {
+        List<CardState> out = new ArrayList<>(cards.size());
+        for (CardState card : cards) {
+            out.add(card == null ? null : f.apply(card));
+        }
+        return Collections.unmodifiableList(out);
+    }
+}

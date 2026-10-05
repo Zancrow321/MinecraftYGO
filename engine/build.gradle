@@ -7,10 +7,12 @@ java {
 }
 
 dependencies {
-    // Minecraft already ships JNA; the mod must not bundle a second copy.
+    // Minecraft already ships JNA and Gson; the mod must not bundle second copies.
     compileOnly "net.java.dev.jna:jna:${jna_version}"
+    compileOnly "com.google.code.gson:gson:${gson_version}"
 
     testImplementation "net.java.dev.jna:jna:${jna_version}"
+    testImplementation "com.google.code.gson:gson:${gson_version}"
     testImplementation platform("org.junit:junit-bom:${junit_version}")
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'

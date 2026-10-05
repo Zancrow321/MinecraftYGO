@@ -17,14 +17,14 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * Smoke tests against the real native library. Run {@code native/build.sh} first; CI builds it for every platform
  * and fails if it is missing, while local runs without it are skipped.
  */
-class OcgCoreTest {
+public class OcgCoreTest {
     private static final long[] SEED = {1, 2, 3, 4};
     private static final int TYPE_MONSTER = 0x1;
     private static final int TYPE_NORMAL = 0x10;
     private static final int TEST_CARD = 89631139; // Blue-Eyes White Dragon
 
     @BeforeAll
-    static void requireNatives() {
+    public static void requireNatives() {
         NativeLoader.Platform platform = NativeLoader.Platform.current();
         boolean bundled = OcgCoreTest.class.getResource(
                 "/natives/" + platform.directory() + "/" + platform.fileName()) != null;

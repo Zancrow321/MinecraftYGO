@@ -104,6 +104,15 @@ public final class OcgDuel implements AutoCloseable {
         lib.OCG_DuelNewCard(handle(), info);
     }
 
+    /**
+     * Loads a Lua script into the duel, e.g. {@code constant.lua} and {@code utility.lua} right after creation.
+     *
+     * @return whether the script loaded without errors
+     */
+    public boolean loadScript(String name, byte[] script) {
+        return lib.OCG_LoadScript(handle(), script, script.length, name) != 0;
+    }
+
     public void start() {
         lib.OCG_StartDuel(handle());
     }
@@ -126,6 +135,18 @@ public final class OcgDuel implements AutoCloseable {
 
     public int queryCount(int team, int location) {
         return lib.OCG_DuelQueryCount(handle(), (byte) team, location);
+    }
+
+    /**
+     * @return the raw {@code OCG_DuelQueryLocation} buffer for one player's location
+     */
+    public byte[] queryLocation(int controller, int location, int flags) {
+        OcgStructs.QueryInfo info = new OcgStructs.QueryInfo();
+        info.flags = flags;
+        info.con = (byte) controller;
+        info.loc = location;
+        IntByReference length = new IntByReference();
+        return readBuffer(lib.OCG_DuelQueryLocation(handle(), length, info), length);
     }
 
     /**
