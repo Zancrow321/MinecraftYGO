@@ -25,6 +25,8 @@ public final class OcgConstants {
     public static final int POS_FACEDOWN_DEFENSE = 0x8;
     public static final int POS_FACEUP = POS_FACEUP_ATTACK | POS_FACEUP_DEFENSE;
     public static final int POS_FACEDOWN = POS_FACEDOWN_ATTACK | POS_FACEDOWN_DEFENSE;
+    public static final int POS_ATTACK = POS_FACEUP_ATTACK | POS_FACEDOWN_ATTACK;
+    public static final int POS_DEFENSE = POS_FACEUP_DEFENSE | POS_FACEDOWN_DEFENSE;
 
     // Duel flags
     public static final long DUEL_TEST_MODE = 0x01L;

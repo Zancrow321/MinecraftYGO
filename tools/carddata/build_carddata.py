@@ -6,13 +6,16 @@ for just the cards in the pool:
 
   engine/src/main/resources/minecraftygo/cards.json    stats + text for each card
   engine/src/main/resources/minecraftygo/scripts/      base scripts and c<code>.lua for each card
+  engine/src/main/resources/minecraftygo/system_strings.json   EDOPro's system strings (prompt texts)
 
 The pool is every card in the deck lists under engine/src/main/resources/minecraftygo/decks/*.ydk.
 
 Usage:
   git clone --depth 1 https://github.com/ProjectIgnis/BabelCDB
   git clone --depth 1 https://github.com/ProjectIgnis/CardScripts
-  python3 tools/carddata/build_carddata.py --cdb BabelCDB/cards.cdb --scripts CardScripts
+  git clone --depth 1 https://github.com/ProjectIgnis/Distribution
+  python3 tools/carddata/build_carddata.py --cdb BabelCDB/cards.cdb --scripts CardScripts \
+      --strings Distribution/config/strings.conf
 """
 import argparse
 import json
@@ -43,7 +46,10 @@ def card_row(row, text):
     code, alias, setcode, ctype, atk, defense, level, race, attribute = row
     setcodes = [(setcode >> (16 * i)) & 0xFFFF for i in range(4)]
     is_link = bool(ctype & TYPE_LINK)
-    strings = [s for s in text[2:] if s]
+    # Keep positions: scripts refer to strings by index (aux.Stringid(code, i)). Trim only trailing blanks.
+    strings = [s or "" for s in text[2:]]
+    while strings and not strings[-1]:
+        strings.pop()
     return {
         "code": code,
         "alias": alias,
@@ -68,6 +74,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--cdb", required=True, type=Path, help="path to BabelCDB cards.cdb")
     parser.add_argument("--scripts", required=True, type=Path, help="path to a CardScripts checkout")
+    parser.add_argument("--strings", required=True, type=Path, help="path to Distribution/config/strings.conf")
     args = parser.parse_args()
 
     pool = set()
@@ -106,7 +113,16 @@ def main():
             sys.exit(f"no script for {card['code']} {card['name']}")
         shutil.copy(source, out / name)
 
-    print(f"{len(cards)} cards, {len(list(out.iterdir()))} scripts written to {RESOURCES}")
+    system = {}
+    for line in args.strings.read_text(encoding="utf-8").splitlines():
+        if line.startswith("!system "):
+            _, number, text = line.split(" ", 2)
+            system[int(number)] = text
+    (RESOURCES / "system_strings.json").write_text(
+        json.dumps({str(k): v for k, v in sorted(system.items())}, indent=1, ensure_ascii=False) + "\n",
+        encoding="utf-8")
+
+    print(f"{len(system)} system strings, {len(cards)} cards, {len(list(out.iterdir()))} scripts written to {RESOURCES}")
 
 
 if __name__ == "__main__":
