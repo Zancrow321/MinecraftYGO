@@ -18,10 +18,20 @@ repositories {
         url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
         content { includeGroup 'software.bernie.geckolib' }
     }
+    maven {
+        name = 'Curios'
+        url = 'https://maven.theillusivec4.top/'
+        content { includeGroup 'top.theillusivec4.curios' }
+    }
 }
 
 dependencies {
     implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+    // Optional: adds a Duel Disk slot. Dev runs include it unless -PnoCurios is passed.
+    compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
+    if (!project.hasProperty('noCurios')) {
+        runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+    }
 }
 
 // The engine (OCG-Core bindings + bundled natives) is compiled straight into the mod jar.
@@ -43,6 +53,10 @@ neoForge {
             // -Pautoplay answers duel prompts at random, for watching the field without a person at the keys.
             if (project.hasProperty('autoplay')) {
                 systemProperty 'minecraftygo.autoplay', 'true'
+            }
+            // -Pcamera=THIRD_PERSON_FRONT[:bodyYawOffset] locks the camera, for screenshots of the player's duel disk.
+            if (project.hasProperty('camera')) {
+                systemProperty 'minecraftygo.camera', project.property('camera').toString()
             }
         }
         server {
@@ -76,6 +90,7 @@ var generateModMetadata = tasks.register('generateModMetadata', ProcessResources
             mod_authors            : mod_authors,
             mod_description        : mod_description,
             geckolib_version_range : geckolib_version_range,
+            curios_version_range   : curios_version_range,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

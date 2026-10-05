@@ -164,6 +164,7 @@ public final class FieldRenderer {
         Vec3 cam = camera.getPosition();
         PoseStack poses = event.getPoseStack();
         float partial = event.getPartialTick().getGameTimeDeltaPartialTick(false);
+        ClientField.updateScale(partial);
         long now = ClientField.tick();
         MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
         Draw draw = new Draw(poses.last(), cam, buffers);

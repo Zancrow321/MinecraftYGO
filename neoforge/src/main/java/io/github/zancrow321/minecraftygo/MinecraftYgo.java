@@ -4,9 +4,14 @@ import com.mojang.logging.LogUtils;
 import io.github.zancrow321.minecraftygo.client.YgoClientConfig;
 import io.github.zancrow321.minecraftygo.duel.DuelManager;
 import io.github.zancrow321.minecraftygo.engine.OcgCore;
+import io.github.zancrow321.minecraftygo.duel.DuelDisks;
 import io.github.zancrow321.minecraftygo.entity.YgoEntities;
+import io.github.zancrow321.minecraftygo.item.YgoItems;
 import io.github.zancrow321.minecraftygo.network.YgoNetwork;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -15,6 +20,7 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -27,6 +33,7 @@ public final class MinecraftYgo {
 
     public MinecraftYgo(IEventBus modBus, ModContainer container) {
         YgoEntities.register(modBus);
+        YgoItems.register(modBus);
         modBus.addListener(YgoNetwork::register);
         if (FMLEnvironment.dist == Dist.CLIENT) {
             container.registerConfig(ModConfig.Type.CLIENT, YgoClientConfig.SPEC);
@@ -39,7 +46,27 @@ public final class MinecraftYgo {
                 DuelManager.get(player.server).onLogout(player);
             }
         });
+        NeoForge.EVENT_BUS.addListener((PlayerEvent.StartTracking event) -> {
+            if (event.getEntity() instanceof ServerPlayer tracker && event.getTarget() instanceof ServerPlayer target) {
+                DuelManager.get(tracker.server).onStartTracking(tracker, target);
+            }
+        });
+        NeoForge.EVENT_BUS.addListener(this::onInteractPlayer);
         NeoForge.EVENT_BUS.addListener(YgoCommands::register);
+    }
+
+    /** Right-clicking another player while wearing or holding a duel disk challenges them (or accepts). */
+    private void onInteractPlayer(PlayerInteractEvent.EntityInteract event) {
+        Player player = event.getEntity();
+        if (event.getHand() != InteractionHand.MAIN_HAND || !(event.getTarget() instanceof Player other)
+                || !DuelDisks.has(player)) {
+            return;
+        }
+        if (player instanceof ServerPlayer serverPlayer && other instanceof ServerPlayer serverOther) {
+            DuelManager.get(serverPlayer.server).diskInteract(serverPlayer, serverOther);
+        }
+        event.setCancellationResult(InteractionResult.SUCCESS);
+        event.setCanceled(true);
     }
 
     private void onServerStarting(ServerStartingEvent event) {
