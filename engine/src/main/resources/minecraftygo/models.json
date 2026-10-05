@@ -1,0 +1,4940 @@
+[
+ {
+  "code": 32864,
+  "model": "the13th_grave",
+  "folder": "The13thGrave",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 62121,
+  "model": "castle_of_dark_illusions",
+  "folder": "CastleOfDarkIllusions",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 549481,
+  "model": "prevent_rat",
+  "folder": "PreventRat",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 732302,
+  "model": "temple_of_skulls",
+  "folder": "TempleOfSkulls",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 756652,
+  "model": "doron",
+  "folder": "Doron",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 1184620,
+  "model": "kojikocy",
+  "folder": "Kojikocy",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 1641882,
+  "model": "fusionist",
+  "folder": "Fusionist",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 1761063,
+  "model": "nekogal1",
+  "folder": "Nekogal1",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 1784619,
+  "model": "uraby",
+  "folder": "Uraby",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 1929294,
+  "model": "key_mace",
+  "folder": "KeyMace",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 2118022,
+  "model": "hyosube",
+  "folder": "Hyosube",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 2483611,
+  "model": "water_omotics",
+  "folder": "WaterOmotics",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 2504891,
+  "model": "skull_knight",
+  "folder": "SkullKnight",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 2830619,
+  "model": "flame_viper",
+  "folder": "FlameViper",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 2863439,
+  "model": "fiend_reflection2",
+  "folder": "FiendReflection2",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 2906250,
+  "model": "grappler",
+  "folder": "Grappler",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 2957055,
+  "model": "wicked_dragon_with_the_ersatz_head",
+  "folder": "WickedDragonWithTheErsatzHead",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 2971090,
+  "model": "orion_the_battle_king",
+  "folder": "OrionTheBattleKing",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 3056267,
+  "model": "invader_of_the_throne",
+  "folder": "InvaderOfTheThrone",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 3170832,
+  "model": "takuhee",
+  "folder": "Takuhee",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 3606209,
+  "model": "one_who_hunts_souls",
+  "folder": "OneWhoHuntsSouls",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 3627449,
+  "model": "skull_gaurdian",
+  "folder": "SkullGaurdian",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 3732747,
+  "model": "water_element",
+  "folder": "WaterElement",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 3797883,
+  "model": "slot_machine",
+  "folder": "SlotMachine",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 3985011,
+  "model": "lucky_trinket",
+  "folder": "LuckyTrinket",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 4179849,
+  "model": "queen_of_autumn_leaves",
+  "folder": "QueenOfAutumnLeaves",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 4392470,
+  "model": "leo_wizard",
+  "folder": "LeoWizard",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 4931562,
+  "model": "mountain_warrior",
+  "folder": "MountainWarrior",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 5053103,
+  "model": "battle_ox",
+  "folder": "BattleOx",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 5405694,
+  "model": "black_luster_soldier",
+  "folder": "BlackLusterSoldier",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 5628232,
+  "model": "flying_penguin",
+  "folder": "FlyingPenguin",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 5818798,
+  "model": "gazelle_the_king_of_mythical_beasts",
+  "folder": "GazelleTheKingOfMythicalBeasts",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 5901497,
+  "model": "queens_double",
+  "folder": "QueensDouble",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 6103114,
+  "model": "beaked_snake",
+  "folder": "BeakedSnake",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 6285791,
+  "model": "the_wicked_worm_beast",
+  "folder": "TheWickedWormBeast",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 6297941,
+  "model": "burglar",
+  "folder": "Burglar",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 6367785,
+  "model": "eldeen",
+  "folder": "Eldeen",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 6368038,
+  "model": "gaia_the_fierce_knight",
+  "folder": "GaiaTheFierceKnight",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 6400512,
+  "model": "cyber_commander",
+  "folder": "CyberCommander",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 6740720,
+  "model": "seiyaryu",
+  "folder": "Seiyaryu",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 6840573,
+  "model": "barox",
+  "folder": "Barox",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 7019529,
+  "model": "insect_soldiers_of_the_sky",
+  "folder": "InsectSoldiersOfTheSky",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 7089711,
+  "model": "hane_hane",
+  "folder": "HaneHane",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 7225792,
+  "model": "mon_larvas",
+  "folder": "MonLarvas",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 7359741,
+  "model": "mechanicalchaser",
+  "folder": "Mechanicalchaser",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 7489323,
+  "model": "milus_radiant",
+  "folder": "MilusRadiant",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 7526150,
+  "model": "golgoil",
+  "folder": "Golgoil",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 7562372,
+  "model": "megasonic_eye",
+  "folder": "MegasonicEye",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 7670542,
+  "model": "bio_plant",
+  "folder": "BioPlant",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 7805359,
+  "model": "niwatori",
+  "folder": "Niwatori",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 8058240,
+  "model": "binding_chain",
+  "folder": "BindingChain",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 8131171,
+  "model": "sinister_serpent",
+  "folder": "SinisterSerpent",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 8201910,
+  "model": "star_boy",
+  "folder": "StarBoy",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 8327462,
+  "model": "skullbird",
+  "folder": "Skullbird",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 8353769,
+  "model": "air_eater",
+  "folder": "AirEater",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 8471389,
+  "model": "giga_tech_wolf",
+  "folder": "GigaTechWolf",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 8783685,
+  "model": "hourglass_of_life",
+  "folder": "HourglassOfLife",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 8944575,
+  "model": "the_drdek",
+  "folder": "TheDrdek",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 9076207,
+  "model": "armed_ninja",
+  "folder": "ArmedNinja",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 9159938,
+  "model": "dark_gray",
+  "folder": "DarkGray",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 9197735,
+  "model": "dragon_statue",
+  "folder": "DragonStatue",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 9293977,
+  "model": "metal_dragon",
+  "folder": "MetalDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 9430387,
+  "model": "la_la_lioon",
+  "folder": "LaLaLioon",
+  "animations": []
+ },
+ {
+  "code": 9540040,
+  "model": "boulder_tortoise",
+  "folder": "BoulderTortoise",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 9653271,
+  "model": "kaminari_attack",
+  "folder": "KaminariAttack",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 10071456,
+  "model": "protector_of_the_throne",
+  "folder": "ProtectorOfTheThrone",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 10189126,
+  "model": "masked_sorcerer",
+  "folder": "MaskedSorcerer",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 10202894,
+  "model": "skull_red_bird",
+  "folder": "SkullRedBird",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 10262698,
+  "model": "the_statue_of_easter_island",
+  "folder": "TheStatueOfEasterIsland",
+  "animations": []
+ },
+ {
+  "code": 10315429,
+  "model": "yaiba_robo",
+  "folder": "YaibaRobo",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 10476868,
+  "model": "barrel_rock",
+  "folder": "BarrelRock",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 10538007,
+  "model": "leogun",
+  "folder": "Leogun",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 10598400,
+  "model": "zarigun",
+  "folder": "Zarigun",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 10859908,
+  "model": "holograh",
+  "folder": "Holograh",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 11250655,
+  "model": "emperor_of_the_land_and_sea",
+  "folder": "EmperorOfTheLandAndSea",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 11324436,
+  "model": "electric_snake",
+  "folder": "ElectricSnake",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 11384280,
+  "model": "cannon_soldier",
+  "folder": "CannonSoldier",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 11714098,
+  "model": "30000_year_white_turtle",
+  "folder": "30000YearWhiteTurtle",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 11793047,
+  "model": "gorgon_egg",
+  "folder": "GorgonEgg",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 11901678,
+  "model": "black_skull_dragon",
+  "folder": "BlackSkullDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 12146024,
+  "model": "bolt_escargot",
+  "folder": "BoltEscargot",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 12206212,
+  "model": "harpie_lady_sisters",
+  "folder": "HarpieLadySisters",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 12436646,
+  "model": "aqua_snake",
+  "folder": "AquaSnake",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 12472242,
+  "model": "leghul",
+  "folder": "Leghul",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 12829151,
+  "model": "kanan_the_swordmistress",
+  "folder": "KananTheSwordmistress",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 13039848,
+  "model": "giant_soldier_of_stone",
+  "folder": "GiantSoldierOfStone",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 13069066,
+  "model": "sword_arm_of_dragon",
+  "folder": "SwordArmOfDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 13193642,
+  "model": "dark_plant",
+  "folder": "DarkPlant",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 13215230,
+  "model": "dream_clown",
+  "folder": "DreamClown",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 13429800,
+  "model": "great_white",
+  "folder": "GreatWhite",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 13599884,
+  "model": "steel_scorpion",
+  "folder": "SteelScorpion",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 13723605,
+  "model": "man_eating_treasure_chest",
+  "folder": "ManEatingTreasureChest",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 13945283,
+  "model": "wall_of_illusion",
+  "folder": "WallOfIllusion",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 14015067,
+  "model": "ancient_one_of_the_deep_forest",
+  "folder": "AncientOneOfTheDeepForest",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 14037717,
+  "model": "spirit_of_the_books",
+  "folder": "SpiritOfTheBooks",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 14141448,
+  "model": "great_moth",
+  "folder": "GreatMoth",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 14181608,
+  "model": "mushroom_man",
+  "folder": "MushroomMan",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 14708569,
+  "model": "arlownay",
+  "folder": "Arlownay",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 14851496,
+  "model": "jellyfish",
+  "folder": "Jellyfish",
+  "animations": []
+ },
+ {
+  "code": 14977074,
+  "model": "garoozis",
+  "folder": "Garoozis",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 15025844,
+  "model": "mystical_elf",
+  "folder": "MysticalElf",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 15042735,
+  "model": "hurricail",
+  "folder": "Hurricail",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 15150365,
+  "model": "white_magical_hat",
+  "folder": "WhiteMagicalHat",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 15150371,
+  "model": "archfiend_mirror",
+  "folder": "ArchfiendMirror",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 15237615,
+  "model": "empress_judge",
+  "folder": "EmpressJudge",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 15303296,
+  "model": "ryu_kishin",
+  "folder": "RyuKishin",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 15367030,
+  "model": "gokibore",
+  "folder": "Gokibore",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 15401633,
+  "model": "kagemusha_of_the_blue_flame",
+  "folder": "KagemushaOfTheBlueFlame",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 15480588,
+  "model": "armored_lizard",
+  "folder": "ArmoredLizard",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 15507080,
+  "model": "secretarian_of_secrets",
+  "folder": "SecretarianOfSecrets",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 15510988,
+  "model": "thunder_kid",
+  "folder": "ThunderKid",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 15820147,
+  "model": "monsturtle",
+  "folder": "Monsturtle",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 16229315,
+  "model": "gale_dogra",
+  "folder": "GaleDogra",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 16246527,
+  "model": "armored_rat",
+  "folder": "ArmoredRat",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 16353197,
+  "model": "drooling_lizard",
+  "folder": "DroolingLizard",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 16507828,
+  "model": "bracchio_raidus",
+  "folder": "BracchioRaidus",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 16768387,
+  "model": "big_eye",
+  "folder": "BigEye",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 16899564,
+  "model": "beautiful_headhuntress",
+  "folder": "BeautifulHeadhuntress",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 16972957,
+  "model": "doma_the_angel_of_silence",
+  "folder": "DomaTheAngelOfSilence",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 17115745,
+  "model": "yormungarde",
+  "folder": "Yormungarde",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 17238333,
+  "model": "wretched_ghost_of_the_attic",
+  "folder": "WretchedGhostOfTheAttic",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 17358176,
+  "model": "lady_of_faith",
+  "folder": "LadyOfFaith",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 17441953,
+  "model": "turtle_raccoon",
+  "folder": "TurtleRaccoon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 17511156,
+  "model": "wood_clown",
+  "folder": "WoodClown",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 17535588,
+  "model": "armored_starfish",
+  "folder": "ArmoredStarfish",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 17733394,
+  "model": "wood_remains",
+  "folder": "WoodRemains",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 17881964,
+  "model": "darkfire_dragon",
+  "folder": "DarkfireDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 17968114,
+  "model": "amazon_of_the_seas",
+  "folder": "AmazonOfTheSeas",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 18180762,
+  "model": "the_thing_that_hides_in_the_mud",
+  "folder": "TheThingThatHidesInTheMud",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 18246479,
+  "model": "battle_steer",
+  "folder": "BattleSteer",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 18710707,
+  "model": "the_furious_sea_king",
+  "folder": "TheFuriousSeaKing",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 18914778,
+  "model": "change_slime",
+  "folder": "ChangeSlime",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 19066538,
+  "model": "roaring_ocean_snake",
+  "folder": "RoaringOceanSnake",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 19737320,
+  "model": "gatekeeper",
+  "folder": "Gatekeeper",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 20060230,
+  "model": "hard_armor",
+  "folder": "HardArmor",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 20277860,
+  "model": "armored_zombie",
+  "folder": "ArmoredZombie",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 20315854,
+  "model": "fairy_dragon",
+  "folder": "FairyDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 20394040,
+  "model": "lava_battleguard",
+  "folder": "LavaBattleguard",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 20541432,
+  "model": "key_mace2",
+  "folder": "KeyMace2",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 20624263,
+  "model": "peacock",
+  "folder": "Peacock",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 20848593,
+  "model": "ice_water",
+  "folder": "IceWater",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 21239280,
+  "model": "bone_mouse",
+  "folder": "BoneMouse",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 21263083,
+  "model": "pale_beast",
+  "folder": "PaleBeast",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 21347810,
+  "model": "rainbow_flower",
+  "folder": "RainbowFlower",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 21417692,
+  "model": "dark_elf",
+  "folder": "DarkElf",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 21817254,
+  "model": "mega_thunderball",
+  "folder": "MegaThunderball",
+  "animations": []
+ },
+ {
+  "code": 22026707,
+  "model": "curtain_of_the_dark_ones",
+  "folder": "CurtainOfTheDarkOnes",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 22855882,
+  "model": "fiend_sword",
+  "folder": "FiendSword",
+  "animations": []
+ },
+ {
+  "code": 22910685,
+  "model": "green_phantom_king",
+  "folder": "GreenPhantomKing",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 23032273,
+  "model": "megirus_light",
+  "folder": "MegirusLight",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 23659124,
+  "model": "sea_king_dragon",
+  "folder": "SeaKingDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 23771716,
+  "model": "7_colored_fish",
+  "folder": "7ColoredFish",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 23995346,
+  "model": "blue_eyes_ultimate_dragon",
+  "folder": "BlueEyesUltimateDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 24194033,
+  "model": "dorover",
+  "folder": "Dorover",
+  "animations": []
+ },
+ {
+  "code": 24311372,
+  "model": "zoa",
+  "folder": "Zoa",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 24348204,
+  "model": "the_bewitching_phantom_thief",
+  "folder": "TheBewitchingPhantomThief",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 24433920,
+  "model": "pendulum_machine",
+  "folder": "PendulumMachine",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 24611934,
+  "model": "ryu_kishin_powered",
+  "folder": "RyuKishinPowered",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 25109950,
+  "model": "the_little_swordsman_of_aile",
+  "folder": "TheLittleSwordsmanOfAile",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 25655502,
+  "model": "bickuribox",
+  "folder": "Bickuribox",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 25833572,
+  "model": "gate_guardian",
+  "folder": "GateGuardian",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 25882881,
+  "model": "dokuroizo_the_grim_reaper",
+  "folder": "DokuroizoTheGrimReaper",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 25955164,
+  "model": "sanga_of_the_thunder",
+  "folder": "SangaOfTheThunder",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 26202165,
+  "model": "sangan",
+  "folder": "Sangan",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 26302522,
+  "model": "blast_sphere",
+  "folder": "BlastSphere",
+  "animations": []
+ },
+ {
+  "code": 26378150,
+  "model": "rude_kaiser",
+  "folder": "RudeKaiser",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 26932788,
+  "model": "javelin_beetle",
+  "folder": "JavelinBeetle",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 27054370,
+  "model": "firewing_pegasus",
+  "folder": "FirewingPegasus",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 27094595,
+  "model": "graveyard_and_the_hand_of_invitation",
+  "folder": "GraveyardAndTheHandOfInvitation",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 27324313,
+  "model": "wattkid",
+  "folder": "Wattkid",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 28003512,
+  "model": "the_judgement_hand",
+  "folder": "TheJudgementHand",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 28279543,
+  "model": "curse_of_dragon",
+  "folder": "CurseOfDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 28450915,
+  "model": "invader_from_another_dimension",
+  "folder": "InvaderFromAnotherDimension",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 28470714,
+  "model": "bladefly",
+  "folder": "Bladefly",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 28546905,
+  "model": "illusionist_faceless_mage",
+  "folder": "IllusionistFacelessMage",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 28563545,
+  "model": "dragon_seeker",
+  "folder": "DragonSeeker",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 28593363,
+  "model": "deepsea_shark",
+  "folder": "DeepseaShark",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 28725004,
+  "model": "tainted_wisdom",
+  "folder": "TaintedWisdom",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 28933734,
+  "model": "mask_of_darkness",
+  "folder": "MaskOfDarkness",
+  "animations": []
+ },
+ {
+  "code": 29155212,
+  "model": "pumpking_the_king_of_ghosts",
+  "folder": "PumpkingTheKingOfGhosts",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 29172562,
+  "model": "steel_ogre_grotto1",
+  "folder": "SteelOgreGrotto1",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 29380133,
+  "model": "yado_karu",
+  "folder": "YadoKaru",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 29402771,
+  "model": "rainbow_marine_mermaid",
+  "folder": "RainbowMarineMermaid",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 29491031,
+  "model": "the_snake_hair",
+  "folder": "TheSnakeHair",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 29616941,
+  "model": "beautiful_beast_trainer",
+  "folder": "BeautifulBeastTrainer",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 29692206,
+  "model": "twin_long_rods2",
+  "folder": "TwinLongRods2",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 29802344,
+  "model": "snakeyashi",
+  "folder": "Snakeyashi",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 29929832,
+  "model": "marine_beast",
+  "folder": "MarineBeast",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 29948642,
+  "model": "dig_beak",
+  "folder": "DigBeak",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 30090452,
+  "model": "zanki",
+  "folder": "Zanki",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 30113682,
+  "model": "judge_man",
+  "folder": "JudgeMan",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 30208479,
+  "model": "magician_of_black_chaos",
+  "folder": "MagicianOfBlackChaos",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 30451366,
+  "model": "mystical_sheep1",
+  "folder": "MysticalSheep1",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 30778711,
+  "model": "shadow_ghoul",
+  "folder": "ShadowGhoul",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 31122090,
+  "model": "gyakutenno_megami",
+  "folder": "GyakutennoMegami",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 31339260,
+  "model": "zombie_warrior",
+  "folder": "ZombieWarrior",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 31560081,
+  "model": "magician_of_faith",
+  "folder": "MagicianOfFaith",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 31786629,
+  "model": "thunder_dragon",
+  "folder": "ThunderDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 31890399,
+  "model": "fiends_mirror",
+  "folder": "FiendsMirror",
+  "animations": []
+ },
+ {
+  "code": 32012842,
+  "model": "millenium_shield",
+  "folder": "MilleniumShield",
+  "animations": []
+ },
+ {
+  "code": 32274490,
+  "model": "skull_servant",
+  "folder": "SkullServant",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 32344688,
+  "model": "dark_chimera",
+  "folder": "DarkChimera",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 32355828,
+  "model": "skelgon",
+  "folder": "Skelgon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 32452818,
+  "model": "beaver_warrior",
+  "folder": "BeaverWarrior",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 32485271,
+  "model": "rose_spectere_of_dunn",
+  "folder": "RoseSpectereOfDunn",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 32539892,
+  "model": "minar",
+  "folder": "Minar",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 32569498,
+  "model": "korogashi",
+  "folder": "Korogashi",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 32751480,
+  "model": "mystical_sand",
+  "folder": "MysticalSand",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 32809211,
+  "model": "jinzo7",
+  "folder": "Jinzo7",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 33064647,
+  "model": "one_eyed_shield_dragon",
+  "folder": "OneEyedShieldDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 33066139,
+  "model": "reaper_of_the_cards",
+  "folder": "ReaperOfTheCards",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 33178416,
+  "model": "misairuzame",
+  "folder": "Misairuzame",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 33396948,
+  "model": "exodia_the_forbidden_one",
+  "folder": "ExodiaTheForbiddenOne",
+  "animations": [
+   "combined",
+   "idle",
+   "individual"
+  ]
+ },
+ {
+  "code": 33413638,
+  "model": "cockroach_knight",
+  "folder": "CockroachKnight",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 33508719,
+  "model": "morphing_jar",
+  "folder": "MorphingJar",
+  "animations": []
+ },
+ {
+  "code": 33621868,
+  "model": "giganto",
+  "folder": "Giganto",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 33691040,
+  "model": "pragtical",
+  "folder": "Pragtical",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 33734439,
+  "model": "three_legged_zombies",
+  "folder": "ThreeLeggedZombies",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 33878931,
+  "model": "togex",
+  "folder": "Togex",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 33951077,
+  "model": "super_war_lion",
+  "folder": "SuperWarLion",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 34290067,
+  "model": "corroding_shark",
+  "folder": "CorrodingShark",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 34320307,
+  "model": "living_vase",
+  "folder": "LivingVase",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 34442949,
+  "model": "mechanical_snail",
+  "folder": "MechanicalSnail",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 34460851,
+  "model": "flame_manipulator",
+  "folder": "FlameManipulator",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 34536276,
+  "model": "ganigumo",
+  "folder": "Ganigumo",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 34690519,
+  "model": "spirit_of_the_mountain",
+  "folder": "SpiritOfTheMountain",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 34743446,
+  "model": "blocker",
+  "folder": "Blocker",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 35282433,
+  "model": "blue_eyed_silver_zombie",
+  "folder": "BlueEyedSilverZombie",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 35565537,
+  "model": "dark_witch",
+  "folder": "DarkWitch",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 35712107,
+  "model": "monstruous_bird",
+  "folder": "MonstruousBird",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 35752363,
+  "model": "vermillion_sparrow",
+  "folder": "VermillionSparrow",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 36039163,
+  "model": "penguin_knight",
+  "folder": "PenguinKnight",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 36121917,
+  "model": "monster_egg",
+  "folder": "MonsterEgg",
+  "animations": []
+ },
+ {
+  "code": 36151751,
+  "model": "arma_knight",
+  "folder": "ArmaKnight",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 36304921,
+  "model": "witty_phantom",
+  "folder": "WittyPhantom",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 36821538,
+  "model": "ancient_sorcerer",
+  "folder": "AncientSorcerer",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 36904469,
+  "model": "akihiron",
+  "folder": "Akihiron",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 37043180,
+  "model": "dd_warrior",
+  "folder": "DDWarrior",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 37160778,
+  "model": "fairywitch",
+  "folder": "Fairywitch",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 37243151,
+  "model": "weather_control",
+  "folder": "WeatherControl",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 37313348,
+  "model": "turtle_tiger",
+  "folder": "TurtleTiger",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 37421579,
+  "model": "charubin_the_fire_knight",
+  "folder": "CharubinTheFireKnight",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 38035986,
+  "model": "akakieisu",
+  "folder": "Akakieisu",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 38116136,
+  "model": "machine_attacker",
+  "folder": "MachineAttacker",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 38142739,
+  "model": "petit_angel",
+  "folder": "PetitAngel",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 38247752,
+  "model": "dark_eyes_illusionist",
+  "folder": "DarkEyesIllusionist",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 38277918,
+  "model": "mikazukinoyaiba",
+  "folder": "Mikazukinoyaiba",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 38289717,
+  "model": "crawling_dragon2",
+  "folder": "CrawlingDragon2",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 38942059,
+  "model": "sonic_maid",
+  "folder": "SonicMaid",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 38982356,
+  "model": "hyo",
+  "folder": "Hyo",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 38999506,
+  "model": "cosmo_queen",
+  "folder": "CosmoQueen",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 39004808,
+  "model": "root_water",
+  "folder": "RootWater",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 39111158,
+  "model": "tri_horned_dragon",
+  "folder": "TriHornedDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 39175982,
+  "model": "winged_cleaver",
+  "folder": "WingedCleaver",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 39239728,
+  "model": "royal_guard",
+  "folder": "RoyalGuard",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 40173854,
+  "model": "amphibious_bugroth",
+  "folder": "AmphibiousBugroth",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 40196604,
+  "model": "dark_shade",
+  "folder": "DarkShade",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 40200834,
+  "model": "sleeping_lion",
+  "folder": "SleepingLion",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 40240595,
+  "model": "cocoon_of_evolution",
+  "folder": "CocoonOfEvolution",
+  "animations": []
+ },
+ {
+  "code": 40374923,
+  "model": "mammoth_graveyard",
+  "folder": "MammothGraveyard",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 40387124,
+  "model": "abyss_flower",
+  "folder": "AbyssFlower",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 40453765,
+  "model": "swamp_battleguard",
+  "folder": "SwampBattleguard",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 40575313,
+  "model": "shadow_specter",
+  "folder": "ShadowSpecter",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 40640057,
+  "model": "kuriboh",
+  "folder": "Kuriboh",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 40826495,
+  "model": "dissolverock",
+  "folder": "Dissolverock",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 41061625,
+  "model": "yashinoki",
+  "folder": "Yashinoki",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 41218256,
+  "model": "claw_reacher",
+  "folder": "ClawReacher",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 41392891,
+  "model": "feral_imp",
+  "folder": "FeralImp",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 41396436,
+  "model": "blue_winged_crown",
+  "folder": "BlueWingedCrown",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 41403766,
+  "model": "giant_scorpion_of_the_tundra",
+  "folder": "GiantScorpionOfTheTundra",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 41422426,
+  "model": "supporter_in_the_shadows",
+  "folder": "SupporterInTheShadows",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 41462083,
+  "model": "thousand_dragon",
+  "folder": "ThousandDragon",
+  "animations": [
+   "altidle",
+   "idle"
+  ]
+ },
+ {
+  "code": 41544074,
+  "model": "kamionwizard",
+  "folder": "Kamionwizard",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 41762634,
+  "model": "giant_flea",
+  "folder": "GiantFlea",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 41949033,
+  "model": "dark_assailant",
+  "folder": "DarkAssailant",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 42348802,
+  "model": "trakodon",
+  "folder": "Trakodon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 42418084,
+  "model": "winged_egg_of_new_life",
+  "folder": "WingedEggOfNewLife",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 42431843,
+  "model": "ancient_brain",
+  "folder": "AncientBrain",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 42591472,
+  "model": "laughing_flower",
+  "folder": "LaughingFlower",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 42625254,
+  "model": "little_d",
+  "folder": "LittleD",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 42883273,
+  "model": "wodan_the_resident_of_the_forest",
+  "folder": "WodanTheResidentOfTheForest",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 43230671,
+  "model": "ancient_lizard_warrior",
+  "folder": "AncientLizardWarrior",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 43352213,
+  "model": "nekogal2",
+  "folder": "Nekogal2",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 43500484,
+  "model": "darkworld_thorns",
+  "folder": "DarkworldThorns",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 43530283,
+  "model": "hourglass_of_courage",
+  "folder": "HourglassOfCourage",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 43905751,
+  "model": "madjinn_gunn",
+  "folder": "MadjinnGunn",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 44073668,
+  "model": "takriminos",
+  "folder": "Takriminos",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 44287299,
+  "model": "masaki_the_legendary_swordsman",
+  "folder": "MasakiTheLegendarySwordsman",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 44865098,
+  "model": "cyber_soldier",
+  "folder": "CyberSoldier",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 45042329,
+  "model": "tripwire_beast",
+  "folder": "TripwireBeast",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 45121025,
+  "model": "ogre_of_the_black_shadow",
+  "folder": "OgreOfTheBlackShadow",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 45231177,
+  "model": "flame_swordsman",
+  "folder": "FlameSwordsman",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 45688586,
+  "model": "karakuri_spider",
+  "folder": "KarakuriSpider",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 45909477,
+  "model": "moon_envoy",
+  "folder": "MoonEnvoy",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 46247516,
+  "model": "tao_the_chanter",
+  "folder": "TaoTheChanter",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 46457856,
+  "model": "tomozaurus",
+  "folder": "Tomozaurus",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 46461247,
+  "model": "trap_master",
+  "folder": "TrapMaster",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 46474915,
+  "model": "magical_ghost",
+  "folder": "MagicalGhost",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 46534755,
+  "model": "fire_kraken",
+  "folder": "FireKraken",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 46657337,
+  "model": "muka_muka",
+  "folder": "MukaMuka",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 46696593,
+  "model": "crimson_sunbird",
+  "folder": "CrimsonSunbird",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 46700124,
+  "model": "machine_king",
+  "folder": "MachineKing",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 46718686,
+  "model": "hitodenchak",
+  "folder": "Hitodenchak",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 46864967,
+  "model": "minomushi_warrior",
+  "folder": "MinomushiWarrior",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 46986414,
+  "model": "dark_magician",
+  "folder": "DarkMagician",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 47060154,
+  "model": "mystic_clown",
+  "folder": "MysticClown",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 47319141,
+  "model": "wing_eagle",
+  "folder": "WingEagle",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 47695416,
+  "model": "candle_of_fate",
+  "folder": "CandleOfFate",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 47879985,
+  "model": "guardian_of_the_throne_room",
+  "folder": "GuardianOfTheThroneRoom",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 47922711,
+  "model": "tatsunootoshigo",
+  "folder": "Tatsunootoshigo",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 47986555,
+  "model": "millennium_golem",
+  "folder": "MillenniumGolem",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 48109103,
+  "model": "kappa_avenger",
+  "folder": "KappaAvenger",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 48305365,
+  "model": "axe_raider",
+  "folder": "AxeRaider",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 48365709,
+  "model": "ansatsu",
+  "folder": "Ansatsu",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 48531733,
+  "model": "bolt_penguin",
+  "folder": "BoltPenguin",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 48579379,
+  "model": "perfectly_ultimate_great_moth",
+  "folder": "PerfectlyUltimateGreatMoth",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 48649353,
+  "model": "ushi_oni",
+  "folder": "UshiOni",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 49127943,
+  "model": "man_eating_plant",
+  "folder": "ManEatingPlant",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 49218300,
+  "model": "sorcerer_of_the_doomed",
+  "folder": "SorcererOfTheDoomed",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 49258578,
+  "model": "gate_deeg",
+  "folder": "GateDeeg",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 49370026,
+  "model": "genin",
+  "folder": "Genin",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 49417509,
+  "model": "wolf",
+  "folder": "Wolf",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 49587396,
+  "model": "ancient_tool",
+  "folder": "AncientTool",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 49791927,
+  "model": "tiger_axe",
+  "folder": "TigerAxe",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 50005633,
+  "model": "swordstalker",
+  "folder": "Swordstalker",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 50176820,
+  "model": "mech_bass",
+  "folder": "MechBass",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 50259460,
+  "model": "versago_the_destroyer",
+  "folder": "VersagoTheDestroyer",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 50705071,
+  "model": "metalzoa",
+  "folder": "Metalzoa",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 50930991,
+  "model": "neo_the_magic_swordsman",
+  "folder": "NeoTheMagicSwordsman",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 51228280,
+  "model": "dungeon_worm",
+  "folder": "DungeonWorm",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 51275027,
+  "model": "the_unhappy_maiden",
+  "folder": "TheUnhappyMaiden",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 51371017,
+  "model": "princess_of_tsurugi",
+  "folder": "PrincessOfTsurugi",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 51828629,
+  "model": "giltia_the_d_knight",
+  "folder": "GiltiaTheDKnight",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 52040216,
+  "model": "harpies_pet_dragon",
+  "folder": "HarpiesPetDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 52367652,
+  "model": "that_which_feeds_on_life",
+  "folder": "ThatWhichFeedsOnLife",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 52584282,
+  "model": "hercules_beetle",
+  "folder": "HerculesBeetle",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 52800428,
+  "model": "fiends_hand",
+  "folder": "FiendsHand",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 53153481,
+  "model": "armaill",
+  "folder": "Armaill",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 53293545,
+  "model": "firegrass",
+  "folder": "Firegrass",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 53375573,
+  "model": "dark_king_of_the_abyss",
+  "folder": "DarkKingOfTheAbyss",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 53493204,
+  "model": "goddess_with_the_third_eye",
+  "folder": "GoddessWithTheThirdEye",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 53581214,
+  "model": "fire_reaper",
+  "folder": "FireReaper",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 53606874,
+  "model": "big_insect",
+  "folder": "BigInsect",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 53713014,
+  "model": "crazy_fish",
+  "folder": "CrazyFish",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 53829412,
+  "model": "griffore",
+  "folder": "Griffore",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 53830602,
+  "model": "fungi_of_the_musk",
+  "folder": "FungiOfTheMusk",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 53832650,
+  "model": "meotoko",
+  "folder": "Meotoko",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 54098121,
+  "model": "mysterious_puppeteer",
+  "folder": "MysteriousPuppeteer",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 54541900,
+  "model": "karbonala_warrior",
+  "folder": "KarbonalaWarrior",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 54579801,
+  "model": "high_tide_gyojin",
+  "folder": "HighTideGyojin",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 54615781,
+  "model": "spirit_of_the_winds",
+  "folder": "SpiritOfTheWinds",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 54622031,
+  "model": "great_mammoth_of_goldfine",
+  "folder": "GreatMammothOfGoldfine",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 54652250,
+  "model": "man_eater_bug",
+  "folder": "ManEaterBug",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 54752875,
+  "model": "twin_headed_thunder_dragon",
+  "folder": "TwinHeadedThunderDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 54844990,
+  "model": "skull_stalker",
+  "folder": "SkullStalker",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 55014050,
+  "model": "water_girl",
+  "folder": "WaterGirl",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 55210709,
+  "model": "lisark",
+  "folder": "Lisark",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 55291359,
+  "model": "succubus_knight",
+  "folder": "SuccubusKnight",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 55337339,
+  "model": "job_change_mirror",
+  "folder": "JobChangeMirror",
+  "animations": []
+ },
+ {
+  "code": 55444629,
+  "model": "lesser_dragon",
+  "folder": "LesserDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 55550921,
+  "model": "battle_warrior",
+  "folder": "BattleWarrior",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 55567161,
+  "model": "pot_the_trick",
+  "folder": "PotTheTrick",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 55691901,
+  "model": "great_bill",
+  "folder": "GreatBill",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 55763552,
+  "model": "dragon_piper",
+  "folder": "DragonPiper",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 55784832,
+  "model": "morinphen",
+  "folder": "Morinphen",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 55875323,
+  "model": "electric_lizard",
+  "folder": "ElectricLizard",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 55998462,
+  "model": "metal_fish",
+  "folder": "MetalFish",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 56283725,
+  "model": "kumootoko",
+  "folder": "Kumootoko",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 56342351,
+  "model": "m_warrior1",
+  "folder": "MWarrior1",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 56413937,
+  "model": "warrior_of_tradition",
+  "folder": "WarriorOfTradition",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 56713552,
+  "model": "obese_marmot_of_nefariousness",
+  "folder": "ObeseMarmotOfNefariousness",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 56789759,
+  "model": "tyhone2",
+  "folder": "Tyhone2",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 56907389,
+  "model": "musician_king",
+  "folder": "MusicianKing",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 57305373,
+  "model": "two_mouth_darkruler",
+  "folder": "TwoMouthDarkruler",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 57405307,
+  "model": "winged_dragon_guardian_of_the_fortress2",
+  "folder": "WingedDragonGuardianOfTheFortress2",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 57935140,
+  "model": "tenderness",
+  "folder": "Tenderness",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 58192742,
+  "model": "petit_moth",
+  "folder": "PetitMoth",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 58314394,
+  "model": "ground_attacker_bugroth",
+  "folder": "GroundAttackerBugroth",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 58528964,
+  "model": "flame_ghost",
+  "folder": "FlameGhost",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 58831685,
+  "model": "giant_red_seasnake",
+  "folder": "GiantRedSeasnake",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 58861941,
+  "model": "ooguchi",
+  "folder": "Ooguchi",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 59036972,
+  "model": "mavelus",
+  "folder": "Mavelus",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 59053232,
+  "model": "turu_purun",
+  "folder": "TuruPurun",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 59383041,
+  "model": "toon_alligator",
+  "folder": "ToonAlligator",
+  "animations": [
+   "animation",
+   "idle"
+  ]
+ },
+ {
+  "code": 59983499,
+  "model": "dancing_elf",
+  "folder": "DancingElf",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 60694662,
+  "model": "skelengel",
+  "folder": "Skelengel",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 60715406,
+  "model": "tentacle_plant",
+  "folder": "TentaclePlant",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 60802233,
+  "model": "kuwagata",
+  "folder": "Kuwagata",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 60862676,
+  "model": "flame_cerebrus",
+  "folder": "FlameCerebrus",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 61201220,
+  "model": "phantom_ghost",
+  "folder": "PhantomGhost",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 61454890,
+  "model": "necrolancer_the_time_lord",
+  "folder": "NecrolancerTheTimeLord",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 61831093,
+  "model": "greenkappa",
+  "folder": "Greenkappa",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 62193699,
+  "model": "rock_ogre_grotto2",
+  "folder": "RockOgreGrotto2",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 62210247,
+  "model": "lunar_queen_elzaim",
+  "folder": "LunarQueenElzaim",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 62337487,
+  "model": "fortress_whale",
+  "folder": "FortressWhale",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 62340868,
+  "model": "kazejin",
+  "folder": "Kazejin",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 62403074,
+  "model": "rhaimundos_of_the_red_sword",
+  "folder": "RhaimundosOfTheRedSword",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 62671448,
+  "model": "toad_master",
+  "folder": "ToadMaster",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 62762898,
+  "model": "parrot_dragon",
+  "folder": "ParrotDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 62793020,
+  "model": "mystery_hand",
+  "folder": "MysteryHand",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 63125616,
+  "model": "the_shadow_who_controls_the_dark",
+  "folder": "TheShadowWhoControlsTheDark",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 63308047,
+  "model": "terra_the_terrible",
+  "folder": "TerraTheTerrible",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 63432835,
+  "model": "stone_armadiller",
+  "folder": "StoneArmadiller",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 63515678,
+  "model": "mystical_capture_chain",
+  "folder": "MysticalCaptureChain",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 63545455,
+  "model": "mech_mole_zombie",
+  "folder": "MechMoleZombie",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 64154377,
+  "model": "embryonic_beast",
+  "folder": "EmbryonicBeast",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 64271667,
+  "model": "meteor_dragon",
+  "folder": "MeteorDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 64335804,
+  "model": "red_eyes_black_metal_dragon",
+  "folder": "RedEyesBlackMetalDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 64428736,
+  "model": "alligators_sword",
+  "folder": "AlligatorsSword",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 64501875,
+  "model": "hibikime",
+  "folder": "Hibikime",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 64511793,
+  "model": "eyearmor",
+  "folder": "Eyearmor",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 64631466,
+  "model": "relinquished",
+  "folder": "Relinquished",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 65393205,
+  "model": "chakra",
+  "folder": "Chakra",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 65570596,
+  "model": "red_archery_girl",
+  "folder": "RedArcheryGirl",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 65623423,
+  "model": "gruesome_goo",
+  "folder": "GruesomeGoo",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 66516792,
+  "model": "serpent_night_dragon",
+  "folder": "SerpentNightDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 66602787,
+  "model": "saggi_the_dark_clown",
+  "folder": "SaggiTheDarkClown",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 66672569,
+  "model": "dragon_zombie",
+  "folder": "DragonZombie",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 66836598,
+  "model": "waterdragon_fairy",
+  "folder": "WaterdragonFairy",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 66889139,
+  "model": "gaia_the_dragon_champion",
+  "folder": "GaiaTheDragonChampion",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 67494157,
+  "model": "crawling_dragon",
+  "folder": "CrawlingDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 67629977,
+  "model": "hoshiningen",
+  "folder": "Hoshiningen",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 67724379,
+  "model": "koumori_dragon",
+  "folder": "KoumoriDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 67841515,
+  "model": "barrel_lily",
+  "folder": "BarrelLily",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 67959180,
+  "model": "goddess_of_whim",
+  "folder": "GoddessOfWhim",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 68171737,
+  "model": "stone_dragon",
+  "folder": "StoneDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 68339286,
+  "model": "metal_guardian",
+  "folder": "MetalGuardian",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 68401546,
+  "model": "fairys_gift",
+  "folder": "FairysGift",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 68516705,
+  "model": "mystic_horseman",
+  "folder": "MysticHorseman",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 68638985,
+  "model": "slime_toad",
+  "folder": "SlimeToad",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 68658728,
+  "model": "little_chimera",
+  "folder": "LittleChimera",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 68846917,
+  "model": "rock_ogre_grotto1",
+  "folder": "RockOgreGrotto1",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 68870276,
+  "model": "fiend_reflection1",
+  "folder": "FiendReflection1",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 68928540,
+  "model": "kamakiriman",
+  "folder": "Kamakiriman",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 68963107,
+  "model": "boo_koo",
+  "folder": "BooKoo",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 69015963,
+  "model": "cyber_stein",
+  "folder": "CyberStein",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 69123138,
+  "model": "zera_the_mant",
+  "folder": "ZeraTheMant",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 69140098,
+  "model": "gemini_elf",
+  "folder": "GeminiElf",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 69572024,
+  "model": "tongyo",
+  "folder": "Tongyo",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 69669405,
+  "model": "horn_imp",
+  "folder": "HornImp",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 69750536,
+  "model": "wow_warrior",
+  "folder": "WowWarrior",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 69780745,
+  "model": "garvas",
+  "folder": "Garvas",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 69893315,
+  "model": "dice_armadillo",
+  "folder": "DiceArmadillo",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 69992868,
+  "model": "muse_a",
+  "folder": "MuseA",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 70084224,
+  "model": "neck_hunter",
+  "folder": "NeckHunter",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 70138455,
+  "model": "blast_juggler",
+  "folder": "BlastJuggler",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 70345785,
+  "model": "yamadron",
+  "folder": "Yamadron",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 70681994,
+  "model": "dragoness_the_wicked_knight",
+  "folder": "DragonessTheWickedKnight",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 70781052,
+  "model": "summoned_skull",
+  "folder": "SummonedSkull",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 70924884,
+  "model": "alinsection",
+  "folder": "Alinsection",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 71068263,
+  "model": "stuffed_animal",
+  "folder": "StuffedAnimal",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 71107816,
+  "model": "the_bistro_butcher",
+  "folder": "TheBistroButcher",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 71280811,
+  "model": "yaranzo",
+  "folder": "Yaranzo",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 71407486,
+  "model": "fireyarou",
+  "folder": "Fireyarou",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 71625222,
+  "model": "time_wizard",
+  "folder": "TimeWizard",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 71746462,
+  "model": "sea_kamen",
+  "folder": "SeaKamen",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 71950093,
+  "model": "shovel_crusher",
+  "folder": "ShovelCrusher",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 72053645,
+  "model": "weather_report",
+  "folder": "WeatherReport",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 72076281,
+  "model": "bat",
+  "folder": "Bat",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 72269672,
+  "model": "stone_ghost",
+  "folder": "StoneGhost",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 72299832,
+  "model": "giant_mech_soldier",
+  "folder": "GiantMechSoldier",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 72520073,
+  "model": "dark_artist",
+  "folder": "DarkArtist",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 72842870,
+  "model": "tyhone",
+  "folder": "Tyhone",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 72869010,
+  "model": "soul_hunter",
+  "folder": "SoulHunter",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 72929454,
+  "model": "turtle_bird",
+  "folder": "TurtleBird",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 73051941,
+  "model": "sand_stone",
+  "folder": "SandStone",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 73081602,
+  "model": "queen_bird",
+  "folder": "QueenBird",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 73481154,
+  "model": "destoyer_golem",
+  "folder": "DestoyerGolem",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 73911410,
+  "model": "sword_slasher",
+  "folder": "SwordSlasher",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 74277583,
+  "model": "brave_scizzar",
+  "folder": "BraveScizzar",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 74677422,
+  "model": "red_eyes_black_dragon",
+  "folder": "RedEyesBlackDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 74703140,
+  "model": "punished_eagle",
+  "folder": "PunishedEagle",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 75356564,
+  "model": "petit_dragon",
+  "folder": "PetitDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 75376965,
+  "model": "enchanting_mermaid",
+  "folder": "EnchantingMermaid",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 75390004,
+  "model": "megazowler",
+  "folder": "Megazowler",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 75499502,
+  "model": "master_expert",
+  "folder": "MasterExpert",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 75559356,
+  "model": "cyber_soldier_of_darkworld",
+  "folder": "CyberSoldierOfDarkworld",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 75582395,
+  "model": "faith_bird",
+  "folder": "FaithBird",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 75646173,
+  "model": "synchar",
+  "folder": "Synchar",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 75850803,
+  "model": "la_moon",
+  "folder": "LaMoon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 75889523,
+  "model": "archfiend_marmot_of_nefariousness",
+  "folder": "ArchfiendMarmotOfNefariousness",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 76184692,
+  "model": "hitotsu_me_giant",
+  "folder": "HitotsuMeGiant",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 76211194,
+  "model": "meda_bat",
+  "folder": "MedaBat",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 76232340,
+  "model": "sengenjin",
+  "folder": "Sengenjin",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 76446915,
+  "model": "disk_magician",
+  "folder": "DiskMagician",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 76512652,
+  "model": "krokodilus",
+  "folder": "Krokodilus",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 76634149,
+  "model": "kairyu_shin",
+  "folder": "KairyuShin",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 76704943,
+  "model": "yamatano_dragon_scroll",
+  "folder": "YamatanoDragonScroll",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 76775123,
+  "model": "patrol_robo",
+  "folder": "PatrolRobo",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 76812113,
+  "model": "harpie_lady",
+  "folder": "HarpieLady",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 77456781,
+  "model": "fiend_kraken",
+  "folder": "FiendKraken",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 77568553,
+  "model": "acid_crawler",
+  "folder": "AcidCrawler",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 77581312,
+  "model": "masked_clown",
+  "folder": "MaskedClown",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 77603950,
+  "model": "phantom_dewan",
+  "folder": "PhantomDewan",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 77827521,
+  "model": "trial_of_nightmare",
+  "folder": "TrialOfNightmare",
+  "animations": []
+ },
+ {
+  "code": 77998771,
+  "model": "crow_goblin",
+  "folder": "CrowGoblin",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 78010363,
+  "model": "witch_of_the_black_forest",
+  "folder": "WitchOfTheBlackForest",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 78402798,
+  "model": "night_lizard",
+  "folder": "NightLizard",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 78556320,
+  "model": "vishwar_randi",
+  "folder": "VishwarRandi",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 78780140,
+  "model": "trent",
+  "folder": "Trent",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 79629370,
+  "model": "maiden_of_the_moonlight",
+  "folder": "MaidenOfTheMoonlight",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 80141480,
+  "model": "hunter_spider",
+  "folder": "HunterSpider",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 80234301,
+  "model": "prisman",
+  "folder": "Prisman",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 80516007,
+  "model": "rare_fish",
+  "folder": "RareFish",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 80600490,
+  "model": "kaneningen",
+  "folder": "Kaneningen",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 80727036,
+  "model": "man_eating_black_shark",
+  "folder": "ManEatingBlackShark",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 80741828,
+  "model": "witches_apprentice",
+  "folder": "WitchesApprentice",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 80770678,
+  "model": "spirit_of_the_harp",
+  "folder": "SpiritOfTheHarp",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 80813021,
+  "model": "torike",
+  "folder": "Torike",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 81057959,
+  "model": "d_human",
+  "folder": "DHuman",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 81179446,
+  "model": "kattapillar",
+  "folder": "Kattapillar",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 81386177,
+  "model": "bottom_dweller",
+  "folder": "BottomDweller",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 81480460,
+  "model": "barrel_dragon",
+  "folder": "BarrelDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 81492226,
+  "model": "ancient_jar",
+  "folder": "AncientJar",
+  "animations": []
+ },
+ {
+  "code": 81563416,
+  "model": "fairy_of_the_fountain",
+  "folder": "FairyOfTheFountain",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 81618817,
+  "model": "lord_of_zemia",
+  "folder": "LordOfZemia",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 81686058,
+  "model": "ill_witch",
+  "folder": "IllWitch",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 81843628,
+  "model": "needle_worm",
+  "folder": "NeedleWorm",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 81863068,
+  "model": "hiros_shadow_scout",
+  "folder": "HirosShadowScout",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 82065276,
+  "model": "oscillo_hero",
+  "folder": "OscilloHero",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 82085619,
+  "model": "shining_friendship",
+  "folder": "ShiningFriendship",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 82742611,
+  "model": "serpent_marauder",
+  "folder": "SerpentMarauder",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 82818645,
+  "model": "rock_spirit",
+  "folder": "RockSpirit",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 83464209,
+  "model": "mystical_sheep2",
+  "folder": "MysticalSheep2",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 83678433,
+  "model": "midnight_fiend",
+  "folder": "MidnightFiend",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 84103702,
+  "model": "kanikabuto",
+  "folder": "Kanikabuto",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 84133008,
+  "model": "monster_eye",
+  "folder": "MonsterEye",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 84285623,
+  "model": "haniwa",
+  "folder": "Haniwa",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 84686841,
+  "model": "king_fog",
+  "folder": "KingFog",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 84794011,
+  "model": "solitude",
+  "folder": "Solitude",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 84916669,
+  "model": "doriado",
+  "folder": "Doriado",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 84926738,
+  "model": "the_immortal_of_thunder",
+  "folder": "TheImmortalOfThunder",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 84990171,
+  "model": "bean_soldier",
+  "folder": "BeanSoldier",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 85255550,
+  "model": "swordsman_from_a_distant_land",
+  "folder": "SwordsmanFromADistantLand",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 85309439,
+  "model": "ray_temparature",
+  "folder": "RayTemparature",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 85326399,
+  "model": "spike_seadra",
+  "folder": "SpikeSeadra",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 85448931,
+  "model": "sentinel_of_the_seas",
+  "folder": "SentinelOfTheSeas",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 85639257,
+  "model": "aqua_madoor",
+  "folder": "AquaMadoor",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 85705804,
+  "model": "kurama",
+  "folder": "Kurama",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 86088138,
+  "model": "ocubeam",
+  "folder": "Ocubeam",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 86100785,
+  "model": "zone_eater",
+  "folder": "ZoneEater",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 86164529,
+  "model": "aqua_dragon",
+  "folder": "AquaDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 86325596,
+  "model": "baron_of_the_fiend_sword",
+  "folder": "BaronOfTheFiendSword",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 86421986,
+  "model": "ancient_tree_of_enlightenment",
+  "folder": "AncientTreeOfEnlightenment",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 87322377,
+  "model": "launcher_spider",
+  "folder": "LauncherSpider",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 87557188,
+  "model": "the_stern_mystic",
+  "folder": "TheSternMystic",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 87564352,
+  "model": "blackland_fire_dragon",
+  "folder": "BlacklandFireDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 87756343,
+  "model": "larvae_moth",
+  "folder": "LarvaeMoth",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 87796900,
+  "model": "winged_dragon_guardian_of_the_fortress1",
+  "folder": "WingedDragonGuardianOfTheFortress1",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 88435542,
+  "model": "fire_eye",
+  "folder": "FireEye",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 88643173,
+  "model": "nightmare_scorpion",
+  "folder": "NightmareScorpion",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 88819587,
+  "model": "baby_dragon",
+  "folder": "BabyDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 88979991,
+  "model": "killer_needle",
+  "folder": "KillerNeedle",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 89091579,
+  "model": "basic_insect",
+  "folder": "BasicInsect",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 89112729,
+  "model": "cyber_saurus",
+  "folder": "CyberSaurus",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 89272878,
+  "model": "guardian_of_the_labrynth",
+  "folder": "GuardianOfTheLabrynth",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 89494469,
+  "model": "dark_titan_of_terror",
+  "folder": "DarkTitanOfTerror",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 89558090,
+  "model": "dark_prisoner",
+  "folder": "DarkPrisoner",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 89631139,
+  "model": "blue_eyes_white_dragon",
+  "folder": "BlueEyesWhiteDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 89832901,
+  "model": "b_dragon_jungle_king",
+  "folder": "BDragonJungleKing",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 89904598,
+  "model": "anthrosaurus",
+  "folder": "Anthrosaurus",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 89987208,
+  "model": "hero_of_the_east",
+  "folder": "HeroOfTheEast",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 90357090,
+  "model": "silver_fang",
+  "folder": "SilverFang",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 90660762,
+  "model": "meteor_black_dragon",
+  "folder": "MeteorBlackDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 90844184,
+  "model": "garma_sword",
+  "folder": "GarmaSword",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 90963488,
+  "model": "nemuriko",
+  "folder": "Nemuriko",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 91152256,
+  "model": "celtic_guardian",
+  "folder": "CelticGuardian",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 91939608,
+  "model": "rogue_doll",
+  "folder": "RogueDoll",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 91996584,
+  "model": "whiptail_crow",
+  "folder": "WhiptailCrow",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 92391084,
+  "model": "wilmee",
+  "folder": "Wilmee",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 92409659,
+  "model": "white_dolphin",
+  "folder": "WhiteDolphin",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 92667214,
+  "model": "clown_zombie",
+  "folder": "ClownZombie",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 92731455,
+  "model": "m_warrior2",
+  "folder": "MWarrior2",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 92944626,
+  "model": "wings_of_wicked_flame",
+  "folder": "WingsOfWickedFlame",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 93013676,
+  "model": "maha_vailo",
+  "folder": "MahaVailo",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 93108297,
+  "model": "liquid_beast",
+  "folder": "LiquidBeast",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 93221206,
+  "model": "ancient_elf",
+  "folder": "AncientElf",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 93343894,
+  "model": "water_magician",
+  "folder": "WaterMagician",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 93553943,
+  "model": "man_eater",
+  "folder": "ManEater",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 93788854,
+  "model": "the_wandering_doomed",
+  "folder": "TheWanderingDoomed",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 93889755,
+  "model": "crass_clown",
+  "folder": "CrassClown",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 93900406,
+  "model": "mushroom_man2",
+  "folder": "MushroomMan2",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 93920745,
+  "model": "penguin_soldier",
+  "folder": "PenguinSoldier",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 94022093,
+  "model": "behegon",
+  "folder": "Behegon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 94042337,
+  "model": "violent_rain",
+  "folder": "ViolentRain",
+  "animations": []
+ },
+ {
+  "code": 94119974,
+  "model": "two_headed_king_rex",
+  "folder": "TwoHeadedKingRex",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 94230224,
+  "model": "needle_ball",
+  "folder": "NeedleBall",
+  "animations": []
+ },
+ {
+  "code": 94412545,
+  "model": "mechaleon",
+  "folder": "Mechaleon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 94566432,
+  "model": "kaiser_dragon",
+  "folder": "KaiserDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 94675535,
+  "model": "larvas",
+  "folder": "Larvas",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 94773007,
+  "model": "jirai_gumo",
+  "folder": "JiraiGumo",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 94905343,
+  "model": "rabid_horseman",
+  "folder": "RabidHorseman",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 95144193,
+  "model": "kwagar_hercules",
+  "folder": "KwagarHercules",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 95174353,
+  "model": "ameba",
+  "folder": "Ameba",
+  "animations": []
+ },
+ {
+  "code": 95265975,
+  "model": "ghoul_with_an_appetite",
+  "folder": "GhoulWithAnAppetite",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 95288024,
+  "model": "sky_dragon",
+  "folder": "SkyDragon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 95727991,
+  "model": "catapult_turtle",
+  "folder": "CatapultTurtle",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 95744531,
+  "model": "griggle",
+  "folder": "Griggle",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 95952802,
+  "model": "flower_wolf",
+  "folder": "FlowerWolf",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 96643568,
+  "model": "wetha",
+  "folder": "Wetha",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 96851799,
+  "model": "hinotama_soul",
+  "folder": "HinotamaSoul",
+  "animations": []
+ },
+ {
+  "code": 96967123,
+  "model": "dharma_cannon",
+  "folder": "DharmaCannon",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 96981563,
+  "model": "giant_turtle_who_feeds_on_flames",
+  "folder": "GiantTurtleWhoFeedsOnFlames",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 97360116,
+  "model": "unknown_warrior_of_fiend",
+  "folder": "UnknownWarriorOfFiend",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 97590747,
+  "model": "la_jinn_the_mystical_genie_of_the_lamp",
+  "folder": "LaJinnTheMysticalGenieOfTheLamp",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 97612389,
+  "model": "monster_tamer",
+  "folder": "MonsterTamer",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 97843505,
+  "model": "djinn_the_watcher_of_the_wind",
+  "folder": "DjinnTheWatcherOfTheWind",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 97973387,
+  "model": "droll_bird",
+  "folder": "DrollBird",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 98049915,
+  "model": "mystical_lamp",
+  "folder": "MysticalLamp",
+  "animations": []
+ },
+ {
+  "code": 98075147,
+  "model": "spiked_snail",
+  "folder": "SpikedSnail",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 98434877,
+  "model": "suijin",
+  "folder": "Suijin",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 98582704,
+  "model": "wing_egg_elf",
+  "folder": "WingEggElf",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 98795934,
+  "model": "mabarrel",
+  "folder": "Mabarrel",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 98818516,
+  "model": "frenzied_panda",
+  "folder": "FrenziedPanda",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 98898173,
+  "model": "the_melting_red_shadow",
+  "folder": "TheMeltingRedShadow",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 99030164,
+  "model": "happy_lover",
+  "folder": "HappyLover",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 99261403,
+  "model": "dark_rabbit",
+  "folder": "DarkRabbit",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 99426834,
+  "model": "beastking_of_the_swamps",
+  "folder": "BeastkingOfTheSwamps",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 99510761,
+  "model": "lord_of_the_lamp",
+  "folder": "LordOfTheLamp",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 99551425,
+  "model": "labyrinth_tank",
+  "folder": "LabyrinthTank",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 99721536,
+  "model": "dokurorider",
+  "folder": "Dokurorider",
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 99785935,
+  "model": "alpha_the_magnet_warrior",
+  "folder": "AlphaTheMagnetWarrior",
+  "animations": [
+   "idle"
+  ]
+ }
+]

@@ -1,0 +1,16 @@
+{
+ "_comment": "Model folders whose name doesn't match a card name exactly (typos in folder names), and an optional fixed era cutoff (\"cutoff\": \"YYYY-MM-DD\").",
+ "cards": {
+  "DestoyerGolem": 73481154,
+  "GuardianOfTheLabrynth": 89272878,
+  "Kaneningen": 80600490,
+  "MilleniumShield": 32012842,
+  "MonstruousBird": 35712107,
+  "MysticalLamp": 98049915,
+  "RayTemparature": 85309439,
+  "RoseSpectereOfDunn": 32485271,
+  "SecretarianOfSecrets": 15507080,
+  "SkullGaurdian": 3627449,
+  "WitchesApprentice": 80741828
+ }
+}
