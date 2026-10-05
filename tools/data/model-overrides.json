@@ -1,0 +1,16 @@
+{
+  "_comment": "Manual fixes for YGOMCModels folders whose name does not match the English card name (typos, renamed cards). Keys are folder names. Fields: name (English card name), code (passcode), ignore (skip folder), scaleMul / yawOffset (presentation tuning used by the model converter).",
+  "folders": {
+    "DestoyerGolem": { "name": "Destroyer Golem" },
+    "GuardianOfTheLabrynth": { "name": "Guardian of the Labyrinth" },
+    "Kaneningen": { "name": "Kageningen" },
+    "MilleniumShield": { "name": "Millennium Shield" },
+    "MonstruousBird": { "name": "Monstrous Bird" },
+    "MysticalLamp": { "name": "Mystic Lamp" },
+    "RayTemparature": { "name": "Ray & Temperature" },
+    "RoseSpectereOfDunn": { "name": "Rose Spectre of Dunn" },
+    "SecretarianOfSecrets": { "name": "Sectarian of Secrets" },
+    "SkullGaurdian": { "name": "Skull Guardian" },
+    "WitchesApprentice": { "name": "Witch's Apprentice" }
+  }
+}

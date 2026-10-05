@@ -1,0 +1,8244 @@
+{
+  "format": 1,
+  "eraCutoff": "2002-12-20",
+  "cards": [
+    {
+      "code": 32864,
+      "name": "The 13th Grave",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "The13thGrave",
+      "reason": "model"
+    },
+    {
+      "code": 62121,
+      "name": "Castle of Dark Illusions",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "CastleOfDarkIllusions",
+      "reason": "model"
+    },
+    {
+      "code": 126218,
+      "name": "Skull Dice",
+      "kind": "trap",
+      "firstRelease": "2001-07-05",
+      "reason": "era"
+    },
+    {
+      "code": 295517,
+      "name": "A Legendary Ocean",
+      "kind": "spell",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 296499,
+      "name": "The Regulation of Tribe",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 403847,
+      "name": "The A. Forces",
+      "kind": "spell",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 473469,
+      "name": "Driving Snow",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 549481,
+      "name": "Prevent Rat",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "PreventRat",
+      "reason": "model"
+    },
+    {
+      "code": 596051,
+      "name": "Snake Fang",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 732302,
+      "name": "Temple of Skulls",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "TempleOfSkulls",
+      "reason": "model"
+    },
+    {
+      "code": 756652,
+      "name": "Doron",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "Doron",
+      "reason": "model"
+    },
+    {
+      "code": 1184620,
+      "name": "Kojikocy",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "Kojikocy",
+      "reason": "model"
+    },
+    {
+      "code": 1248895,
+      "name": "Chain Destruction",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 1435851,
+      "name": "Dragon Treasure",
+      "kind": "spell",
+      "firstRelease": "1999-05-27",
+      "reason": "era"
+    },
+    {
+      "code": 1557499,
+      "name": "Silver Bow and Arrow",
+      "kind": "spell",
+      "firstRelease": "1999-05-27",
+      "reason": "era"
+    },
+    {
+      "code": 1641882,
+      "name": "Fusionist",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-03-06",
+      "model": "Fusionist",
+      "reason": "model"
+    },
+    {
+      "code": 1761063,
+      "name": "Nekogal #1",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "Nekogal1",
+      "reason": "model"
+    },
+    {
+      "code": 1784619,
+      "name": "Uraby",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "Uraby",
+      "reason": "model"
+    },
+    {
+      "code": 1918087,
+      "name": "Minor Goblin Official",
+      "kind": "trap",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 1929294,
+      "name": "Key Mace",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "KeyMace",
+      "reason": "model"
+    },
+    {
+      "code": 2047519,
+      "name": "Hidden Soldiers",
+      "kind": "trap",
+      "firstRelease": "2002-05-28",
+      "reason": "era"
+    },
+    {
+      "code": 2118022,
+      "name": "Hyosube",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "Hyosube",
+      "reason": "model"
+    },
+    {
+      "code": 2130625,
+      "name": "Numinous Healer",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 2370081,
+      "name": "Steel Shell",
+      "kind": "spell",
+      "firstRelease": "1999-05-25",
+      "reason": "era"
+    },
+    {
+      "code": 2483611,
+      "name": "Water Omotics",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "WaterOmotics",
+      "reason": "model"
+    },
+    {
+      "code": 2504891,
+      "name": "Skull Knight",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "2000-03-01",
+      "model": "SkullKnight",
+      "reason": "model"
+    },
+    {
+      "code": 2830619,
+      "name": "Flame Viper",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "FlameViper",
+      "reason": "model"
+    },
+    {
+      "code": 2833249,
+      "name": "D. Tribe",
+      "kind": "trap",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 2863439,
+      "name": "Fiend Reflection #2",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "FiendReflection2",
+      "reason": "model"
+    },
+    {
+      "code": 2903036,
+      "name": "Tribute Doll",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 2906250,
+      "name": "Grappler",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "Grappler",
+      "reason": "model"
+    },
+    {
+      "code": 2957055,
+      "name": "Wicked Dragon with the Ersatz Head",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "WickedDragonWithTheErsatzHead",
+      "reason": "model"
+    },
+    {
+      "code": 2971090,
+      "name": "Orion the Battle King",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "OrionTheBattleKing",
+      "reason": "model"
+    },
+    {
+      "code": 3027001,
+      "name": "Fake Trap",
+      "kind": "trap",
+      "firstRelease": "1999-09-23",
+      "reason": "era"
+    },
+    {
+      "code": 3055837,
+      "name": "Trap of Board Eraser",
+      "kind": "trap",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 3056267,
+      "name": "Invader of the Throne",
+      "kind": "monster",
+      "firstRelease": "2002-06-20",
+      "model": "InvaderOfTheThrone",
+      "reason": "model"
+    },
+    {
+      "code": 3170832,
+      "name": "Takuhee",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "Takuhee",
+      "reason": "model"
+    },
+    {
+      "code": 3492538,
+      "name": "Insect Armor with Laser Cannon",
+      "kind": "spell",
+      "firstRelease": "1999-07-08",
+      "reason": "era"
+    },
+    {
+      "code": 3606209,
+      "name": "One Who Hunts Souls",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "OneWhoHuntsSouls",
+      "reason": "model"
+    },
+    {
+      "code": 3627449,
+      "name": "Skull Guardian",
+      "kind": "monster",
+      "firstRelease": "2000-03-23",
+      "model": "SkullGaurdian",
+      "reason": "model"
+    },
+    {
+      "code": 3682106,
+      "name": "Double Snare",
+      "kind": "spell",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 3732747,
+      "name": "Water Element",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "WaterElement",
+      "reason": "model"
+    },
+    {
+      "code": 3797883,
+      "name": "Slot Machine",
+      "kind": "monster",
+      "firstRelease": "2002-06-20",
+      "model": "SlotMachine",
+      "reason": "model"
+    },
+    {
+      "code": 3819470,
+      "name": "Seven Tools of the Bandit",
+      "kind": "trap",
+      "firstRelease": "1999-11-18",
+      "reason": "era"
+    },
+    {
+      "code": 3985011,
+      "name": "Lucky Trinket",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "LuckyTrinket",
+      "reason": "model"
+    },
+    {
+      "code": 4031928,
+      "name": "Change of Heart",
+      "kind": "spell",
+      "firstRelease": "1999-09-23",
+      "reason": "era"
+    },
+    {
+      "code": 4149689,
+      "name": "Goblin Fan",
+      "kind": "trap",
+      "firstRelease": "2000-07-13",
+      "reason": "era"
+    },
+    {
+      "code": 4178474,
+      "name": "Raigeki Break",
+      "kind": "trap",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 4179849,
+      "name": "Queen of Autumn Leaves",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "QueenOfAutumnLeaves",
+      "reason": "model"
+    },
+    {
+      "code": 4206964,
+      "name": "Trap Hole",
+      "kind": "trap",
+      "firstRelease": "1999-02-04",
+      "reason": "era"
+    },
+    {
+      "code": 4392470,
+      "name": "Leo Wizard",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "LeoWizard",
+      "reason": "model"
+    },
+    {
+      "code": 4614116,
+      "name": "Dark Energy",
+      "kind": "spell",
+      "firstRelease": "1999-03-27",
+      "reason": "era"
+    },
+    {
+      "code": 4931562,
+      "name": "Mountain Warrior",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "MountainWarrior",
+      "reason": "model"
+    },
+    {
+      "code": 5053103,
+      "name": "Battle Ox",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "BattleOx",
+      "reason": "model"
+    },
+    {
+      "code": 5318639,
+      "name": "Mystical Space Typhoon",
+      "kind": "spell",
+      "firstRelease": "2001-06-28",
+      "reason": "era"
+    },
+    {
+      "code": 5405694,
+      "name": "Black Luster Soldier",
+      "kind": "monster",
+      "firstRelease": "1999-02-21",
+      "model": "BlackLusterSoldier",
+      "reason": "model"
+    },
+    {
+      "code": 5494820,
+      "name": "Cyclon Laser",
+      "kind": "spell",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 5556668,
+      "name": "Exchange",
+      "kind": "spell",
+      "firstRelease": "2001-07-05",
+      "reason": "era"
+    },
+    {
+      "code": 5616412,
+      "name": "Destruction Punch",
+      "kind": "trap",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 5628232,
+      "name": "Flying Penguin",
+      "kind": "monster",
+      "firstRelease": "1999-06-01",
+      "model": "FlyingPenguin",
+      "reason": "model"
+    },
+    {
+      "code": 5758500,
+      "name": "Soul Release",
+      "kind": "spell",
+      "firstRelease": "1999-09-23",
+      "reason": "era"
+    },
+    {
+      "code": 5818798,
+      "name": "Gazelle the King of Mythical Beasts",
+      "kind": "monster",
+      "firstRelease": "2000-04-01",
+      "model": "GazelleTheKingOfMythicalBeasts",
+      "reason": "model"
+    },
+    {
+      "code": 5901497,
+      "name": "Queen's Double",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "QueensDouble",
+      "reason": "model"
+    },
+    {
+      "code": 5990062,
+      "name": "Reversal Quiz",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 6103114,
+      "name": "Beaked Snake",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "BeakedSnake",
+      "reason": "model"
+    },
+    {
+      "code": 6285791,
+      "name": "The Wicked Worm Beast",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "TheWickedWormBeast",
+      "reason": "model"
+    },
+    {
+      "code": 6297941,
+      "name": "Burglar",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "Burglar",
+      "reason": "model"
+    },
+    {
+      "code": 6343408,
+      "name": "Miracle Dig",
+      "kind": "spell",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 6367785,
+      "name": "Eldeen",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "Eldeen",
+      "reason": "model"
+    },
+    {
+      "code": 6368038,
+      "name": "Gaia The Fierce Knight",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "GaiaTheFierceKnight",
+      "reason": "model"
+    },
+    {
+      "code": 6390406,
+      "name": "Emblem of Dragon Destroyer",
+      "kind": "spell",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 6400512,
+      "name": "Cyber Commander",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "CyberCommander",
+      "reason": "model"
+    },
+    {
+      "code": 6733059,
+      "name": "Skull Lair",
+      "kind": "trap",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 6740720,
+      "name": "Seiyaryu",
+      "kind": "monster",
+      "firstRelease": "1999-07-08",
+      "model": "Seiyaryu",
+      "reason": "model"
+    },
+    {
+      "code": 6840573,
+      "name": "Barox",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-05-27",
+      "model": "Barox",
+      "reason": "model"
+    },
+    {
+      "code": 6850209,
+      "name": "A Deal with Dark Ruler",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 7019529,
+      "name": "Insect Soldiers of the Sky",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "InsectSoldiersOfTheSky",
+      "reason": "model"
+    },
+    {
+      "code": 7089711,
+      "name": "Hane-Hane",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "HaneHane",
+      "reason": "model"
+    },
+    {
+      "code": 7165085,
+      "name": "Bait Doll",
+      "kind": "spell",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 7225792,
+      "name": "Mon Larvas",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "MonLarvas",
+      "reason": "model"
+    },
+    {
+      "code": 7359741,
+      "name": "Mechanicalchaser",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "Mechanicalchaser",
+      "reason": "model"
+    },
+    {
+      "code": 7489323,
+      "name": "Milus Radiant",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "MilusRadiant",
+      "reason": "model"
+    },
+    {
+      "code": 7512044,
+      "name": "Gather Your Mind",
+      "kind": "spell",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 7526150,
+      "name": "Golgoil",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "Golgoil",
+      "reason": "model"
+    },
+    {
+      "code": 7562372,
+      "name": "Megasonic Eye",
+      "kind": "monster",
+      "firstRelease": "1999-06-01",
+      "model": "MegasonicEye",
+      "reason": "model"
+    },
+    {
+      "code": 7565547,
+      "name": "Collected Power",
+      "kind": "trap",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 7625614,
+      "name": "Raregold Armor",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 7670542,
+      "name": "Bio Plant",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "BioPlant",
+      "reason": "model"
+    },
+    {
+      "code": 7805359,
+      "name": "Niwatori",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "Niwatori",
+      "reason": "model"
+    },
+    {
+      "code": 8058240,
+      "name": "Binding Chain",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "BindingChain",
+      "reason": "model"
+    },
+    {
+      "code": 8131171,
+      "name": "Sinister Serpent",
+      "kind": "monster",
+      "firstRelease": "2000-07-13",
+      "model": "SinisterSerpent",
+      "reason": "model"
+    },
+    {
+      "code": 8201910,
+      "name": "Star Boy",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "StarBoy",
+      "reason": "model"
+    },
+    {
+      "code": 8327462,
+      "name": "Skullbird",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-07-05",
+      "model": "Skullbird",
+      "reason": "model"
+    },
+    {
+      "code": 8353769,
+      "name": "Air Eater",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "AirEater",
+      "reason": "model"
+    },
+    {
+      "code": 8471389,
+      "name": "Giga-Tech Wolf",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "GigaTechWolf",
+      "reason": "model"
+    },
+    {
+      "code": 8783685,
+      "name": "Hourglass of Life",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "HourglassOfLife",
+      "reason": "model"
+    },
+    {
+      "code": 8842266,
+      "name": "Poison of the Old Man",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 8944575,
+      "name": "The Drdek",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "TheDrdek",
+      "reason": "model"
+    },
+    {
+      "code": 8951260,
+      "name": "Respect Play",
+      "kind": "trap",
+      "firstRelease": "2002-03-21",
+      "reason": "era"
+    },
+    {
+      "code": 8964854,
+      "name": "Combination Attack",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 9074847,
+      "name": "Major Riot",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 9076207,
+      "name": "Armed Ninja",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "ArmedNinja",
+      "reason": "model"
+    },
+    {
+      "code": 9159938,
+      "name": "Dark Gray",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "DarkGray",
+      "reason": "model"
+    },
+    {
+      "code": 9197735,
+      "name": "Dragon Statue",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "DragonStatue",
+      "reason": "model"
+    },
+    {
+      "code": 9293977,
+      "name": "Metal Dragon",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-05-27",
+      "model": "MetalDragon",
+      "reason": "model"
+    },
+    {
+      "code": 9430387,
+      "name": "LaLa Li-oon",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "LaLaLioon",
+      "reason": "model"
+    },
+    {
+      "code": 9540040,
+      "name": "Boulder Tortoise",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "BoulderTortoise",
+      "reason": "model"
+    },
+    {
+      "code": 9653271,
+      "name": "Kaminari Attack",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-07-22",
+      "model": "KaminariAttack",
+      "reason": "model"
+    },
+    {
+      "code": 9786492,
+      "name": "White Dragon Ritual",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 10012614,
+      "name": "Banner of Courage",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 10071456,
+      "name": "Protector of the Throne",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "ProtectorOfTheThrone",
+      "reason": "model"
+    },
+    {
+      "code": 10189126,
+      "name": "Masked Sorcerer",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "MaskedSorcerer",
+      "reason": "model"
+    },
+    {
+      "code": 10202894,
+      "name": "Skull Red Bird",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "SkullRedBird",
+      "reason": "model"
+    },
+    {
+      "code": 10248192,
+      "name": "Hieroglyph Lithograph",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 10262698,
+      "name": "The Statue of Easter Island",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "TheStatueOfEasterIsland",
+      "reason": "model"
+    },
+    {
+      "code": 10315429,
+      "name": "Yaiba Robo",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "YaibaRobo",
+      "reason": "model"
+    },
+    {
+      "code": 10352095,
+      "name": "Scroll of Bewitchment",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 10476868,
+      "name": "Barrel Rock",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "BarrelRock",
+      "reason": "model"
+    },
+    {
+      "code": 10538007,
+      "name": "Leogun",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "Leogun",
+      "reason": "model"
+    },
+    {
+      "code": 10598400,
+      "name": "Zarigun",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "Zarigun",
+      "reason": "model"
+    },
+    {
+      "code": 10859908,
+      "name": "Holograh",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "Holograh",
+      "reason": "model"
+    },
+    {
+      "code": 11250655,
+      "name": "Emperor of the Land and Sea",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "EmperorOfTheLandAndSea",
+      "reason": "model"
+    },
+    {
+      "code": 11324436,
+      "name": "Electric Snake",
+      "kind": "monster",
+      "firstRelease": "2002-06-20",
+      "model": "ElectricSnake",
+      "reason": "model"
+    },
+    {
+      "code": 11384280,
+      "name": "Cannon Soldier",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "CannonSoldier",
+      "reason": "model"
+    },
+    {
+      "code": 11714098,
+      "name": "30,000-Year White Turtle",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "30000YearWhiteTurtle",
+      "reason": "model"
+    },
+    {
+      "code": 11793047,
+      "name": "Gorgon Egg",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "GorgonEgg",
+      "reason": "model"
+    },
+    {
+      "code": 11868825,
+      "name": "Goblin's Secret Remedy",
+      "kind": "spell",
+      "firstRelease": "1999-03-27",
+      "reason": "era"
+    },
+    {
+      "code": 11901678,
+      "name": "Black Skull Dragon",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-09-23",
+      "model": "BlackSkullDragon",
+      "reason": "model"
+    },
+    {
+      "code": 11961740,
+      "name": "Different Dimension Capsule",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 12146024,
+      "name": "Bolt Escargot",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "BoltEscargot",
+      "reason": "model"
+    },
+    {
+      "code": 12183332,
+      "name": "Card Shuffle",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 12206212,
+      "name": "Harpie Lady Sisters",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "HarpieLadySisters",
+      "reason": "model"
+    },
+    {
+      "code": 12253117,
+      "name": "World Suppression",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 12436646,
+      "name": "Aqua Snake",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "AquaSnake",
+      "reason": "model"
+    },
+    {
+      "code": 12470447,
+      "name": "Curse of Fiend",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 12472242,
+      "name": "Leghul",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "Leghul",
+      "reason": "model"
+    },
+    {
+      "code": 12580477,
+      "name": "Raigeki",
+      "kind": "spell",
+      "firstRelease": "1999-03-06",
+      "reason": "era"
+    },
+    {
+      "code": 12607053,
+      "name": "Waboku",
+      "kind": "trap",
+      "firstRelease": "1999-12-16",
+      "reason": "era"
+    },
+    {
+      "code": 12829151,
+      "name": "Kanan the Swordmistress",
+      "kind": "monster",
+      "firstRelease": "1999-02-21",
+      "model": "KananTheSwordmistress",
+      "reason": "model"
+    },
+    {
+      "code": 13039848,
+      "name": "Giant Soldier of Stone",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "GiantSoldierOfStone",
+      "reason": "model"
+    },
+    {
+      "code": 13069066,
+      "name": "Sword Arm of Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "SwordArmOfDragon",
+      "reason": "model"
+    },
+    {
+      "code": 13193642,
+      "name": "Dark Plant",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "DarkPlant",
+      "reason": "model"
+    },
+    {
+      "code": 13215230,
+      "name": "Dream Clown",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "DreamClown",
+      "reason": "model"
+    },
+    {
+      "code": 13429800,
+      "name": "Great White",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "GreatWhite",
+      "reason": "model"
+    },
+    {
+      "code": 13599884,
+      "name": "Steel Scorpion",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "SteelScorpion",
+      "reason": "model"
+    },
+    {
+      "code": 13723605,
+      "name": "Man-Eating Treasure Chest",
+      "kind": "monster",
+      "firstRelease": "1999-12-16",
+      "model": "ManEatingTreasureChest",
+      "reason": "model"
+    },
+    {
+      "code": 13945283,
+      "name": "Wall of Illusion",
+      "kind": "monster",
+      "firstRelease": "1999-12-16",
+      "model": "WallOfIllusion",
+      "reason": "model"
+    },
+    {
+      "code": 14015067,
+      "name": "Ancient One of the Deep Forest",
+      "kind": "monster",
+      "firstRelease": "2002-09-16",
+      "model": "AncientOneOfTheDeepForest",
+      "reason": "model"
+    },
+    {
+      "code": 14037717,
+      "name": "Spirit of the Books",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "SpiritOfTheBooks",
+      "reason": "model"
+    },
+    {
+      "code": 14141448,
+      "name": "Great Moth",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "GreatMoth",
+      "reason": "model"
+    },
+    {
+      "code": 14181608,
+      "name": "Mushroom Man",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "MushroomMan",
+      "reason": "model"
+    },
+    {
+      "code": 14315573,
+      "name": "Negate Attack",
+      "kind": "trap",
+      "firstRelease": "2000-12-07",
+      "reason": "era"
+    },
+    {
+      "code": 14318794,
+      "name": "Life Absorbing Machine",
+      "kind": "trap",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 14708569,
+      "name": "Arlownay",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "Arlownay",
+      "reason": "model"
+    },
+    {
+      "code": 14731897,
+      "name": "Unity",
+      "kind": "spell",
+      "firstRelease": "2002-11-01",
+      "reason": "era"
+    },
+    {
+      "code": 14851496,
+      "name": "Jellyfish",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "Jellyfish",
+      "reason": "model"
+    },
+    {
+      "code": 14977074,
+      "name": "Garoozis",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "Garoozis",
+      "reason": "model"
+    },
+    {
+      "code": 15025844,
+      "name": "Mystical Elf",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "MysticalElf",
+      "reason": "model"
+    },
+    {
+      "code": 15042735,
+      "name": "Hurricail",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "Hurricail",
+      "reason": "model"
+    },
+    {
+      "code": 15052462,
+      "name": "Violet Crystal",
+      "kind": "spell",
+      "firstRelease": "1999-02-04",
+      "reason": "era"
+    },
+    {
+      "code": 15083728,
+      "name": "House of Adhesive Tape",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 15150365,
+      "name": "White Magical Hat",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "WhiteMagicalHat",
+      "reason": "model"
+    },
+    {
+      "code": 15150371,
+      "name": "Archfiend Mirror",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "ArchfiendMirror",
+      "reason": "model"
+    },
+    {
+      "code": 15237615,
+      "name": "Empress Judge",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-09-23",
+      "model": "EmpressJudge",
+      "reason": "model"
+    },
+    {
+      "code": 15259703,
+      "name": "Toon World",
+      "kind": "spell",
+      "firstRelease": "2002-03-21",
+      "reason": "era"
+    },
+    {
+      "code": 15303296,
+      "name": "Ryu-Kishin",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "RyuKishin",
+      "reason": "model"
+    },
+    {
+      "code": 15367030,
+      "name": "Gokibore",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "Gokibore",
+      "reason": "model"
+    },
+    {
+      "code": 15401633,
+      "name": "Kagemusha of the Blue Flame",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "KagemushaOfTheBlueFlame",
+      "reason": "model"
+    },
+    {
+      "code": 15480588,
+      "name": "Armored Lizard",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "ArmoredLizard",
+      "reason": "model"
+    },
+    {
+      "code": 15507080,
+      "name": "Sectarian of Secrets",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "SecretarianOfSecrets",
+      "reason": "model"
+    },
+    {
+      "code": 15510988,
+      "name": "Thunder Kid",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "ThunderKid",
+      "reason": "model"
+    },
+    {
+      "code": 15820147,
+      "name": "Monsturtle",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "Monsturtle",
+      "reason": "model"
+    },
+    {
+      "code": 15866454,
+      "name": "Spiritualism",
+      "kind": "spell",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 16227556,
+      "name": "Inspection",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 16229315,
+      "name": "Gale Dogra",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "GaleDogra",
+      "reason": "model"
+    },
+    {
+      "code": 16246527,
+      "name": "Armored Rat",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "ArmoredRat",
+      "reason": "model"
+    },
+    {
+      "code": 16353197,
+      "name": "Drooling Lizard",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "DroolingLizard",
+      "reason": "model"
+    },
+    {
+      "code": 16430187,
+      "name": "The Reliable Guardian",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 16507828,
+      "name": "Bracchio-raidus",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-10-17",
+      "model": "BracchioRaidus",
+      "reason": "model"
+    },
+    {
+      "code": 16762927,
+      "name": "Gravekeeper's Servant",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 16768387,
+      "name": "Big Eye",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "BigEye",
+      "reason": "model"
+    },
+    {
+      "code": 16899564,
+      "name": "Beautiful Headhuntress",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "BeautifulHeadhuntress",
+      "reason": "model"
+    },
+    {
+      "code": 16970158,
+      "name": "Call of the Grave",
+      "kind": "trap",
+      "firstRelease": "1999-08-26",
+      "reason": "era"
+    },
+    {
+      "code": 16972957,
+      "name": "Doma The Angel of Silence",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "DomaTheAngelOfSilence",
+      "reason": "model"
+    },
+    {
+      "code": 17092736,
+      "name": "Ancient Telescope",
+      "kind": "spell",
+      "firstRelease": "1999-07-05",
+      "reason": "era"
+    },
+    {
+      "code": 17115745,
+      "name": "Yormungarde",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "Yormungarde",
+      "reason": "model"
+    },
+    {
+      "code": 17238333,
+      "name": "Wretched Ghost of the Attic",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "WretchedGhostOfTheAttic",
+      "reason": "model"
+    },
+    {
+      "code": 17358176,
+      "name": "Lady of Faith",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "LadyOfFaith",
+      "reason": "model"
+    },
+    {
+      "code": 17375316,
+      "name": "Confiscation",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 17441953,
+      "name": "Turtle Raccoon",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "TurtleRaccoon",
+      "reason": "model"
+    },
+    {
+      "code": 17449108,
+      "name": "Nobleman of Extermination",
+      "kind": "spell",
+      "firstRelease": "2002-01-24",
+      "reason": "era"
+    },
+    {
+      "code": 17484499,
+      "name": "Exchange of the Spirit",
+      "kind": "trap",
+      "firstRelease": "2001-12-28",
+      "reason": "era"
+    },
+    {
+      "code": 17511156,
+      "name": "Wood Clown",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "WoodClown",
+      "reason": "model"
+    },
+    {
+      "code": 17535588,
+      "name": "Armored Starfish",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "ArmoredStarfish",
+      "reason": "model"
+    },
+    {
+      "code": 17653779,
+      "name": "Fairy's Hand Mirror",
+      "kind": "trap",
+      "firstRelease": "2001-10-25",
+      "reason": "era"
+    },
+    {
+      "code": 17733394,
+      "name": "Wood Remains",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "WoodRemains",
+      "reason": "model"
+    },
+    {
+      "code": 17814387,
+      "name": "Reinforcements",
+      "kind": "trap",
+      "firstRelease": "1999-07-05",
+      "reason": "era"
+    },
+    {
+      "code": 17881964,
+      "name": "Darkfire Dragon",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-03-06",
+      "model": "DarkfireDragon",
+      "reason": "model"
+    },
+    {
+      "code": 17968114,
+      "name": "Amazon of the Seas",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "AmazonOfTheSeas",
+      "reason": "model"
+    },
+    {
+      "code": 18144506,
+      "name": "Harpie's Feather Duster",
+      "kind": "spell",
+      "firstRelease": "1999-07-08",
+      "reason": "era"
+    },
+    {
+      "code": 18161786,
+      "name": "Mystic Plasma Zone",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 18180762,
+      "name": "The Thing That Hides in the Mud",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "TheThingThatHidesInTheMud",
+      "reason": "model"
+    },
+    {
+      "code": 18246479,
+      "name": "Battle Steer",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "BattleSteer",
+      "reason": "model"
+    },
+    {
+      "code": 18591904,
+      "name": "Final Destiny",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 18605135,
+      "name": "Tornado Wall",
+      "kind": "trap",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 18710707,
+      "name": "The Furious Sea King",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "TheFuriousSeaKing",
+      "reason": "model"
+    },
+    {
+      "code": 18807108,
+      "name": "Spellbinding Circle",
+      "kind": "trap",
+      "firstRelease": "2001-06-28",
+      "reason": "era"
+    },
+    {
+      "code": 18914778,
+      "name": "Change Slime",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "ChangeSlime",
+      "reason": "model"
+    },
+    {
+      "code": 18937875,
+      "name": "Burning Spear",
+      "kind": "spell",
+      "firstRelease": "1999-05-25",
+      "reason": "era"
+    },
+    {
+      "code": 19066538,
+      "name": "Roaring Ocean Snake",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-09-23",
+      "model": "RoaringOceanSnake",
+      "reason": "model"
+    },
+    {
+      "code": 19159413,
+      "name": "De-Spell",
+      "kind": "spell",
+      "firstRelease": "1999-03-27",
+      "reason": "era"
+    },
+    {
+      "code": 19230407,
+      "name": "Offerings to the Doomed",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 19384334,
+      "name": "Molten Destruction",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 19523799,
+      "name": "Ookazi",
+      "kind": "spell",
+      "firstRelease": "1999-05-25",
+      "reason": "era"
+    },
+    {
+      "code": 19613556,
+      "name": "Heavy Storm",
+      "kind": "spell",
+      "firstRelease": "2000-03-01",
+      "reason": "era"
+    },
+    {
+      "code": 19737320,
+      "name": "Gatekeeper",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "Gatekeeper",
+      "reason": "model"
+    },
+    {
+      "code": 19827717,
+      "name": "Return of the Doomed",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 20060230,
+      "name": "Hard Armor",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "HardArmor",
+      "reason": "model"
+    },
+    {
+      "code": 20065549,
+      "name": "Non-Spellcasting Area",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 20101223,
+      "name": "Breath of Light",
+      "kind": "spell",
+      "firstRelease": "1999-07-22",
+      "reason": "era"
+    },
+    {
+      "code": 20188127,
+      "name": "Fairy of the Spring",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 20277860,
+      "name": "Armored Zombie",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "ArmoredZombie",
+      "reason": "model"
+    },
+    {
+      "code": 20315854,
+      "name": "Fairy Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "FairyDragon",
+      "reason": "model"
+    },
+    {
+      "code": 20394040,
+      "name": "Lava Battleguard",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "LavaBattleguard",
+      "reason": "model"
+    },
+    {
+      "code": 20436034,
+      "name": "Ring of Magnetism",
+      "kind": "spell",
+      "firstRelease": "2000-03-01",
+      "reason": "era"
+    },
+    {
+      "code": 20541432,
+      "name": "Key Mace #2",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "KeyMace2",
+      "reason": "model"
+    },
+    {
+      "code": 20624263,
+      "name": "Peacock",
+      "kind": "monster",
+      "firstRelease": "2002-09-16",
+      "model": "Peacock",
+      "reason": "model"
+    },
+    {
+      "code": 20727787,
+      "name": "Disarmament",
+      "kind": "trap",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 20765952,
+      "name": "Mask of Dispel",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 20848593,
+      "name": "Ice Water",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "IceWater",
+      "reason": "model"
+    },
+    {
+      "code": 20871001,
+      "name": "Blue Medicine",
+      "kind": "spell",
+      "firstRelease": "1999-03-01",
+      "reason": "era"
+    },
+    {
+      "code": 21237481,
+      "name": "Type Zero Magic Crusher",
+      "kind": "trap",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 21239280,
+      "name": "Bone Mouse",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "BoneMouse",
+      "reason": "model"
+    },
+    {
+      "code": 21263083,
+      "name": "Pale Beast",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "PaleBeast",
+      "reason": "model"
+    },
+    {
+      "code": 21323861,
+      "name": "Acid Rain",
+      "kind": "spell",
+      "firstRelease": "1999-07-22",
+      "reason": "era"
+    },
+    {
+      "code": 21347810,
+      "name": "Rainbow Flower",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "RainbowFlower",
+      "reason": "model"
+    },
+    {
+      "code": 21417692,
+      "name": "Dark Elf",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "DarkElf",
+      "reason": "model"
+    },
+    {
+      "code": 21558682,
+      "name": "Jam Defender",
+      "kind": "trap",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 21598948,
+      "name": "Fairy Box",
+      "kind": "trap",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 21770260,
+      "name": "Jam Breeding Machine",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 21817254,
+      "name": "Mega Thunderball",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "MegaThunderball",
+      "reason": "model"
+    },
+    {
+      "code": 21840375,
+      "name": "Hidden Spellbook",
+      "kind": "trap",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 21888494,
+      "name": "Chosen One",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 21900719,
+      "name": "Twin Swords of Flashing Light - Tryce",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 22026707,
+      "name": "Curtain of the Dark Ones",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "CurtainOfTheDarkOnes",
+      "reason": "model"
+    },
+    {
+      "code": 22046459,
+      "name": "Megamorph",
+      "kind": "spell",
+      "firstRelease": "2002-01-24",
+      "reason": "era"
+    },
+    {
+      "code": 22359980,
+      "name": "Mirror Wall",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 22537443,
+      "name": "Sebek's Blessing",
+      "kind": "spell",
+      "firstRelease": "2000-12-07",
+      "reason": "era"
+    },
+    {
+      "code": 22610082,
+      "name": "The Mask of Remnants",
+      "kind": "spell",
+      "firstRelease": "2001-07-05",
+      "reason": "era"
+    },
+    {
+      "code": 22702055,
+      "name": "Umi",
+      "kind": "spell",
+      "firstRelease": "1999-03-06",
+      "reason": "era"
+    },
+    {
+      "code": 22855882,
+      "name": "Fiend Sword",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "FiendSword",
+      "reason": "model"
+    },
+    {
+      "code": 22910685,
+      "name": "Green Phantom King",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "GreenPhantomKing",
+      "reason": "model"
+    },
+    {
+      "code": 22959079,
+      "name": "Dimensionhole",
+      "kind": "spell",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 23032273,
+      "name": "Megirus Light",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "MegirusLight",
+      "reason": "model"
+    },
+    {
+      "code": 23171610,
+      "name": "Limiter Removal",
+      "kind": "spell",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 23265313,
+      "name": "Cost Down",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 23424603,
+      "name": "Wasteland",
+      "kind": "spell",
+      "firstRelease": "1999-03-06",
+      "reason": "era"
+    },
+    {
+      "code": 23471572,
+      "name": "Solomon's Lawbook",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 23615409,
+      "name": "Insect Barrier",
+      "kind": "spell",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 23659124,
+      "name": "Sea King Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "SeaKingDragon",
+      "reason": "model"
+    },
+    {
+      "code": 23771716,
+      "name": "7 Colored Fish",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "7ColoredFish",
+      "reason": "model"
+    },
+    {
+      "code": 23995346,
+      "name": "Blue-Eyes Ultimate Dragon",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-08-26",
+      "model": "BlueEyesUltimateDragon",
+      "reason": "model"
+    },
+    {
+      "code": 24068492,
+      "name": "Just Desserts",
+      "kind": "trap",
+      "firstRelease": "1999-10-17",
+      "reason": "era"
+    },
+    {
+      "code": 24094653,
+      "name": "Polymerization",
+      "kind": "spell",
+      "firstRelease": "1999-03-06",
+      "reason": "era"
+    },
+    {
+      "code": 24096228,
+      "name": "Double Spell",
+      "kind": "spell",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 24194033,
+      "name": "Dorover",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "Dorover",
+      "reason": "model"
+    },
+    {
+      "code": 24294108,
+      "name": "Burning Land",
+      "kind": "spell",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 24311372,
+      "name": "Zoa",
+      "kind": "monster",
+      "firstRelease": "1999-12-09",
+      "model": "Zoa",
+      "reason": "model"
+    },
+    {
+      "code": 24348204,
+      "name": "The Bewitching Phantom Thief",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "TheBewitchingPhantomThief",
+      "reason": "model"
+    },
+    {
+      "code": 24433920,
+      "name": "Pendulum Machine",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "PendulumMachine",
+      "reason": "model"
+    },
+    {
+      "code": 24611934,
+      "name": "Ryu-Kishin Powered",
+      "kind": "monster",
+      "firstRelease": "1999-12-16",
+      "model": "RyuKishinPowered",
+      "reason": "model"
+    },
+    {
+      "code": 24623598,
+      "name": "Disappear",
+      "kind": "trap",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 24668830,
+      "name": "Germ Infection",
+      "kind": "spell",
+      "firstRelease": "2000-01-27",
+      "reason": "era"
+    },
+    {
+      "code": 24874630,
+      "name": "Fiend's Sanctuary",
+      "kind": "spell",
+      "firstRelease": "2002-10-04",
+      "reason": "era"
+    },
+    {
+      "code": 25109950,
+      "name": "The Little Swordsman of Aile",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "TheLittleSwordsmanOfAile",
+      "reason": "model"
+    },
+    {
+      "code": 25345186,
+      "name": "After the Struggle",
+      "kind": "spell",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 25655502,
+      "name": "Bickuribox",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "2000-03-01",
+      "model": "Bickuribox",
+      "reason": "model"
+    },
+    {
+      "code": 25769732,
+      "name": "Machine Conversion Factory",
+      "kind": "spell",
+      "firstRelease": "1999-03-27",
+      "reason": "era"
+    },
+    {
+      "code": 25774450,
+      "name": "Mystic Box",
+      "kind": "spell",
+      "firstRelease": "2000-12-23",
+      "reason": "era"
+    },
+    {
+      "code": 25833572,
+      "name": "Gate Guardian",
+      "kind": "monster",
+      "firstRelease": "2000-08-10",
+      "model": "GateGuardian",
+      "reason": "model"
+    },
+    {
+      "code": 25880422,
+      "name": "Block Attack",
+      "kind": "spell",
+      "firstRelease": "2000-01-27",
+      "reason": "era"
+    },
+    {
+      "code": 25882881,
+      "name": "Dokuroizo the Grim Reaper",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "DokuroizoTheGrimReaper",
+      "reason": "model"
+    },
+    {
+      "code": 25955164,
+      "name": "Sanga of the Thunder",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "SangaOfTheThunder",
+      "reason": "model"
+    },
+    {
+      "code": 26202165,
+      "name": "Sangan",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "Sangan",
+      "reason": "model"
+    },
+    {
+      "code": 26302522,
+      "name": "Blast Sphere",
+      "kind": "monster",
+      "firstRelease": "2000-04-01",
+      "model": "BlastSphere",
+      "reason": "model"
+    },
+    {
+      "code": 26378150,
+      "name": "Rude Kaiser",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "RudeKaiser",
+      "reason": "model"
+    },
+    {
+      "code": 26725158,
+      "name": "Exile of the Wicked",
+      "kind": "spell",
+      "firstRelease": "1999-12-01",
+      "reason": "era"
+    },
+    {
+      "code": 26902560,
+      "name": "Fusion Sage",
+      "kind": "spell",
+      "firstRelease": "1999-12-01",
+      "reason": "era"
+    },
+    {
+      "code": 26905245,
+      "name": "Metal Reflect Slime",
+      "kind": "trap",
+      "firstRelease": "2002-10-04",
+      "reason": "era"
+    },
+    {
+      "code": 26931058,
+      "name": "Formation Union",
+      "kind": "trap",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 26932788,
+      "name": "Javelin Beetle",
+      "kind": "monster",
+      "firstRelease": "2000-03-23",
+      "model": "JavelinBeetle",
+      "reason": "model"
+    },
+    {
+      "code": 27053506,
+      "name": "Secret Barrel",
+      "kind": "trap",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 27054370,
+      "name": "Firewing Pegasus",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "FirewingPegasus",
+      "reason": "model"
+    },
+    {
+      "code": 27094595,
+      "name": "Graveyard and the Hand of Invitation",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "GraveyardAndTheHandOfInvitation",
+      "reason": "model"
+    },
+    {
+      "code": 27324313,
+      "name": "Wattkid",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "Wattkid",
+      "reason": "model"
+    },
+    {
+      "code": 27770341,
+      "name": "Super Rejuvenation",
+      "kind": "spell",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 27827272,
+      "name": "Makiu, the Magical Mist",
+      "kind": "spell",
+      "firstRelease": "2001-04-01",
+      "reason": "era"
+    },
+    {
+      "code": 28003512,
+      "name": "The Judgement Hand",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "TheJudgementHand",
+      "reason": "model"
+    },
+    {
+      "code": 28121403,
+      "name": "Really Eternal Rest",
+      "kind": "trap",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 28279543,
+      "name": "Curse of Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "CurseOfDragon",
+      "reason": "model"
+    },
+    {
+      "code": 28450915,
+      "name": "Invader from Another Dimension",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "InvaderFromAnotherDimension",
+      "reason": "model"
+    },
+    {
+      "code": 28470714,
+      "name": "Bladefly",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "Bladefly",
+      "reason": "model"
+    },
+    {
+      "code": 28546905,
+      "name": "Illusionist Faceless Mage",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "IllusionistFacelessMage",
+      "reason": "model"
+    },
+    {
+      "code": 28563545,
+      "name": "Dragon Seeker",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "DragonSeeker",
+      "reason": "model"
+    },
+    {
+      "code": 28566710,
+      "name": "Last Turn",
+      "kind": "trap",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 28593363,
+      "name": "Deepsea Shark",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-07-22",
+      "model": "DeepseaShark",
+      "reason": "model"
+    },
+    {
+      "code": 28596933,
+      "name": "A Wingbeat of Giant Dragon",
+      "kind": "spell",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 28649820,
+      "name": "Embodiment of Apophis",
+      "kind": "trap",
+      "firstRelease": "2001-08-07",
+      "reason": "era"
+    },
+    {
+      "code": 28725004,
+      "name": "Tainted Wisdom",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "TaintedWisdom",
+      "reason": "model"
+    },
+    {
+      "code": 28933734,
+      "name": "Mask of Darkness",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "MaskOfDarkness",
+      "reason": "model"
+    },
+    {
+      "code": 29155212,
+      "name": "Pumpking the King of Ghosts",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "PumpkingTheKingOfGhosts",
+      "reason": "model"
+    },
+    {
+      "code": 29172562,
+      "name": "Steel Ogre Grotto #1",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "SteelOgreGrotto1",
+      "reason": "model"
+    },
+    {
+      "code": 29267084,
+      "name": "Shadow Spell",
+      "kind": "trap",
+      "firstRelease": "2001-04-01",
+      "reason": "era"
+    },
+    {
+      "code": 29380133,
+      "name": "Yado Karu",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "YadoKaru",
+      "reason": "model"
+    },
+    {
+      "code": 29389368,
+      "name": "Nutrient Z",
+      "kind": "trap",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 29401950,
+      "name": "Bottomless Trap Hole",
+      "kind": "trap",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 29402771,
+      "name": "Rainbow Marine Mermaid",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "RainbowMarineMermaid",
+      "reason": "model"
+    },
+    {
+      "code": 29491031,
+      "name": "The Snake Hair",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "TheSnakeHair",
+      "reason": "model"
+    },
+    {
+      "code": 29549364,
+      "name": "Mask of Restrict",
+      "kind": "trap",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 29616941,
+      "name": "Beautiful Beast Trainer",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "BeautifulBeastTrainer",
+      "reason": "model"
+    },
+    {
+      "code": 29692206,
+      "name": "Twin Long Rods #2",
+      "kind": "monster",
+      "firstRelease": "2002-09-16",
+      "model": "TwinLongRods2",
+      "reason": "model"
+    },
+    {
+      "code": 29762407,
+      "name": "Temple of the Kings",
+      "kind": "spell",
+      "firstRelease": "2001-12-20",
+      "reason": "era"
+    },
+    {
+      "code": 29802344,
+      "name": "Snakeyashi",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "Snakeyashi",
+      "reason": "model"
+    },
+    {
+      "code": 29843091,
+      "name": "Ojama Trio",
+      "kind": "trap",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 29929832,
+      "name": "Marine Beast",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-10-17",
+      "model": "MarineBeast",
+      "reason": "model"
+    },
+    {
+      "code": 29948642,
+      "name": "Dig Beak",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "DigBeak",
+      "reason": "model"
+    },
+    {
+      "code": 30090452,
+      "name": "Zanki",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "Zanki",
+      "reason": "model"
+    },
+    {
+      "code": 30113682,
+      "name": "Judge Man",
+      "kind": "monster",
+      "firstRelease": "1999-12-16",
+      "model": "JudgeMan",
+      "reason": "model"
+    },
+    {
+      "code": 30170981,
+      "name": "Spirit Message \"L\"",
+      "kind": "spell",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 30208479,
+      "name": "Magician of Black Chaos",
+      "kind": "monster",
+      "firstRelease": "2000-08-10",
+      "model": "MagicianOfBlackChaos",
+      "reason": "model"
+    },
+    {
+      "code": 30450531,
+      "name": "Rite of Spirit",
+      "kind": "trap",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 30451366,
+      "name": "Mystical Sheep #1",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "MysticalSheep1",
+      "reason": "model"
+    },
+    {
+      "code": 30606547,
+      "name": "The Dark Door",
+      "kind": "spell",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 30778711,
+      "name": "Shadow Ghoul",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "ShadowGhoul",
+      "reason": "model"
+    },
+    {
+      "code": 31036355,
+      "name": "Creature Swap",
+      "kind": "spell",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 31066283,
+      "name": "Revival of Dokurorider",
+      "kind": "spell",
+      "firstRelease": "1999-08-20",
+      "reason": "era"
+    },
+    {
+      "code": 31122090,
+      "name": "Gyakutenno Megami",
+      "kind": "monster",
+      "firstRelease": "1999-12-16",
+      "model": "GyakutennoMegami",
+      "reason": "model"
+    },
+    {
+      "code": 31339260,
+      "name": "Zombie Warrior",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-03-27",
+      "model": "ZombieWarrior",
+      "reason": "model"
+    },
+    {
+      "code": 31560081,
+      "name": "Magician of Faith",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "MagicianOfFaith",
+      "reason": "model"
+    },
+    {
+      "code": 31785398,
+      "name": "Ready for Intercepting",
+      "kind": "trap",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 31786629,
+      "name": "Thunder Dragon",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "ThunderDragon",
+      "reason": "model"
+    },
+    {
+      "code": 31890399,
+      "name": "Fiend's Mirror",
+      "kind": "monster",
+      "firstRelease": "2000-03-23",
+      "model": "FiendsMirror",
+      "reason": "model"
+    },
+    {
+      "code": 31893528,
+      "name": "Spirit Message \"I\"",
+      "kind": "spell",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 32012841,
+      "name": "Millennium Shield",
+      "kind": "monster",
+      "firstRelease": "1999-06-01",
+      "model": "MilleniumShield",
+      "reason": "model"
+    },
+    {
+      "code": 32015116,
+      "name": "Blind Destruction",
+      "kind": "trap",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 32022366,
+      "name": "Gravity Axe - Grarl",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 32062913,
+      "name": "Mega Ton Magical Cannon",
+      "kind": "spell",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 32268901,
+      "name": "Salamandra",
+      "kind": "spell",
+      "firstRelease": "1999-07-08",
+      "reason": "era"
+    },
+    {
+      "code": 32274490,
+      "name": "Skull Servant",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "SkullServant",
+      "reason": "model"
+    },
+    {
+      "code": 32344688,
+      "name": "Dark Chimera",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "DarkChimera",
+      "reason": "model"
+    },
+    {
+      "code": 32355828,
+      "name": "Skelgon",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-12-01",
+      "model": "Skelgon",
+      "reason": "model"
+    },
+    {
+      "code": 32437102,
+      "name": "Dragonic Attack",
+      "kind": "spell",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 32452818,
+      "name": "Beaver Warrior",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "BeaverWarrior",
+      "reason": "model"
+    },
+    {
+      "code": 32485271,
+      "name": "Rose Spectre of Dunn",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-09-23",
+      "model": "RoseSpectereOfDunn",
+      "reason": "model"
+    },
+    {
+      "code": 32539892,
+      "name": "Minar",
+      "kind": "monster",
+      "firstRelease": "2002-06-20",
+      "model": "Minar",
+      "reason": "model"
+    },
+    {
+      "code": 32569498,
+      "name": "Korogashi",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "Korogashi",
+      "reason": "model"
+    },
+    {
+      "code": 32751480,
+      "name": "Mystical Sand",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-12-01",
+      "model": "MysticalSand",
+      "reason": "model"
+    },
+    {
+      "code": 32807846,
+      "name": "Reinforcement of the Army",
+      "kind": "spell",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 32809211,
+      "name": "Jinzo #7",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "Jinzo7",
+      "reason": "model"
+    },
+    {
+      "code": 33064647,
+      "name": "One-Eyed Shield Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "OneEyedShieldDragon",
+      "reason": "model"
+    },
+    {
+      "code": 33066139,
+      "name": "Reaper of the Cards",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "ReaperOfTheCards",
+      "reason": "model"
+    },
+    {
+      "code": 33114323,
+      "name": "Metalsilver Armor",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 33178416,
+      "name": "Misairuzame",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "Misairuzame",
+      "reason": "model"
+    },
+    {
+      "code": 33244944,
+      "name": "Contract with Exodia",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 33396948,
+      "name": "Exodia the Forbidden One",
+      "kind": "monster",
+      "firstRelease": "2000-08-10",
+      "model": "ExodiaTheForbiddenOne",
+      "reason": "model"
+    },
+    {
+      "code": 33413638,
+      "name": "Cockroach Knight",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "CockroachKnight",
+      "reason": "model"
+    },
+    {
+      "code": 33508719,
+      "name": "Morphing Jar",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "MorphingJar",
+      "reason": "model"
+    },
+    {
+      "code": 33550694,
+      "name": "Fusion Gate",
+      "kind": "spell",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 33621868,
+      "name": "Giganto",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "Giganto",
+      "reason": "model"
+    },
+    {
+      "code": 33691040,
+      "name": "Pragtical",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-07-22",
+      "model": "Pragtical",
+      "reason": "model"
+    },
+    {
+      "code": 33734439,
+      "name": "Three-Legged Zombies",
+      "kind": "monster",
+      "firstRelease": "1999-06-01",
+      "model": "ThreeLeggedZombies",
+      "reason": "model"
+    },
+    {
+      "code": 33737664,
+      "name": "Graverobber's Retribution",
+      "kind": "trap",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 33784505,
+      "name": "Jar Robber",
+      "kind": "spell",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 33878931,
+      "name": "Togex",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "Togex",
+      "reason": "model"
+    },
+    {
+      "code": 33950246,
+      "name": "Royal Command",
+      "kind": "trap",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 33951077,
+      "name": "Super War-Lion",
+      "kind": "monster",
+      "firstRelease": "2000-03-23",
+      "model": "SuperWarLion",
+      "reason": "model"
+    },
+    {
+      "code": 34016756,
+      "name": "Riryoku",
+      "kind": "spell",
+      "firstRelease": "2000-12-07",
+      "reason": "era"
+    },
+    {
+      "code": 34029630,
+      "name": "Pitch-Black Power Stone",
+      "kind": "trap",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 34236961,
+      "name": "Ante",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 34290067,
+      "name": "Corroding Shark",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "CorrodingShark",
+      "reason": "model"
+    },
+    {
+      "code": 34320307,
+      "name": "Living Vase",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "LivingVase",
+      "reason": "model"
+    },
+    {
+      "code": 34442949,
+      "name": "Mechanical Snail",
+      "kind": "monster",
+      "firstRelease": "2002-09-16",
+      "model": "MechanicalSnail",
+      "reason": "model"
+    },
+    {
+      "code": 34460851,
+      "name": "Flame Manipulator",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "FlameManipulator",
+      "reason": "model"
+    },
+    {
+      "code": 34536276,
+      "name": "Ganigumo",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "Ganigumo",
+      "reason": "model"
+    },
+    {
+      "code": 34690519,
+      "name": "Spirit of the Mountain",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "SpiritOfTheMountain",
+      "reason": "model"
+    },
+    {
+      "code": 34694160,
+      "name": "The Eye of Truth",
+      "kind": "trap",
+      "firstRelease": "2001-06-28",
+      "reason": "era"
+    },
+    {
+      "code": 34743446,
+      "name": "Blocker",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "Blocker",
+      "reason": "model"
+    },
+    {
+      "code": 34906152,
+      "name": "Mass Driver",
+      "kind": "spell",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 35059553,
+      "name": "Kaiser Colosseum",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 35282433,
+      "name": "Blue-Eyed Silver Zombie",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "BlueEyedSilverZombie",
+      "reason": "model"
+    },
+    {
+      "code": 35316708,
+      "name": "Time Seal",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 35346968,
+      "name": "Solemn Wishes",
+      "kind": "trap",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 35563539,
+      "name": "Mystical Refpanel",
+      "kind": "trap",
+      "firstRelease": "2001-04-01",
+      "reason": "era"
+    },
+    {
+      "code": 35565537,
+      "name": "Dark Witch",
+      "kind": "monster",
+      "firstRelease": "2002-09-16",
+      "model": "DarkWitch",
+      "reason": "model"
+    },
+    {
+      "code": 35712107,
+      "name": "Monstrous Bird",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "MonstruousBird",
+      "reason": "model"
+    },
+    {
+      "code": 35752363,
+      "name": "Vermillion Sparrow",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-07-05",
+      "model": "VermillionSparrow",
+      "reason": "model"
+    },
+    {
+      "code": 36039163,
+      "name": "Penguin Knight",
+      "kind": "monster",
+      "firstRelease": "2002-06-20",
+      "model": "PenguinKnight",
+      "reason": "model"
+    },
+    {
+      "code": 36121917,
+      "name": "Monster Egg",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "MonsterEgg",
+      "reason": "model"
+    },
+    {
+      "code": 36151751,
+      "name": "Arma Knight",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "ArmaKnight",
+      "reason": "model"
+    },
+    {
+      "code": 36261276,
+      "name": "Interdimensional Matter Transporter",
+      "kind": "trap",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 36280194,
+      "name": "Backup Soldier",
+      "kind": "trap",
+      "firstRelease": "2001-06-28",
+      "reason": "era"
+    },
+    {
+      "code": 36304921,
+      "name": "Witty Phantom",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "WittyPhantom",
+      "reason": "model"
+    },
+    {
+      "code": 36468556,
+      "name": "Ceasefire",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 36562627,
+      "name": "Second Coin Toss",
+      "kind": "spell",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 36607978,
+      "name": "Mystical Moon",
+      "kind": "spell",
+      "firstRelease": "1999-05-27",
+      "reason": "era"
+    },
+    {
+      "code": 36821538,
+      "name": "Ancient Sorcerer",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "AncientSorcerer",
+      "reason": "model"
+    },
+    {
+      "code": 36868108,
+      "name": "Armored Glass",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 36904469,
+      "name": "Akihiron",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "Akihiron",
+      "reason": "model"
+    },
+    {
+      "code": 37043180,
+      "name": "D.D. Warrior",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "DDWarrior",
+      "reason": "model"
+    },
+    {
+      "code": 37120512,
+      "name": "Sword of Dark Destruction",
+      "kind": "spell",
+      "firstRelease": "1999-05-25",
+      "reason": "era"
+    },
+    {
+      "code": 37160778,
+      "name": "Fairywitch",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "Fairywitch",
+      "reason": "model"
+    },
+    {
+      "code": 37243151,
+      "name": "Weather Control",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "WeatherControl",
+      "reason": "model"
+    },
+    {
+      "code": 37313348,
+      "name": "Turtle Tiger",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "TurtleTiger",
+      "reason": "model"
+    },
+    {
+      "code": 37313786,
+      "name": "Gamble",
+      "kind": "trap",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 37390589,
+      "name": "Kunai with Chain",
+      "kind": "trap",
+      "firstRelease": "1999-07-08",
+      "reason": "era"
+    },
+    {
+      "code": 37406863,
+      "name": "Fengsheng Mirror",
+      "kind": "spell",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 37421579,
+      "name": "Charubin the Fire Knight",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-03-06",
+      "model": "CharubinTheFireKnight",
+      "reason": "model"
+    },
+    {
+      "code": 37507488,
+      "name": "Relieve Monster",
+      "kind": "trap",
+      "firstRelease": "2002-05-28",
+      "reason": "era"
+    },
+    {
+      "code": 37580756,
+      "name": "Michizure",
+      "kind": "trap",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 37684215,
+      "name": "Fusion Sword Murasame Blade",
+      "kind": "spell",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 37820550,
+      "name": "Electro-Whip",
+      "kind": "spell",
+      "firstRelease": "1999-05-27",
+      "reason": "era"
+    },
+    {
+      "code": 38035986,
+      "name": "Akakieisu",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "Akakieisu",
+      "reason": "model"
+    },
+    {
+      "code": 38116136,
+      "name": "Machine Attacker",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "MachineAttacker",
+      "reason": "model"
+    },
+    {
+      "code": 38142739,
+      "name": "Petit Angel",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "PetitAngel",
+      "reason": "model"
+    },
+    {
+      "code": 38199696,
+      "name": "Red Medicine",
+      "kind": "spell",
+      "firstRelease": "1999-02-04",
+      "reason": "era"
+    },
+    {
+      "code": 38247752,
+      "name": "Dark-Eyes Illusionist",
+      "kind": "monster",
+      "firstRelease": "2000-04-20",
+      "model": "DarkEyesIllusionist",
+      "reason": "model"
+    },
+    {
+      "code": 38275183,
+      "name": "Spell Shield Type-8",
+      "kind": "trap",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 38277918,
+      "name": "Mikazukinoyaiba",
+      "kind": "monster",
+      "firstRelease": "2002-10-01",
+      "model": "Mikazukinoyaiba",
+      "reason": "model"
+    },
+    {
+      "code": 38289717,
+      "name": "Crawling Dragon #2",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "CrawlingDragon2",
+      "reason": "model"
+    },
+    {
+      "code": 38552107,
+      "name": "Horn of Light",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 38723936,
+      "name": "Question",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 38942059,
+      "name": "Sonic Maid",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "SonicMaid",
+      "reason": "model"
+    },
+    {
+      "code": 38982356,
+      "name": "Hyo",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "Hyo",
+      "reason": "model"
+    },
+    {
+      "code": 38992735,
+      "name": "Wave-Motion Cannon",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 38999506,
+      "name": "Cosmo Queen",
+      "kind": "monster",
+      "firstRelease": "2002-12-20",
+      "model": "CosmoQueen",
+      "reason": "model"
+    },
+    {
+      "code": 39004808,
+      "name": "Root Water",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "RootWater",
+      "reason": "model"
+    },
+    {
+      "code": 39111158,
+      "name": "Tri-Horned Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "TriHornedDragon",
+      "reason": "model"
+    },
+    {
+      "code": 39175982,
+      "name": "Winged Cleaver",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "WingedCleaver",
+      "reason": "model"
+    },
+    {
+      "code": 39239728,
+      "name": "Royal Guard",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "RoyalGuard",
+      "reason": "model"
+    },
+    {
+      "code": 39399168,
+      "name": "Resurrection of Chakra",
+      "kind": "spell",
+      "firstRelease": "2000-03-23",
+      "reason": "era"
+    },
+    {
+      "code": 39774685,
+      "name": "Vile Germs",
+      "kind": "spell",
+      "firstRelease": "1999-03-27",
+      "reason": "era"
+    },
+    {
+      "code": 39897277,
+      "name": "Elf's Light",
+      "kind": "spell",
+      "firstRelease": "1999-05-25",
+      "reason": "era"
+    },
+    {
+      "code": 40172183,
+      "name": "Narrow Pass",
+      "kind": "trap",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 40173854,
+      "name": "Amphibious Bugroth",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-12-01",
+      "model": "AmphibiousBugroth",
+      "reason": "model"
+    },
+    {
+      "code": 40196604,
+      "name": "Dark Shade",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "DarkShade",
+      "reason": "model"
+    },
+    {
+      "code": 40200834,
+      "name": "Sleeping Lion",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "SleepingLion",
+      "reason": "model"
+    },
+    {
+      "code": 40240595,
+      "name": "Cocoon of Evolution",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "CocoonOfEvolution",
+      "reason": "model"
+    },
+    {
+      "code": 40374923,
+      "name": "Mammoth Graveyard",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "MammothGraveyard",
+      "reason": "model"
+    },
+    {
+      "code": 40387124,
+      "name": "Abyss Flower",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "AbyssFlower",
+      "reason": "model"
+    },
+    {
+      "code": 40453765,
+      "name": "Swamp Battleguard",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "SwampBattleguard",
+      "reason": "model"
+    },
+    {
+      "code": 40575313,
+      "name": "Shadow Specter",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "ShadowSpecter",
+      "reason": "model"
+    },
+    {
+      "code": 40619825,
+      "name": "Axe of Despair",
+      "kind": "spell",
+      "firstRelease": "2001-10-25",
+      "reason": "era"
+    },
+    {
+      "code": 40633297,
+      "name": "Bad Reaction to Simochi",
+      "kind": "trap",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 40640057,
+      "name": "Kuriboh",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "Kuriboh",
+      "reason": "model"
+    },
+    {
+      "code": 40703222,
+      "name": "Multiply",
+      "kind": "spell",
+      "firstRelease": "2001-06-28",
+      "reason": "era"
+    },
+    {
+      "code": 40703393,
+      "name": "The Puppet Magic of Dark Ruler",
+      "kind": "spell",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 40826495,
+      "name": "Dissolverock",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "Dissolverock",
+      "reason": "model"
+    },
+    {
+      "code": 41061625,
+      "name": "Yashinoki",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "Yashinoki",
+      "reason": "model"
+    },
+    {
+      "code": 41142615,
+      "name": "The Cheerful Coffin",
+      "kind": "spell",
+      "firstRelease": "1999-09-23",
+      "reason": "era"
+    },
+    {
+      "code": 41182875,
+      "name": "Javelin Beetle Pact",
+      "kind": "spell",
+      "firstRelease": "2000-03-23",
+      "reason": "era"
+    },
+    {
+      "code": 41218256,
+      "name": "Claw Reacher",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "ClawReacher",
+      "reason": "model"
+    },
+    {
+      "code": 41356845,
+      "name": "Acid Trap Hole",
+      "kind": "trap",
+      "firstRelease": "1999-07-08",
+      "reason": "era"
+    },
+    {
+      "code": 41392891,
+      "name": "Feral Imp",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "FeralImp",
+      "reason": "model"
+    },
+    {
+      "code": 41396436,
+      "name": "Blue-Winged Crown",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "BlueWingedCrown",
+      "reason": "model"
+    },
+    {
+      "code": 41398771,
+      "name": "Curse of Aging",
+      "kind": "trap",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 41403766,
+      "name": "Giant Scorpion of the Tundra",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "GiantScorpionOfTheTundra",
+      "reason": "model"
+    },
+    {
+      "code": 41420027,
+      "name": "Solemn Judgment",
+      "kind": "trap",
+      "firstRelease": "1999-11-18",
+      "reason": "era"
+    },
+    {
+      "code": 41422426,
+      "name": "Supporter in the Shadows",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "SupporterInTheShadows",
+      "reason": "model"
+    },
+    {
+      "code": 41426869,
+      "name": "Black Illusion Ritual",
+      "kind": "spell",
+      "firstRelease": "2000-04-20",
+      "reason": "era"
+    },
+    {
+      "code": 41462083,
+      "name": "Thousand Dragon",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-11-18",
+      "model": "ThousandDragon",
+      "reason": "model"
+    },
+    {
+      "code": 41544074,
+      "name": "Kamionwizard",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-03-27",
+      "model": "Kamionwizard",
+      "reason": "model"
+    },
+    {
+      "code": 41762634,
+      "name": "Giant Flea",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "GiantFlea",
+      "reason": "model"
+    },
+    {
+      "code": 41925941,
+      "name": "Bark of Dark Ruler",
+      "kind": "trap",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 41949033,
+      "name": "Dark Assailant",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "DarkAssailant",
+      "reason": "model"
+    },
+    {
+      "code": 42348802,
+      "name": "Trakodon",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "Trakodon",
+      "reason": "model"
+    },
+    {
+      "code": 42364257,
+      "name": "Anti Raigeki",
+      "kind": "trap",
+      "firstRelease": "1999-09-23",
+      "reason": "era"
+    },
+    {
+      "code": 42418084,
+      "name": "Winged Egg of New Life",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "WingedEggOfNewLife",
+      "reason": "model"
+    },
+    {
+      "code": 42431843,
+      "name": "Ancient Brain",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "AncientBrain",
+      "reason": "model"
+    },
+    {
+      "code": 42578427,
+      "name": "Eatgaboon",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 42591472,
+      "name": "Laughing Flower",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "LaughingFlower",
+      "reason": "model"
+    },
+    {
+      "code": 42625254,
+      "name": "Little D",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "LittleD",
+      "reason": "model"
+    },
+    {
+      "code": 42703248,
+      "name": "Giant Trunade",
+      "kind": "spell",
+      "firstRelease": "2001-06-28",
+      "reason": "era"
+    },
+    {
+      "code": 42829885,
+      "name": "The Forceful Sentry",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 42883273,
+      "name": "Wodan the Resident of the Forest",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "WodanTheResidentOfTheForest",
+      "reason": "model"
+    },
+    {
+      "code": 43230671,
+      "name": "Ancient Lizard Warrior",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "AncientLizardWarrior",
+      "reason": "model"
+    },
+    {
+      "code": 43352213,
+      "name": "Nekogal #2",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "Nekogal2",
+      "reason": "model"
+    },
+    {
+      "code": 43417563,
+      "name": "Commencement Dance",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 43434803,
+      "name": "The Shallow Grave",
+      "kind": "spell",
+      "firstRelease": "2002-01-24",
+      "reason": "era"
+    },
+    {
+      "code": 43487744,
+      "name": "White Hole",
+      "kind": "trap",
+      "firstRelease": "1999-08-26",
+      "reason": "era"
+    },
+    {
+      "code": 43500484,
+      "name": "Darkworld Thorns",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "DarkworldThorns",
+      "reason": "model"
+    },
+    {
+      "code": 43509019,
+      "name": "Toon Defense",
+      "kind": "trap",
+      "firstRelease": "2002-03-21",
+      "reason": "era"
+    },
+    {
+      "code": 43530283,
+      "name": "Hourglass of Courage",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "HourglassOfCourage",
+      "reason": "model"
+    },
+    {
+      "code": 43641473,
+      "name": "Tailor of the Fickle",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 43694075,
+      "name": "Novox's Prayer",
+      "kind": "spell",
+      "firstRelease": "2000-03-23",
+      "reason": "era"
+    },
+    {
+      "code": 43711255,
+      "name": "Prohibition",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 43905751,
+      "name": "Madjinn Gunn",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "MadjinnGunn",
+      "reason": "model"
+    },
+    {
+      "code": 43973174,
+      "name": "The Flute of Summoning Dragon",
+      "kind": "spell",
+      "firstRelease": "1999-12-16",
+      "reason": "era"
+    },
+    {
+      "code": 44073668,
+      "name": "Takriminos",
+      "kind": "monster",
+      "firstRelease": "1999-06-01",
+      "model": "Takriminos",
+      "reason": "model"
+    },
+    {
+      "code": 44095762,
+      "name": "Mirror Force",
+      "kind": "trap",
+      "firstRelease": "2000-01-27",
+      "reason": "era"
+    },
+    {
+      "code": 44209392,
+      "name": "Castle Walls",
+      "kind": "trap",
+      "firstRelease": "1999-07-05",
+      "reason": "era"
+    },
+    {
+      "code": 44287299,
+      "name": "Masaki the Legendary Swordsman",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "MasakiTheLegendarySwordsman",
+      "reason": "model"
+    },
+    {
+      "code": 44656491,
+      "name": "Messenger of Peace",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 44763025,
+      "name": "Delinquent Duo",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 44865098,
+      "name": "Cyber Soldier",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "CyberSoldier",
+      "reason": "model"
+    },
+    {
+      "code": 45042329,
+      "name": "Tripwire Beast",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "TripwireBeast",
+      "reason": "model"
+    },
+    {
+      "code": 45121025,
+      "name": "Ogre of the Black Shadow",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "OgreOfTheBlackShadow",
+      "reason": "model"
+    },
+    {
+      "code": 45231177,
+      "name": "Flame Swordsman",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-03-06",
+      "model": "FlameSwordsman",
+      "reason": "model"
+    },
+    {
+      "code": 45688586,
+      "name": "Karakuri Spider",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "KarakuriSpider",
+      "reason": "model"
+    },
+    {
+      "code": 45778932,
+      "name": "Rising Air Current",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 45895206,
+      "name": "Dark-Piercing Light",
+      "kind": "spell",
+      "firstRelease": "1999-05-25",
+      "reason": "era"
+    },
+    {
+      "code": 45909477,
+      "name": "Moon Envoy",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "MoonEnvoy",
+      "reason": "model"
+    },
+    {
+      "code": 45986603,
+      "name": "Snatch Steal",
+      "kind": "spell",
+      "firstRelease": "2002-01-24",
+      "reason": "era"
+    },
+    {
+      "code": 46009906,
+      "name": "Beast Fangs",
+      "kind": "spell",
+      "firstRelease": "1999-02-04",
+      "reason": "era"
+    },
+    {
+      "code": 46130346,
+      "name": "Hinotama",
+      "kind": "spell",
+      "firstRelease": "1999-03-06",
+      "reason": "era"
+    },
+    {
+      "code": 46181000,
+      "name": "Frontline Base",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 46247516,
+      "name": "Tao the Chanter",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "TaoTheChanter",
+      "reason": "model"
+    },
+    {
+      "code": 46411259,
+      "name": "Metamorphosis",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 46457856,
+      "name": "Tomozaurus",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "Tomozaurus",
+      "reason": "model"
+    },
+    {
+      "code": 46461247,
+      "name": "Trap Master",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "TrapMaster",
+      "reason": "model"
+    },
+    {
+      "code": 46474915,
+      "name": "Magical Ghost",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "MagicalGhost",
+      "reason": "model"
+    },
+    {
+      "code": 46534755,
+      "name": "Fire Kraken",
+      "kind": "monster",
+      "firstRelease": "2002-09-16",
+      "model": "FireKraken",
+      "reason": "model"
+    },
+    {
+      "code": 46657337,
+      "name": "Muka Muka",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "MukaMuka",
+      "reason": "model"
+    },
+    {
+      "code": 46696593,
+      "name": "Crimson Sunbird",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-12-01",
+      "model": "CrimsonSunbird",
+      "reason": "model"
+    },
+    {
+      "code": 46700124,
+      "name": "Machine King",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "MachineKing",
+      "reason": "model"
+    },
+    {
+      "code": 46718686,
+      "name": "Hitodenchak",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "Hitodenchak",
+      "reason": "model"
+    },
+    {
+      "code": 46864967,
+      "name": "Minomushi Warrior",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "MinomushiWarrior",
+      "reason": "model"
+    },
+    {
+      "code": 46918794,
+      "name": "Tremendous Fire",
+      "kind": "spell",
+      "firstRelease": "2000-01-27",
+      "reason": "era"
+    },
+    {
+      "code": 46986414,
+      "name": "Dark Magician",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "DarkMagician",
+      "reason": "model"
+    },
+    {
+      "code": 47060154,
+      "name": "Mystic Clown",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "MysticClown",
+      "reason": "model"
+    },
+    {
+      "code": 47233801,
+      "name": "Dark Snake Syndrome",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 47319141,
+      "name": "Wing Eagle",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "WingEagle",
+      "reason": "model"
+    },
+    {
+      "code": 47355498,
+      "name": "Necrovalley",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 47695416,
+      "name": "Candle of Fate",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "CandleOfFate",
+      "reason": "model"
+    },
+    {
+      "code": 47852924,
+      "name": "Soul of the Pure",
+      "kind": "spell",
+      "firstRelease": "1999-05-25",
+      "reason": "era"
+    },
+    {
+      "code": 47879985,
+      "name": "Guardian of the Throne Room",
+      "kind": "monster",
+      "firstRelease": "2002-06-20",
+      "model": "GuardianOfTheThroneRoom",
+      "reason": "model"
+    },
+    {
+      "code": 47922711,
+      "name": "Tatsunootoshigo",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "Tatsunootoshigo",
+      "reason": "model"
+    },
+    {
+      "code": 47986555,
+      "name": "Millennium Golem",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "MillenniumGolem",
+      "reason": "model"
+    },
+    {
+      "code": 48109103,
+      "name": "Kappa Avenger",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "KappaAvenger",
+      "reason": "model"
+    },
+    {
+      "code": 48305365,
+      "name": "Axe Raider",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "AxeRaider",
+      "reason": "model"
+    },
+    {
+      "code": 48365709,
+      "name": "Ansatsu",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "Ansatsu",
+      "reason": "model"
+    },
+    {
+      "code": 48531733,
+      "name": "Bolt Penguin",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "BoltPenguin",
+      "reason": "model"
+    },
+    {
+      "code": 48539234,
+      "name": "Appropriate",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 48579379,
+      "name": "Perfectly Ultimate Great Moth",
+      "kind": "monster",
+      "firstRelease": "1999-07-08",
+      "model": "PerfectlyUltimateGreatMoth",
+      "reason": "model"
+    },
+    {
+      "code": 48642904,
+      "name": "Mesmeric Control",
+      "kind": "spell",
+      "firstRelease": "2000-12-07",
+      "reason": "era"
+    },
+    {
+      "code": 48649353,
+      "name": "Ushi Oni",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "UshiOni",
+      "reason": "model"
+    },
+    {
+      "code": 49127943,
+      "name": "Man-Eating Plant",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "ManEatingPlant",
+      "reason": "model"
+    },
+    {
+      "code": 49218300,
+      "name": "Sorcerer of the Doomed",
+      "kind": "monster",
+      "firstRelease": "1999-12-16",
+      "model": "SorcererOfTheDoomed",
+      "reason": "model"
+    },
+    {
+      "code": 49251811,
+      "name": "Mystic Probe",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 49258578,
+      "name": "Gate Deeg",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "GateDeeg",
+      "reason": "model"
+    },
+    {
+      "code": 49370026,
+      "name": "Genin",
+      "kind": "monster",
+      "firstRelease": "1999-03-18",
+      "model": "Genin",
+      "reason": "model"
+    },
+    {
+      "code": 49417509,
+      "name": "Wolf",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "Wolf",
+      "reason": "model"
+    },
+    {
+      "code": 49587034,
+      "name": "Lightforce Sword",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 49587396,
+      "name": "Ancient Tool",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "AncientTool",
+      "reason": "model"
+    },
+    {
+      "code": 49791927,
+      "name": "Tiger Axe",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "TigerAxe",
+      "reason": "model"
+    },
+    {
+      "code": 50005633,
+      "name": "Swordstalker",
+      "kind": "monster",
+      "firstRelease": "1999-12-16",
+      "model": "Swordstalker",
+      "reason": "model"
+    },
+    {
+      "code": 50045299,
+      "name": "Dragon Capture Jar",
+      "kind": "trap",
+      "firstRelease": "1999-03-06",
+      "reason": "era"
+    },
+    {
+      "code": 50152549,
+      "name": "Paralyzing Potion",
+      "kind": "spell",
+      "firstRelease": "2000-01-27",
+      "reason": "era"
+    },
+    {
+      "code": 50176820,
+      "name": "Mech Bass",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "MechBass",
+      "reason": "model"
+    },
+    {
+      "code": 50259460,
+      "name": "Versago the Destroyer",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "VersagoTheDestroyer",
+      "reason": "model"
+    },
+    {
+      "code": 50705071,
+      "name": "Metalzoa",
+      "kind": "monster",
+      "firstRelease": "1999-12-09",
+      "model": "Metalzoa",
+      "reason": "model"
+    },
+    {
+      "code": 50913601,
+      "name": "Mountain",
+      "kind": "spell",
+      "firstRelease": "1999-03-06",
+      "reason": "era"
+    },
+    {
+      "code": 50930991,
+      "name": "Neo the Magic Swordsman",
+      "kind": "monster",
+      "firstRelease": "1999-12-16",
+      "model": "NeoTheMagicSwordsman",
+      "reason": "model"
+    },
+    {
+      "code": 51228280,
+      "name": "Dungeon Worm",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "DungeonWorm",
+      "reason": "model"
+    },
+    {
+      "code": 51267887,
+      "name": "Raise Body Heat",
+      "kind": "spell",
+      "firstRelease": "1999-03-27",
+      "reason": "era"
+    },
+    {
+      "code": 51275027,
+      "name": "The Unhappy Maiden",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "TheUnhappyMaiden",
+      "reason": "model"
+    },
+    {
+      "code": 51371017,
+      "name": "Princess of Tsurugi",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "PrincessOfTsurugi",
+      "reason": "model"
+    },
+    {
+      "code": 51452091,
+      "name": "Royal Decree",
+      "kind": "trap",
+      "firstRelease": "1999-10-17",
+      "reason": "era"
+    },
+    {
+      "code": 51482758,
+      "name": "Remove Trap",
+      "kind": "spell",
+      "firstRelease": "1999-03-06",
+      "reason": "era"
+    },
+    {
+      "code": 51828629,
+      "name": "Giltia the D. Knight",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-11-18",
+      "model": "GiltiaTheDKnight",
+      "reason": "model"
+    },
+    {
+      "code": 52040216,
+      "name": "Harpie's Pet Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-12-09",
+      "model": "HarpiesPetDragon",
+      "reason": "model"
+    },
+    {
+      "code": 52097679,
+      "name": "Shield & Sword",
+      "kind": "spell",
+      "firstRelease": "2000-01-27",
+      "reason": "era"
+    },
+    {
+      "code": 52367652,
+      "name": "That Which Feeds on Life",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "ThatWhichFeedsOnLife",
+      "reason": "model"
+    },
+    {
+      "code": 52503575,
+      "name": "Final Attack Orders",
+      "kind": "trap",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 52584282,
+      "name": "Hercules Beetle",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "HerculesBeetle",
+      "reason": "model"
+    },
+    {
+      "code": 52800428,
+      "name": "Fiend's Hand",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "FiendsHand",
+      "reason": "model"
+    },
+    {
+      "code": 53046408,
+      "name": "Emergency Provisions",
+      "kind": "spell",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 53112492,
+      "name": "Anti-Spell",
+      "kind": "trap",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 53119267,
+      "name": "Magical Thorn",
+      "kind": "trap",
+      "firstRelease": "1999-12-01",
+      "reason": "era"
+    },
+    {
+      "code": 53129443,
+      "name": "Dark Hole",
+      "kind": "spell",
+      "firstRelease": "1999-02-04",
+      "reason": "era"
+    },
+    {
+      "code": 53153481,
+      "name": "Armaill",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "Armaill",
+      "reason": "model"
+    },
+    {
+      "code": 53293545,
+      "name": "Firegrass",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "Firegrass",
+      "reason": "model"
+    },
+    {
+      "code": 53375573,
+      "name": "Dark King of the Abyss",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "DarkKingOfTheAbyss",
+      "reason": "model"
+    },
+    {
+      "code": 53493204,
+      "name": "Goddess with the Third Eye",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "GoddessWithTheThirdEye",
+      "reason": "model"
+    },
+    {
+      "code": 53581214,
+      "name": "Fire Reaper",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "FireReaper",
+      "reason": "model"
+    },
+    {
+      "code": 53582587,
+      "name": "Torrential Tribute",
+      "kind": "trap",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 53606874,
+      "name": "Big Insect",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "BigInsect",
+      "reason": "model"
+    },
+    {
+      "code": 53713014,
+      "name": "Crazy Fish",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "CrazyFish",
+      "reason": "model"
+    },
+    {
+      "code": 53829412,
+      "name": "Griffore",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "Griffore",
+      "reason": "model"
+    },
+    {
+      "code": 53830602,
+      "name": "Fungi of the Musk",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "FungiOfTheMusk",
+      "reason": "model"
+    },
+    {
+      "code": 53832650,
+      "name": "Meotoko",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "Meotoko",
+      "reason": "model"
+    },
+    {
+      "code": 54098121,
+      "name": "Mysterious Puppeteer",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "MysteriousPuppeteer",
+      "reason": "model"
+    },
+    {
+      "code": 54109233,
+      "name": "Infinite Dismissal",
+      "kind": "trap",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 54178050,
+      "name": "Dragon's Rage",
+      "kind": "trap",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 54539105,
+      "name": "War-Lion Ritual",
+      "kind": "spell",
+      "firstRelease": "2000-03-23",
+      "reason": "era"
+    },
+    {
+      "code": 54541900,
+      "name": "Karbonala Warrior",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-03-27",
+      "model": "KarbonalaWarrior",
+      "reason": "model"
+    },
+    {
+      "code": 54579801,
+      "name": "High Tide Gyojin",
+      "kind": "monster",
+      "firstRelease": "2002-06-20",
+      "model": "HighTideGyojin",
+      "reason": "model"
+    },
+    {
+      "code": 54591086,
+      "name": "Virus Cannon",
+      "kind": "trap",
+      "firstRelease": "2001-09-06",
+      "reason": "era"
+    },
+    {
+      "code": 54615781,
+      "name": "Spirit of the Winds",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "SpiritOfTheWinds",
+      "reason": "model"
+    },
+    {
+      "code": 54622031,
+      "name": "Great Mammoth of Goldfine",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-10-17",
+      "model": "GreatMammothOfGoldfine",
+      "reason": "model"
+    },
+    {
+      "code": 54652250,
+      "name": "Man-Eater Bug",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "ManEaterBug",
+      "reason": "model"
+    },
+    {
+      "code": 54704216,
+      "name": "Nightmare Wheel",
+      "kind": "trap",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 54752875,
+      "name": "Twin-Headed Thunder Dragon",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "2000-01-27",
+      "model": "TwinHeadedThunderDragon",
+      "reason": "model"
+    },
+    {
+      "code": 54844990,
+      "name": "Skull Stalker",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "SkullStalker",
+      "reason": "model"
+    },
+    {
+      "code": 55014050,
+      "name": "Water Girl",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "WaterGirl",
+      "reason": "model"
+    },
+    {
+      "code": 55144522,
+      "name": "Pot of Greed",
+      "kind": "spell",
+      "firstRelease": "1999-05-27",
+      "reason": "era"
+    },
+    {
+      "code": 55210709,
+      "name": "Lisark",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "Lisark",
+      "reason": "model"
+    },
+    {
+      "code": 55226821,
+      "name": "Lightning Blade",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 55291359,
+      "name": "Succubus Knight",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "SuccubusKnight",
+      "reason": "model"
+    },
+    {
+      "code": 55321970,
+      "name": "Gust Fan",
+      "kind": "spell",
+      "firstRelease": "1999-05-25",
+      "reason": "era"
+    },
+    {
+      "code": 55337339,
+      "name": "Job-Change Mirror",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "JobChangeMirror",
+      "reason": "model"
+    },
+    {
+      "code": 55348096,
+      "name": "Arsenal Robber",
+      "kind": "trap",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 55444629,
+      "name": "Lesser Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "LesserDragon",
+      "reason": "model"
+    },
+    {
+      "code": 55550921,
+      "name": "Battle Warrior",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "BattleWarrior",
+      "reason": "model"
+    },
+    {
+      "code": 55567161,
+      "name": "Pot the Trick",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "PotTheTrick",
+      "reason": "model"
+    },
+    {
+      "code": 55608151,
+      "name": "Gryphon Wing",
+      "kind": "trap",
+      "firstRelease": "2000-03-01",
+      "reason": "era"
+    },
+    {
+      "code": 55691901,
+      "name": "Great Bill",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "GreatBill",
+      "reason": "model"
+    },
+    {
+      "code": 55761792,
+      "name": "Black Luster Ritual",
+      "kind": "spell",
+      "firstRelease": "2000-03-23",
+      "reason": "era"
+    },
+    {
+      "code": 55763552,
+      "name": "Dragon Piper",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "DragonPiper",
+      "reason": "model"
+    },
+    {
+      "code": 55773067,
+      "name": "Drop Off",
+      "kind": "trap",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 55784832,
+      "name": "Morinphen",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "Morinphen",
+      "reason": "model"
+    },
+    {
+      "code": 55875323,
+      "name": "Electric Lizard",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "ElectricLizard",
+      "reason": "model"
+    },
+    {
+      "code": 55948544,
+      "name": "Judgment of the Pharaoh",
+      "kind": "trap",
+      "firstRelease": "2002-12-04",
+      "reason": "era"
+    },
+    {
+      "code": 55991637,
+      "name": "Dragon's Gunfire",
+      "kind": "spell",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 55998462,
+      "name": "Metal Fish",
+      "kind": "monster",
+      "firstRelease": "2002-09-16",
+      "model": "MetalFish",
+      "reason": "model"
+    },
+    {
+      "code": 56260110,
+      "name": "Raimei",
+      "kind": "spell",
+      "firstRelease": "1999-03-01",
+      "reason": "era"
+    },
+    {
+      "code": 56283725,
+      "name": "Kumootoko",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "Kumootoko",
+      "reason": "model"
+    },
+    {
+      "code": 56342351,
+      "name": "M-Warrior #1",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "MWarrior1",
+      "reason": "model"
+    },
+    {
+      "code": 56413937,
+      "name": "Warrior of Tradition",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-07-05",
+      "model": "WarriorOfTradition",
+      "reason": "model"
+    },
+    {
+      "code": 56460688,
+      "name": "Different Dimension Gate",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 56594520,
+      "name": "Gaia Power",
+      "kind": "spell",
+      "firstRelease": "2001-06-28",
+      "reason": "era"
+    },
+    {
+      "code": 56606928,
+      "name": "Eternal Drought",
+      "kind": "spell",
+      "firstRelease": "1999-07-22",
+      "reason": "era"
+    },
+    {
+      "code": 56713552,
+      "name": "Obese Marmot of Nefariousness",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "ObeseMarmotOfNefariousness",
+      "reason": "model"
+    },
+    {
+      "code": 56747793,
+      "name": "United We Stand",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 56789759,
+      "name": "Tyhone #2",
+      "kind": "monster",
+      "firstRelease": "2002-09-16",
+      "model": "Tyhone2",
+      "reason": "model"
+    },
+    {
+      "code": 56830749,
+      "name": "Share the Pain",
+      "kind": "spell",
+      "firstRelease": "2000-03-01",
+      "reason": "era"
+    },
+    {
+      "code": 56907389,
+      "name": "Musician King",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-11-18",
+      "model": "MusicianKing",
+      "reason": "model"
+    },
+    {
+      "code": 56948373,
+      "name": "Mask of the Accursed",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 56995655,
+      "name": "Ominous Fortunetelling",
+      "kind": "trap",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 57182235,
+      "name": "Token Thanksgiving",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 57305373,
+      "name": "Two-Mouth Darkruler",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "TwoMouthDarkruler",
+      "reason": "model"
+    },
+    {
+      "code": 57405307,
+      "name": "Winged Dragon, Guardian of the Fortress #2",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "WingedDragonGuardianOfTheFortress2",
+      "reason": "model"
+    },
+    {
+      "code": 57728570,
+      "name": "Crush Card Virus",
+      "kind": "trap",
+      "firstRelease": "1999-07-08",
+      "reason": "era"
+    },
+    {
+      "code": 57882509,
+      "name": "Mask of Weakness",
+      "kind": "trap",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 57935140,
+      "name": "Tenderness",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "Tenderness",
+      "reason": "model"
+    },
+    {
+      "code": 57953380,
+      "name": "Card of Safe Return",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 58074572,
+      "name": "Mooyan Curry",
+      "kind": "spell",
+      "firstRelease": "1999-03-06",
+      "reason": "era"
+    },
+    {
+      "code": 58192742,
+      "name": "Petit Moth",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "PetitMoth",
+      "reason": "model"
+    },
+    {
+      "code": 58314394,
+      "name": "Ground Attacker Bugroth",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "GroundAttackerBugroth",
+      "reason": "model"
+    },
+    {
+      "code": 58528964,
+      "name": "Flame Ghost",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-03-06",
+      "model": "FlameGhost",
+      "reason": "model"
+    },
+    {
+      "code": 58577036,
+      "name": "Reasoning",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 58621589,
+      "name": "Shadow of Eyes",
+      "kind": "trap",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 58775978,
+      "name": "Nightmare's Steelcage",
+      "kind": "spell",
+      "firstRelease": "2000-12-21",
+      "reason": "era"
+    },
+    {
+      "code": 58831685,
+      "name": "Giant Red Seasnake",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "GiantRedSeasnake",
+      "reason": "model"
+    },
+    {
+      "code": 58861941,
+      "name": "Ooguchi",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "Ooguchi",
+      "reason": "model"
+    },
+    {
+      "code": 58921041,
+      "name": "Anti-Spell Fragrance",
+      "kind": "trap",
+      "firstRelease": "2000-12-07",
+      "reason": "era"
+    },
+    {
+      "code": 59036972,
+      "name": "Mavelus",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-03-27",
+      "model": "Mavelus",
+      "reason": "model"
+    },
+    {
+      "code": 59053232,
+      "name": "Turu-Purun",
+      "kind": "monster",
+      "firstRelease": "2002-10-01",
+      "model": "TuruPurun",
+      "reason": "model"
+    },
+    {
+      "code": 59197169,
+      "name": "Yami",
+      "kind": "spell",
+      "firstRelease": "1999-03-06",
+      "reason": "era"
+    },
+    {
+      "code": 59344077,
+      "name": "Magic Drain",
+      "kind": "trap",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 59383041,
+      "name": "Toon Alligator",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "ToonAlligator",
+      "reason": "model"
+    },
+    {
+      "code": 59560625,
+      "name": "Shift",
+      "kind": "trap",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 59744639,
+      "name": "Windstorm of Etaqua",
+      "kind": "trap",
+      "firstRelease": "2000-12-07",
+      "reason": "era"
+    },
+    {
+      "code": 59983499,
+      "name": "Dancing Elf",
+      "kind": "monster",
+      "firstRelease": "2002-10-01",
+      "model": "DancingElf",
+      "reason": "model"
+    },
+    {
+      "code": 60082869,
+      "name": "Dust Tornado",
+      "kind": "trap",
+      "firstRelease": "2001-10-25",
+      "reason": "era"
+    },
+    {
+      "code": 60365591,
+      "name": "Shinato's Ark",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 60391791,
+      "name": "Senri Eye",
+      "kind": "spell",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 60519422,
+      "name": "Kishido Spirit",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 60682203,
+      "name": "Cold Wave",
+      "kind": "spell",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 60694662,
+      "name": "Skelengel",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "Skelengel",
+      "reason": "model"
+    },
+    {
+      "code": 60715406,
+      "name": "Tentacle Plant",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "TentaclePlant",
+      "reason": "model"
+    },
+    {
+      "code": 60802233,
+      "name": "Kuwagata α",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "Kuwagata",
+      "reason": "model"
+    },
+    {
+      "code": 60862676,
+      "name": "Flame Cerebrus",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "FlameCerebrus",
+      "reason": "model"
+    },
+    {
+      "code": 60866277,
+      "name": "Earthshaker",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 61127349,
+      "name": "Big Bang Shot",
+      "kind": "spell",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 61201220,
+      "name": "Phantom Ghost",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "PhantomGhost",
+      "reason": "model"
+    },
+    {
+      "code": 61405855,
+      "name": "Sword of Dragon's Soul",
+      "kind": "spell",
+      "firstRelease": "2000-12-07",
+      "reason": "era"
+    },
+    {
+      "code": 61454890,
+      "name": "Necrolancer the Time-lord",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "NecrolancerTheTimeLord",
+      "reason": "model"
+    },
+    {
+      "code": 61622107,
+      "name": "Bubble Crash",
+      "kind": "trap",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 61705417,
+      "name": "Graverobber",
+      "kind": "trap",
+      "firstRelease": "2001-10-25",
+      "reason": "era"
+    },
+    {
+      "code": 61740673,
+      "name": "Imperial Order",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 61831093,
+      "name": "Greenkappa",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "Greenkappa",
+      "reason": "model"
+    },
+    {
+      "code": 61844784,
+      "name": "Magic Reflector",
+      "kind": "spell",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 61854111,
+      "name": "Legendary Sword",
+      "kind": "spell",
+      "firstRelease": "1999-02-04",
+      "reason": "era"
+    },
+    {
+      "code": 62193699,
+      "name": "Rock Ogre Grotto #2",
+      "kind": "monster",
+      "firstRelease": "1999-03-18",
+      "model": "RockOgreGrotto2",
+      "reason": "model"
+    },
+    {
+      "code": 62210247,
+      "name": "Lunar Queen Elzaim",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "LunarQueenElzaim",
+      "reason": "model"
+    },
+    {
+      "code": 62279055,
+      "name": "Magic Cylinder",
+      "kind": "trap",
+      "firstRelease": "2000-12-23",
+      "reason": "era"
+    },
+    {
+      "code": 62325062,
+      "name": "Adhesion Trap Hole",
+      "kind": "trap",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 62337487,
+      "name": "Fortress Whale",
+      "kind": "monster",
+      "firstRelease": "2000-03-23",
+      "model": "FortressWhale",
+      "reason": "model"
+    },
+    {
+      "code": 62340868,
+      "name": "Kazejin",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "Kazejin",
+      "reason": "model"
+    },
+    {
+      "code": 62403074,
+      "name": "Rhaimundos of the Red Sword",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "RhaimundosOfTheRedSword",
+      "reason": "model"
+    },
+    {
+      "code": 62671448,
+      "name": "Toad Master",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "ToadMaster",
+      "reason": "model"
+    },
+    {
+      "code": 62762898,
+      "name": "Parrot Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "ParrotDragon",
+      "reason": "model"
+    },
+    {
+      "code": 62793020,
+      "name": "Mystery Hand",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "MysteryHand",
+      "reason": "model"
+    },
+    {
+      "code": 62867251,
+      "name": "Light of Intervention",
+      "kind": "trap",
+      "firstRelease": "2002-01-24",
+      "reason": "era"
+    },
+    {
+      "code": 62966332,
+      "name": "Convulsion of Nature",
+      "kind": "spell",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 63102017,
+      "name": "Stop Defense",
+      "kind": "spell",
+      "firstRelease": "1999-05-27",
+      "reason": "era"
+    },
+    {
+      "code": 63125616,
+      "name": "The Shadow Who Controls the Dark",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "TheShadowWhoControlsTheDark",
+      "reason": "model"
+    },
+    {
+      "code": 63224564,
+      "name": "Cyber Shield",
+      "kind": "spell",
+      "firstRelease": "1999-07-08",
+      "reason": "era"
+    },
+    {
+      "code": 63308047,
+      "name": "Terra the Terrible",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "TerraTheTerrible",
+      "reason": "model"
+    },
+    {
+      "code": 63391643,
+      "name": "Thousand Knives",
+      "kind": "spell",
+      "firstRelease": "2000-12-23",
+      "reason": "era"
+    },
+    {
+      "code": 63432835,
+      "name": "Stone Armadiller",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "StoneArmadiller",
+      "reason": "model"
+    },
+    {
+      "code": 63442604,
+      "name": "Physical Double",
+      "kind": "trap",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 63515678,
+      "name": "Mystical Capture Chain",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "MysticalCaptureChain",
+      "reason": "model"
+    },
+    {
+      "code": 63545455,
+      "name": "Mech Mole Zombie",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "MechMoleZombie",
+      "reason": "model"
+    },
+    {
+      "code": 63689843,
+      "name": "Attack and Receive",
+      "kind": "trap",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 63789924,
+      "name": "Smoke Grenade of the Thief",
+      "kind": "spell",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 64047146,
+      "name": "Horn of the Unicorn",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 64154377,
+      "name": "Embryonic Beast",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "EmbryonicBeast",
+      "reason": "model"
+    },
+    {
+      "code": 64271667,
+      "name": "Meteor Dragon",
+      "kind": "monster",
+      "firstRelease": "2000-08-10",
+      "model": "MeteorDragon",
+      "reason": "model"
+    },
+    {
+      "code": 64274292,
+      "name": "Meteorain",
+      "kind": "trap",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 64335804,
+      "name": "Red-Eyes Black Metal Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-12-09",
+      "model": "RedEyesBlackMetalDragon",
+      "reason": "model"
+    },
+    {
+      "code": 64389297,
+      "name": "Magical Labyrinth",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 64428736,
+      "name": "Alligator's Sword",
+      "kind": "monster",
+      "firstRelease": "2000-04-01",
+      "model": "AlligatorsSword",
+      "reason": "model"
+    },
+    {
+      "code": 64501875,
+      "name": "Hibikime",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "Hibikime",
+      "reason": "model"
+    },
+    {
+      "code": 64511793,
+      "name": "Eyearmor",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "Eyearmor",
+      "reason": "model"
+    },
+    {
+      "code": 64631466,
+      "name": "Relinquished",
+      "kind": "monster",
+      "firstRelease": "2002-03-21",
+      "model": "Relinquished",
+      "reason": "model"
+    },
+    {
+      "code": 64801562,
+      "name": "Heart of Clear Water",
+      "kind": "spell",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 65169794,
+      "name": "Black Pendant",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 65393205,
+      "name": "Chakra",
+      "kind": "monster",
+      "firstRelease": "2000-03-23",
+      "model": "Chakra",
+      "reason": "model"
+    },
+    {
+      "code": 65396880,
+      "name": "Huge Revolution",
+      "kind": "trap",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 65570596,
+      "name": "Red Archery Girl",
+      "kind": "monster",
+      "firstRelease": "2002-03-21",
+      "model": "RedArcheryGirl",
+      "reason": "model"
+    },
+    {
+      "code": 65623423,
+      "name": "Gruesome Goo",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "GruesomeGoo",
+      "reason": "model"
+    },
+    {
+      "code": 65830223,
+      "name": "Coffin Seller",
+      "kind": "trap",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 66516792,
+      "name": "Serpent Night Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "SerpentNightDragon",
+      "reason": "model"
+    },
+    {
+      "code": 66602787,
+      "name": "Saggi the Dark Clown",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "SaggiTheDarkClown",
+      "reason": "model"
+    },
+    {
+      "code": 66672569,
+      "name": "Dragon Zombie",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "DragonZombie",
+      "reason": "model"
+    },
+    {
+      "code": 66719324,
+      "name": "Rain of Mercy",
+      "kind": "spell",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 66788016,
+      "name": "Fissure",
+      "kind": "spell",
+      "firstRelease": "1999-02-04",
+      "reason": "era"
+    },
+    {
+      "code": 66836598,
+      "name": "Waterdragon Fairy",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "WaterdragonFairy",
+      "reason": "model"
+    },
+    {
+      "code": 66889139,
+      "name": "Gaia the Dragon Champion",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-05-27",
+      "model": "GaiaTheDragonChampion",
+      "reason": "model"
+    },
+    {
+      "code": 67287533,
+      "name": "Spirit Message \"N\"",
+      "kind": "spell",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 67494157,
+      "name": "Crawling Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "CrawlingDragon",
+      "reason": "model"
+    },
+    {
+      "code": 67629977,
+      "name": "Hoshiningen",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "Hoshiningen",
+      "reason": "model"
+    },
+    {
+      "code": 67724379,
+      "name": "Koumori Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-12-16",
+      "model": "KoumoriDragon",
+      "reason": "model"
+    },
+    {
+      "code": 67841515,
+      "name": "Barrel Lily",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "BarrelLily",
+      "reason": "model"
+    },
+    {
+      "code": 67959180,
+      "name": "Goddess of Whim",
+      "kind": "monster",
+      "firstRelease": "2002-12-20",
+      "model": "GoddessOfWhim",
+      "reason": "model"
+    },
+    {
+      "code": 67987611,
+      "name": "Amazoness Archers",
+      "kind": "trap",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 68005187,
+      "name": "Soul Exchange",
+      "kind": "spell",
+      "firstRelease": "2000-11-23",
+      "reason": "era"
+    },
+    {
+      "code": 68057622,
+      "name": "Continuous Destruction Punch",
+      "kind": "spell",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 68170903,
+      "name": "A Feint Plan",
+      "kind": "trap",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 68171737,
+      "name": "Stone Dragon",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "StoneDragon",
+      "reason": "model"
+    },
+    {
+      "code": 68304813,
+      "name": "Precious Cards from Beyond",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 68334074,
+      "name": "Miracle Restoring",
+      "kind": "trap",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 68339286,
+      "name": "Metal Guardian",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "MetalGuardian",
+      "reason": "model"
+    },
+    {
+      "code": 68400115,
+      "name": "The Emperor's Holiday",
+      "kind": "trap",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 68401546,
+      "name": "Fairy's Gift",
+      "kind": "monster",
+      "firstRelease": "1999-06-01",
+      "model": "FairysGift",
+      "reason": "model"
+    },
+    {
+      "code": 68427465,
+      "name": "Wicked-Breaking Flamberge - Baou",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 68516705,
+      "name": "Mystic Horseman",
+      "kind": "monster",
+      "firstRelease": "1999-12-16",
+      "model": "MysticHorseman",
+      "reason": "model"
+    },
+    {
+      "code": 68540058,
+      "name": "Metalmorph",
+      "kind": "trap",
+      "firstRelease": "1999-12-09",
+      "reason": "era"
+    },
+    {
+      "code": 68638985,
+      "name": "Slime Toad",
+      "kind": "monster",
+      "firstRelease": "2002-12-20",
+      "model": "SlimeToad",
+      "reason": "model"
+    },
+    {
+      "code": 68658728,
+      "name": "Little Chimera",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "LittleChimera",
+      "reason": "model"
+    },
+    {
+      "code": 68846917,
+      "name": "Rock Ogre Grotto #1",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "RockOgreGrotto1",
+      "reason": "model"
+    },
+    {
+      "code": 68870276,
+      "name": "Fiend Reflection #1",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "FiendReflection1",
+      "reason": "model"
+    },
+    {
+      "code": 68928540,
+      "name": "Kamakiriman",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "Kamakiriman",
+      "reason": "model"
+    },
+    {
+      "code": 68963107,
+      "name": "Boo Koo",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "BooKoo",
+      "reason": "model"
+    },
+    {
+      "code": 69015963,
+      "name": "Cyber-Stein",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "CyberStein",
+      "reason": "model"
+    },
+    {
+      "code": 69122763,
+      "name": "Deal of Phantom",
+      "kind": "trap",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 69123138,
+      "name": "Zera the Mant",
+      "kind": "monster",
+      "firstRelease": "2000-03-23",
+      "model": "ZeraTheMant",
+      "reason": "model"
+    },
+    {
+      "code": 69140098,
+      "name": "Gemini Elf",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "GeminiElf",
+      "reason": "model"
+    },
+    {
+      "code": 69243953,
+      "name": "Butterfly Dagger - Elma",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 69279219,
+      "name": "My Body as a Shield",
+      "kind": "spell",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 69296555,
+      "name": "Array of Revealing Light",
+      "kind": "spell",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 69572024,
+      "name": "Tongyo",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "Tongyo",
+      "reason": "model"
+    },
+    {
+      "code": 69669405,
+      "name": "Horn Imp",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "HornImp",
+      "reason": "model"
+    },
+    {
+      "code": 69750536,
+      "name": "Wow Warrior",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "WowWarrior",
+      "reason": "model"
+    },
+    {
+      "code": 69780745,
+      "name": "Garvas",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "Garvas",
+      "reason": "model"
+    },
+    {
+      "code": 69832741,
+      "name": "Spirit Elimination",
+      "kind": "spell",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 69893315,
+      "name": "Dice Armadillo",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "DiceArmadillo",
+      "reason": "model"
+    },
+    {
+      "code": 69954399,
+      "name": "Ekibyo Drakmord",
+      "kind": "spell",
+      "firstRelease": "2002-01-24",
+      "reason": "era"
+    },
+    {
+      "code": 69992868,
+      "name": "Muse-A",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "MuseA",
+      "reason": "model"
+    },
+    {
+      "code": 70046172,
+      "name": "Rush Recklessly",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 70084224,
+      "name": "Neck Hunter",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "NeckHunter",
+      "reason": "model"
+    },
+    {
+      "code": 70138455,
+      "name": "Blast Juggler",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "BlastJuggler",
+      "reason": "model"
+    },
+    {
+      "code": 70231910,
+      "name": "Dark Core",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 70344351,
+      "name": "Riryoku Field",
+      "kind": "trap",
+      "firstRelease": "2002-01-24",
+      "reason": "era"
+    },
+    {
+      "code": 70345785,
+      "name": "Yamadron",
+      "kind": "monster",
+      "firstRelease": "1999-06-01",
+      "model": "Yamadron",
+      "reason": "model"
+    },
+    {
+      "code": 70368879,
+      "name": "Upstart Goblin",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 70681994,
+      "name": "Dragoness the Wicked Knight",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-03-27",
+      "model": "DragonessTheWickedKnight",
+      "reason": "model"
+    },
+    {
+      "code": 70781052,
+      "name": "Summoned Skull",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "SummonedSkull",
+      "reason": "model"
+    },
+    {
+      "code": 70828912,
+      "name": "Premature Burial",
+      "kind": "spell",
+      "firstRelease": "2001-06-28",
+      "reason": "era"
+    },
+    {
+      "code": 70924884,
+      "name": "Alinsection",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "Alinsection",
+      "reason": "model"
+    },
+    {
+      "code": 71044499,
+      "name": "Nobleman of Crossout",
+      "kind": "spell",
+      "firstRelease": "2001-06-28",
+      "reason": "era"
+    },
+    {
+      "code": 71068263,
+      "name": "Stuffed Animal",
+      "kind": "monster",
+      "firstRelease": "1999-06-01",
+      "model": "StuffedAnimal",
+      "reason": "model"
+    },
+    {
+      "code": 71107816,
+      "name": "The Bistro Butcher",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "TheBistroButcher",
+      "reason": "model"
+    },
+    {
+      "code": 71280811,
+      "name": "Yaranzo",
+      "kind": "monster",
+      "firstRelease": "1999-06-01",
+      "model": "Yaranzo",
+      "reason": "model"
+    },
+    {
+      "code": 71407486,
+      "name": "Fireyarou",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "Fireyarou",
+      "reason": "model"
+    },
+    {
+      "code": 71453557,
+      "name": "Autonomous Action Unit",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 71625222,
+      "name": "Time Wizard",
+      "kind": "monster",
+      "firstRelease": "2001-10-25",
+      "model": "TimeWizard",
+      "reason": "model"
+    },
+    {
+      "code": 71746462,
+      "name": "Sea Kamen",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "SeaKamen",
+      "reason": "model"
+    },
+    {
+      "code": 71950093,
+      "name": "Shovel Crusher",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "ShovelCrusher",
+      "reason": "model"
+    },
+    {
+      "code": 72053645,
+      "name": "Weather Report",
+      "kind": "monster",
+      "firstRelease": "2002-06-20",
+      "model": "WeatherReport",
+      "reason": "model"
+    },
+    {
+      "code": 72076281,
+      "name": "Bat",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "Bat",
+      "reason": "model"
+    },
+    {
+      "code": 72269672,
+      "name": "Stone Ghost",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "StoneGhost",
+      "reason": "model"
+    },
+    {
+      "code": 72299832,
+      "name": "Giant Mech-Soldier",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "GiantMechSoldier",
+      "reason": "model"
+    },
+    {
+      "code": 72302403,
+      "name": "Swords of Revealing Light",
+      "kind": "spell",
+      "firstRelease": "1999-03-27",
+      "reason": "era"
+    },
+    {
+      "code": 72405967,
+      "name": "Royal Tribute",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 72520073,
+      "name": "Dark Artist",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "DarkArtist",
+      "reason": "model"
+    },
+    {
+      "code": 72575145,
+      "name": "Demotion",
+      "kind": "spell",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 72842870,
+      "name": "Tyhone",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "Tyhone",
+      "reason": "model"
+    },
+    {
+      "code": 72869010,
+      "name": "Soul Hunter",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-10-17",
+      "model": "SoulHunter",
+      "reason": "model"
+    },
+    {
+      "code": 72892473,
+      "name": "Card Destruction",
+      "kind": "spell",
+      "firstRelease": "2000-11-23",
+      "reason": "era"
+    },
+    {
+      "code": 72929454,
+      "name": "Turtle Bird",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "TurtleBird",
+      "reason": "model"
+    },
+    {
+      "code": 73051941,
+      "name": "Sand Stone",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "SandStone",
+      "reason": "model"
+    },
+    {
+      "code": 73079365,
+      "name": "Gust",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 73081602,
+      "name": "Queen Bird",
+      "kind": "monster",
+      "firstRelease": "2002-09-16",
+      "model": "QueenBird",
+      "reason": "model"
+    },
+    {
+      "code": 73134081,
+      "name": "Final Flame",
+      "kind": "spell",
+      "firstRelease": "1999-03-27",
+      "reason": "era"
+    },
+    {
+      "code": 73481154,
+      "name": "Destroyer Golem",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "DestoyerGolem",
+      "reason": "model"
+    },
+    {
+      "code": 73628505,
+      "name": "Terraforming",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 73911410,
+      "name": "Sword Slasher",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "SwordSlasher",
+      "reason": "model"
+    },
+    {
+      "code": 73915051,
+      "name": "Scapegoat",
+      "kind": "spell",
+      "firstRelease": "2001-04-01",
+      "reason": "era"
+    },
+    {
+      "code": 74137509,
+      "name": "Graceful Dice",
+      "kind": "spell",
+      "firstRelease": "2001-07-05",
+      "reason": "era"
+    },
+    {
+      "code": 74191942,
+      "name": "Painful Choice",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 74277583,
+      "name": "Brave Scizzar",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "BraveScizzar",
+      "reason": "model"
+    },
+    {
+      "code": 74677422,
+      "name": "Red-Eyes Black Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "RedEyesBlackDragon",
+      "reason": "model"
+    },
+    {
+      "code": 74701381,
+      "name": "DNA Surgery",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 74703140,
+      "name": "Punished Eagle",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-11-18",
+      "model": "PunishedEagle",
+      "reason": "model"
+    },
+    {
+      "code": 74923978,
+      "name": "Forced Requisition",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 75356564,
+      "name": "Petit Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "PetitDragon",
+      "reason": "model"
+    },
+    {
+      "code": 75376965,
+      "name": "Enchanting Mermaid",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "EnchantingMermaid",
+      "reason": "model"
+    },
+    {
+      "code": 75390004,
+      "name": "Megazowler",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "Megazowler",
+      "reason": "model"
+    },
+    {
+      "code": 75499502,
+      "name": "Master & Expert",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "MasterExpert",
+      "reason": "model"
+    },
+    {
+      "code": 75559356,
+      "name": "Cyber Soldier of Darkworld",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "CyberSoldierOfDarkworld",
+      "reason": "model"
+    },
+    {
+      "code": 75582395,
+      "name": "Faith Bird",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "FaithBird",
+      "reason": "model"
+    },
+    {
+      "code": 75646173,
+      "name": "Synchar",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "Synchar",
+      "reason": "model"
+    },
+    {
+      "code": 75646520,
+      "name": "Metal Detector",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 75850803,
+      "name": "LaMoon",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "LaMoon",
+      "reason": "model"
+    },
+    {
+      "code": 75889523,
+      "name": "Archfiend Marmot of Nefariousness",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "ArchfiendMarmotOfNefariousness",
+      "reason": "model"
+    },
+    {
+      "code": 76103675,
+      "name": "Sparks",
+      "kind": "spell",
+      "firstRelease": "1999-02-04",
+      "reason": "era"
+    },
+    {
+      "code": 76184692,
+      "name": "Hitotsu-Me Giant",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "HitotsuMeGiant",
+      "reason": "model"
+    },
+    {
+      "code": 76211194,
+      "name": "Meda Bat",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "MedaBat",
+      "reason": "model"
+    },
+    {
+      "code": 76232340,
+      "name": "Sengenjin",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "Sengenjin",
+      "reason": "model"
+    },
+    {
+      "code": 76297408,
+      "name": "Soul Demolition",
+      "kind": "trap",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 76446915,
+      "name": "Disk Magician",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "DiskMagician",
+      "reason": "model"
+    },
+    {
+      "code": 76512652,
+      "name": "Krokodilus",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "Krokodilus",
+      "reason": "model"
+    },
+    {
+      "code": 76634149,
+      "name": "Kairyu-Shin",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "KairyuShin",
+      "reason": "model"
+    },
+    {
+      "code": 76704943,
+      "name": "Yamatano Dragon Scroll",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "YamatanoDragonScroll",
+      "reason": "model"
+    },
+    {
+      "code": 76714458,
+      "name": "Spell of Pain",
+      "kind": "spell",
+      "firstRelease": "2002-07-04",
+      "reason": "era"
+    },
+    {
+      "code": 76775123,
+      "name": "Patrol Robo",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "PatrolRobo",
+      "reason": "model"
+    },
+    {
+      "code": 76792184,
+      "name": "Black Magic Ritual",
+      "kind": "spell",
+      "firstRelease": "1999-12-09",
+      "reason": "era"
+    },
+    {
+      "code": 76806714,
+      "name": "Turtle Oath",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 76812113,
+      "name": "Harpie Lady",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "HarpieLady",
+      "reason": "model"
+    },
+    {
+      "code": 76848240,
+      "name": "Non Aggression Area",
+      "kind": "trap",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 77007920,
+      "name": "Laser Cannon Armor",
+      "kind": "spell",
+      "firstRelease": "1999-03-27",
+      "reason": "era"
+    },
+    {
+      "code": 77027445,
+      "name": "Power of Kaishin",
+      "kind": "spell",
+      "firstRelease": "1999-02-04",
+      "reason": "era"
+    },
+    {
+      "code": 77414722,
+      "name": "Magic Jammer",
+      "kind": "trap",
+      "firstRelease": "1999-11-18",
+      "reason": "era"
+    },
+    {
+      "code": 77454922,
+      "name": "Fortress Whale's Oath",
+      "kind": "spell",
+      "firstRelease": "2000-03-23",
+      "reason": "era"
+    },
+    {
+      "code": 77456781,
+      "name": "Fiend Kraken",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "FiendKraken",
+      "reason": "model"
+    },
+    {
+      "code": 77561728,
+      "name": "Disturbance Strategy",
+      "kind": "trap",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 77568553,
+      "name": "Acid Crawler",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "AcidCrawler",
+      "reason": "model"
+    },
+    {
+      "code": 77581312,
+      "name": "Masked Clown",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "MaskedClown",
+      "reason": "model"
+    },
+    {
+      "code": 77603950,
+      "name": "Phantom Dewan",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "PhantomDewan",
+      "reason": "model"
+    },
+    {
+      "code": 77622396,
+      "name": "Reverse Trap",
+      "kind": "trap",
+      "firstRelease": "1999-07-05",
+      "reason": "era"
+    },
+    {
+      "code": 77754944,
+      "name": "Widespread Ruin",
+      "kind": "trap",
+      "firstRelease": "2000-07-13",
+      "reason": "era"
+    },
+    {
+      "code": 77827521,
+      "name": "Trial of Nightmare",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "TrialOfNightmare",
+      "reason": "model"
+    },
+    {
+      "code": 77910045,
+      "name": "Fatal Abacus",
+      "kind": "trap",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 77998771,
+      "name": "Crow Goblin",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "CrowGoblin",
+      "reason": "model"
+    },
+    {
+      "code": 78010363,
+      "name": "Witch of the Black Forest",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "WitchOfTheBlackForest",
+      "reason": "model"
+    },
+    {
+      "code": 78053598,
+      "name": "Dark Designator",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 78402798,
+      "name": "Night Lizard",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "NightLizard",
+      "reason": "model"
+    },
+    {
+      "code": 78556320,
+      "name": "Vishwar Randi",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "VishwarRandi",
+      "reason": "model"
+    },
+    {
+      "code": 78577570,
+      "name": "Garma Sword Oath",
+      "kind": "spell",
+      "firstRelease": "2000-07-13",
+      "reason": "era"
+    },
+    {
+      "code": 78637313,
+      "name": "Call of Darkness",
+      "kind": "trap",
+      "firstRelease": "1999-09-23",
+      "reason": "era"
+    },
+    {
+      "code": 78780140,
+      "name": "Trent",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "Trent",
+      "reason": "model"
+    },
+    {
+      "code": 78783370,
+      "name": "Barrel Behind the Door",
+      "kind": "trap",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 79323590,
+      "name": "Chain Energy",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 79571449,
+      "name": "Graceful Charity",
+      "kind": "spell",
+      "firstRelease": "1999-08-26",
+      "reason": "era"
+    },
+    {
+      "code": 79629370,
+      "name": "Maiden of the Moonlight",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "MaidenOfTheMoonlight",
+      "reason": "model"
+    },
+    {
+      "code": 79759861,
+      "name": "Tribute to The Doomed",
+      "kind": "spell",
+      "firstRelease": "1999-09-23",
+      "reason": "era"
+    },
+    {
+      "code": 80141480,
+      "name": "Hunter Spider",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "HunterSpider",
+      "reason": "model"
+    },
+    {
+      "code": 80163754,
+      "name": "Burst Breath",
+      "kind": "trap",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 80168720,
+      "name": "Darkness Approaches",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 80193355,
+      "name": "Dramatic Rescue",
+      "kind": "trap",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 80234301,
+      "name": "Prisman",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "Prisman",
+      "reason": "model"
+    },
+    {
+      "code": 80516007,
+      "name": "Rare Fish",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-05-27",
+      "model": "RareFish",
+      "reason": "model"
+    },
+    {
+      "code": 80600490,
+      "name": "Kageningen",
+      "kind": "monster",
+      "firstRelease": "1999-03-18",
+      "model": "Kaneningen",
+      "reason": "model"
+    },
+    {
+      "code": 80604091,
+      "name": "Ultimate Offering",
+      "kind": "trap",
+      "firstRelease": "1999-07-05",
+      "reason": "era"
+    },
+    {
+      "code": 80727036,
+      "name": "Man-eating Black Shark",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-08-26",
+      "model": "ManEatingBlackShark",
+      "reason": "model"
+    },
+    {
+      "code": 80741828,
+      "name": "Witch's Apprentice",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "WitchesApprentice",
+      "reason": "model"
+    },
+    {
+      "code": 80770678,
+      "name": "Spirit of the Harp",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "SpiritOfTheHarp",
+      "reason": "model"
+    },
+    {
+      "code": 80811661,
+      "name": "Hamburger Recipe",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 80813021,
+      "name": "Torike",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "Torike",
+      "reason": "model"
+    },
+    {
+      "code": 80987696,
+      "name": "Time Machine",
+      "kind": "trap",
+      "firstRelease": "2000-08-10",
+      "reason": "era"
+    },
+    {
+      "code": 81057959,
+      "name": "D. Human",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "DHuman",
+      "reason": "model"
+    },
+    {
+      "code": 81172176,
+      "name": "Fiend Comedian",
+      "kind": "trap",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 81179446,
+      "name": "Kattapillar",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "Kattapillar",
+      "reason": "model"
+    },
+    {
+      "code": 81210420,
+      "name": "Magical Hats",
+      "kind": "trap",
+      "firstRelease": "2001-06-28",
+      "reason": "era"
+    },
+    {
+      "code": 81325903,
+      "name": "Amazoness Spellcaster",
+      "kind": "spell",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 81332143,
+      "name": "Yu-Jo Friendship",
+      "kind": "spell",
+      "firstRelease": "2002-11-01",
+      "reason": "era"
+    },
+    {
+      "code": 81380218,
+      "name": "Chorus of Sanctuary",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 81385346,
+      "name": "Stamping Destruction",
+      "kind": "spell",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 81386177,
+      "name": "Bottom Dweller",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "BottomDweller",
+      "reason": "model"
+    },
+    {
+      "code": 81480460,
+      "name": "Barrel Dragon",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "BarrelDragon",
+      "reason": "model"
+    },
+    {
+      "code": 81492226,
+      "name": "Ancient Jar",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "AncientJar",
+      "reason": "model"
+    },
+    {
+      "code": 81563416,
+      "name": "Fairy of the Fountain",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "FairyOfTheFountain",
+      "reason": "model"
+    },
+    {
+      "code": 81618817,
+      "name": "Lord of Zemia",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "LordOfZemia",
+      "reason": "model"
+    },
+    {
+      "code": 81686058,
+      "name": "Ill Witch",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "IllWitch",
+      "reason": "model"
+    },
+    {
+      "code": 81756897,
+      "name": "Zera Ritual",
+      "kind": "spell",
+      "firstRelease": "2000-03-23",
+      "reason": "era"
+    },
+    {
+      "code": 81777047,
+      "name": "Luminous Spark",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 81820689,
+      "name": "The Inexperienced Spy",
+      "kind": "spell",
+      "firstRelease": "1999-05-25",
+      "reason": "era"
+    },
+    {
+      "code": 81843628,
+      "name": "Needle Worm",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "NeedleWorm",
+      "reason": "model"
+    },
+    {
+      "code": 81863068,
+      "name": "Hiro's Shadow Scout",
+      "kind": "monster",
+      "firstRelease": "2002-01-24",
+      "model": "HirosShadowScout",
+      "reason": "model"
+    },
+    {
+      "code": 81933259,
+      "name": "Beastly Mirror Ritual",
+      "kind": "spell",
+      "firstRelease": "2000-03-23",
+      "reason": "era"
+    },
+    {
+      "code": 82003859,
+      "name": "Toll",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 82065276,
+      "name": "Oscillo Hero",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "OscilloHero",
+      "reason": "model"
+    },
+    {
+      "code": 82085619,
+      "name": "Shining Friendship",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "ShiningFriendship",
+      "reason": "model"
+    },
+    {
+      "code": 82432018,
+      "name": "Mask of Brutality",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 82542267,
+      "name": "Gravedigger Ghoul",
+      "kind": "spell",
+      "firstRelease": "1999-05-27",
+      "reason": "era"
+    },
+    {
+      "code": 82732705,
+      "name": "Skill Drain",
+      "kind": "trap",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 82742611,
+      "name": "Serpent Marauder",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "SerpentMarauder",
+      "reason": "model"
+    },
+    {
+      "code": 82818645,
+      "name": "Rock Spirit",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "RockSpirit",
+      "reason": "model"
+    },
+    {
+      "code": 82878489,
+      "name": "Shine Palace",
+      "kind": "spell",
+      "firstRelease": "1999-07-08",
+      "reason": "era"
+    },
+    {
+      "code": 82999629,
+      "name": "Umiiruka",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 83225447,
+      "name": "Stim-Pack",
+      "kind": "spell",
+      "firstRelease": "2000-03-01",
+      "reason": "era"
+    },
+    {
+      "code": 83464209,
+      "name": "Mystical Sheep #2",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "MysticalSheep2",
+      "reason": "model"
+    },
+    {
+      "code": 83555666,
+      "name": "Ring of Destruction",
+      "kind": "trap",
+      "firstRelease": "2000-12-07",
+      "reason": "era"
+    },
+    {
+      "code": 83678433,
+      "name": "Midnight Fiend",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "MidnightFiend",
+      "reason": "model"
+    },
+    {
+      "code": 83746708,
+      "name": "Mage Power",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 83764718,
+      "name": "Monster Reborn",
+      "kind": "spell",
+      "firstRelease": "1999-03-27",
+      "reason": "era"
+    },
+    {
+      "code": 83887306,
+      "name": "Two-Pronged Attack",
+      "kind": "trap",
+      "firstRelease": "1999-03-06",
+      "reason": "era"
+    },
+    {
+      "code": 83968380,
+      "name": "Jar of Greed",
+      "kind": "trap",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 84103702,
+      "name": "Kanikabuto",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "Kanikabuto",
+      "reason": "model"
+    },
+    {
+      "code": 84133008,
+      "name": "Monster Eye",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "MonsterEye",
+      "reason": "model"
+    },
+    {
+      "code": 84257639,
+      "name": "Dian Keto the Cure Master",
+      "kind": "spell",
+      "firstRelease": "1999-12-16",
+      "reason": "era"
+    },
+    {
+      "code": 84285623,
+      "name": "Haniwa",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "Haniwa",
+      "reason": "model"
+    },
+    {
+      "code": 84686841,
+      "name": "King Fog",
+      "kind": "monster",
+      "firstRelease": "1999-03-18",
+      "model": "KingFog",
+      "reason": "model"
+    },
+    {
+      "code": 84740193,
+      "name": "Buster Rancher",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 84794011,
+      "name": "Solitude",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "Solitude",
+      "reason": "model"
+    },
+    {
+      "code": 84916669,
+      "name": "Doriado",
+      "kind": "monster",
+      "firstRelease": "1999-07-05",
+      "model": "Doriado",
+      "reason": "model"
+    },
+    {
+      "code": 84926738,
+      "name": "The Immortal of Thunder",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "TheImmortalOfThunder",
+      "reason": "model"
+    },
+    {
+      "code": 84990171,
+      "name": "Bean Soldier",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "BeanSoldier",
+      "reason": "model"
+    },
+    {
+      "code": 85255550,
+      "name": "Swordsman from a Distant Land",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "SwordsmanFromADistantLand",
+      "reason": "model"
+    },
+    {
+      "code": 85309439,
+      "name": "Ray & Temperature",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "RayTemparature",
+      "reason": "model"
+    },
+    {
+      "code": 85326399,
+      "name": "Spike Seadra",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "SpikeSeadra",
+      "reason": "model"
+    },
+    {
+      "code": 85448931,
+      "name": "Sentinel of the Seas",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "SentinelOfTheSeas",
+      "reason": "model"
+    },
+    {
+      "code": 85562745,
+      "name": "Dark Room of Nightmare",
+      "kind": "spell",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 85602018,
+      "name": "Last Will",
+      "kind": "spell",
+      "firstRelease": "1999-12-16",
+      "reason": "era"
+    },
+    {
+      "code": 85639257,
+      "name": "Aqua Madoor",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "AquaMadoor",
+      "reason": "model"
+    },
+    {
+      "code": 85705804,
+      "name": "Kurama",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "Kurama",
+      "reason": "model"
+    },
+    {
+      "code": 85742772,
+      "name": "Gravity Bind",
+      "kind": "trap",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 86088138,
+      "name": "Ocubeam",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "Ocubeam",
+      "reason": "model"
+    },
+    {
+      "code": 86100785,
+      "name": "Zone Eater",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "ZoneEater",
+      "reason": "model"
+    },
+    {
+      "code": 86164529,
+      "name": "Aqua Dragon",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-08-26",
+      "model": "AquaDragon",
+      "reason": "model"
+    },
+    {
+      "code": 86198326,
+      "name": "7 Completed",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 86318356,
+      "name": "Sogen",
+      "kind": "spell",
+      "firstRelease": "1999-03-06",
+      "reason": "era"
+    },
+    {
+      "code": 86325596,
+      "name": "Baron of the Fiend Sword",
+      "kind": "monster",
+      "firstRelease": "1999-12-16",
+      "model": "BaronOfTheFiendSword",
+      "reason": "model"
+    },
+    {
+      "code": 86421986,
+      "name": "Ancient Tree of Enlightenment",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "AncientTreeOfEnlightenment",
+      "reason": "model"
+    },
+    {
+      "code": 87322377,
+      "name": "Launcher Spider",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "LauncherSpider",
+      "reason": "model"
+    },
+    {
+      "code": 87430998,
+      "name": "Forest",
+      "kind": "spell",
+      "firstRelease": "1999-03-06",
+      "reason": "era"
+    },
+    {
+      "code": 87557188,
+      "name": "The Stern Mystic",
+      "kind": "monster",
+      "firstRelease": "1999-12-16",
+      "model": "TheSternMystic",
+      "reason": "model"
+    },
+    {
+      "code": 87564352,
+      "name": "Blackland Fire Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "BlacklandFireDragon",
+      "reason": "model"
+    },
+    {
+      "code": 87756343,
+      "name": "Larvae Moth",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "LarvaeMoth",
+      "reason": "model"
+    },
+    {
+      "code": 87796900,
+      "name": "Winged Dragon, Guardian of the Fortress #1",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "WingedDragonGuardianOfTheFortress1",
+      "reason": "model"
+    },
+    {
+      "code": 87880531,
+      "name": "Diffusion Wave-Motion",
+      "kind": "spell",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 88279736,
+      "name": "Robbin' Goblin",
+      "kind": "trap",
+      "firstRelease": "2000-01-27",
+      "reason": "era"
+    },
+    {
+      "code": 88435542,
+      "name": "Fire Eye",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "FireEye",
+      "reason": "model"
+    },
+    {
+      "code": 88643173,
+      "name": "Nightmare Scorpion",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "NightmareScorpion",
+      "reason": "model"
+    },
+    {
+      "code": 88819587,
+      "name": "Baby Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "BabyDragon",
+      "reason": "model"
+    },
+    {
+      "code": 88979991,
+      "name": "Killer Needle",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "KillerNeedle",
+      "reason": "model"
+    },
+    {
+      "code": 89091579,
+      "name": "Basic Insect",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "BasicInsect",
+      "reason": "model"
+    },
+    {
+      "code": 89112729,
+      "name": "Cyber Saurus",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "2000-01-27",
+      "model": "CyberSaurus",
+      "reason": "model"
+    },
+    {
+      "code": 89272878,
+      "name": "Guardian of the Labyrinth",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "GuardianOfTheLabrynth",
+      "reason": "model"
+    },
+    {
+      "code": 89494469,
+      "name": "Dark Titan of Terror",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "DarkTitanOfTerror",
+      "reason": "model"
+    },
+    {
+      "code": 89558090,
+      "name": "Dark Prisoner",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "DarkPrisoner",
+      "reason": "model"
+    },
+    {
+      "code": 89631139,
+      "name": "Blue-Eyes White Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "BlueEyesWhiteDragon",
+      "reason": "model"
+    },
+    {
+      "code": 89832901,
+      "name": "B. Dragon Jungle King",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "BDragonJungleKing",
+      "reason": "model"
+    },
+    {
+      "code": 89904598,
+      "name": "Anthrosaurus",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "Anthrosaurus",
+      "reason": "model"
+    },
+    {
+      "code": 89987208,
+      "name": "Hero of the East",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "HeroOfTheEast",
+      "reason": "model"
+    },
+    {
+      "code": 89997728,
+      "name": "Toon Table of Contents",
+      "kind": "spell",
+      "firstRelease": "2002-03-21",
+      "reason": "era"
+    },
+    {
+      "code": 90219263,
+      "name": "Elegant Egotist",
+      "kind": "spell",
+      "firstRelease": "1999-07-22",
+      "reason": "era"
+    },
+    {
+      "code": 90330453,
+      "name": "Last Day of Witch",
+      "kind": "spell",
+      "firstRelease": "1999-12-01",
+      "reason": "era"
+    },
+    {
+      "code": 90357090,
+      "name": "Silver Fang",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "SilverFang",
+      "reason": "model"
+    },
+    {
+      "code": 90502999,
+      "name": "Ground Collapse",
+      "kind": "spell",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 90660762,
+      "name": "Meteor Black Dragon",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-08-26",
+      "model": "MeteorBlackDragon",
+      "reason": "model"
+    },
+    {
+      "code": 90669991,
+      "name": "Pineapple Blast",
+      "kind": "trap",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 90844184,
+      "name": "Garma Sword",
+      "kind": "monster",
+      "firstRelease": "2000-07-13",
+      "model": "GarmaSword",
+      "reason": "model"
+    },
+    {
+      "code": 90846359,
+      "name": "Rivalry of Warlords",
+      "kind": "trap",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 90873992,
+      "name": "Warrior Elimination",
+      "kind": "spell",
+      "firstRelease": "1999-07-22",
+      "reason": "era"
+    },
+    {
+      "code": 90963488,
+      "name": "Nemuriko",
+      "kind": "monster",
+      "firstRelease": "1999-02-04",
+      "model": "Nemuriko",
+      "reason": "model"
+    },
+    {
+      "code": 91152256,
+      "name": "Celtic Guardian",
+      "kind": "monster",
+      "firstRelease": "1999-03-18",
+      "model": "CelticGuardian",
+      "reason": "model"
+    },
+    {
+      "code": 91595718,
+      "name": "Book of Secret Arts",
+      "kind": "spell",
+      "firstRelease": "1999-02-04",
+      "reason": "era"
+    },
+    {
+      "code": 91781589,
+      "name": "Thunder of Ruler",
+      "kind": "trap",
+      "firstRelease": "2002-07-18",
+      "reason": "era"
+    },
+    {
+      "code": 91939608,
+      "name": "Rogue Doll",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "RogueDoll",
+      "reason": "model"
+    },
+    {
+      "code": 91996584,
+      "name": "Whiptail Crow",
+      "kind": "monster",
+      "firstRelease": "2002-09-16",
+      "model": "WhiptailCrow",
+      "reason": "model"
+    },
+    {
+      "code": 92391084,
+      "name": "Wilmee",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "Wilmee",
+      "reason": "model"
+    },
+    {
+      "code": 92394653,
+      "name": "Spirit's Invitation",
+      "kind": "trap",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 92408984,
+      "name": "The Dragon's Bead",
+      "kind": "trap",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 92409659,
+      "name": "White Dolphin",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "WhiteDolphin",
+      "reason": "model"
+    },
+    {
+      "code": 92667214,
+      "name": "Clown Zombie",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "ClownZombie",
+      "reason": "model"
+    },
+    {
+      "code": 92731455,
+      "name": "M-Warrior #2",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "MWarrior2",
+      "reason": "model"
+    },
+    {
+      "code": 92854392,
+      "name": "Staunch Defender",
+      "kind": "trap",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 92944626,
+      "name": "Wings of Wicked Flame",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "WingsOfWickedFlame",
+      "reason": "model"
+    },
+    {
+      "code": 93013676,
+      "name": "Maha Vailo",
+      "kind": "monster",
+      "firstRelease": "2002-06-20",
+      "model": "MahaVailo",
+      "reason": "model"
+    },
+    {
+      "code": 93016201,
+      "name": "Royal Oppression",
+      "kind": "trap",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 93108297,
+      "name": "Liquid Beast",
+      "kind": "monster",
+      "firstRelease": "2002-09-16",
+      "model": "LiquidBeast",
+      "reason": "model"
+    },
+    {
+      "code": 93108433,
+      "name": "Monster Recovery",
+      "kind": "spell",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 93221206,
+      "name": "Ancient Elf",
+      "kind": "monster",
+      "firstRelease": "1999-07-22",
+      "model": "AncientElf",
+      "reason": "model"
+    },
+    {
+      "code": 93260132,
+      "name": "Spell Shattering Arrow",
+      "kind": "spell",
+      "firstRelease": "2002-07-04",
+      "reason": "era"
+    },
+    {
+      "code": 93343894,
+      "name": "Water Magician",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "WaterMagician",
+      "reason": "model"
+    },
+    {
+      "code": 93382620,
+      "name": "Rope of Life",
+      "kind": "trap",
+      "firstRelease": "2002-05-16",
+      "reason": "era"
+    },
+    {
+      "code": 93553943,
+      "name": "Man Eater",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "ManEater",
+      "reason": "model"
+    },
+    {
+      "code": 93599951,
+      "name": "Dark Spirit of the Silent",
+      "kind": "trap",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 93671934,
+      "name": "Morale Boost",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 93788854,
+      "name": "The Wandering Doomed",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "TheWanderingDoomed",
+      "reason": "model"
+    },
+    {
+      "code": 93889755,
+      "name": "Crass Clown",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "CrassClown",
+      "reason": "model"
+    },
+    {
+      "code": 93900406,
+      "name": "Mushroom Man #2",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "MushroomMan2",
+      "reason": "model"
+    },
+    {
+      "code": 93920745,
+      "name": "Penguin Soldier",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "PenguinSoldier",
+      "reason": "model"
+    },
+    {
+      "code": 94022093,
+      "name": "Behegon",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "Behegon",
+      "reason": "model"
+    },
+    {
+      "code": 94042337,
+      "name": "Violent Rain",
+      "kind": "monster",
+      "firstRelease": "1999-11-18",
+      "model": "ViolentRain",
+      "reason": "model"
+    },
+    {
+      "code": 94119974,
+      "name": "Two-Headed King Rex",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "TwoHeadedKingRex",
+      "reason": "model"
+    },
+    {
+      "code": 94163677,
+      "name": "Infinite Cards",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 94212438,
+      "name": "Destiny Board",
+      "kind": "trap",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 94230224,
+      "name": "Needle Ball",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "NeedleBall",
+      "reason": "model"
+    },
+    {
+      "code": 94377247,
+      "name": "Curse of the Masked Beast",
+      "kind": "spell",
+      "firstRelease": "2001-04-19",
+      "reason": "era"
+    },
+    {
+      "code": 94412545,
+      "name": "Mechaleon",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "Mechaleon",
+      "reason": "model"
+    },
+    {
+      "code": 94425169,
+      "name": "Spring of Rebirth",
+      "kind": "spell",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 94566432,
+      "name": "Kaiser Dragon",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-12-01",
+      "model": "KaiserDragon",
+      "reason": "model"
+    },
+    {
+      "code": 94675535,
+      "name": "Larvas",
+      "kind": "monster",
+      "firstRelease": "1999-03-27",
+      "model": "Larvas",
+      "reason": "model"
+    },
+    {
+      "code": 94716515,
+      "name": "Eradicating Aerosol",
+      "kind": "spell",
+      "firstRelease": "1999-07-22",
+      "reason": "era"
+    },
+    {
+      "code": 94739788,
+      "name": "Remove Brainwashing",
+      "kind": "trap",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 94772232,
+      "name": "Spirit Message \"A\"",
+      "kind": "spell",
+      "firstRelease": "2002-12-12",
+      "reason": "era"
+    },
+    {
+      "code": 94773007,
+      "name": "Jirai Gumo",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "JiraiGumo",
+      "reason": "model"
+    },
+    {
+      "code": 94793422,
+      "name": "Rod of the Mind's Eye",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 94905343,
+      "name": "Rabid Horseman",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "2000-01-27",
+      "model": "RabidHorseman",
+      "reason": "model"
+    },
+    {
+      "code": 95051344,
+      "name": "Eternal Rest",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 95132338,
+      "name": "Aqua Chorus",
+      "kind": "trap",
+      "firstRelease": "2000-12-07",
+      "reason": "era"
+    },
+    {
+      "code": 95144193,
+      "name": "Kwagar Hercules",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-07-05",
+      "model": "KwagarHercules",
+      "reason": "model"
+    },
+    {
+      "code": 95174353,
+      "name": "Ameba",
+      "kind": "monster",
+      "firstRelease": "2002-06-20",
+      "model": "Ameba",
+      "reason": "model"
+    },
+    {
+      "code": 95220856,
+      "name": "Vengeful Bog Spirit",
+      "kind": "spell",
+      "firstRelease": "2002-03-21",
+      "reason": "era"
+    },
+    {
+      "code": 95265975,
+      "name": "Ghoul with an Appetite",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "GhoulWithAnAppetite",
+      "reason": "model"
+    },
+    {
+      "code": 95281259,
+      "name": "The Warrior Returning Alive",
+      "kind": "spell",
+      "firstRelease": "2001-09-20",
+      "reason": "era"
+    },
+    {
+      "code": 95286165,
+      "name": "De-Fusion",
+      "kind": "spell",
+      "firstRelease": "2002-03-21",
+      "reason": "era"
+    },
+    {
+      "code": 95288024,
+      "name": "Sky Dragon",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "SkyDragon",
+      "reason": "model"
+    },
+    {
+      "code": 95451366,
+      "name": "Exhausting Spell",
+      "kind": "trap",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 95515060,
+      "name": "Rod of Silence - Kay'est",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 95638658,
+      "name": "Shooting Star Bow - Ceal",
+      "kind": "spell",
+      "firstRelease": "2002-11-21",
+      "reason": "era"
+    },
+    {
+      "code": 95727991,
+      "name": "Catapult Turtle",
+      "kind": "monster",
+      "firstRelease": "2000-01-27",
+      "model": "CatapultTurtle",
+      "reason": "model"
+    },
+    {
+      "code": 95744531,
+      "name": "Griggle",
+      "kind": "monster",
+      "firstRelease": "2002-06-20",
+      "model": "Griggle",
+      "reason": "model"
+    },
+    {
+      "code": 95952802,
+      "name": "Flower Wolf",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "1999-05-27",
+      "model": "FlowerWolf",
+      "reason": "model"
+    },
+    {
+      "code": 96008713,
+      "name": "Magical Arm Shield",
+      "kind": "trap",
+      "firstRelease": "2000-12-07",
+      "reason": "era"
+    },
+    {
+      "code": 96355986,
+      "name": "Enchanted Javelin",
+      "kind": "trap",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 96643568,
+      "name": "Wetha",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "Wetha",
+      "reason": "model"
+    },
+    {
+      "code": 96677818,
+      "name": "Spellbook Organization",
+      "kind": "spell",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 96851799,
+      "name": "Hinotama Soul",
+      "kind": "monster",
+      "firstRelease": "1999-03-06",
+      "model": "HinotamaSoul",
+      "reason": "model"
+    },
+    {
+      "code": 96965364,
+      "name": "Insect Imitation",
+      "kind": "spell",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 96967123,
+      "name": "Dharma Cannon",
+      "kind": "monster",
+      "firstRelease": "2002-10-01",
+      "model": "DharmaCannon",
+      "reason": "model"
+    },
+    {
+      "code": 96981563,
+      "name": "Giant Turtle Who Feeds on Flames",
+      "kind": "monster",
+      "firstRelease": "2002-09-16",
+      "model": "GiantTurtleWhoFeedsOnFlames",
+      "reason": "model"
+    },
+    {
+      "code": 97077563,
+      "name": "Call of the Haunted",
+      "kind": "trap",
+      "firstRelease": "2001-10-25",
+      "reason": "era"
+    },
+    {
+      "code": 97360116,
+      "name": "Unknown Warrior of Fiend",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "UnknownWarriorOfFiend",
+      "reason": "model"
+    },
+    {
+      "code": 97590747,
+      "name": "La Jinn the Mystical Genie of the Lamp",
+      "kind": "monster",
+      "firstRelease": "1999-08-26",
+      "model": "LaJinnTheMysticalGenieOfTheLamp",
+      "reason": "model"
+    },
+    {
+      "code": 97612389,
+      "name": "Monster Tamer",
+      "kind": "monster",
+      "firstRelease": "2000-03-01",
+      "model": "MonsterTamer",
+      "reason": "model"
+    },
+    {
+      "code": 97687912,
+      "name": "Fairy Meteor Crush",
+      "kind": "spell",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 97809599,
+      "name": "Seal of the Ancients",
+      "kind": "spell",
+      "firstRelease": "2000-12-07",
+      "reason": "era"
+    },
+    {
+      "code": 97843505,
+      "name": "Djinn the Watcher of the Wind",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "DjinnTheWatcherOfTheWind",
+      "reason": "model"
+    },
+    {
+      "code": 97973387,
+      "name": "Droll Bird",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "DrollBird",
+      "reason": "model"
+    },
+    {
+      "code": 98049915,
+      "name": "Mystic Lamp",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "MysticalLamp",
+      "reason": "model"
+    },
+    {
+      "code": 98069388,
+      "name": "Horn of Heaven",
+      "kind": "trap",
+      "firstRelease": "1999-11-18",
+      "reason": "era"
+    },
+    {
+      "code": 98075147,
+      "name": "Spiked Snail",
+      "kind": "monster",
+      "firstRelease": "1999-03-18",
+      "model": "SpikedSnail",
+      "reason": "model"
+    },
+    {
+      "code": 98139712,
+      "name": "Skull Invitation",
+      "kind": "trap",
+      "firstRelease": "2000-12-14",
+      "reason": "era"
+    },
+    {
+      "code": 98239899,
+      "name": "Blast with Chain",
+      "kind": "trap",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 98252586,
+      "name": "Follow Wind",
+      "kind": "spell",
+      "firstRelease": "1999-05-27",
+      "reason": "era"
+    },
+    {
+      "code": 98299011,
+      "name": "Gift of The Mystical Elf",
+      "kind": "trap",
+      "firstRelease": "2002-01-24",
+      "reason": "era"
+    },
+    {
+      "code": 98374133,
+      "name": "Invigoration",
+      "kind": "spell",
+      "firstRelease": "1999-05-25",
+      "reason": "era"
+    },
+    {
+      "code": 98434877,
+      "name": "Suijin",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "Suijin",
+      "reason": "model"
+    },
+    {
+      "code": 98495314,
+      "name": "Sword of Deep-Seated",
+      "kind": "spell",
+      "firstRelease": "2000-01-27",
+      "reason": "era"
+    },
+    {
+      "code": 98582704,
+      "name": "Wing Egg Elf",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "WingEggElf",
+      "reason": "model"
+    },
+    {
+      "code": 98795934,
+      "name": "Mabarrel",
+      "kind": "monster",
+      "firstRelease": "1999-05-25",
+      "model": "Mabarrel",
+      "reason": "model"
+    },
+    {
+      "code": 98818516,
+      "name": "Frenzied Panda",
+      "kind": "monster",
+      "firstRelease": "1999-05-27",
+      "model": "FrenziedPanda",
+      "reason": "model"
+    },
+    {
+      "code": 98898173,
+      "name": "The Melting Red Shadow",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "TheMeltingRedShadow",
+      "reason": "model"
+    },
+    {
+      "code": 99030164,
+      "name": "Happy Lover",
+      "kind": "monster",
+      "firstRelease": "1999-03-01",
+      "model": "HappyLover",
+      "reason": "model"
+    },
+    {
+      "code": 99173029,
+      "name": "Spiritual Energy Settle Machine",
+      "kind": "spell",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 99261403,
+      "name": "Dark Rabbit",
+      "kind": "monster",
+      "firstRelease": "1999-09-23",
+      "model": "DarkRabbit",
+      "reason": "model"
+    },
+    {
+      "code": 99351431,
+      "name": "The Secret of the Bandit",
+      "kind": "spell",
+      "firstRelease": "2001-11-29",
+      "reason": "era"
+    },
+    {
+      "code": 99426834,
+      "name": "Beastking of the Swamps",
+      "kind": "monster",
+      "firstRelease": "1999-12-01",
+      "model": "BeastkingOfTheSwamps",
+      "reason": "model"
+    },
+    {
+      "code": 99510761,
+      "name": "Lord of the Lamp",
+      "kind": "monster",
+      "firstRelease": "1999-10-17",
+      "model": "LordOfTheLamp",
+      "reason": "model"
+    },
+    {
+      "code": 99517131,
+      "name": "The Spell Absorbing Life",
+      "kind": "trap",
+      "firstRelease": "2002-09-19",
+      "reason": "era"
+    },
+    {
+      "code": 99518961,
+      "name": "Restructer Revolution",
+      "kind": "spell",
+      "firstRelease": "1999-12-01",
+      "reason": "era"
+    },
+    {
+      "code": 99551425,
+      "name": "Labyrinth Tank",
+      "kind": "monster",
+      "extraDeck": true,
+      "firstRelease": "2000-01-27",
+      "model": "LabyrinthTank",
+      "reason": "model"
+    },
+    {
+      "code": 99597615,
+      "name": "Malevolent Nuzzler",
+      "kind": "spell",
+      "firstRelease": "2002-06-20",
+      "reason": "era"
+    },
+    {
+      "code": 99721536,
+      "name": "Dokurorider",
+      "kind": "monster",
+      "firstRelease": "1999-08-20",
+      "model": "Dokurorider",
+      "reason": "model"
+    },
+    {
+      "code": 99785935,
+      "name": "Alpha The Magnet Warrior",
+      "kind": "monster",
+      "firstRelease": "2000-07-13",
+      "model": "AlphaTheMagnetWarrior",
+      "reason": "model"
+    },
+    {
+      "code": 99789342,
+      "name": "Dark Magic Curtain",
+      "kind": "spell",
+      "firstRelease": "2000-12-23",
+      "reason": "era"
+    }
+  ]
+}

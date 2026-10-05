@@ -1,0 +1,6 @@
+{
+  "_comment": "Card pool rules. eraCutoff: null = latest first release among the modeled monsters (user decision), or an ISO date to override. includeCodes/excludeCodes adjust the spell/trap selection.",
+  "eraCutoff": null,
+  "includeCodes": [],
+  "excludeCodes": []
+}

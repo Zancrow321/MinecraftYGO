@@ -6,10 +6,29 @@ plugins {
 evaluationDependsOn(":ocgcore-native")
 val native = project(":ocgcore-native")
 
+// scripts.zip: the CardScripts files listed in src/generated/resources/minecraftygo/data/scripts.txt (bootstrap
+// scripts + pool cards + their GOAT variants), zipped reproducibly from the pinned checkout.
+val cardScriptsDir = rootProject.layout.buildDirectory.dir("upstream/cardScripts")
+val scriptList = layout.projectDirectory.file("src/generated/resources/minecraftygo/data/scripts.txt")
+val bundleScripts = tasks.register<Zip>("bundleScripts") {
+    group = "data"
+    description = "Bundles the card pool's Lua scripts into minecraftygo/scripts.zip"
+    dependsOn(":syncUpstreamCardScripts")
+    inputs.file(scriptList)
+    archiveFileName = "scripts.zip"
+    destinationDirectory = layout.buildDirectory.dir("generated/scriptBundle/minecraftygo")
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
+    from(cardScriptsDir)
+    val wanted = providers.fileContents(scriptList).asText.map { text -> text.lines().filter(String::isNotBlank).toSet() }
+    include { element -> element.isDirectory || element.relativePath.pathString in wanted.get() }
+}
+
 sourceSets {
     main {
         java.srcDir("src/generated/java")
         resources.srcDir("src/generated/resources")
+        resources.srcDir(bundleScripts.map { layout.buildDirectory.dir("generated/scriptBundle").get() })
     }
 }
 
@@ -54,6 +73,7 @@ tasks.test {
     systemProperty("ygo.upstream.dir", upstreamDir.get().asFile.absolutePath)
     systemProperty("org.slf4j.simpleLogger.defaultLogLevel", "info")
     providers.gradleProperty("ygo.fuzzDuels").orNull?.let { systemProperty("ygo.fuzzDuels", it) }
+    providers.gradleProperty("ygo.poolDuels").orNull?.let { systemProperty("ygo.poolDuels", it) }
     providers.gradleProperty("ygo.fuzzSeed").orNull?.let { systemProperty("ygo.fuzzSeed", it) }
     maxHeapSize = "1g"
 }

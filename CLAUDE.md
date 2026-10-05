@@ -16,6 +16,16 @@ Minecraft (NeoForge 26.1.2, Java 25) Yu-Gi-Oh! dueling mod on top of edo9300/ygo
   never edit by hand (`checkOcgConstants` runs in `check`).
 - Test fixtures (`engine/src/testFixtures`) read the pinned BabelCDB/CardScripts from `build/upstream/`.
 
+- `tools/` – data pipeline (`./gradlew :tools:regenerate`, needs the big upstream checkouts):
+  `pool.GeneratePool` maps YGOMCModels folders to passcodes (YGOJSON names, overrides in
+  `tools/data/model-overrides.json`), computes the era cutoff and spells/traps (`tools/data/pool-config.json`) and
+  writes `engine/src/generated/resources/minecraftygo/data/{cards.json,pool.json,texts_en.json,sets.json,scripts.txt}`
+  plus `docs/PoolReport.md`; `bbmodel.ConvertModels` writes GeckoLib assets to `neoforge/src/generated/resources`
+  (`geckolib/models/monster/<code>.geo.json`, animations, `textures/monster/<code>.png`, `ygo/monster_models.json`).
+  All outputs are committed; `.github/workflows/data.yml` checks they are current.
+- `engine:bundleScripts` zips the scripts listed in `scripts.txt` into `minecraftygo/scripts.zip` (engine resources);
+  `BundledData` loads cards/pool/texts/scripts from the classpath.
+
 ## Commands
 - `./gradlew :engine:test` – full engine test suite (needs JDK 25 as JAVA_HOME, cmake, g++).
 - `./gradlew :engine:test -Pygo.showTestOutput` – with stdout.
@@ -23,7 +33,8 @@ Minecraft (NeoForge 26.1.2, Java 25) Yu-Gi-Oh! dueling mod on top of edo9300/ygo
   (`-Pygo.fuzzSeed=<n>` reproduces a failure).
 - `-Pygo.nativeDir=<dir>` runs the engine tests against a prebuilt library + layout probe;
   `-Pygo.cmakeArgs="..."` passes extra CMake configure arguments.
-- Upstream pins: `sources.lock.json` (`syncUpstream<Name>` tasks).
+- Upstream pins: `sources.lock.json` (`syncUpstream<Name>` tasks). ygopro-core (submodule), CardScripts and BabelCDB
+  are bumped together; afterwards run `:engine:generateOcgConstants`, `:tools:regenerate` and the full test suite.
 
 ## Conventions
 - Tabs in Java, 4 spaces in Kotlin DSL. Javac runs with `-Xlint:all -Werror`.

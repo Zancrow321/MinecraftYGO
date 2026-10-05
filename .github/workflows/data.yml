@@ -1,0 +1,39 @@
+name: data
+
+# Re-runs the complete data pipeline from the pinned upstreams and fails if the committed outputs
+# (engine data, GeckoLib assets, PoolReport) differ - i.e. someone changed tools/ or sources.lock.json
+# without regenerating.
+on:
+  push:
+    paths:
+      - 'tools/**'
+      - 'sources.lock.json'
+      - '.github/workflows/data.yml'
+  pull_request:
+    paths:
+      - 'tools/**'
+      - 'sources.lock.json'
+      - '.github/workflows/data.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Regenerate
+        run: ./gradlew :tools:regenerate :tools:test -Pygo.skipMod=true
+      - name: Committed outputs are up to date
+        run: |
+          git status --porcelain
+          git diff --exit-code -- engine/src/generated neoforge/src/generated docs/PoolReport.md

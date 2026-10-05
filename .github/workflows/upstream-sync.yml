@@ -1,0 +1,50 @@
+name: upstream-sync
+
+# Weekly: moves the YGOMCModels pin to the newest upstream commit, regenerates pool + assets and opens a
+# pull request with the report. New model folders that cannot be mapped automatically make the job fail
+# with suggestions (add them to tools/data/model-overrides.json in the PR).
+# ygopro-core, CardScripts and BabelCDB are bumped together by hand (see CLAUDE.md).
+on:
+  schedule:
+    - cron: '41 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Bump YGOMCModels pin
+        id: bump
+        run: |
+          head=$(git ls-remote https://github.com/iconmaster5326/YGOMCModels.git HEAD | cut -f1)
+          python3 - "$head" <<'PY'
+          import json, sys
+          lock = json.load(open("sources.lock.json"))
+          old = lock["ygomcmodels"]["commit"]
+          lock["ygomcmodels"]["commit"] = sys.argv[1]
+          open("sources.lock.json", "w").write(json.dumps(lock, indent=2) + "\n")
+          print(f"{old} -> {sys.argv[1]}")
+          PY
+          echo "head=$head" >> "$GITHUB_OUTPUT"
+      - name: Regenerate
+        run: ./gradlew :tools:regenerate :tools:test :engine:test -Pygo.skipMod=true
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: upstream-sync/ygomcmodels
+          title: "Data: sync YGOMCModels ${{ steps.bump.outputs.head }}"
+          commit-message: "Data: sync YGOMCModels to ${{ steps.bump.outputs.head }}"
+          body: |
+            Automated weekly sync of [YGOMCModels](https://github.com/iconmaster5326/YGOMCModels).
+            See `docs/PoolReport.md` in the diff for new monsters, the era cutoff and new spells/traps.

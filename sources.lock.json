@@ -22,7 +22,9 @@
   },
   "ygojson": {
     "url": "https://github.com/iconmaster5326/YGOJSON.git",
-    "commit": "fc001ff87ce55bf264659ef59185f9dbe294acfe",
-    "license": "MIT"
+    "commit": "5d97ede58b68994c3e99a43d419ed5d2c44c7284",
+    "branch": "v1/aggregate",
+    "license": "MIT",
+    "note": "generated data branch (cards.json, sets.json, ...); 2025-10-25 build"
   }
 }
