@@ -4,7 +4,9 @@ import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.engine.data.CardInfo;
 import io.github.zancrow321.minecraftygo.engine.duel.Board;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
+import io.github.zancrow321.minecraftygo.client.field.ClientField;
 import io.github.zancrow321.minecraftygo.engine.protocol.CardState;
+import io.github.zancrow321.minecraftygo.engine.protocol.Loc;
 import io.github.zancrow321.minecraftygo.engine.text.PromptView;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -31,7 +33,8 @@ public final class DuelScreen extends Screen {
     private static final int OWN_ZONE_BG = 0x80203040;
 
     private final List<Hover> hovers = new ArrayList<>();
-    private final List<Integer> selected = new ArrayList<>();
+    /** When opened from a zone click: only that zone's choices are listed. */
+    private final Loc focus;
     private PromptView shownPrompt;
     private int page;
 
@@ -43,7 +46,12 @@ public final class DuelScreen extends Screen {
     }
 
     public DuelScreen() {
+        this(null);
+    }
+
+    public DuelScreen(Loc focus) {
         super(Component.literal("Duel"));
+        this.focus = focus;
     }
 
     @Override
@@ -59,9 +67,9 @@ public final class DuelScreen extends Screen {
     @Override
     protected void init() {
         PromptView prompt = ClientDuel.prompt();
+        List<Integer> selected = ClientDuel.selected();
         if (prompt != shownPrompt) {
             shownPrompt = prompt;
-            selected.clear();
             page = 0;
         }
         if (prompt == null) {
@@ -74,7 +82,10 @@ public final class DuelScreen extends Screen {
 
         List<Button> buttons = new ArrayList<>();
         if (prompt.multi() == null) {
-            for (PromptView.Choice choice : prompt.choices()) {
+            List<PromptView.Choice> listed = focus != null && shownPrompt == prompt
+                    && !ClientField.choicesAt(prompt, focus).isEmpty()
+                    ? ClientField.choicesAt(prompt, focus) : prompt.choices();
+            for (PromptView.Choice choice : listed) {
                 buttons.add(Button.builder(Component.literal(fit(choice.label(), buttonWidth)),
                         b -> ClientDuel.answer(choice.response())).build());
             }
@@ -84,9 +95,7 @@ public final class DuelScreen extends Screen {
                 int index = i;
                 String mark = selected.contains(i) ? "[x] " : "[ ] ";
                 buttons.add(Button.builder(Component.literal(fit(mark + multi.options().get(i), buttonWidth)), b -> {
-                    if (!selected.remove((Integer) index)) {
-                        selected.add(index);
-                    }
+                    ClientDuel.toggle(index);
                     rebuildWidgets();
                 }).build());
             }

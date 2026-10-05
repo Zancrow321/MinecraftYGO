@@ -3,6 +3,8 @@
   "code": 32864,
   "model": "the13th_grave",
   "folder": "The13thGrave",
+  "width": 2.0,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -11,6 +13,8 @@
   "code": 62121,
   "model": "castle_of_dark_illusions",
   "folder": "CastleOfDarkIllusions",
+  "width": 4.062,
+  "height": 4.094,
   "animations": [
    "idle"
   ]
@@ -19,6 +23,8 @@
   "code": 549481,
   "model": "prevent_rat",
   "folder": "PreventRat",
+  "width": 2.547,
+  "height": 0.609,
   "animations": [
    "idle"
   ]
@@ -27,6 +33,8 @@
   "code": 732302,
   "model": "temple_of_skulls",
   "folder": "TempleOfSkulls",
+  "width": 9.938,
+  "height": 4.062,
   "animations": [
    "idle"
   ]
@@ -35,6 +43,8 @@
   "code": 756652,
   "model": "doron",
   "folder": "Doron",
+  "width": 1.0,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -43,6 +53,8 @@
   "code": 1184620,
   "model": "kojikocy",
   "folder": "Kojikocy",
+  "width": 1.938,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -51,6 +63,8 @@
   "code": 1641882,
   "model": "fusionist",
   "folder": "Fusionist",
+  "width": 2.375,
+  "height": 1.312,
   "animations": [
    "idle"
   ]
@@ -59,6 +73,8 @@
   "code": 1761063,
   "model": "nekogal1",
   "folder": "Nekogal1",
+  "width": 3.969,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -67,6 +83,8 @@
   "code": 1784619,
   "model": "uraby",
   "folder": "Uraby",
+  "width": 8.25,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -75,6 +93,8 @@
   "code": 1929294,
   "model": "key_mace",
   "folder": "KeyMace",
+  "width": 1.5,
+  "height": 0.938,
   "animations": [
    "idle"
   ]
@@ -83,6 +103,8 @@
   "code": 2118022,
   "model": "hyosube",
   "folder": "Hyosube",
+  "width": 1.062,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -91,6 +113,8 @@
   "code": 2483611,
   "model": "water_omotics",
   "folder": "WaterOmotics",
+  "width": 1.031,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -99,6 +123,8 @@
   "code": 2504891,
   "model": "skull_knight",
   "folder": "SkullKnight",
+  "width": 2.438,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -107,6 +133,8 @@
   "code": 2830619,
   "model": "flame_viper",
   "folder": "FlameViper",
+  "width": 5.25,
+  "height": 0.812,
   "animations": [
    "idle"
   ]
@@ -115,6 +143,8 @@
   "code": 2863439,
   "model": "fiend_reflection2",
   "folder": "FiendReflection2",
+  "width": 3.125,
+  "height": 1.625,
   "animations": [
    "idle"
   ]
@@ -123,6 +153,8 @@
   "code": 2906250,
   "model": "grappler",
   "folder": "Grappler",
+  "width": 2.438,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -131,6 +163,8 @@
   "code": 2957055,
   "model": "wicked_dragon_with_the_ersatz_head",
   "folder": "WickedDragonWithTheErsatzHead",
+  "width": 4.75,
+  "height": 4.625,
   "animations": [
    "idle"
   ]
@@ -139,6 +173,8 @@
   "code": 2971090,
   "model": "orion_the_battle_king",
   "folder": "OrionTheBattleKing",
+  "width": 1.062,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -147,6 +183,8 @@
   "code": 3056267,
   "model": "invader_of_the_throne",
   "folder": "InvaderOfTheThrone",
+  "width": 2.562,
+  "height": 2.562,
   "animations": [
    "idle"
   ]
@@ -155,6 +193,8 @@
   "code": 3170832,
   "model": "takuhee",
   "folder": "Takuhee",
+  "width": 3.875,
+  "height": 1.125,
   "animations": [
    "idle"
   ]
@@ -163,6 +203,8 @@
   "code": 3606209,
   "model": "one_who_hunts_souls",
   "folder": "OneWhoHuntsSouls",
+  "width": 5.625,
+  "height": 1.625,
   "animations": [
    "idle"
   ]
@@ -171,6 +213,8 @@
   "code": 3627449,
   "model": "skull_gaurdian",
   "folder": "SkullGaurdian",
+  "width": 1.25,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -179,6 +223,8 @@
   "code": 3732747,
   "model": "water_element",
   "folder": "WaterElement",
+  "width": 1.0,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -187,6 +233,8 @@
   "code": 3797883,
   "model": "slot_machine",
   "folder": "SlotMachine",
+  "width": 4.312,
+  "height": 5.125,
   "animations": [
    "idle"
   ]
@@ -195,6 +243,8 @@
   "code": 3985011,
   "model": "lucky_trinket",
   "folder": "LuckyTrinket",
+  "width": 1.562,
+  "height": 1.188,
   "animations": [
    "idle"
   ]
@@ -203,6 +253,8 @@
   "code": 4179849,
   "model": "queen_of_autumn_leaves",
   "folder": "QueenOfAutumnLeaves",
+  "width": 1.312,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -211,6 +263,8 @@
   "code": 4392470,
   "model": "leo_wizard",
   "folder": "LeoWizard",
+  "width": 4.625,
+  "height": 1.469,
   "animations": [
    "idle"
   ]
@@ -219,6 +273,8 @@
   "code": 4931562,
   "model": "mountain_warrior",
   "folder": "MountainWarrior",
+  "width": 1.5,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -227,6 +283,8 @@
   "code": 5053103,
   "model": "battle_ox",
   "folder": "BattleOx",
+  "width": 1.969,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -235,6 +293,8 @@
   "code": 5405694,
   "model": "black_luster_soldier",
   "folder": "BlackLusterSoldier",
+  "width": 2.344,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -243,6 +303,8 @@
   "code": 5628232,
   "model": "flying_penguin",
   "folder": "FlyingPenguin",
+  "width": 2.062,
+  "height": 1.625,
   "animations": [
    "idle"
   ]
@@ -251,6 +313,8 @@
   "code": 5818798,
   "model": "gazelle_the_king_of_mythical_beasts",
   "folder": "GazelleTheKingOfMythicalBeasts",
+  "width": 2.531,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -259,6 +323,8 @@
   "code": 5901497,
   "model": "queens_double",
   "folder": "QueensDouble",
+  "width": 1.25,
+  "height": 2.266,
   "animations": [
    "idle"
   ]
@@ -267,6 +333,8 @@
   "code": 6103114,
   "model": "beaked_snake",
   "folder": "BeakedSnake",
+  "width": 3.625,
+  "height": 0.25,
   "animations": [
    "idle"
   ]
@@ -275,6 +343,8 @@
   "code": 6285791,
   "model": "the_wicked_worm_beast",
   "folder": "TheWickedWormBeast",
+  "width": 1.156,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -283,6 +353,8 @@
   "code": 6297941,
   "model": "burglar",
   "folder": "Burglar",
+  "width": 3.562,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -291,6 +363,8 @@
   "code": 6367785,
   "model": "eldeen",
   "folder": "Eldeen",
+  "width": 2.188,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -299,6 +373,8 @@
   "code": 6368038,
   "model": "gaia_the_fierce_knight",
   "folder": "GaiaTheFierceKnight",
+  "width": 3.438,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -307,6 +383,8 @@
   "code": 6400512,
   "model": "cyber_commander",
   "folder": "CyberCommander",
+  "width": 1.062,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -315,6 +393,8 @@
   "code": 6740720,
   "model": "seiyaryu",
   "folder": "Seiyaryu",
+  "width": 4.188,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -323,6 +403,8 @@
   "code": 6840573,
   "model": "barox",
   "folder": "Barox",
+  "width": 1.406,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -331,6 +413,8 @@
   "code": 7019529,
   "model": "insect_soldiers_of_the_sky",
   "folder": "InsectSoldiersOfTheSky",
+  "width": 2.562,
+  "height": 0.625,
   "animations": [
    "idle"
   ]
@@ -339,6 +423,8 @@
   "code": 7089711,
   "model": "hane_hane",
   "folder": "HaneHane",
+  "width": 3.156,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -347,6 +433,8 @@
   "code": 7225792,
   "model": "mon_larvas",
   "folder": "MonLarvas",
+  "width": 1.125,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -355,6 +443,8 @@
   "code": 7359741,
   "model": "mechanicalchaser",
   "folder": "Mechanicalchaser",
+  "width": 5.0,
+  "height": 2.75,
   "animations": [
    "idle"
   ]
@@ -363,6 +453,8 @@
   "code": 7489323,
   "model": "milus_radiant",
   "folder": "MilusRadiant",
+  "width": 2.125,
+  "height": 1.25,
   "animations": [
    "idle"
   ]
@@ -371,6 +463,8 @@
   "code": 7526150,
   "model": "golgoil",
   "folder": "Golgoil",
+  "width": 1.938,
+  "height": 4.219,
   "animations": [
    "idle"
   ]
@@ -379,6 +473,8 @@
   "code": 7562372,
   "model": "megasonic_eye",
   "folder": "MegasonicEye",
+  "width": 2.062,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -387,6 +483,8 @@
   "code": 7670542,
   "model": "bio_plant",
   "folder": "BioPlant",
+  "width": 1.125,
+  "height": 1.312,
   "animations": [
    "idle"
   ]
@@ -395,6 +493,8 @@
   "code": 7805359,
   "model": "niwatori",
   "folder": "Niwatori",
+  "width": 2.094,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -403,6 +503,8 @@
   "code": 8058240,
   "model": "binding_chain",
   "folder": "BindingChain",
+  "width": 0.188,
+  "height": 0.375,
   "animations": [
    "idle"
   ]
@@ -411,6 +513,8 @@
   "code": 8131171,
   "model": "sinister_serpent",
   "folder": "SinisterSerpent",
+  "width": 4.25,
+  "height": 1.438,
   "animations": [
    "idle"
   ]
@@ -419,6 +523,8 @@
   "code": 8201910,
   "model": "star_boy",
   "folder": "StarBoy",
+  "width": 4.0,
+  "height": 2.938,
   "animations": [
    "idle"
   ]
@@ -427,6 +533,8 @@
   "code": 8327462,
   "model": "skullbird",
   "folder": "Skullbird",
+  "width": 5.625,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -435,6 +543,8 @@
   "code": 8353769,
   "model": "air_eater",
   "folder": "AirEater",
+  "width": 2.938,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -443,6 +553,8 @@
   "code": 8471389,
   "model": "giga_tech_wolf",
   "folder": "GigaTechWolf",
+  "width": 3.875,
+  "height": 1.188,
   "animations": [
    "idle"
   ]
@@ -451,6 +563,8 @@
   "code": 8783685,
   "model": "hourglass_of_life",
   "folder": "HourglassOfLife",
+  "width": 1.062,
+  "height": 0.875,
   "animations": [
    "idle"
   ]
@@ -459,6 +573,8 @@
   "code": 8944575,
   "model": "the_drdek",
   "folder": "TheDrdek",
+  "width": 0.688,
+  "height": 0.875,
   "animations": [
    "idle"
   ]
@@ -467,6 +583,8 @@
   "code": 9076207,
   "model": "armed_ninja",
   "folder": "ArmedNinja",
+  "width": 2.125,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -475,6 +593,8 @@
   "code": 9159938,
   "model": "dark_gray",
   "folder": "DarkGray",
+  "width": 3.05,
+  "height": 2.237,
   "animations": [
    "idle"
   ]
@@ -483,6 +603,8 @@
   "code": 9197735,
   "model": "dragon_statue",
   "folder": "DragonStatue",
+  "width": 4.188,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -491,6 +613,8 @@
   "code": 9293977,
   "model": "metal_dragon",
   "folder": "MetalDragon",
+  "width": 19.938,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -499,12 +623,16 @@
   "code": 9430387,
   "model": "la_la_lioon",
   "folder": "LaLaLioon",
+  "width": 1.812,
+  "height": 1.312,
   "animations": []
  },
  {
   "code": 9540040,
   "model": "boulder_tortoise",
   "folder": "BoulderTortoise",
+  "width": 5.688,
+  "height": 1.438,
   "animations": [
    "idle"
   ]
@@ -513,6 +641,8 @@
   "code": 9653271,
   "model": "kaminari_attack",
   "folder": "KaminariAttack",
+  "width": 1.0,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -521,6 +651,8 @@
   "code": 10071456,
   "model": "protector_of_the_throne",
   "folder": "ProtectorOfTheThrone",
+  "width": 2.562,
+  "height": 2.562,
   "animations": [
    "idle"
   ]
@@ -529,6 +661,8 @@
   "code": 10189126,
   "model": "masked_sorcerer",
   "folder": "MaskedSorcerer",
+  "width": 2.594,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -537,6 +671,8 @@
   "code": 10202894,
   "model": "skull_red_bird",
   "folder": "SkullRedBird",
+  "width": 2.5,
+  "height": 1.25,
   "animations": [
    "idle"
   ]
@@ -545,12 +681,16 @@
   "code": 10262698,
   "model": "the_statue_of_easter_island",
   "folder": "TheStatueOfEasterIsland",
+  "width": 2.375,
+  "height": 4.0,
   "animations": []
  },
  {
   "code": 10315429,
   "model": "yaiba_robo",
   "folder": "YaibaRobo",
+  "width": 1.0,
+  "height": 1.75,
   "animations": [
    "idle"
   ]
@@ -559,6 +699,8 @@
   "code": 10476868,
   "model": "barrel_rock",
   "folder": "BarrelRock",
+  "width": 2.125,
+  "height": 3.719,
   "animations": [
    "idle"
   ]
@@ -567,6 +709,8 @@
   "code": 10538007,
   "model": "leogun",
   "folder": "Leogun",
+  "width": 2.016,
+  "height": 0.938,
   "animations": [
    "idle"
   ]
@@ -575,6 +719,8 @@
   "code": 10598400,
   "model": "zarigun",
   "folder": "Zarigun",
+  "width": 2.875,
+  "height": 3.562,
   "animations": [
    "idle"
   ]
@@ -583,6 +729,8 @@
   "code": 10859908,
   "model": "holograh",
   "folder": "Holograh",
+  "width": 2.125,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -591,6 +739,8 @@
   "code": 11250655,
   "model": "emperor_of_the_land_and_sea",
   "folder": "EmperorOfTheLandAndSea",
+  "width": 5.125,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -599,6 +749,8 @@
   "code": 11324436,
   "model": "electric_snake",
   "folder": "ElectricSnake",
+  "width": 1.25,
+  "height": 1.438,
   "animations": [
    "idle"
   ]
@@ -607,6 +759,8 @@
   "code": 11384280,
   "model": "cannon_soldier",
   "folder": "CannonSoldier",
+  "width": 2.0,
+  "height": 2.625,
   "animations": [
    "idle"
   ]
@@ -615,6 +769,8 @@
   "code": 11714098,
   "model": "30000_year_white_turtle",
   "folder": "30000YearWhiteTurtle",
+  "width": 1.938,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -623,6 +779,8 @@
   "code": 11793047,
   "model": "gorgon_egg",
   "folder": "GorgonEgg",
+  "width": 1.812,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -631,6 +789,8 @@
   "code": 11901678,
   "model": "black_skull_dragon",
   "folder": "BlackSkullDragon",
+  "width": 7.625,
+  "height": 5.219,
   "animations": [
    "idle"
   ]
@@ -639,6 +799,8 @@
   "code": 12146024,
   "model": "bolt_escargot",
   "folder": "BoltEscargot",
+  "width": 1.812,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -647,6 +809,8 @@
   "code": 12206212,
   "model": "harpie_lady_sisters",
   "folder": "HarpieLadySisters",
+  "width": 3.5,
+  "height": 2.531,
   "animations": [
    "idle"
   ]
@@ -655,6 +819,8 @@
   "code": 12436646,
   "model": "aqua_snake",
   "folder": "AquaSnake",
+  "width": 9.312,
+  "height": 1.188,
   "animations": [
    "idle"
   ]
@@ -663,6 +829,8 @@
   "code": 12472242,
   "model": "leghul",
   "folder": "Leghul",
+  "width": 6.562,
+  "height": 0.688,
   "animations": [
    "idle"
   ]
@@ -671,6 +839,8 @@
   "code": 12829151,
   "model": "kanan_the_swordmistress",
   "folder": "KananTheSwordmistress",
+  "width": 1.5,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -679,6 +849,8 @@
   "code": 13039848,
   "model": "giant_soldier_of_stone",
   "folder": "GiantSoldierOfStone",
+  "width": 2.625,
+  "height": 4.438,
   "animations": [
    "idle"
   ]
@@ -687,6 +859,8 @@
   "code": 13069066,
   "model": "sword_arm_of_dragon",
   "folder": "SwordArmOfDragon",
+  "width": 26.938,
+  "height": 6.562,
   "animations": [
    "idle"
   ]
@@ -695,6 +869,8 @@
   "code": 13193642,
   "model": "dark_plant",
   "folder": "DarkPlant",
+  "width": 0.938,
+  "height": 1.256,
   "animations": [
    "idle"
   ]
@@ -703,6 +879,8 @@
   "code": 13215230,
   "model": "dream_clown",
   "folder": "DreamClown",
+  "width": 1.0,
+  "height": 2.875,
   "animations": [
    "idle"
   ]
@@ -711,6 +889,8 @@
   "code": 13429800,
   "model": "great_white",
   "folder": "GreatWhite",
+  "width": 3.312,
+  "height": 0.969,
   "animations": [
    "idle"
   ]
@@ -719,6 +899,8 @@
   "code": 13599884,
   "model": "steel_scorpion",
   "folder": "SteelScorpion",
+  "width": 2.312,
+  "height": 0.375,
   "animations": [
    "idle"
   ]
@@ -727,6 +909,8 @@
   "code": 13723605,
   "model": "man_eating_treasure_chest",
   "folder": "ManEatingTreasureChest",
+  "width": 1.625,
+  "height": 0.938,
   "animations": [
    "idle"
   ]
@@ -735,6 +919,8 @@
   "code": 13945283,
   "model": "wall_of_illusion",
   "folder": "WallOfIllusion",
+  "width": 10.188,
+  "height": 2.406,
   "animations": [
    "idle"
   ]
@@ -743,6 +929,8 @@
   "code": 14015067,
   "model": "ancient_one_of_the_deep_forest",
   "folder": "AncientOneOfTheDeepForest",
+  "width": 3.05,
+  "height": 2.237,
   "animations": [
    "idle"
   ]
@@ -751,6 +939,8 @@
   "code": 14037717,
   "model": "spirit_of_the_books",
   "folder": "SpiritOfTheBooks",
+  "width": 2.594,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -759,6 +949,8 @@
   "code": 14141448,
   "model": "great_moth",
   "folder": "GreatMoth",
+  "width": 11.875,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -767,6 +959,8 @@
   "code": 14181608,
   "model": "mushroom_man",
   "folder": "MushroomMan",
+  "width": 3.875,
+  "height": 3.125,
   "animations": [
    "idle"
   ]
@@ -775,6 +969,8 @@
   "code": 14708569,
   "model": "arlownay",
   "folder": "Arlownay",
+  "width": 1.375,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -783,12 +979,16 @@
   "code": 14851496,
   "model": "jellyfish",
   "folder": "Jellyfish",
+  "width": 1.125,
+  "height": 1.188,
   "animations": []
  },
  {
   "code": 14977074,
   "model": "garoozis",
   "folder": "Garoozis",
+  "width": 2.25,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -797,6 +997,8 @@
   "code": 15025844,
   "model": "mystical_elf",
   "folder": "MysticalElf",
+  "width": 1.562,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -805,6 +1007,8 @@
   "code": 15042735,
   "model": "hurricail",
   "folder": "Hurricail",
+  "width": 0.875,
+  "height": 2.5,
   "animations": [
    "idle"
   ]
@@ -813,6 +1017,8 @@
   "code": 15150365,
   "model": "white_magical_hat",
   "folder": "WhiteMagicalHat",
+  "width": 2.125,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -821,6 +1027,8 @@
   "code": 15150371,
   "model": "archfiend_mirror",
   "folder": "ArchfiendMirror",
+  "width": 4.188,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -829,6 +1037,8 @@
   "code": 15237615,
   "model": "empress_judge",
   "folder": "EmpressJudge",
+  "width": 2.25,
+  "height": 2.156,
   "animations": [
    "idle"
   ]
@@ -837,6 +1047,8 @@
   "code": 15303296,
   "model": "ryu_kishin",
   "folder": "RyuKishin",
+  "width": 1.844,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -845,6 +1057,8 @@
   "code": 15367030,
   "model": "gokibore",
   "folder": "Gokibore",
+  "width": 0.938,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -853,6 +1067,8 @@
   "code": 15401633,
   "model": "kagemusha_of_the_blue_flame",
   "folder": "KagemushaOfTheBlueFlame",
+  "width": 3.062,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -861,6 +1077,8 @@
   "code": 15480588,
   "model": "armored_lizard",
   "folder": "ArmoredLizard",
+  "width": 1.969,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -869,6 +1087,8 @@
   "code": 15507080,
   "model": "secretarian_of_secrets",
   "folder": "SecretarianOfSecrets",
+  "width": 1.062,
+  "height": 1.625,
   "animations": [
    "idle"
   ]
@@ -877,6 +1097,8 @@
   "code": 15510988,
   "model": "thunder_kid",
   "folder": "ThunderKid",
+  "width": 1.438,
+  "height": 1.125,
   "animations": [
    "idle"
   ]
@@ -885,6 +1107,8 @@
   "code": 15820147,
   "model": "monsturtle",
   "folder": "Monsturtle",
+  "width": 7.312,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -893,6 +1117,8 @@
   "code": 16229315,
   "model": "gale_dogra",
   "folder": "GaleDogra",
+  "width": 3.25,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -901,6 +1127,8 @@
   "code": 16246527,
   "model": "armored_rat",
   "folder": "ArmoredRat",
+  "width": 2.547,
+  "height": 0.609,
   "animations": [
    "idle"
   ]
@@ -909,6 +1137,8 @@
   "code": 16353197,
   "model": "drooling_lizard",
   "folder": "DroolingLizard",
+  "width": 2.438,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -917,6 +1147,8 @@
   "code": 16507828,
   "model": "bracchio_raidus",
   "folder": "BracchioRaidus",
+  "width": 22.0,
+  "height": 2.812,
   "animations": [
    "idle"
   ]
@@ -925,6 +1157,8 @@
   "code": 16768387,
   "model": "big_eye",
   "folder": "BigEye",
+  "width": 1.25,
+  "height": 1.75,
   "animations": [
    "idle"
   ]
@@ -933,6 +1167,8 @@
   "code": 16899564,
   "model": "beautiful_headhuntress",
   "folder": "BeautifulHeadhuntress",
+  "width": 2.375,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -941,6 +1177,8 @@
   "code": 16972957,
   "model": "doma_the_angel_of_silence",
   "folder": "DomaTheAngelOfSilence",
+  "width": 3.125,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -949,6 +1187,8 @@
   "code": 17115745,
   "model": "yormungarde",
   "folder": "Yormungarde",
+  "width": 44.0,
+  "height": 0.812,
   "animations": [
    "idle"
   ]
@@ -957,6 +1197,8 @@
   "code": 17238333,
   "model": "wretched_ghost_of_the_attic",
   "folder": "WretchedGhostOfTheAttic",
+  "width": 0.625,
+  "height": 0.5,
   "animations": [
    "idle"
   ]
@@ -965,6 +1207,8 @@
   "code": 17358176,
   "model": "lady_of_faith",
   "folder": "LadyOfFaith",
+  "width": 1.0,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -973,6 +1217,8 @@
   "code": 17441953,
   "model": "turtle_raccoon",
   "folder": "TurtleRaccoon",
+  "width": 1.562,
+  "height": 1.438,
   "animations": [
    "idle"
   ]
@@ -981,6 +1227,8 @@
   "code": 17511156,
   "model": "wood_clown",
   "folder": "WoodClown",
+  "width": 2.312,
+  "height": 2.281,
   "animations": [
    "idle"
   ]
@@ -989,6 +1237,8 @@
   "code": 17535588,
   "model": "armored_starfish",
   "folder": "ArmoredStarfish",
+  "width": 1.0,
+  "height": 0.312,
   "animations": [
    "idle"
   ]
@@ -997,6 +1247,8 @@
   "code": 17733394,
   "model": "wood_remains",
   "folder": "WoodRemains",
+  "width": 1.875,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -1005,6 +1257,8 @@
   "code": 17881964,
   "model": "darkfire_dragon",
   "folder": "DarkfireDragon",
+  "width": 13.875,
+  "height": 1.25,
   "animations": [
    "idle"
   ]
@@ -1013,6 +1267,8 @@
   "code": 17968114,
   "model": "amazon_of_the_seas",
   "folder": "AmazonOfTheSeas",
+  "width": 1.25,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -1021,6 +1277,8 @@
   "code": 18180762,
   "model": "the_thing_that_hides_in_the_mud",
   "folder": "TheThingThatHidesInTheMud",
+  "width": 3.625,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -1029,6 +1287,8 @@
   "code": 18246479,
   "model": "battle_steer",
   "folder": "BattleSteer",
+  "width": 2.938,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1037,6 +1297,8 @@
   "code": 18710707,
   "model": "the_furious_sea_king",
   "folder": "TheFuriousSeaKing",
+  "width": 3.031,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -1045,6 +1307,8 @@
   "code": 18914778,
   "model": "change_slime",
   "folder": "ChangeSlime",
+  "width": 1.062,
+  "height": 1.25,
   "animations": [
    "idle"
   ]
@@ -1053,6 +1317,8 @@
   "code": 19066538,
   "model": "roaring_ocean_snake",
   "folder": "RoaringOceanSnake",
+  "width": 11.5,
+  "height": 0.906,
   "animations": [
    "idle"
   ]
@@ -1061,6 +1327,8 @@
   "code": 19737320,
   "model": "gatekeeper",
   "folder": "Gatekeeper",
+  "width": 2.688,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -1069,6 +1337,8 @@
   "code": 20060230,
   "model": "hard_armor",
   "folder": "HardArmor",
+  "width": 1.938,
+  "height": 1.547,
   "animations": [
    "idle"
   ]
@@ -1077,6 +1347,8 @@
   "code": 20277860,
   "model": "armored_zombie",
   "folder": "ArmoredZombie",
+  "width": 2.188,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1085,6 +1357,8 @@
   "code": 20315854,
   "model": "fairy_dragon",
   "folder": "FairyDragon",
+  "width": 1.406,
+  "height": 1.0,
   "animations": [
    "idle"
   ]
@@ -1093,6 +1367,8 @@
   "code": 20394040,
   "model": "lava_battleguard",
   "folder": "LavaBattleguard",
+  "width": 2.188,
+  "height": 3.047,
   "animations": [
    "idle"
   ]
@@ -1101,6 +1377,8 @@
   "code": 20541432,
   "model": "key_mace2",
   "folder": "KeyMace2",
+  "width": 1.5,
+  "height": 0.938,
   "animations": [
    "idle"
   ]
@@ -1109,6 +1387,8 @@
   "code": 20624263,
   "model": "peacock",
   "folder": "Peacock",
+  "width": 5.0,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -1117,6 +1397,8 @@
   "code": 20848593,
   "model": "ice_water",
   "folder": "IceWater",
+  "width": 1.0,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -1125,6 +1407,8 @@
   "code": 21239280,
   "model": "bone_mouse",
   "folder": "BoneMouse",
+  "width": 3.0,
+  "height": 1.125,
   "animations": [
    "idle"
   ]
@@ -1133,6 +1417,8 @@
   "code": 21263083,
   "model": "pale_beast",
   "folder": "PaleBeast",
+  "width": 1.0,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -1141,6 +1427,8 @@
   "code": 21347810,
   "model": "rainbow_flower",
   "folder": "RainbowFlower",
+  "width": 1.812,
+  "height": 1.812,
   "animations": [
    "idle"
   ]
@@ -1149,6 +1437,8 @@
   "code": 21417692,
   "model": "dark_elf",
   "folder": "DarkElf",
+  "width": 1.562,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -1157,12 +1447,16 @@
   "code": 21817254,
   "model": "mega_thunderball",
   "folder": "MegaThunderball",
+  "width": 1.0,
+  "height": 1.25,
   "animations": []
  },
  {
   "code": 22026707,
   "model": "curtain_of_the_dark_ones",
   "folder": "CurtainOfTheDarkOnes",
+  "width": 1.062,
+  "height": 1.688,
   "animations": [
    "idle"
   ]
@@ -1171,12 +1465,16 @@
   "code": 22855882,
   "model": "fiend_sword",
   "folder": "FiendSword",
+  "width": 1.812,
+  "height": 0.812,
   "animations": []
  },
  {
   "code": 22910685,
   "model": "green_phantom_king",
   "folder": "GreenPhantomKing",
+  "width": 1.312,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -1185,6 +1483,8 @@
   "code": 23032273,
   "model": "megirus_light",
   "folder": "MegirusLight",
+  "width": 1.938,
+  "height": 1.562,
   "animations": [
    "idle"
   ]
@@ -1193,6 +1493,8 @@
   "code": 23659124,
   "model": "sea_king_dragon",
   "folder": "SeaKingDragon",
+  "width": 26.062,
+  "height": 4.312,
   "animations": [
    "idle"
   ]
@@ -1201,6 +1503,8 @@
   "code": 23771716,
   "model": "7_colored_fish",
   "folder": "7ColoredFish",
+  "width": 5.236,
+  "height": 1.0,
   "animations": [
    "idle"
   ]
@@ -1209,6 +1513,8 @@
   "code": 23995346,
   "model": "blue_eyes_ultimate_dragon",
   "folder": "BlueEyesUltimateDragon",
+  "width": 15.375,
+  "height": 8.0,
   "animations": [
    "idle"
   ]
@@ -1217,12 +1523,16 @@
   "code": 24194033,
   "model": "dorover",
   "folder": "Dorover",
+  "width": 1.094,
+  "height": 1.938,
   "animations": []
  },
  {
   "code": 24311372,
   "model": "zoa",
   "folder": "Zoa",
+  "width": 4.344,
+  "height": 2.812,
   "animations": [
    "idle"
   ]
@@ -1231,6 +1541,8 @@
   "code": 24348204,
   "model": "the_bewitching_phantom_thief",
   "folder": "TheBewitchingPhantomThief",
+  "width": 1.75,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -1239,6 +1551,8 @@
   "code": 24433920,
   "model": "pendulum_machine",
   "folder": "PendulumMachine",
+  "width": 2.062,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -1247,6 +1561,8 @@
   "code": 24611934,
   "model": "ryu_kishin_powered",
   "folder": "RyuKishinPowered",
+  "width": 2.25,
+  "height": 1.75,
   "animations": [
    "idle"
   ]
@@ -1255,6 +1571,8 @@
   "code": 25109950,
   "model": "the_little_swordsman_of_aile",
   "folder": "TheLittleSwordsmanOfAile",
+  "width": 6.0,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1263,6 +1581,8 @@
   "code": 25655502,
   "model": "bickuribox",
   "folder": "Bickuribox",
+  "width": 4.312,
+  "height": 3.531,
   "animations": [
    "idle"
   ]
@@ -1271,6 +1591,8 @@
   "code": 25833572,
   "model": "gate_guardian",
   "folder": "GateGuardian",
+  "width": 4.875,
+  "height": 7.25,
   "animations": [
    "idle"
   ]
@@ -1279,6 +1601,8 @@
   "code": 25882881,
   "model": "dokuroizo_the_grim_reaper",
   "folder": "DokuroizoTheGrimReaper",
+  "width": 3.125,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1287,6 +1611,8 @@
   "code": 25955164,
   "model": "sanga_of_the_thunder",
   "folder": "SangaOfTheThunder",
+  "width": 4.875,
+  "height": 7.25,
   "animations": [
    "idle"
   ]
@@ -1295,6 +1621,8 @@
   "code": 26202165,
   "model": "sangan",
   "folder": "Sangan",
+  "width": 2.875,
+  "height": 1.375,
   "animations": [
    "idle"
   ]
@@ -1303,12 +1631,16 @@
   "code": 26302522,
   "model": "blast_sphere",
   "folder": "BlastSphere",
+  "width": 1.875,
+  "height": 1.469,
   "animations": []
  },
  {
   "code": 26378150,
   "model": "rude_kaiser",
   "folder": "RudeKaiser",
+  "width": 1.75,
+  "height": 2.625,
   "animations": [
    "idle"
   ]
@@ -1317,6 +1649,8 @@
   "code": 26932788,
   "model": "javelin_beetle",
   "folder": "JavelinBeetle",
+  "width": 3.0,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -1325,6 +1659,8 @@
   "code": 27054370,
   "model": "firewing_pegasus",
   "folder": "FirewingPegasus",
+  "width": 5.062,
+  "height": 2.438,
   "animations": [
    "idle"
   ]
@@ -1333,6 +1669,8 @@
   "code": 27094595,
   "model": "graveyard_and_the_hand_of_invitation",
   "folder": "GraveyardAndTheHandOfInvitation",
+  "width": 2.0,
+  "height": 1.0,
   "animations": [
    "idle"
   ]
@@ -1341,6 +1679,8 @@
   "code": 27324313,
   "model": "wattkid",
   "folder": "Wattkid",
+  "width": 1.75,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1349,6 +1689,8 @@
   "code": 28003512,
   "model": "the_judgement_hand",
   "folder": "TheJudgementHand",
+  "width": 1.625,
+  "height": 0.938,
   "animations": [
    "idle"
   ]
@@ -1357,6 +1699,8 @@
   "code": 28279543,
   "model": "curse_of_dragon",
   "folder": "CurseOfDragon",
+  "width": 9.938,
+  "height": 1.438,
   "animations": [
    "idle"
   ]
@@ -1365,6 +1709,8 @@
   "code": 28450915,
   "model": "invader_from_another_dimension",
   "folder": "InvaderFromAnotherDimension",
+  "width": 2.312,
+  "height": 1.016,
   "animations": [
    "idle"
   ]
@@ -1373,6 +1719,8 @@
   "code": 28470714,
   "model": "bladefly",
   "folder": "Bladefly",
+  "width": 1.312,
+  "height": 1.25,
   "animations": [
    "idle"
   ]
@@ -1381,6 +1729,8 @@
   "code": 28546905,
   "model": "illusionist_faceless_mage",
   "folder": "IllusionistFacelessMage",
+  "width": 1.25,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -1389,6 +1739,8 @@
   "code": 28563545,
   "model": "dragon_seeker",
   "folder": "DragonSeeker",
+  "width": 2.031,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -1397,6 +1749,8 @@
   "code": 28593363,
   "model": "deepsea_shark",
   "folder": "DeepseaShark",
+  "width": 9.312,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1405,6 +1759,8 @@
   "code": 28725004,
   "model": "tainted_wisdom",
   "folder": "TaintedWisdom",
+  "width": 1.5,
+  "height": 2.75,
   "animations": [
    "idle"
   ]
@@ -1413,12 +1769,16 @@
   "code": 28933734,
   "model": "mask_of_darkness",
   "folder": "MaskOfDarkness",
+  "width": 1.188,
+  "height": 1.938,
   "animations": []
  },
  {
   "code": 29155212,
   "model": "pumpking_the_king_of_ghosts",
   "folder": "PumpkingTheKingOfGhosts",
+  "width": 8.125,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -1427,6 +1787,8 @@
   "code": 29172562,
   "model": "steel_ogre_grotto1",
   "folder": "SteelOgreGrotto1",
+  "width": 2.625,
+  "height": 4.312,
   "animations": [
    "idle"
   ]
@@ -1435,6 +1797,8 @@
   "code": 29380133,
   "model": "yado_karu",
   "folder": "YadoKaru",
+  "width": 4.938,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1443,6 +1807,8 @@
   "code": 29402771,
   "model": "rainbow_marine_mermaid",
   "folder": "RainbowMarineMermaid",
+  "width": 1.062,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -1451,6 +1817,8 @@
   "code": 29491031,
   "model": "the_snake_hair",
   "folder": "TheSnakeHair",
+  "width": 1.0,
+  "height": 2.562,
   "animations": [
    "idle"
   ]
@@ -1459,6 +1827,8 @@
   "code": 29616941,
   "model": "beautiful_beast_trainer",
   "folder": "BeautifulBeastTrainer",
+  "width": 4.0,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1467,6 +1837,8 @@
   "code": 29692206,
   "model": "twin_long_rods2",
   "folder": "TwinLongRods2",
+  "width": 0.75,
+  "height": 1.625,
   "animations": [
    "idle"
   ]
@@ -1475,6 +1847,8 @@
   "code": 29802344,
   "model": "snakeyashi",
   "folder": "Snakeyashi",
+  "width": 5.0,
+  "height": 7.5,
   "animations": [
    "idle"
   ]
@@ -1483,6 +1857,8 @@
   "code": 29929832,
   "model": "marine_beast",
   "folder": "MarineBeast",
+  "width": 1.625,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -1491,6 +1867,8 @@
   "code": 29948642,
   "model": "dig_beak",
   "folder": "DigBeak",
+  "width": 3.625,
+  "height": 0.25,
   "animations": [
    "idle"
   ]
@@ -1499,6 +1877,8 @@
   "code": 30090452,
   "model": "zanki",
   "folder": "Zanki",
+  "width": 1.562,
+  "height": 2.406,
   "animations": [
    "idle"
   ]
@@ -1507,6 +1887,8 @@
   "code": 30113682,
   "model": "judge_man",
   "folder": "JudgeMan",
+  "width": 1.688,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -1515,6 +1897,8 @@
   "code": 30208479,
   "model": "magician_of_black_chaos",
   "folder": "MagicianOfBlackChaos",
+  "width": 2.438,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -1523,6 +1907,8 @@
   "code": 30451366,
   "model": "mystical_sheep1",
   "folder": "MysticalSheep1",
+  "width": 2.906,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -1531,6 +1917,8 @@
   "code": 30778711,
   "model": "shadow_ghoul",
   "folder": "ShadowGhoul",
+  "width": 0.938,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -1539,6 +1927,8 @@
   "code": 31122090,
   "model": "gyakutenno_megami",
   "folder": "GyakutennoMegami",
+  "width": 2.25,
+  "height": 2.156,
   "animations": [
    "idle"
   ]
@@ -1547,6 +1937,8 @@
   "code": 31339260,
   "model": "zombie_warrior",
   "folder": "ZombieWarrior",
+  "width": 1.603,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -1555,6 +1947,8 @@
   "code": 31560081,
   "model": "magician_of_faith",
   "folder": "MagicianOfFaith",
+  "width": 3.0,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -1563,6 +1957,8 @@
   "code": 31786629,
   "model": "thunder_dragon",
   "folder": "ThunderDragon",
+  "width": 14.75,
+  "height": 1.375,
   "animations": [
    "idle"
   ]
@@ -1571,18 +1967,24 @@
   "code": 31890399,
   "model": "fiends_mirror",
   "folder": "FiendsMirror",
+  "width": 0.875,
+  "height": 1.188,
   "animations": []
  },
  {
   "code": 32012842,
   "model": "millenium_shield",
   "folder": "MilleniumShield",
+  "width": 1.0,
+  "height": 1.0,
   "animations": []
  },
  {
   "code": 32274490,
   "model": "skull_servant",
   "folder": "SkullServant",
+  "width": 1.0,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -1591,6 +1993,8 @@
   "code": 32344688,
   "model": "dark_chimera",
   "folder": "DarkChimera",
+  "width": 2.406,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -1599,6 +2003,8 @@
   "code": 32355828,
   "model": "skelgon",
   "folder": "Skelgon",
+  "width": 10.5,
+  "height": 2.938,
   "animations": [
    "idle"
   ]
@@ -1607,6 +2013,8 @@
   "code": 32452818,
   "model": "beaver_warrior",
   "folder": "BeaverWarrior",
+  "width": 2.844,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -1615,6 +2023,8 @@
   "code": 32485271,
   "model": "rose_spectere_of_dunn",
   "folder": "RoseSpectereOfDunn",
+  "width": 1.375,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1623,6 +2033,8 @@
   "code": 32539892,
   "model": "minar",
   "folder": "Minar",
+  "width": 2.719,
+  "height": 2.562,
   "animations": [
    "idle"
   ]
@@ -1631,6 +2043,8 @@
   "code": 32569498,
   "model": "korogashi",
   "folder": "Korogashi",
+  "width": 3.312,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -1639,6 +2053,8 @@
   "code": 32751480,
   "model": "mystical_sand",
   "folder": "MysticalSand",
+  "width": 2.859,
+  "height": 3.25,
   "animations": [
    "idle"
   ]
@@ -1647,6 +2063,8 @@
   "code": 32809211,
   "model": "jinzo7",
   "folder": "Jinzo7",
+  "width": 1.0,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -1655,6 +2073,8 @@
   "code": 33064647,
   "model": "one_eyed_shield_dragon",
   "folder": "OneEyedShieldDragon",
+  "width": 7.875,
+  "height": 4.438,
   "animations": [
    "idle"
   ]
@@ -1663,6 +2083,8 @@
   "code": 33066139,
   "model": "reaper_of_the_cards",
   "folder": "ReaperOfTheCards",
+  "width": 2.0,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1671,6 +2093,8 @@
   "code": 33178416,
   "model": "misairuzame",
   "folder": "Misairuzame",
+  "width": 4.812,
+  "height": 1.188,
   "animations": [
    "idle"
   ]
@@ -1679,6 +2103,8 @@
   "code": 33396948,
   "model": "exodia_the_forbidden_one",
   "folder": "ExodiaTheForbiddenOne",
+  "width": 4.125,
+  "height": 5.875,
   "animations": [
    "combined",
    "idle",
@@ -1689,6 +2115,8 @@
   "code": 33413638,
   "model": "cockroach_knight",
   "folder": "CockroachKnight",
+  "width": 1.625,
+  "height": 3.312,
   "animations": [
    "idle"
   ]
@@ -1697,12 +2125,16 @@
   "code": 33508719,
   "model": "morphing_jar",
   "folder": "MorphingJar",
+  "width": 0.625,
+  "height": 1.125,
   "animations": []
  },
  {
   "code": 33621868,
   "model": "giganto",
   "folder": "Giganto",
+  "width": 6.375,
+  "height": 2.75,
   "animations": [
    "idle"
   ]
@@ -1711,6 +2143,8 @@
   "code": 33691040,
   "model": "pragtical",
   "folder": "Pragtical",
+  "width": 5.062,
+  "height": 0.719,
   "animations": [
    "idle"
   ]
@@ -1719,6 +2153,8 @@
   "code": 33734439,
   "model": "three_legged_zombies",
   "folder": "ThreeLeggedZombies",
+  "width": 2.188,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1727,6 +2163,8 @@
   "code": 33878931,
   "model": "togex",
   "folder": "Togex",
+  "width": 3.312,
+  "height": 2.438,
   "animations": [
    "idle"
   ]
@@ -1735,6 +2173,8 @@
   "code": 33951077,
   "model": "super_war_lion",
   "folder": "SuperWarLion",
+  "width": 1.625,
+  "height": 2.438,
   "animations": [
    "idle"
   ]
@@ -1743,6 +2183,8 @@
   "code": 34290067,
   "model": "corroding_shark",
   "folder": "CorrodingShark",
+  "width": 4.062,
+  "height": 0.938,
   "animations": [
    "idle"
   ]
@@ -1751,6 +2193,8 @@
   "code": 34320307,
   "model": "living_vase",
   "folder": "LivingVase",
+  "width": 1.75,
+  "height": 0.875,
   "animations": [
    "idle"
   ]
@@ -1759,6 +2203,8 @@
   "code": 34442949,
   "model": "mechanical_snail",
   "folder": "MechanicalSnail",
+  "width": 4.125,
+  "height": 1.75,
   "animations": [
    "idle"
   ]
@@ -1767,6 +2213,8 @@
   "code": 34460851,
   "model": "flame_manipulator",
   "folder": "FlameManipulator",
+  "width": 2.0,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -1775,6 +2223,8 @@
   "code": 34536276,
   "model": "ganigumo",
   "folder": "Ganigumo",
+  "width": 2.75,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -1783,6 +2233,8 @@
   "code": 34690519,
   "model": "spirit_of_the_mountain",
   "folder": "SpiritOfTheMountain",
+  "width": 0.953,
+  "height": 0.938,
   "animations": [
    "idle"
   ]
@@ -1791,6 +2243,8 @@
   "code": 34743446,
   "model": "blocker",
   "folder": "Blocker",
+  "width": 1.25,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -1799,6 +2253,8 @@
   "code": 35282433,
   "model": "blue_eyed_silver_zombie",
   "folder": "BlueEyedSilverZombie",
+  "width": 2.688,
+  "height": 0.75,
   "animations": [
    "idle"
   ]
@@ -1807,6 +2263,8 @@
   "code": 35565537,
   "model": "dark_witch",
   "folder": "DarkWitch",
+  "width": 2.938,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -1815,6 +2273,8 @@
   "code": 35712107,
   "model": "monstruous_bird",
   "folder": "MonstruousBird",
+  "width": 11.0,
+  "height": 3.625,
   "animations": [
    "idle"
   ]
@@ -1823,6 +2283,8 @@
   "code": 35752363,
   "model": "vermillion_sparrow",
   "folder": "VermillionSparrow",
+  "width": 1.25,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -1831,6 +2293,8 @@
   "code": 36039163,
   "model": "penguin_knight",
   "folder": "PenguinKnight",
+  "width": 1.812,
+  "height": 1.375,
   "animations": [
    "idle"
   ]
@@ -1839,12 +2303,16 @@
   "code": 36121917,
   "model": "monster_egg",
   "folder": "MonsterEgg",
+  "width": 1.0,
+  "height": 1.5,
   "animations": []
  },
  {
   "code": 36151751,
   "model": "arma_knight",
   "folder": "ArmaKnight",
+  "width": 3.062,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -1853,6 +2321,8 @@
   "code": 36304921,
   "model": "witty_phantom",
   "folder": "WittyPhantom",
+  "width": 1.125,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1861,6 +2331,8 @@
   "code": 36821538,
   "model": "ancient_sorcerer",
   "folder": "AncientSorcerer",
+  "width": 1.688,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -1869,6 +2341,8 @@
   "code": 36904469,
   "model": "akihiron",
   "folder": "Akihiron",
+  "width": 1.75,
+  "height": 1.625,
   "animations": [
    "idle"
   ]
@@ -1877,6 +2351,8 @@
   "code": 37043180,
   "model": "dd_warrior",
   "folder": "DDWarrior",
+  "width": 4.125,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1885,6 +2361,8 @@
   "code": 37160778,
   "model": "fairywitch",
   "folder": "Fairywitch",
+  "width": 2.859,
+  "height": 2.75,
   "animations": [
    "idle"
   ]
@@ -1893,6 +2371,8 @@
   "code": 37243151,
   "model": "weather_control",
   "folder": "WeatherControl",
+  "width": 2.125,
+  "height": 1.688,
   "animations": [
    "idle"
   ]
@@ -1901,6 +2381,8 @@
   "code": 37313348,
   "model": "turtle_tiger",
   "folder": "TurtleTiger",
+  "width": 5.875,
+  "height": 0.875,
   "animations": [
    "idle"
   ]
@@ -1909,6 +2391,8 @@
   "code": 37421579,
   "model": "charubin_the_fire_knight",
   "folder": "CharubinTheFireKnight",
+  "width": 3.719,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1917,6 +2401,8 @@
   "code": 38035986,
   "model": "akakieisu",
   "folder": "Akakieisu",
+  "width": 1.312,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -1925,6 +2411,8 @@
   "code": 38116136,
   "model": "machine_attacker",
   "folder": "MachineAttacker",
+  "width": 2.438,
+  "height": 3.188,
   "animations": [
    "idle"
   ]
@@ -1933,6 +2421,8 @@
   "code": 38142739,
   "model": "petit_angel",
   "folder": "PetitAngel",
+  "width": 1.188,
+  "height": 1.0,
   "animations": [
    "idle"
   ]
@@ -1941,6 +2431,8 @@
   "code": 38247752,
   "model": "dark_eyes_illusionist",
   "folder": "DarkEyesIllusionist",
+  "width": 1.25,
+  "height": 2.562,
   "animations": [
    "idle"
   ]
@@ -1949,6 +2441,8 @@
   "code": 38277918,
   "model": "mikazukinoyaiba",
   "folder": "Mikazukinoyaiba",
+  "width": 2.0,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -1957,6 +2451,8 @@
   "code": 38289717,
   "model": "crawling_dragon2",
   "folder": "CrawlingDragon2",
+  "width": 4.25,
+  "height": 3.484,
   "animations": [
    "idle"
   ]
@@ -1965,6 +2461,8 @@
   "code": 38942059,
   "model": "sonic_maid",
   "folder": "SonicMaid",
+  "width": 2.0,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -1973,6 +2471,8 @@
   "code": 38982356,
   "model": "hyo",
   "folder": "Hyo",
+  "width": 1.25,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -1981,6 +2481,8 @@
   "code": 38999506,
   "model": "cosmo_queen",
   "folder": "CosmoQueen",
+  "width": 1.562,
+  "height": 2.75,
   "animations": [
    "idle"
   ]
@@ -1989,6 +2491,8 @@
   "code": 39004808,
   "model": "root_water",
   "folder": "RootWater",
+  "width": 2.25,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -1997,6 +2501,8 @@
   "code": 39111158,
   "model": "tri_horned_dragon",
   "folder": "TriHornedDragon",
+  "width": 5.0,
+  "height": 4.719,
   "animations": [
    "idle"
   ]
@@ -2005,6 +2511,8 @@
   "code": 39175982,
   "model": "winged_cleaver",
   "folder": "WingedCleaver",
+  "width": 1.312,
+  "height": 1.25,
   "animations": [
    "idle"
   ]
@@ -2013,6 +2521,8 @@
   "code": 39239728,
   "model": "royal_guard",
   "folder": "RoyalGuard",
+  "width": 2.688,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -2021,6 +2531,8 @@
   "code": 40173854,
   "model": "amphibious_bugroth",
   "folder": "AmphibiousBugroth",
+  "width": 7.375,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -2029,6 +2541,8 @@
   "code": 40196604,
   "model": "dark_shade",
   "folder": "DarkShade",
+  "width": 2.125,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -2037,6 +2551,8 @@
   "code": 40200834,
   "model": "sleeping_lion",
   "folder": "SleepingLion",
+  "width": 4.625,
+  "height": 1.469,
   "animations": [
    "idle"
   ]
@@ -2045,12 +2561,16 @@
   "code": 40240595,
   "model": "cocoon_of_evolution",
   "folder": "CocoonOfEvolution",
+  "width": 1.844,
+  "height": 0.984,
   "animations": []
  },
  {
   "code": 40374923,
   "model": "mammoth_graveyard",
   "folder": "MammothGraveyard",
+  "width": 9.336,
+  "height": 4.125,
   "animations": [
    "idle"
   ]
@@ -2059,6 +2579,8 @@
   "code": 40387124,
   "model": "abyss_flower",
   "folder": "AbyssFlower",
+  "width": 0.938,
+  "height": 1.256,
   "animations": [
    "idle"
   ]
@@ -2067,6 +2589,8 @@
   "code": 40453765,
   "model": "swamp_battleguard",
   "folder": "SwampBattleguard",
+  "width": 2.188,
+  "height": 3.047,
   "animations": [
    "idle"
   ]
@@ -2075,6 +2599,8 @@
   "code": 40575313,
   "model": "shadow_specter",
   "folder": "ShadowSpecter",
+  "width": 2.078,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -2083,6 +2609,8 @@
   "code": 40640057,
   "model": "kuriboh",
   "folder": "Kuriboh",
+  "width": 0.625,
+  "height": 0.5,
   "animations": [
    "idle"
   ]
@@ -2091,6 +2619,8 @@
   "code": 40826495,
   "model": "dissolverock",
   "folder": "Dissolverock",
+  "width": 3.625,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -2099,6 +2629,8 @@
   "code": 41061625,
   "model": "yashinoki",
   "folder": "Yashinoki",
+  "width": 5.0,
+  "height": 7.5,
   "animations": [
    "idle"
   ]
@@ -2107,6 +2639,8 @@
   "code": 41218256,
   "model": "claw_reacher",
   "folder": "ClawReacher",
+  "width": 1.062,
+  "height": 2.5,
   "animations": [
    "idle"
   ]
@@ -2115,6 +2649,8 @@
   "code": 41392891,
   "model": "feral_imp",
   "folder": "FeralImp",
+  "width": 2.781,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -2123,6 +2659,8 @@
   "code": 41396436,
   "model": "blue_winged_crown",
   "folder": "BlueWingedCrown",
+  "width": 2.625,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -2131,6 +2669,8 @@
   "code": 41403766,
   "model": "giant_scorpion_of_the_tundra",
   "folder": "GiantScorpionOfTheTundra",
+  "width": 2.5,
+  "height": 0.406,
   "animations": [
    "idle"
   ]
@@ -2139,6 +2679,8 @@
   "code": 41422426,
   "model": "supporter_in_the_shadows",
   "folder": "SupporterInTheShadows",
+  "width": 1.312,
+  "height": 1.25,
   "animations": [
    "idle"
   ]
@@ -2147,6 +2689,8 @@
   "code": 41462083,
   "model": "thousand_dragon",
   "folder": "ThousandDragon",
+  "width": 4.875,
+  "height": 4.0,
   "animations": [
    "altidle",
    "idle"
@@ -2156,6 +2700,8 @@
   "code": 41544074,
   "model": "kamionwizard",
   "folder": "Kamionwizard",
+  "width": 2.312,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -2164,6 +2710,8 @@
   "code": 41762634,
   "model": "giant_flea",
   "folder": "GiantFlea",
+  "width": 1.062,
+  "height": 0.75,
   "animations": [
    "idle"
   ]
@@ -2172,6 +2720,8 @@
   "code": 41949033,
   "model": "dark_assailant",
   "folder": "DarkAssailant",
+  "width": 1.0,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -2180,6 +2730,8 @@
   "code": 42348802,
   "model": "trakodon",
   "folder": "Trakodon",
+  "width": 8.25,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -2188,6 +2740,8 @@
   "code": 42418084,
   "model": "winged_egg_of_new_life",
   "folder": "WingedEggOfNewLife",
+  "width": 4.062,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -2196,6 +2750,8 @@
   "code": 42431843,
   "model": "ancient_brain",
   "folder": "AncientBrain",
+  "width": 1.969,
+  "height": 1.56,
   "animations": [
    "idle"
   ]
@@ -2204,6 +2760,8 @@
   "code": 42591472,
   "model": "laughing_flower",
   "folder": "LaughingFlower",
+  "width": 6.75,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -2212,6 +2770,8 @@
   "code": 42625254,
   "model": "little_d",
   "folder": "LittleD",
+  "width": 1.406,
+  "height": 2.281,
   "animations": [
    "idle"
   ]
@@ -2220,6 +2780,8 @@
   "code": 42883273,
   "model": "wodan_the_resident_of_the_forest",
   "folder": "WodanTheResidentOfTheForest",
+  "width": 1.625,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -2228,6 +2790,8 @@
   "code": 43230671,
   "model": "ancient_lizard_warrior",
   "folder": "AncientLizardWarrior",
+  "width": 3.0,
+  "height": 1.812,
   "animations": [
    "idle"
   ]
@@ -2236,6 +2800,8 @@
   "code": 43352213,
   "model": "nekogal2",
   "folder": "Nekogal2",
+  "width": 3.969,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -2244,6 +2810,8 @@
   "code": 43500484,
   "model": "darkworld_thorns",
   "folder": "DarkworldThorns",
+  "width": 1.562,
+  "height": 1.312,
   "animations": [
    "idle"
   ]
@@ -2252,6 +2820,8 @@
   "code": 43530283,
   "model": "hourglass_of_courage",
   "folder": "HourglassOfCourage",
+  "width": 1.062,
+  "height": 0.875,
   "animations": [
    "idle"
   ]
@@ -2260,6 +2830,8 @@
   "code": 43905751,
   "model": "madjinn_gunn",
   "folder": "MadjinnGunn",
+  "width": 4.938,
+  "height": 1.031,
   "animations": [
    "idle"
   ]
@@ -2268,6 +2840,8 @@
   "code": 44073668,
   "model": "takriminos",
   "folder": "Takriminos",
+  "width": 2.781,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -2276,6 +2850,8 @@
   "code": 44287299,
   "model": "masaki_the_legendary_swordsman",
   "folder": "MasakiTheLegendarySwordsman",
+  "width": 1.75,
+  "height": 2.156,
   "animations": [
    "idle"
   ]
@@ -2284,6 +2860,8 @@
   "code": 44865098,
   "model": "cyber_soldier",
   "folder": "CyberSoldier",
+  "width": 1.25,
+  "height": 1.688,
   "animations": [
    "idle"
   ]
@@ -2292,6 +2870,8 @@
   "code": 45042329,
   "model": "tripwire_beast",
   "folder": "TripwireBeast",
+  "width": 7.688,
+  "height": 3.188,
   "animations": [
    "idle"
   ]
@@ -2300,6 +2880,8 @@
   "code": 45121025,
   "model": "ogre_of_the_black_shadow",
   "folder": "OgreOfTheBlackShadow",
+  "width": 1.5,
+  "height": 3.047,
   "animations": [
    "idle"
   ]
@@ -2308,6 +2890,8 @@
   "code": 45231177,
   "model": "flame_swordsman",
   "folder": "FlameSwordsman",
+  "width": 1.938,
+  "height": 2.688,
   "animations": [
    "idle"
   ]
@@ -2316,6 +2900,8 @@
   "code": 45688586,
   "model": "karakuri_spider",
   "folder": "KarakuriSpider",
+  "width": 2.422,
+  "height": 1.75,
   "animations": [
    "idle"
   ]
@@ -2324,6 +2910,8 @@
   "code": 45909477,
   "model": "moon_envoy",
   "folder": "MoonEnvoy",
+  "width": 4.0,
+  "height": 2.406,
   "animations": [
    "idle"
   ]
@@ -2332,6 +2920,8 @@
   "code": 46247516,
   "model": "tao_the_chanter",
   "folder": "TaoTheChanter",
+  "width": 1.062,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -2340,6 +2930,8 @@
   "code": 46457856,
   "model": "tomozaurus",
   "folder": "Tomozaurus",
+  "width": 2.875,
+  "height": 3.438,
   "animations": [
    "idle"
   ]
@@ -2348,6 +2940,8 @@
   "code": 46461247,
   "model": "trap_master",
   "folder": "TrapMaster",
+  "width": 1.312,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -2356,6 +2950,8 @@
   "code": 46474915,
   "model": "magical_ghost",
   "folder": "MagicalGhost",
+  "width": 1.0,
+  "height": 2.715,
   "animations": [
    "idle"
   ]
@@ -2364,6 +2960,8 @@
   "code": 46534755,
   "model": "fire_kraken",
   "folder": "FireKraken",
+  "width": 4.438,
+  "height": 1.812,
   "animations": [
    "idle"
   ]
@@ -2372,6 +2970,8 @@
   "code": 46657337,
   "model": "muka_muka",
   "folder": "MukaMuka",
+  "width": 3.625,
+  "height": 0.938,
   "animations": [
    "idle"
   ]
@@ -2380,6 +2980,8 @@
   "code": 46696593,
   "model": "crimson_sunbird",
   "folder": "CrimsonSunbird",
+  "width": 2.625,
+  "height": 1.312,
   "animations": [
    "idle"
   ]
@@ -2388,6 +2990,8 @@
   "code": 46700124,
   "model": "machine_king",
   "folder": "MachineKing",
+  "width": 1.875,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -2396,6 +3000,8 @@
   "code": 46718686,
   "model": "hitodenchak",
   "folder": "Hitodenchak",
+  "width": 1.0,
+  "height": 0.312,
   "animations": [
    "idle"
   ]
@@ -2404,6 +3010,8 @@
   "code": 46864967,
   "model": "minomushi_warrior",
   "folder": "MinomushiWarrior",
+  "width": 2.016,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -2412,6 +3020,8 @@
   "code": 46986414,
   "model": "dark_magician",
   "folder": "DarkMagician",
+  "width": 2.0,
+  "height": 2.459,
   "animations": [
    "idle"
   ]
@@ -2420,6 +3030,8 @@
   "code": 47060154,
   "model": "mystic_clown",
   "folder": "MysticClown",
+  "width": 1.062,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -2428,6 +3040,8 @@
   "code": 47319141,
   "model": "wing_eagle",
   "folder": "WingEagle",
+  "width": 5.438,
+  "height": 1.25,
   "animations": [
    "idle"
   ]
@@ -2436,6 +3050,8 @@
   "code": 47695416,
   "model": "candle_of_fate",
   "folder": "CandleOfFate",
+  "width": 0.625,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -2444,6 +3060,8 @@
   "code": 47879985,
   "model": "guardian_of_the_throne_room",
   "folder": "GuardianOfTheThroneRoom",
+  "width": 1.25,
+  "height": 1.533,
   "animations": [
    "idle"
   ]
@@ -2452,6 +3070,8 @@
   "code": 47922711,
   "model": "tatsunootoshigo",
   "folder": "Tatsunootoshigo",
+  "width": 8.188,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -2460,6 +3080,8 @@
   "code": 47986555,
   "model": "millennium_golem",
   "folder": "MillenniumGolem",
+  "width": 2.125,
+  "height": 3.5,
   "animations": [
    "idle"
   ]
@@ -2468,6 +3090,8 @@
   "code": 48109103,
   "model": "kappa_avenger",
   "folder": "KappaAvenger",
+  "width": 1.0,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -2476,6 +3100,8 @@
   "code": 48305365,
   "model": "axe_raider",
   "folder": "AxeRaider",
+  "width": 1.844,
+  "height": 2.109,
   "animations": [
    "idle"
   ]
@@ -2484,6 +3110,8 @@
   "code": 48365709,
   "model": "ansatsu",
   "folder": "Ansatsu",
+  "width": 1.125,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -2492,6 +3120,8 @@
   "code": 48531733,
   "model": "bolt_penguin",
   "folder": "BoltPenguin",
+  "width": 6.125,
+  "height": 1.375,
   "animations": [
    "idle"
   ]
@@ -2500,6 +3130,8 @@
   "code": 48579379,
   "model": "perfectly_ultimate_great_moth",
   "folder": "PerfectlyUltimateGreatMoth",
+  "width": 13.25,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -2508,6 +3140,8 @@
   "code": 48649353,
   "model": "ushi_oni",
   "folder": "UshiOni",
+  "width": 2.844,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -2516,6 +3150,8 @@
   "code": 49127943,
   "model": "man_eating_plant",
   "folder": "ManEatingPlant",
+  "width": 1.562,
+  "height": 1.312,
   "animations": [
    "idle"
   ]
@@ -2524,6 +3160,8 @@
   "code": 49218300,
   "model": "sorcerer_of_the_doomed",
   "folder": "SorcererOfTheDoomed",
+  "width": 2.25,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -2532,6 +3170,8 @@
   "code": 49258578,
   "model": "gate_deeg",
   "folder": "GateDeeg",
+  "width": 2.75,
+  "height": 3.875,
   "animations": [
    "idle"
   ]
@@ -2540,6 +3180,8 @@
   "code": 49370026,
   "model": "genin",
   "folder": "Genin",
+  "width": 1.75,
+  "height": 2.5,
   "animations": [
    "idle"
   ]
@@ -2548,6 +3190,8 @@
   "code": 49417509,
   "model": "wolf",
   "folder": "Wolf",
+  "width": 2.062,
+  "height": 1.141,
   "animations": [
    "idle"
   ]
@@ -2556,6 +3200,8 @@
   "code": 49587396,
   "model": "ancient_tool",
   "folder": "AncientTool",
+  "width": 4.375,
+  "height": 1.594,
   "animations": [
    "idle"
   ]
@@ -2564,6 +3210,8 @@
   "code": 49791927,
   "model": "tiger_axe",
   "folder": "TigerAxe",
+  "width": 2.0,
+  "height": 1.812,
   "animations": [
    "idle"
   ]
@@ -2572,6 +3220,8 @@
   "code": 50005633,
   "model": "swordstalker",
   "folder": "Swordstalker",
+  "width": 2.125,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -2580,6 +3230,8 @@
   "code": 50176820,
   "model": "mech_bass",
   "folder": "MechBass",
+  "width": 3.25,
+  "height": 1.438,
   "animations": [
    "idle"
   ]
@@ -2588,6 +3240,8 @@
   "code": 50259460,
   "model": "versago_the_destroyer",
   "folder": "VersagoTheDestroyer",
+  "width": 4.438,
+  "height": 2.469,
   "animations": [
    "idle"
   ]
@@ -2596,6 +3250,8 @@
   "code": 50705071,
   "model": "metalzoa",
   "folder": "Metalzoa",
+  "width": 4.312,
+  "height": 2.812,
   "animations": [
    "idle"
   ]
@@ -2604,6 +3260,8 @@
   "code": 50930991,
   "model": "neo_the_magic_swordsman",
   "folder": "NeoTheMagicSwordsman",
+  "width": 2.312,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -2612,6 +3270,8 @@
   "code": 51228280,
   "model": "dungeon_worm",
   "folder": "DungeonWorm",
+  "width": 9.438,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -2620,6 +3280,8 @@
   "code": 51275027,
   "model": "the_unhappy_maiden",
   "folder": "TheUnhappyMaiden",
+  "width": 1.0,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -2628,6 +3290,8 @@
   "code": 51371017,
   "model": "princess_of_tsurugi",
   "folder": "PrincessOfTsurugi",
+  "width": 1.25,
+  "height": 2.266,
   "animations": [
    "idle"
   ]
@@ -2636,6 +3300,8 @@
   "code": 51828629,
   "model": "giltia_the_d_knight",
   "folder": "GiltiaTheDKnight",
+  "width": 4.062,
+  "height": 2.625,
   "animations": [
    "idle"
   ]
@@ -2644,6 +3310,8 @@
   "code": 52040216,
   "model": "harpies_pet_dragon",
   "folder": "HarpiesPetDragon",
+  "width": 13.75,
+  "height": 6.125,
   "animations": [
    "idle"
   ]
@@ -2652,6 +3320,8 @@
   "code": 52367652,
   "model": "that_which_feeds_on_life",
   "folder": "ThatWhichFeedsOnLife",
+  "width": 1.0,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -2660,6 +3330,8 @@
   "code": 52584282,
   "model": "hercules_beetle",
   "folder": "HerculesBeetle",
+  "width": 1.812,
+  "height": 1.906,
   "animations": [
    "idle"
   ]
@@ -2668,6 +3340,8 @@
   "code": 52800428,
   "model": "fiends_hand",
   "folder": "FiendsHand",
+  "width": 2.0,
+  "height": 0.562,
   "animations": [
    "idle"
   ]
@@ -2676,6 +3350,8 @@
   "code": 53153481,
   "model": "armaill",
   "folder": "Armaill",
+  "width": 1.688,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -2684,6 +3360,8 @@
   "code": 53293545,
   "model": "firegrass",
   "folder": "Firegrass",
+  "width": 1.75,
+  "height": 0.875,
   "animations": [
    "idle"
   ]
@@ -2692,6 +3370,8 @@
   "code": 53375573,
   "model": "dark_king_of_the_abyss",
   "folder": "DarkKingOfTheAbyss",
+  "width": 1.0,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -2700,6 +3380,8 @@
   "code": 53493204,
   "model": "goddess_with_the_third_eye",
   "folder": "GoddessWithTheThirdEye",
+  "width": 1.188,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -2708,6 +3390,8 @@
   "code": 53581214,
   "model": "fire_reaper",
   "folder": "FireReaper",
+  "width": 1.375,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -2716,6 +3400,8 @@
   "code": 53606874,
   "model": "big_insect",
   "folder": "BigInsect",
+  "width": 2.5,
+  "height": 1.0,
   "animations": [
    "idle"
   ]
@@ -2724,6 +3410,8 @@
   "code": 53713014,
   "model": "crazy_fish",
   "folder": "CrazyFish",
+  "width": 3.75,
+  "height": 0.938,
   "animations": [
    "idle"
   ]
@@ -2732,6 +3420,8 @@
   "code": 53829412,
   "model": "griffore",
   "folder": "Griffore",
+  "width": 12.625,
+  "height": 2.438,
   "animations": [
    "idle"
   ]
@@ -2740,6 +3430,8 @@
   "code": 53830602,
   "model": "fungi_of_the_musk",
   "folder": "FungiOfTheMusk",
+  "width": 4.75,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -2748,6 +3440,8 @@
   "code": 53832650,
   "model": "meotoko",
   "folder": "Meotoko",
+  "width": 1.25,
+  "height": 2.359,
   "animations": [
    "idle"
   ]
@@ -2756,6 +3450,8 @@
   "code": 54098121,
   "model": "mysterious_puppeteer",
   "folder": "MysteriousPuppeteer",
+  "width": 1.0,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -2764,6 +3460,8 @@
   "code": 54541900,
   "model": "karbonala_warrior",
   "folder": "KarbonalaWarrior",
+  "width": 1.812,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -2772,6 +3470,8 @@
   "code": 54579801,
   "model": "high_tide_gyojin",
   "folder": "HighTideGyojin",
+  "width": 2.25,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -2780,6 +3480,8 @@
   "code": 54615781,
   "model": "spirit_of_the_winds",
   "folder": "SpiritOfTheWinds",
+  "width": 1.281,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -2788,6 +3490,8 @@
   "code": 54622031,
   "model": "great_mammoth_of_goldfine",
   "folder": "GreatMammothOfGoldfine",
+  "width": 9.336,
+  "height": 4.125,
   "animations": [
    "idle"
   ]
@@ -2796,6 +3500,8 @@
   "code": 54652250,
   "model": "man_eater_bug",
   "folder": "ManEaterBug",
+  "width": 1.25,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -2804,6 +3510,8 @@
   "code": 54752875,
   "model": "twin_headed_thunder_dragon",
   "folder": "TwinHeadedThunderDragon",
+  "width": 6.438,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -2812,6 +3520,8 @@
   "code": 54844990,
   "model": "skull_stalker",
   "folder": "SkullStalker",
+  "width": 3.25,
+  "height": 3.0,
   "animations": [
    "idle"
   ]
@@ -2820,6 +3530,8 @@
   "code": 55014050,
   "model": "water_girl",
   "folder": "WaterGirl",
+  "width": 2.5,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -2828,6 +3540,8 @@
   "code": 55210709,
   "model": "lisark",
   "folder": "Lisark",
+  "width": 2.406,
+  "height": 1.812,
   "animations": [
    "idle"
   ]
@@ -2836,6 +3550,8 @@
   "code": 55291359,
   "model": "succubus_knight",
   "folder": "SuccubusKnight",
+  "width": 1.0,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -2844,12 +3560,16 @@
   "code": 55337339,
   "model": "job_change_mirror",
   "folder": "JobChangeMirror",
+  "width": 1.5,
+  "height": 1.719,
   "animations": []
  },
  {
   "code": 55444629,
   "model": "lesser_dragon",
   "folder": "LesserDragon",
+  "width": 1.969,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -2858,6 +3578,8 @@
   "code": 55550921,
   "model": "battle_warrior",
   "folder": "BattleWarrior",
+  "width": 1.0,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -2866,6 +3588,8 @@
   "code": 55567161,
   "model": "pot_the_trick",
   "folder": "PotTheTrick",
+  "width": 3.531,
+  "height": 1.75,
   "animations": [
    "idle"
   ]
@@ -2874,6 +3598,8 @@
   "code": 55691901,
   "model": "great_bill",
   "folder": "GreatBill",
+  "width": 2.75,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -2882,6 +3608,8 @@
   "code": 55763552,
   "model": "dragon_piper",
   "folder": "DragonPiper",
+  "width": 3.531,
+  "height": 1.75,
   "animations": [
    "idle"
   ]
@@ -2890,6 +3618,8 @@
   "code": 55784832,
   "model": "morinphen",
   "folder": "Morinphen",
+  "width": 3.438,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -2898,6 +3628,8 @@
   "code": 55875323,
   "model": "electric_lizard",
   "folder": "ElectricLizard",
+  "width": 1.438,
+  "height": 1.125,
   "animations": [
    "idle"
   ]
@@ -2906,6 +3638,8 @@
   "code": 55998462,
   "model": "metal_fish",
   "folder": "MetalFish",
+  "width": 1.312,
+  "height": 0.906,
   "animations": [
    "idle"
   ]
@@ -2914,6 +3648,8 @@
   "code": 56283725,
   "model": "kumootoko",
   "folder": "Kumootoko",
+  "width": 4.5,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -2922,6 +3658,8 @@
   "code": 56342351,
   "model": "m_warrior1",
   "folder": "MWarrior1",
+  "width": 2.188,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -2930,6 +3668,8 @@
   "code": 56413937,
   "model": "warrior_of_tradition",
   "folder": "WarriorOfTradition",
+  "width": 2.375,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -2938,6 +3678,8 @@
   "code": 56713552,
   "model": "obese_marmot_of_nefariousness",
   "folder": "ObeseMarmotOfNefariousness",
+  "width": 1.266,
+  "height": 0.594,
   "animations": [
    "idle"
   ]
@@ -2946,6 +3688,8 @@
   "code": 56789759,
   "model": "tyhone2",
   "folder": "Tyhone2",
+  "width": 2.75,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -2954,6 +3698,8 @@
   "code": 56907389,
   "model": "musician_king",
   "folder": "MusicianKing",
+  "width": 1.812,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -2962,6 +3708,8 @@
   "code": 57305373,
   "model": "two_mouth_darkruler",
   "folder": "TwoMouthDarkruler",
+  "width": 6.438,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -2970,6 +3718,8 @@
   "code": 57405307,
   "model": "winged_dragon_guardian_of_the_fortress2",
   "folder": "WingedDragonGuardianOfTheFortress2",
+  "width": 3.938,
+  "height": 1.562,
   "animations": [
    "idle"
   ]
@@ -2978,6 +3728,8 @@
   "code": 57935140,
   "model": "tenderness",
   "folder": "Tenderness",
+  "width": 2.125,
+  "height": 0.625,
   "animations": [
    "idle"
   ]
@@ -2986,6 +3738,8 @@
   "code": 58192742,
   "model": "petit_moth",
   "folder": "PetitMoth",
+  "width": 1.688,
+  "height": 0.375,
   "animations": [
    "idle"
   ]
@@ -2994,6 +3748,8 @@
   "code": 58314394,
   "model": "ground_attacker_bugroth",
   "folder": "GroundAttackerBugroth",
+  "width": 7.375,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -3002,6 +3758,8 @@
   "code": 58528964,
   "model": "flame_ghost",
   "folder": "FlameGhost",
+  "width": 1.812,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -3010,6 +3768,8 @@
   "code": 58831685,
   "model": "giant_red_seasnake",
   "folder": "GiantRedSeasnake",
+  "width": 22.0,
+  "height": 1.625,
   "animations": [
    "idle"
   ]
@@ -3018,6 +3778,8 @@
   "code": 58861941,
   "model": "ooguchi",
   "folder": "Ooguchi",
+  "width": 5.25,
+  "height": 0.969,
   "animations": [
    "idle"
   ]
@@ -3026,6 +3788,8 @@
   "code": 59036972,
   "model": "mavelus",
   "folder": "Mavelus",
+  "width": 2.625,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -3034,6 +3798,8 @@
   "code": 59053232,
   "model": "turu_purun",
   "folder": "TuruPurun",
+  "width": 5.312,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -3042,6 +3808,8 @@
   "code": 59383041,
   "model": "toon_alligator",
   "folder": "ToonAlligator",
+  "width": 2.344,
+  "height": 1.906,
   "animations": [
    "animation",
    "idle"
@@ -3051,6 +3819,8 @@
   "code": 59983499,
   "model": "dancing_elf",
   "folder": "DancingElf",
+  "width": 2.031,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -3059,6 +3829,8 @@
   "code": 60694662,
   "model": "skelengel",
   "folder": "Skelengel",
+  "width": 1.875,
+  "height": 1.812,
   "animations": [
    "idle"
   ]
@@ -3067,6 +3839,8 @@
   "code": 60715406,
   "model": "tentacle_plant",
   "folder": "TentaclePlant",
+  "width": 3.062,
+  "height": 1.125,
   "animations": [
    "idle"
   ]
@@ -3075,6 +3849,8 @@
   "code": 60802233,
   "model": "kuwagata",
   "folder": "Kuwagata",
+  "width": 2.5,
+  "height": 2.594,
   "animations": [
    "idle"
   ]
@@ -3083,6 +3859,8 @@
   "code": 60862676,
   "model": "flame_cerebrus",
   "folder": "FlameCerebrus",
+  "width": 6.75,
+  "height": 1.562,
   "animations": [
    "idle"
   ]
@@ -3091,6 +3869,8 @@
   "code": 61201220,
   "model": "phantom_ghost",
   "folder": "PhantomGhost",
+  "width": 3.25,
+  "height": 2.688,
   "animations": [
    "idle"
   ]
@@ -3099,6 +3879,8 @@
   "code": 61454890,
   "model": "necrolancer_the_time_lord",
   "folder": "NecrolancerTheTimeLord",
+  "width": 2.812,
+  "height": 2.5,
   "animations": [
    "idle"
   ]
@@ -3107,6 +3889,8 @@
   "code": 61831093,
   "model": "greenkappa",
   "folder": "Greenkappa",
+  "width": 1.156,
+  "height": 2.5,
   "animations": [
    "idle"
   ]
@@ -3115,6 +3899,8 @@
   "code": 62193699,
   "model": "rock_ogre_grotto2",
   "folder": "RockOgreGrotto2",
+  "width": 2.0,
+  "height": 3.875,
   "animations": [
    "idle"
   ]
@@ -3123,6 +3909,8 @@
   "code": 62210247,
   "model": "lunar_queen_elzaim",
   "folder": "LunarQueenElzaim",
+  "width": 1.531,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -3131,6 +3919,8 @@
   "code": 62337487,
   "model": "fortress_whale",
   "folder": "FortressWhale",
+  "width": 30.875,
+  "height": 10.875,
   "animations": [
    "idle"
   ]
@@ -3139,6 +3929,8 @@
   "code": 62340868,
   "model": "kazejin",
   "folder": "Kazejin",
+  "width": 3.25,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -3147,6 +3939,8 @@
   "code": 62403074,
   "model": "rhaimundos_of_the_red_sword",
   "folder": "RhaimundosOfTheRedSword",
+  "width": 1.844,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -3155,6 +3949,8 @@
   "code": 62671448,
   "model": "toad_master",
   "folder": "ToadMaster",
+  "width": 2.312,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -3163,6 +3959,8 @@
   "code": 62762898,
   "model": "parrot_dragon",
   "folder": "ParrotDragon",
+  "width": 10.125,
+  "height": 3.312,
   "animations": [
    "idle"
   ]
@@ -3171,6 +3969,8 @@
   "code": 62793020,
   "model": "mystery_hand",
   "folder": "MysteryHand",
+  "width": 1.375,
+  "height": 1.125,
   "animations": [
    "idle"
   ]
@@ -3179,6 +3979,8 @@
   "code": 63125616,
   "model": "the_shadow_who_controls_the_dark",
   "folder": "TheShadowWhoControlsTheDark",
+  "width": 1.125,
+  "height": 1.312,
   "animations": [
    "idle"
   ]
@@ -3187,6 +3989,8 @@
   "code": 63308047,
   "model": "terra_the_terrible",
   "folder": "TerraTheTerrible",
+  "width": 1.25,
+  "height": 2.172,
   "animations": [
    "idle"
   ]
@@ -3195,6 +3999,8 @@
   "code": 63432835,
   "model": "stone_armadiller",
   "folder": "StoneArmadiller",
+  "width": 3.0,
+  "height": 1.812,
   "animations": [
    "idle"
   ]
@@ -3203,6 +4009,8 @@
   "code": 63515678,
   "model": "mystical_capture_chain",
   "folder": "MysticalCaptureChain",
+  "width": 0.188,
+  "height": 0.375,
   "animations": [
    "idle"
   ]
@@ -3211,6 +4019,8 @@
   "code": 63545455,
   "model": "mech_mole_zombie",
   "folder": "MechMoleZombie",
+  "width": 1.25,
+  "height": 2.5,
   "animations": [
    "idle"
   ]
@@ -3219,6 +4029,8 @@
   "code": 64154377,
   "model": "embryonic_beast",
   "folder": "EmbryonicBeast",
+  "width": 1.25,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -3227,6 +4039,8 @@
   "code": 64271667,
   "model": "meteor_dragon",
   "folder": "MeteorDragon",
+  "width": 7.125,
+  "height": 2.5,
   "animations": [
    "idle"
   ]
@@ -3235,6 +4049,8 @@
   "code": 64335804,
   "model": "red_eyes_black_metal_dragon",
   "folder": "RedEyesBlackMetalDragon",
+  "width": 5.938,
+  "height": 7.688,
   "animations": [
    "idle"
   ]
@@ -3243,6 +4059,8 @@
   "code": 64428736,
   "model": "alligators_sword",
   "folder": "AlligatorsSword",
+  "width": 4.266,
+  "height": 2.406,
   "animations": [
    "idle"
   ]
@@ -3251,6 +4069,8 @@
   "code": 64501875,
   "model": "hibikime",
   "folder": "Hibikime",
+  "width": 2.0,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -3259,6 +4079,8 @@
   "code": 64511793,
   "model": "eyearmor",
   "folder": "Eyearmor",
+  "width": 1.625,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -3267,6 +4089,8 @@
   "code": 64631466,
   "model": "relinquished",
   "folder": "Relinquished",
+  "width": 3.0,
+  "height": 4.188,
   "animations": [
    "idle"
   ]
@@ -3275,6 +4099,8 @@
   "code": 65393205,
   "model": "chakra",
   "folder": "Chakra",
+  "width": 5.188,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -3283,6 +4109,8 @@
   "code": 65570596,
   "model": "red_archery_girl",
   "folder": "RedArcheryGirl",
+  "width": 2.5,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -3291,6 +4119,8 @@
   "code": 65623423,
   "model": "gruesome_goo",
   "folder": "GruesomeGoo",
+  "width": 1.062,
+  "height": 1.25,
   "animations": [
    "idle"
   ]
@@ -3299,6 +4129,8 @@
   "code": 66516792,
   "model": "serpent_night_dragon",
   "folder": "SerpentNightDragon",
+  "width": 27.924,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -3307,6 +4139,8 @@
   "code": 66602787,
   "model": "saggi_the_dark_clown",
   "folder": "SaggiTheDarkClown",
+  "width": 1.375,
+  "height": 2.656,
   "animations": [
    "idle"
   ]
@@ -3315,6 +4149,8 @@
   "code": 66672569,
   "model": "dragon_zombie",
   "folder": "DragonZombie",
+  "width": 11.625,
+  "height": 2.75,
   "animations": [
    "idle"
   ]
@@ -3323,6 +4159,8 @@
   "code": 66836598,
   "model": "waterdragon_fairy",
   "folder": "WaterdragonFairy",
+  "width": 7.562,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -3331,6 +4169,8 @@
   "code": 66889139,
   "model": "gaia_the_dragon_champion",
   "folder": "GaiaTheDragonChampion",
+  "width": 9.938,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -3339,6 +4179,8 @@
   "code": 67494157,
   "model": "crawling_dragon",
   "folder": "CrawlingDragon",
+  "width": 11.625,
+  "height": 2.75,
   "animations": [
    "idle"
   ]
@@ -3347,6 +4189,8 @@
   "code": 67629977,
   "model": "hoshiningen",
   "folder": "Hoshiningen",
+  "width": 4.125,
+  "height": 1.75,
   "animations": [
    "idle"
   ]
@@ -3355,6 +4199,8 @@
   "code": 67724379,
   "model": "koumori_dragon",
   "folder": "KoumoriDragon",
+  "width": 12.75,
+  "height": 4.438,
   "animations": [
    "idle"
   ]
@@ -3363,6 +4209,8 @@
   "code": 67841515,
   "model": "barrel_lily",
   "folder": "BarrelLily",
+  "width": 1.625,
+  "height": 2.5,
   "animations": [
    "idle"
   ]
@@ -3371,6 +4219,8 @@
   "code": 67959180,
   "model": "goddess_of_whim",
   "folder": "GoddessOfWhim",
+  "width": 1.031,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -3379,6 +4229,8 @@
   "code": 68171737,
   "model": "stone_dragon",
   "folder": "StoneDragon",
+  "width": 2.375,
+  "height": 3.875,
   "animations": [
    "idle"
   ]
@@ -3387,6 +4239,8 @@
   "code": 68339286,
   "model": "metal_guardian",
   "folder": "MetalGuardian",
+  "width": 3.969,
+  "height": 1.562,
   "animations": [
    "idle"
   ]
@@ -3395,6 +4249,8 @@
   "code": 68401546,
   "model": "fairys_gift",
   "folder": "FairysGift",
+  "width": 1.562,
+  "height": 1.25,
   "animations": [
    "idle"
   ]
@@ -3403,6 +4259,8 @@
   "code": 68516705,
   "model": "mystic_horseman",
   "folder": "MysticHorseman",
+  "width": 4.125,
+  "height": 3.0,
   "animations": [
    "idle"
   ]
@@ -3411,6 +4269,8 @@
   "code": 68638985,
   "model": "slime_toad",
   "folder": "SlimeToad",
+  "width": 1.25,
+  "height": 0.812,
   "animations": [
    "idle"
   ]
@@ -3419,6 +4279,8 @@
   "code": 68658728,
   "model": "little_chimera",
   "folder": "LittleChimera",
+  "width": 2.375,
+  "height": 1.312,
   "animations": [
    "idle"
   ]
@@ -3427,6 +4289,8 @@
   "code": 68846917,
   "model": "rock_ogre_grotto1",
   "folder": "RockOgreGrotto1",
+  "width": 2.625,
+  "height": 4.312,
   "animations": [
    "idle"
   ]
@@ -3435,6 +4299,8 @@
   "code": 68870276,
   "model": "fiend_reflection1",
   "folder": "FiendReflection1",
+  "width": 3.125,
+  "height": 1.625,
   "animations": [
    "idle"
   ]
@@ -3443,6 +4309,8 @@
   "code": 68928540,
   "model": "kamakiriman",
   "folder": "Kamakiriman",
+  "width": 1.125,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -3451,6 +4319,8 @@
   "code": 68963107,
   "model": "boo_koo",
   "folder": "BooKoo",
+  "width": 1.812,
+  "height": 0.781,
   "animations": [
    "idle"
   ]
@@ -3459,6 +4329,8 @@
   "code": 69015963,
   "model": "cyber_stein",
   "folder": "CyberStein",
+  "width": 1.438,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -3467,6 +4339,8 @@
   "code": 69123138,
   "model": "zera_the_mant",
   "folder": "ZeraTheMant",
+  "width": 3.125,
+  "height": 4.031,
   "animations": [
    "idle"
   ]
@@ -3475,6 +4349,8 @@
   "code": 69140098,
   "model": "gemini_elf",
   "folder": "GeminiElf",
+  "width": 2.5,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -3483,6 +4359,8 @@
   "code": 69572024,
   "model": "tongyo",
   "folder": "Tongyo",
+  "width": 1.75,
+  "height": 0.312,
   "animations": [
    "idle"
   ]
@@ -3491,6 +4369,8 @@
   "code": 69669405,
   "model": "horn_imp",
   "folder": "HornImp",
+  "width": 0.688,
+  "height": 1.188,
   "animations": [
    "idle"
   ]
@@ -3499,6 +4379,8 @@
   "code": 69750536,
   "model": "wow_warrior",
   "folder": "WowWarrior",
+  "width": 1.656,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -3507,6 +4389,8 @@
   "code": 69780745,
   "model": "garvas",
   "folder": "Garvas",
+  "width": 2.688,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -3515,6 +4399,8 @@
   "code": 69893315,
   "model": "dice_armadillo",
   "folder": "DiceArmadillo",
+  "width": 1.375,
+  "height": 1.375,
   "animations": [
    "idle"
   ]
@@ -3523,6 +4409,8 @@
   "code": 69992868,
   "model": "muse_a",
   "folder": "MuseA",
+  "width": 3.562,
+  "height": 2.5,
   "animations": [
    "idle"
   ]
@@ -3531,6 +4419,8 @@
   "code": 70084224,
   "model": "neck_hunter",
   "folder": "NeckHunter",
+  "width": 3.844,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -3539,6 +4429,8 @@
   "code": 70138455,
   "model": "blast_juggler",
   "folder": "BlastJuggler",
+  "width": 4.375,
+  "height": 1.781,
   "animations": [
    "idle"
   ]
@@ -3547,6 +4439,8 @@
   "code": 70345785,
   "model": "yamadron",
   "folder": "Yamadron",
+  "width": 2.719,
+  "height": 3.625,
   "animations": [
    "idle"
   ]
@@ -3555,6 +4449,8 @@
   "code": 70681994,
   "model": "dragoness_the_wicked_knight",
   "folder": "DragonessTheWickedKnight",
+  "width": 2.438,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -3563,6 +4459,8 @@
   "code": 70781052,
   "model": "summoned_skull",
   "folder": "SummonedSkull",
+  "width": 3.344,
+  "height": 4.25,
   "animations": [
    "idle"
   ]
@@ -3571,6 +4469,8 @@
   "code": 70924884,
   "model": "alinsection",
   "folder": "Alinsection",
+  "width": 2.375,
+  "height": 1.188,
   "animations": [
    "idle"
   ]
@@ -3579,6 +4479,8 @@
   "code": 71068263,
   "model": "stuffed_animal",
   "folder": "StuffedAnimal",
+  "width": 1.75,
+  "height": 1.375,
   "animations": [
    "idle"
   ]
@@ -3587,6 +4489,8 @@
   "code": 71107816,
   "model": "the_bistro_butcher",
   "folder": "TheBistroButcher",
+  "width": 1.344,
+  "height": 2.438,
   "animations": [
    "idle"
   ]
@@ -3595,6 +4499,8 @@
   "code": 71280811,
   "model": "yaranzo",
   "folder": "Yaranzo",
+  "width": 1.0,
+  "height": 1.812,
   "animations": [
    "idle"
   ]
@@ -3603,6 +4509,8 @@
   "code": 71407486,
   "model": "fireyarou",
   "folder": "Fireyarou",
+  "width": 1.0,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -3611,6 +4519,8 @@
   "code": 71625222,
   "model": "time_wizard",
   "folder": "TimeWizard",
+  "width": 1.875,
+  "height": 1.562,
   "animations": [
    "idle"
   ]
@@ -3619,6 +4529,8 @@
   "code": 71746462,
   "model": "sea_kamen",
   "folder": "SeaKamen",
+  "width": 1.125,
+  "height": 1.906,
   "animations": [
    "idle"
   ]
@@ -3627,6 +4539,8 @@
   "code": 71950093,
   "model": "shovel_crusher",
   "folder": "ShovelCrusher",
+  "width": 10.562,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -3635,6 +4549,8 @@
   "code": 72053645,
   "model": "weather_report",
   "folder": "WeatherReport",
+  "width": 2.062,
+  "height": 1.688,
   "animations": [
    "idle"
   ]
@@ -3643,6 +4559,8 @@
   "code": 72076281,
   "model": "bat",
   "folder": "Bat",
+  "width": 1.75,
+  "height": 0.75,
   "animations": [
    "idle"
   ]
@@ -3651,6 +4569,8 @@
   "code": 72269672,
   "model": "stone_ghost",
   "folder": "StoneGhost",
+  "width": 2.125,
+  "height": 1.75,
   "animations": [
    "idle"
   ]
@@ -3659,6 +4579,8 @@
   "code": 72299832,
   "model": "giant_mech_soldier",
   "folder": "GiantMechSoldier",
+  "width": 2.75,
+  "height": 4.375,
   "animations": [
    "idle"
   ]
@@ -3667,6 +4589,8 @@
   "code": 72520073,
   "model": "dark_artist",
   "folder": "DarkArtist",
+  "width": 2.531,
+  "height": 2.438,
   "animations": [
    "idle"
   ]
@@ -3675,6 +4599,8 @@
   "code": 72842870,
   "model": "tyhone",
   "folder": "Tyhone",
+  "width": 2.75,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -3683,6 +4609,8 @@
   "code": 72869010,
   "model": "soul_hunter",
   "folder": "SoulHunter",
+  "width": 8.5,
+  "height": 3.75,
   "animations": [
    "idle"
   ]
@@ -3691,6 +4619,8 @@
   "code": 72929454,
   "model": "turtle_bird",
   "folder": "TurtleBird",
+  "width": 5.375,
+  "height": 2.5,
   "animations": [
    "idle"
   ]
@@ -3699,6 +4629,8 @@
   "code": 73051941,
   "model": "sand_stone",
   "folder": "SandStone",
+  "width": 12.938,
+  "height": 4.812,
   "animations": [
    "idle"
   ]
@@ -3707,6 +4639,8 @@
   "code": 73081602,
   "model": "queen_bird",
   "folder": "QueenBird",
+  "width": 8.125,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -3715,6 +4649,8 @@
   "code": 73481154,
   "model": "destoyer_golem",
   "folder": "DestoyerGolem",
+  "width": 2.438,
+  "height": 3.531,
   "animations": [
    "idle"
   ]
@@ -3723,6 +4659,8 @@
   "code": 73911410,
   "model": "sword_slasher",
   "folder": "SwordSlasher",
+  "width": 2.25,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -3731,6 +4669,8 @@
   "code": 74277583,
   "model": "brave_scizzar",
   "folder": "BraveScizzar",
+  "width": 4.344,
+  "height": 1.688,
   "animations": [
    "idle"
   ]
@@ -3739,6 +4679,8 @@
   "code": 74677422,
   "model": "red_eyes_black_dragon",
   "folder": "RedEyesBlackDragon",
+  "width": 5.812,
+  "height": 7.688,
   "animations": [
    "idle"
   ]
@@ -3747,6 +4689,8 @@
   "code": 74703140,
   "model": "punished_eagle",
   "folder": "PunishedEagle",
+  "width": 3.875,
+  "height": 1.125,
   "animations": [
    "idle"
   ]
@@ -3755,6 +4699,8 @@
   "code": 75356564,
   "model": "petit_dragon",
   "folder": "PetitDragon",
+  "width": 1.406,
+  "height": 1.0,
   "animations": [
    "idle"
   ]
@@ -3763,6 +4709,8 @@
   "code": 75376965,
   "model": "enchanting_mermaid",
   "folder": "EnchantingMermaid",
+  "width": 1.25,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -3771,6 +4719,8 @@
   "code": 75390004,
   "model": "megazowler",
   "folder": "Megazowler",
+  "width": 11.938,
+  "height": 3.062,
   "animations": [
    "idle"
   ]
@@ -3779,6 +4729,8 @@
   "code": 75499502,
   "model": "master_expert",
   "folder": "MasterExpert",
+  "width": 5.25,
+  "height": 2.938,
   "animations": [
    "idle"
   ]
@@ -3787,6 +4739,8 @@
   "code": 75559356,
   "model": "cyber_soldier_of_darkworld",
   "folder": "CyberSoldierOfDarkworld",
+  "width": 2.438,
+  "height": 3.188,
   "animations": [
    "idle"
   ]
@@ -3795,6 +4749,8 @@
   "code": 75582395,
   "model": "faith_bird",
   "folder": "FaithBird",
+  "width": 3.875,
+  "height": 1.125,
   "animations": [
    "idle"
   ]
@@ -3803,6 +4759,8 @@
   "code": 75646173,
   "model": "synchar",
   "folder": "Synchar",
+  "width": 1.0,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -3811,6 +4769,8 @@
   "code": 75850803,
   "model": "la_moon",
   "folder": "LaMoon",
+  "width": 2.938,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -3819,6 +4779,8 @@
   "code": 75889523,
   "model": "archfiend_marmot_of_nefariousness",
   "folder": "ArchfiendMarmotOfNefariousness",
+  "width": 1.266,
+  "height": 0.594,
   "animations": [
    "idle"
   ]
@@ -3827,6 +4789,8 @@
   "code": 76184692,
   "model": "hitotsu_me_giant",
   "folder": "HitotsuMeGiant",
+  "width": 2.0,
+  "height": 3.625,
   "animations": [
    "idle"
   ]
@@ -3835,6 +4799,8 @@
   "code": 76211194,
   "model": "meda_bat",
   "folder": "MedaBat",
+  "width": 2.688,
+  "height": 0.625,
   "animations": [
    "idle"
   ]
@@ -3843,6 +4809,8 @@
   "code": 76232340,
   "model": "sengenjin",
   "folder": "Sengenjin",
+  "width": 2.375,
+  "height": 4.094,
   "animations": [
    "idle"
   ]
@@ -3851,6 +4819,8 @@
   "code": 76446915,
   "model": "disk_magician",
   "folder": "DiskMagician",
+  "width": 2.125,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -3859,6 +4829,8 @@
   "code": 76512652,
   "model": "krokodilus",
   "folder": "Krokodilus",
+  "width": 2.688,
+  "height": 1.688,
   "animations": [
    "idle"
   ]
@@ -3867,6 +4839,8 @@
   "code": 76634149,
   "model": "kairyu_shin",
   "folder": "KairyuShin",
+  "width": 44.0,
+  "height": 0.812,
   "animations": [
    "idle"
   ]
@@ -3875,6 +4849,8 @@
   "code": 76704943,
   "model": "yamatano_dragon_scroll",
   "folder": "YamatanoDragonScroll",
+  "width": 1.0,
+  "height": 1.562,
   "animations": [
    "idle"
   ]
@@ -3883,6 +4859,8 @@
   "code": 76775123,
   "model": "patrol_robo",
   "folder": "PatrolRobo",
+  "width": 4.375,
+  "height": 1.594,
   "animations": [
    "idle"
   ]
@@ -3891,6 +4869,8 @@
   "code": 76812113,
   "model": "harpie_lady",
   "folder": "HarpieLady",
+  "width": 1.125,
+  "height": 2.031,
   "animations": [
    "idle"
   ]
@@ -3899,6 +4879,8 @@
   "code": 77456781,
   "model": "fiend_kraken",
   "folder": "FiendKraken",
+  "width": 3.812,
+  "height": 6.312,
   "animations": [
    "idle"
   ]
@@ -3907,6 +4889,8 @@
   "code": 77568553,
   "model": "acid_crawler",
   "folder": "AcidCrawler",
+  "width": 1.688,
+  "height": 0.375,
   "animations": [
    "idle"
   ]
@@ -3915,6 +4899,8 @@
   "code": 77581312,
   "model": "masked_clown",
   "folder": "MaskedClown",
+  "width": 1.844,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -3923,6 +4909,8 @@
   "code": 77603950,
   "model": "phantom_dewan",
   "folder": "PhantomDewan",
+  "width": 1.125,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -3931,12 +4919,16 @@
   "code": 77827521,
   "model": "trial_of_nightmare",
   "folder": "TrialOfNightmare",
+  "width": 2.098,
+  "height": 1.188,
   "animations": []
  },
  {
   "code": 77998771,
   "model": "crow_goblin",
   "folder": "CrowGoblin",
+  "width": 2.594,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -3945,6 +4937,8 @@
   "code": 78010363,
   "model": "witch_of_the_black_forest",
   "folder": "WitchOfTheBlackForest",
+  "width": 1.188,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -3953,6 +4947,8 @@
   "code": 78402798,
   "model": "night_lizard",
   "folder": "NightLizard",
+  "width": 3.031,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -3961,6 +4957,8 @@
   "code": 78556320,
   "model": "vishwar_randi",
   "folder": "VishwarRandi",
+  "width": 1.0,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -3969,6 +4967,8 @@
   "code": 78780140,
   "model": "trent",
   "folder": "Trent",
+  "width": 6.0,
+  "height": 4.0,
   "animations": [
    "idle"
   ]
@@ -3977,6 +4977,8 @@
   "code": 79629370,
   "model": "maiden_of_the_moonlight",
   "folder": "MaidenOfTheMoonlight",
+  "width": 1.531,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -3985,6 +4987,8 @@
   "code": 80141480,
   "model": "hunter_spider",
   "folder": "HunterSpider",
+  "width": 4.5,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -3993,6 +4997,8 @@
   "code": 80234301,
   "model": "prisman",
   "folder": "Prisman",
+  "width": 1.625,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -4001,6 +5007,8 @@
   "code": 80516007,
   "model": "rare_fish",
   "folder": "RareFish",
+  "width": 1.625,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -4009,6 +5017,8 @@
   "code": 80600490,
   "model": "kaneningen",
   "folder": "Kaneningen",
+  "width": 1.0,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -4017,6 +5027,8 @@
   "code": 80727036,
   "model": "man_eating_black_shark",
   "folder": "ManEatingBlackShark",
+  "width": 3.312,
+  "height": 0.969,
   "animations": [
    "idle"
   ]
@@ -4025,6 +5037,8 @@
   "code": 80741828,
   "model": "witches_apprentice",
   "folder": "WitchesApprentice",
+  "width": 2.859,
+  "height": 2.75,
   "animations": [
    "idle"
   ]
@@ -4033,6 +5047,8 @@
   "code": 80770678,
   "model": "spirit_of_the_harp",
   "folder": "SpiritOfTheHarp",
+  "width": 3.562,
+  "height": 2.5,
   "animations": [
    "idle"
   ]
@@ -4041,6 +5057,8 @@
   "code": 80813021,
   "model": "torike",
   "folder": "Torike",
+  "width": 0.906,
+  "height": 1.0,
   "animations": [
    "idle"
   ]
@@ -4049,6 +5067,8 @@
   "code": 81057959,
   "model": "d_human",
   "folder": "DHuman",
+  "width": 4.062,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -4057,6 +5077,8 @@
   "code": 81179446,
   "model": "kattapillar",
   "folder": "Kattapillar",
+  "width": 2.125,
+  "height": 0.5,
   "animations": [
    "idle"
   ]
@@ -4065,6 +5087,8 @@
   "code": 81386177,
   "model": "bottom_dweller",
   "folder": "BottomDweller",
+  "width": 9.312,
+  "height": 0.812,
   "animations": [
    "idle"
   ]
@@ -4073,6 +5097,8 @@
   "code": 81480460,
   "model": "barrel_dragon",
   "folder": "BarrelDragon",
+  "width": 6.188,
+  "height": 3.297,
   "animations": [
    "idle"
   ]
@@ -4081,12 +5107,16 @@
   "code": 81492226,
   "model": "ancient_jar",
   "folder": "AncientJar",
+  "width": 0.625,
+  "height": 1.125,
   "animations": []
  },
  {
   "code": 81563416,
   "model": "fairy_of_the_fountain",
   "folder": "FairyOfTheFountain",
+  "width": 1.031,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -4095,6 +5125,8 @@
   "code": 81618817,
   "model": "lord_of_zemia",
   "folder": "LordOfZemia",
+  "width": 5.938,
+  "height": 4.25,
   "animations": [
    "idle"
   ]
@@ -4103,6 +5135,8 @@
   "code": 81686058,
   "model": "ill_witch",
   "folder": "IllWitch",
+  "width": 1.0,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -4111,6 +5145,8 @@
   "code": 81843628,
   "model": "needle_worm",
   "folder": "NeedleWorm",
+  "width": 4.953,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -4119,6 +5155,8 @@
   "code": 81863068,
   "model": "hiros_shadow_scout",
   "folder": "HirosShadowScout",
+  "width": 1.25,
+  "height": 2.359,
   "animations": [
    "idle"
   ]
@@ -4127,6 +5165,8 @@
   "code": 82065276,
   "model": "oscillo_hero",
   "folder": "OscilloHero",
+  "width": 1.75,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -4135,6 +5175,8 @@
   "code": 82085619,
   "model": "shining_friendship",
   "folder": "ShiningFriendship",
+  "width": 1.188,
+  "height": 1.0,
   "animations": [
    "idle"
   ]
@@ -4143,6 +5185,8 @@
   "code": 82742611,
   "model": "serpent_marauder",
   "folder": "SerpentMarauder",
+  "width": 5.25,
+  "height": 0.812,
   "animations": [
    "idle"
   ]
@@ -4151,6 +5195,8 @@
   "code": 82818645,
   "model": "rock_spirit",
   "folder": "RockSpirit",
+  "width": 0.812,
+  "height": 0.875,
   "animations": [
    "idle"
   ]
@@ -4159,6 +5205,8 @@
   "code": 83464209,
   "model": "mystical_sheep2",
   "folder": "MysticalSheep2",
+  "width": 2.906,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -4167,6 +5215,8 @@
   "code": 83678433,
   "model": "midnight_fiend",
   "folder": "MidnightFiend",
+  "width": 2.062,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -4175,6 +5225,8 @@
   "code": 84103702,
   "model": "kanikabuto",
   "folder": "Kanikabuto",
+  "width": 6.625,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -4183,6 +5235,8 @@
   "code": 84133008,
   "model": "monster_eye",
   "folder": "MonsterEye",
+  "width": 1.562,
+  "height": 1.75,
   "animations": [
    "idle"
   ]
@@ -4191,6 +5245,8 @@
   "code": 84285623,
   "model": "haniwa",
   "folder": "Haniwa",
+  "width": 0.812,
+  "height": 0.875,
   "animations": [
    "idle"
   ]
@@ -4199,6 +5255,8 @@
   "code": 84686841,
   "model": "king_fog",
   "folder": "KingFog",
+  "width": 1.25,
+  "height": 1.5,
   "animations": [
    "idle"
   ]
@@ -4207,6 +5265,8 @@
   "code": 84794011,
   "model": "solitude",
   "folder": "Solitude",
+  "width": 4.625,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -4215,6 +5275,8 @@
   "code": 84916669,
   "model": "doriado",
   "folder": "Doriado",
+  "width": 1.0,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -4223,6 +5285,8 @@
   "code": 84926738,
   "model": "the_immortal_of_thunder",
   "folder": "TheImmortalOfThunder",
+  "width": 2.375,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -4231,6 +5295,8 @@
   "code": 84990171,
   "model": "bean_soldier",
   "folder": "BeanSoldier",
+  "width": 1.594,
+  "height": 3.625,
   "animations": [
    "idle"
   ]
@@ -4239,6 +5305,8 @@
   "code": 85255550,
   "model": "swordsman_from_a_distant_land",
   "folder": "SwordsmanFromADistantLand",
+  "width": 1.594,
+  "height": 2.031,
   "animations": [
    "idle"
   ]
@@ -4247,6 +5315,8 @@
   "code": 85309439,
   "model": "ray_temparature",
   "folder": "RayTemparature",
+  "width": 6.562,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -4255,6 +5325,8 @@
   "code": 85326399,
   "model": "spike_seadra",
   "folder": "SpikeSeadra",
+  "width": 16.188,
+  "height": 1.125,
   "animations": [
    "idle"
   ]
@@ -4263,6 +5335,8 @@
   "code": 85448931,
   "model": "sentinel_of_the_seas",
   "folder": "SentinelOfTheSeas",
+  "width": 1.719,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -4271,6 +5345,8 @@
   "code": 85639257,
   "model": "aqua_madoor",
   "folder": "AquaMadoor",
+  "width": 1.188,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -4279,6 +5355,8 @@
   "code": 85705804,
   "model": "kurama",
   "folder": "Kurama",
+  "width": 3.875,
+  "height": 1.625,
   "animations": [
    "idle"
   ]
@@ -4287,6 +5365,8 @@
   "code": 86088138,
   "model": "ocubeam",
   "folder": "Ocubeam",
+  "width": 4.062,
+  "height": 0.938,
   "animations": [
    "idle"
   ]
@@ -4295,6 +5375,8 @@
   "code": 86100785,
   "model": "zone_eater",
   "folder": "ZoneEater",
+  "width": 44.625,
+  "height": 2.5,
   "animations": [
    "idle"
   ]
@@ -4303,6 +5385,8 @@
   "code": 86164529,
   "model": "aqua_dragon",
   "folder": "AquaDragon",
+  "width": 5.438,
+  "height": 3.688,
   "animations": [
    "idle"
   ]
@@ -4311,6 +5395,8 @@
   "code": 86325596,
   "model": "baron_of_the_fiend_sword",
   "folder": "BaronOfTheFiendSword",
+  "width": 2.625,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -4319,6 +5405,8 @@
   "code": 86421986,
   "model": "ancient_tree_of_enlightenment",
   "folder": "AncientTreeOfEnlightenment",
+  "width": 6.0,
+  "height": 4.0,
   "animations": [
    "idle"
   ]
@@ -4327,6 +5415,8 @@
   "code": 87322377,
   "model": "launcher_spider",
   "folder": "LauncherSpider",
+  "width": 1.969,
+  "height": 1.688,
   "animations": [
    "idle"
   ]
@@ -4335,6 +5425,8 @@
   "code": 87557188,
   "model": "the_stern_mystic",
   "folder": "TheSternMystic",
+  "width": 1.875,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -4343,6 +5435,8 @@
   "code": 87564352,
   "model": "blackland_fire_dragon",
   "folder": "BlacklandFireDragon",
+  "width": 19.812,
+  "height": 9.938,
   "animations": [
    "idle"
   ]
@@ -4351,6 +5445,8 @@
   "code": 87756343,
   "model": "larvae_moth",
   "folder": "LarvaeMoth",
+  "width": 4.953,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -4359,6 +5455,8 @@
   "code": 87796900,
   "model": "winged_dragon_guardian_of_the_fortress1",
   "folder": "WingedDragonGuardianOfTheFortress1",
+  "width": 3.938,
+  "height": 1.562,
   "animations": [
    "idle"
   ]
@@ -4367,6 +5465,8 @@
   "code": 88435542,
   "model": "fire_eye",
   "folder": "FireEye",
+  "width": 1.875,
+  "height": 0.375,
   "animations": [
    "idle"
   ]
@@ -4375,6 +5475,8 @@
   "code": 88643173,
   "model": "nightmare_scorpion",
   "folder": "NightmareScorpion",
+  "width": 2.5,
+  "height": 0.406,
   "animations": [
    "idle"
   ]
@@ -4383,6 +5485,8 @@
   "code": 88819587,
   "model": "baby_dragon",
   "folder": "BabyDragon",
+  "width": 2.406,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -4391,6 +5495,8 @@
   "code": 88979991,
   "model": "killer_needle",
   "folder": "KillerNeedle",
+  "width": 2.688,
+  "height": 1.75,
   "animations": [
    "idle"
   ]
@@ -4399,6 +5505,8 @@
   "code": 89091579,
   "model": "basic_insect",
   "folder": "BasicInsect",
+  "width": 2.312,
+  "height": 1.016,
   "animations": [
    "idle"
   ]
@@ -4407,6 +5515,8 @@
   "code": 89112729,
   "model": "cyber_saurus",
   "folder": "CyberSaurus",
+  "width": 6.25,
+  "height": 3.734,
   "animations": [
    "idle"
   ]
@@ -4415,6 +5525,8 @@
   "code": 89272878,
   "model": "guardian_of_the_labrynth",
   "folder": "GuardianOfTheLabrynth",
+  "width": 3.125,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -4423,6 +5535,8 @@
   "code": 89494469,
   "model": "dark_titan_of_terror",
   "folder": "DarkTitanOfTerror",
+  "width": 1.625,
+  "height": 2.859,
   "animations": [
    "idle"
   ]
@@ -4431,6 +5545,8 @@
   "code": 89558090,
   "model": "dark_prisoner",
   "folder": "DarkPrisoner",
+  "width": 2.25,
+  "height": 2.75,
   "animations": [
    "idle"
   ]
@@ -4439,6 +5555,8 @@
   "code": 89631139,
   "model": "blue_eyes_white_dragon",
   "folder": "BlueEyesWhiteDragon",
+  "width": 15.375,
+  "height": 8.0,
   "animations": [
    "idle"
   ]
@@ -4447,6 +5565,8 @@
   "code": 89832901,
   "model": "b_dragon_jungle_king",
   "folder": "BDragonJungleKing",
+  "width": 4.25,
+  "height": 3.484,
   "animations": [
    "idle"
   ]
@@ -4455,6 +5575,8 @@
   "code": 89904598,
   "model": "anthrosaurus",
   "folder": "Anthrosaurus",
+  "width": 2.688,
+  "height": 1.688,
   "animations": [
    "idle"
   ]
@@ -4463,6 +5585,8 @@
   "code": 89987208,
   "model": "hero_of_the_east",
   "folder": "HeroOfTheEast",
+  "width": 2.938,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -4471,6 +5595,8 @@
   "code": 90357090,
   "model": "silver_fang",
   "folder": "SilverFang",
+  "width": 2.062,
+  "height": 1.141,
   "animations": [
    "idle"
   ]
@@ -4479,6 +5605,8 @@
   "code": 90660762,
   "model": "meteor_black_dragon",
   "folder": "MeteorBlackDragon",
+  "width": 3.0,
+  "height": 4.688,
   "animations": [
    "idle"
   ]
@@ -4487,6 +5615,8 @@
   "code": 90844184,
   "model": "garma_sword",
   "folder": "GarmaSword",
+  "width": 1.594,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -4495,6 +5625,8 @@
   "code": 90963488,
   "model": "nemuriko",
   "folder": "Nemuriko",
+  "width": 7.125,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -4503,6 +5635,8 @@
   "code": 91152256,
   "model": "celtic_guardian",
   "folder": "CelticGuardian",
+  "width": 2.125,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -4511,6 +5645,8 @@
   "code": 91939608,
   "model": "rogue_doll",
   "folder": "RogueDoll",
+  "width": 2.25,
+  "height": 1.312,
   "animations": [
    "idle"
   ]
@@ -4519,6 +5655,8 @@
   "code": 91996584,
   "model": "whiptail_crow",
   "folder": "WhiptailCrow",
+  "width": 3.875,
+  "height": 1.625,
   "animations": [
    "idle"
   ]
@@ -4527,6 +5665,8 @@
   "code": 92391084,
   "model": "wilmee",
   "folder": "Wilmee",
+  "width": 1.375,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -4535,6 +5675,8 @@
   "code": 92409659,
   "model": "white_dolphin",
   "folder": "WhiteDolphin",
+  "width": 3.578,
+  "height": 0.844,
   "animations": [
    "idle"
   ]
@@ -4543,6 +5685,8 @@
   "code": 92667214,
   "model": "clown_zombie",
   "folder": "ClownZombie",
+  "width": 4.0,
+  "height": 2.75,
   "animations": [
    "idle"
   ]
@@ -4551,6 +5695,8 @@
   "code": 92731455,
   "model": "m_warrior2",
   "folder": "MWarrior2",
+  "width": 1.75,
+  "height": 2.35,
   "animations": [
    "idle"
   ]
@@ -4559,6 +5705,8 @@
   "code": 92944626,
   "model": "wings_of_wicked_flame",
   "folder": "WingsOfWickedFlame",
+  "width": 3.562,
+  "height": 1.688,
   "animations": [
    "idle"
   ]
@@ -4567,6 +5715,8 @@
   "code": 93013676,
   "model": "maha_vailo",
   "folder": "MahaVailo",
+  "width": 2.125,
+  "height": 2.562,
   "animations": [
    "idle"
   ]
@@ -4575,6 +5725,8 @@
   "code": 93108297,
   "model": "liquid_beast",
   "folder": "LiquidBeast",
+  "width": 1.094,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -4583,6 +5735,8 @@
   "code": 93221206,
   "model": "ancient_elf",
   "folder": "AncientElf",
+  "width": 1.875,
+  "height": 2.438,
   "animations": [
    "idle"
   ]
@@ -4591,6 +5745,8 @@
   "code": 93343894,
   "model": "water_magician",
   "folder": "WaterMagician",
+  "width": 2.625,
+  "height": 2.344,
   "animations": [
    "idle"
   ]
@@ -4599,6 +5755,8 @@
   "code": 93553943,
   "model": "man_eater",
   "folder": "ManEater",
+  "width": 3.062,
+  "height": 1.125,
   "animations": [
    "idle"
   ]
@@ -4607,6 +5765,8 @@
   "code": 93788854,
   "model": "the_wandering_doomed",
   "folder": "TheWanderingDoomed",
+  "width": 1.0,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -4615,6 +5775,8 @@
   "code": 93889755,
   "model": "crass_clown",
   "folder": "CrassClown",
+  "width": 4.0,
+  "height": 2.75,
   "animations": [
    "idle"
   ]
@@ -4623,6 +5785,8 @@
   "code": 93900406,
   "model": "mushroom_man2",
   "folder": "MushroomMan2",
+  "width": 3.875,
+  "height": 3.125,
   "animations": [
    "idle"
   ]
@@ -4631,6 +5795,8 @@
   "code": 93920745,
   "model": "penguin_soldier",
   "folder": "PenguinSoldier",
+  "width": 1.812,
+  "height": 1.375,
   "animations": [
    "idle"
   ]
@@ -4639,6 +5805,8 @@
   "code": 94022093,
   "model": "behegon",
   "folder": "Behegon",
+  "width": 6.875,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -4647,12 +5815,16 @@
   "code": 94042337,
   "model": "violent_rain",
   "folder": "ViolentRain",
+  "width": 1.812,
+  "height": 1.312,
   "animations": []
  },
  {
   "code": 94119974,
   "model": "two_headed_king_rex",
   "folder": "TwoHeadedKingRex",
+  "width": 16.562,
+  "height": 7.062,
   "animations": [
    "idle"
   ]
@@ -4661,12 +5833,16 @@
   "code": 94230224,
   "model": "needle_ball",
   "folder": "NeedleBall",
+  "width": 0.875,
+  "height": 1.0,
   "animations": []
  },
  {
   "code": 94412545,
   "model": "mechaleon",
   "folder": "Mechaleon",
+  "width": 9.75,
+  "height": 2.312,
   "animations": [
    "idle"
   ]
@@ -4675,6 +5851,8 @@
   "code": 94566432,
   "model": "kaiser_dragon",
   "folder": "KaiserDragon",
+  "width": 35.5,
+  "height": 10.062,
   "animations": [
    "idle"
   ]
@@ -4683,6 +5861,8 @@
   "code": 94675535,
   "model": "larvas",
   "folder": "Larvas",
+  "width": 1.125,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -4691,6 +5871,8 @@
   "code": 94773007,
   "model": "jirai_gumo",
   "folder": "JiraiGumo",
+  "width": 3.25,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -4699,6 +5881,8 @@
   "code": 94905343,
   "model": "rabid_horseman",
   "folder": "RabidHorseman",
+  "width": 4.438,
+  "height": 3.438,
   "animations": [
    "idle"
   ]
@@ -4707,6 +5891,8 @@
   "code": 95144193,
   "model": "kwagar_hercules",
   "folder": "KwagarHercules",
+  "width": 6.0,
+  "height": 2.125,
   "animations": [
    "idle"
   ]
@@ -4715,12 +5901,16 @@
   "code": 95174353,
   "model": "ameba",
   "folder": "Ameba",
+  "width": 2.312,
+  "height": 1.5,
   "animations": []
  },
  {
   "code": 95265975,
   "model": "ghoul_with_an_appetite",
   "folder": "GhoulWithAnAppetite",
+  "width": 2.75,
+  "height": 3.875,
   "animations": [
    "idle"
   ]
@@ -4729,6 +5919,8 @@
   "code": 95288024,
   "model": "sky_dragon",
   "folder": "SkyDragon",
+  "width": 14.125,
+  "height": 0.875,
   "animations": [
    "idle"
   ]
@@ -4737,6 +5929,8 @@
   "code": 95727991,
   "model": "catapult_turtle",
   "folder": "CatapultTurtle",
+  "width": 4.625,
+  "height": 2.688,
   "animations": [
    "idle"
   ]
@@ -4745,6 +5939,8 @@
   "code": 95744531,
   "model": "griggle",
   "folder": "Griggle",
+  "width": 0.875,
+  "height": 1.125,
   "animations": [
    "idle"
   ]
@@ -4753,6 +5949,8 @@
   "code": 95952802,
   "model": "flower_wolf",
   "folder": "FlowerWolf",
+  "width": 2.25,
+  "height": 1.203,
   "animations": [
    "idle"
   ]
@@ -4761,6 +5959,8 @@
   "code": 96643568,
   "model": "wetha",
   "folder": "Wetha",
+  "width": 1.562,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -4769,12 +5969,16 @@
   "code": 96851799,
   "model": "hinotama_soul",
   "folder": "HinotamaSoul",
+  "width": 1.125,
+  "height": 1.0,
   "animations": []
  },
  {
   "code": 96967123,
   "model": "dharma_cannon",
   "folder": "DharmaCannon",
+  "width": 1.125,
+  "height": 1.25,
   "animations": [
    "idle"
   ]
@@ -4783,6 +5987,8 @@
   "code": 96981563,
   "model": "giant_turtle_who_feeds_on_flames",
   "folder": "GiantTurtleWhoFeedsOnFlames",
+  "width": 7.312,
+  "height": 2.062,
   "animations": [
    "idle"
   ]
@@ -4791,6 +5997,8 @@
   "code": 97360116,
   "model": "unknown_warrior_of_fiend",
   "folder": "UnknownWarriorOfFiend",
+  "width": 1.062,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -4799,6 +6007,8 @@
   "code": 97590747,
   "model": "la_jinn_the_mystical_genie_of_the_lamp",
   "folder": "LaJinnTheMysticalGenieOfTheLamp",
+  "width": 1.406,
+  "height": 2.0,
   "animations": [
    "idle"
   ]
@@ -4807,6 +6017,8 @@
   "code": 97612389,
   "model": "monster_tamer",
   "folder": "MonsterTamer",
+  "width": 3.812,
+  "height": 1.969,
   "animations": [
    "idle"
   ]
@@ -4815,6 +6027,8 @@
   "code": 97843505,
   "model": "djinn_the_watcher_of_the_wind",
   "folder": "DjinnTheWatcherOfTheWind",
+  "width": 1.562,
+  "height": 1.938,
   "animations": [
    "idle"
   ]
@@ -4823,6 +6037,8 @@
   "code": 97973387,
   "model": "droll_bird",
   "folder": "DrollBird",
+  "width": 2.75,
+  "height": 1.875,
   "animations": [
    "idle"
   ]
@@ -4831,12 +6047,16 @@
   "code": 98049915,
   "model": "mystical_lamp",
   "folder": "MysticalLamp",
+  "width": 1.406,
+  "height": 1.188,
   "animations": []
  },
  {
   "code": 98075147,
   "model": "spiked_snail",
   "folder": "SpikedSnail",
+  "width": 4.125,
+  "height": 1.75,
   "animations": [
    "idle"
   ]
@@ -4845,6 +6065,8 @@
   "code": 98434877,
   "model": "suijin",
   "folder": "Suijin",
+  "width": 5.25,
+  "height": 3.438,
   "animations": [
    "idle"
   ]
@@ -4853,6 +6075,8 @@
   "code": 98582704,
   "model": "wing_egg_elf",
   "folder": "WingEggElf",
+  "width": 4.062,
+  "height": 1.062,
   "animations": [
    "idle"
   ]
@@ -4861,6 +6085,8 @@
   "code": 98795934,
   "model": "mabarrel",
   "folder": "Mabarrel",
+  "width": 1.875,
+  "height": 0.75,
   "animations": [
    "idle"
   ]
@@ -4869,6 +6095,8 @@
   "code": 98818516,
   "model": "frenzied_panda",
   "folder": "FrenziedPanda",
+  "width": 3.0,
+  "height": 2.25,
   "animations": [
    "idle"
   ]
@@ -4877,6 +6105,8 @@
   "code": 98898173,
   "model": "the_melting_red_shadow",
   "folder": "TheMeltingRedShadow",
+  "width": 1.062,
+  "height": 2.5,
   "animations": [
    "idle"
   ]
@@ -4885,6 +6115,8 @@
   "code": 99030164,
   "model": "happy_lover",
   "folder": "HappyLover",
+  "width": 2.125,
+  "height": 0.625,
   "animations": [
    "idle"
   ]
@@ -4893,6 +6125,8 @@
   "code": 99261403,
   "model": "dark_rabbit",
   "folder": "DarkRabbit",
+  "width": 1.188,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -4901,6 +6135,8 @@
   "code": 99426834,
   "model": "beastking_of_the_swamps",
   "folder": "BeastkingOfTheSwamps",
+  "width": 8.75,
+  "height": 1.438,
   "animations": [
    "idle"
   ]
@@ -4909,6 +6145,8 @@
   "code": 99510761,
   "model": "lord_of_the_lamp",
   "folder": "LordOfTheLamp",
+  "width": 2.25,
+  "height": 2.375,
   "animations": [
    "idle"
   ]
@@ -4917,6 +6155,8 @@
   "code": 99551425,
   "model": "labyrinth_tank",
   "folder": "LabyrinthTank",
+  "width": 4.75,
+  "height": 2.812,
   "animations": [
    "idle"
   ]
@@ -4925,6 +6165,8 @@
   "code": 99721536,
   "model": "dokurorider",
   "folder": "Dokurorider",
+  "width": 4.043,
+  "height": 2.281,
   "animations": [
    "idle"
   ]
@@ -4933,6 +6175,8 @@
   "code": 99785935,
   "model": "alpha_the_magnet_warrior",
   "folder": "AlphaTheMagnetWarrior",
+  "width": 1.875,
+  "height": 2.375,
   "animations": [
    "idle"
   ]

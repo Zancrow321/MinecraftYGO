@@ -43,6 +43,7 @@ class DuelTableTest {
         PromptChoices choices = new PromptChoices(text);
         Random random = new Random(42);
         List<String> log = new ArrayList<>();
+        List<FieldEvent> events = new ArrayList<>();
 
         try (DuelTable table = new DuelTable(text, new BundledScripts(),
                 DuelSettings.standard(new long[]{5, 6, 7, 8}, OcgConstants.DUEL_MODE_MR1),
@@ -56,6 +57,7 @@ class DuelTableTest {
                 assertEquals(java.util.Set.of(0), views.keySet(), "only the person gets views");
                 DuelView view = ViewCodec.decode(ViewCodec.encode(views.get(0)));
                 log.addAll(view.log());
+                events.addAll(view.events());
                 for (CardState card : view.board().side(1).hand()) {
                     assertEquals(0, card.code(), "opponent's hand must be hidden");
                 }
@@ -73,6 +75,10 @@ class DuelTableTest {
             }
         }
         assertFalse(log.isEmpty());
+        assertTrue(events.stream().anyMatch(e -> e.kind() == FieldEvent.Kind.SUMMON), "summons are animated");
+        assertTrue(events.stream().anyMatch(e -> e.kind() == FieldEvent.Kind.DAMAGE), "damage is animated");
+        assertTrue(events.stream().filter(e -> e.kind() == FieldEvent.Kind.SET && e.player() == 1)
+                .allMatch(e -> e.code() == 0), "opponent's set cards stay hidden");
         assertTrue(log.stream().anyMatch(l -> l.startsWith("You drew ")), "own draws are named");
         assertTrue(log.stream().anyMatch(l -> l.startsWith("Bot drew ")), "opponent draws are counted only");
         assertTrue(log.stream().anyMatch(l -> l.contains("wins the duel") || l.contains("You win")), log.toString());

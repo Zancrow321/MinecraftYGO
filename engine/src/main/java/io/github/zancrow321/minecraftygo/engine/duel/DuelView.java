@@ -10,10 +10,11 @@ import java.util.List;
  *
  * @param you    which player (0 or 1) the receiver is
  * @param log    commentary lines since the previous view
+ * @param events field events since the previous view, for animation
  * @param prompt the prompt this player must answer, already censored, or {@code null}
  * @param hint   the SELECTMSG hint for the prompt, or 0
  * @param result a final message once the duel is over, else {@code null}
  */
-public record DuelView(int you, List<String> names, Board board, List<String> log, DuelMessage.Prompt prompt,
-                       long hint, String result) {
+public record DuelView(int you, List<String> names, Board board, List<String> log, List<FieldEvent> events,
+                       DuelMessage.Prompt prompt, long hint, String result) {
 }

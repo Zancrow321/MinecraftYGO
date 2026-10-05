@@ -152,6 +152,22 @@ def convert_geometry(model, identifier):
     }
 
 
+def bounds(geo):
+    """The model's size in blocks (ignoring rotations): width is the larger horizontal extent."""
+    lo = [float("inf")] * 3
+    hi = [float("-inf")] * 3
+    for bone in geo["minecraft:geometry"][0]["bones"]:
+        for c in bone.get("cubes", []):
+            for i in range(3):
+                origin = float(c["origin"][i])
+                lo[i] = min(lo[i], origin)
+                hi[i] = max(hi[i], origin + float(c["size"][i]))
+    if lo[0] == float("inf"):
+        return 0, 0
+    width = max(hi[0] - lo[0], hi[2] - lo[2]) / 16
+    return round(width, 3), round(hi[1] / 16, 3)
+
+
 def convert_animations(model):
     """Converts the bbmodel's animations to Bedrock animation JSON. The first one is also exported as "idle"."""
     out = {}
@@ -252,7 +268,8 @@ def main():
         (ASSETS / f"animations/monster/{name}.animation.json").write_text(
             json.dumps(animations, separators=(",", ":")), encoding="utf-8")
         shutil.copy(texture, ASSETS / f"textures/monster/{name}.png")
-        entries.append({"code": code, "model": name, "folder": folder.name,
+        width, height = bounds(geo)
+        entries.append({"code": code, "model": name, "folder": folder.name, "width": width, "height": height,
                         "animations": sorted(animations["animations"])})
     shutil.copy(args.models / "LICENSE.md", ASSETS / "YGOMCModels-LICENSE.md")
 

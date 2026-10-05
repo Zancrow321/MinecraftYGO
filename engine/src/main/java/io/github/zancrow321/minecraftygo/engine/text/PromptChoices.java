@@ -1,11 +1,13 @@
 package io.github.zancrow321.minecraftygo.engine.text;
 
 import io.github.zancrow321.minecraftygo.engine.protocol.CardRef;
+import io.github.zancrow321.minecraftygo.engine.protocol.Loc;
 import io.github.zancrow321.minecraftygo.engine.protocol.DuelMessage.*;
 import io.github.zancrow321.minecraftygo.engine.protocol.Responses;
 import io.github.zancrow321.minecraftygo.engine.text.PromptView.Choice;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,12 +40,15 @@ public final class PromptChoices {
                 yield PromptView.choices(or(hinted, "Select an option"), choices);
             }
             case SelectCard p -> PromptView.multi(or(hinted, "Select " + range(p.min(), p.max()) + " card(s)"),
-                    cardLabels(p.cards(), p.player()), p.min(), p.max(), Responses::cards, p.cancelable());
+                    cardLabels(p.cards(), p.player()), locs(p.cards()), p.min(), p.max(), Responses::cards,
+                    p.cancelable());
             case SelectTribute p -> PromptView.multi(or(hinted, "Select monsters to Tribute"),
-                    p.cards().stream().map(c -> cardLabel(c.card(), p.player())).toList(), 0, p.max(), Responses::cards,
+                    p.cards().stream().map(c -> cardLabel(c.card(), p.player())).toList(),
+                    locs(p.cards().stream().map(TributeCandidate::card).toList()), 0, p.max(), Responses::cards,
                     p.cancelable());
             case SelectSum p -> PromptView.multi(or(hinted, "Select cards totalling " + p.target()),
-                    p.selectable().stream().map(c -> cardLabel(c.card(), p.player())).toList(), 0,
+                    p.selectable().stream().map(c -> cardLabel(c.card(), p.player())).toList(),
+                    locs(p.selectable().stream().map(SumCandidate::card).toList()), 0,
                     Math.max(0, p.max() - p.mustSelect().size()), Responses::cards, false);
             case SelectChain p -> chain(p);
             case SelectPlace p -> place(p, hinted);
@@ -58,11 +63,12 @@ public final class PromptChoices {
             case SelectUnselectCard p -> {
                 List<Choice> choices = new ArrayList<>();
                 for (int i = 0; i < p.selectable().size(); i++) {
-                    choices.add(new Choice(cardLabel(p.selectable().get(i), p.player()), Responses.toggleCard(i)));
+                    choices.add(new Choice(cardLabel(p.selectable().get(i), p.player()), Responses.toggleCard(i),
+                            p.selectable().get(i).loc()));
                 }
                 for (int i = 0; i < p.unselectable().size(); i++) {
                     choices.add(new Choice("Unselect " + cardLabel(p.unselectable().get(i), p.player()),
-                            Responses.toggleCard(p.selectable().size() + i)));
+                            Responses.toggleCard(p.selectable().size() + i), p.unselectable().get(i).loc()));
                 }
                 if (p.finishable() || p.cancelable()) {
                     choices.add(new Choice(p.finishable() ? "Done" : "Cancel", Responses.cancel()));
@@ -104,7 +110,7 @@ public final class PromptChoices {
         for (int i = 0; i < p.activatable().size(); i++) {
             Activatable a = p.activatable().get(i);
             c.add(new Choice("Activate " + text.cardName(a.card().code()) + ": " + text.description(a.description()),
-                    Responses.command(Responses.IDLE_ACTIVATE, i)));
+                    Responses.command(Responses.IDLE_ACTIVATE, i), a.card().loc()));
         }
         add(c, p.repositionable(), "Change position of ", Responses.IDLE_REPOSITION);
         if (p.canBattle()) {
@@ -122,12 +128,12 @@ public final class PromptChoices {
             Attacker a = p.attackers().get(i);
             c.add(new Choice("Attack with " + text.cardName(a.card().code())
                     + (a.canAttackDirectly() ? " (can attack directly)" : ""),
-                    Responses.command(Responses.BATTLE_ATTACK, i)));
+                    Responses.command(Responses.BATTLE_ATTACK, i), a.card().loc()));
         }
         for (int i = 0; i < p.activatable().size(); i++) {
             Activatable a = p.activatable().get(i);
             c.add(new Choice("Activate " + text.cardName(a.card().code()) + ": " + text.description(a.description()),
-                    Responses.command(Responses.BATTLE_ACTIVATE, i)));
+                    Responses.command(Responses.BATTLE_ACTIVATE, i), a.card().loc()));
         }
         if (p.canMain2()) {
             c.add(new Choice("Go to Main Phase 2", Responses.command(Responses.BATTLE_TO_MAIN2, 0)));
@@ -143,7 +149,7 @@ public final class PromptChoices {
         for (int i = 0; i < p.chains().size(); i++) {
             Activatable a = p.chains().get(i);
             c.add(new Choice("Chain " + text.cardName(a.card().code()) + ": " + text.description(a.description()),
-                    Responses.index(i)));
+                    Responses.index(i), a.card().loc()));
         }
         if (!p.forced()) {
             c.add(new Choice("Don't respond", Responses.index(-1)));
@@ -183,12 +189,15 @@ public final class PromptChoices {
         if (p.count() == 1) {
             List<Choice> choices = new ArrayList<>();
             for (int i = 0; i < zones.size(); i++) {
-                choices.add(new Choice(labels.get(i), Responses.zones(List.of(zones.get(i)))));
+                Responses.Zone z = zones.get(i);
+                choices.add(new Choice(labels.get(i), Responses.zones(List.of(z)),
+                        new Loc(z.player(), z.location(), z.sequence(), 0)));
             }
             return PromptView.choices(title, choices);
         }
-        return PromptView.multi(title, labels, p.count(), p.count(),
-                selected -> Responses.zones(selected.stream().map(zones::get).toList()), false);
+        return PromptView.multi(title, labels,
+                zones.stream().map(z -> new Loc(z.player(), z.location(), z.sequence(), 0)).toList(), p.count(),
+                p.count(), selected -> Responses.zones(selected.stream().map(zones::get).toList()), false);
     }
 
     private PromptView bits(String title, long available, int count, boolean race) {
@@ -200,7 +209,7 @@ public final class PromptChoices {
                 labels.add((race ? "Type #" : "Attribute #") + (bit + 1));
             }
         }
-        return PromptView.multi(title, labels, count, count, selected -> {
+        return PromptView.multi(title, labels, Collections.nCopies(labels.size(), null), count, count, selected -> {
             long mask = 0;
             for (int i : selected) {
                 mask |= bits.get(i);
@@ -211,8 +220,13 @@ public final class PromptChoices {
 
     private void add(List<Choice> choices, List<CardRef> cards, String verb, int type) {
         for (int i = 0; i < cards.size(); i++) {
-            choices.add(new Choice(verb + text.cardName(cards.get(i).code()), Responses.command(type, i)));
+            choices.add(new Choice(verb + text.cardName(cards.get(i).code()), Responses.command(type, i),
+                    cards.get(i).loc()));
         }
+    }
+
+    private static List<Loc> locs(List<CardRef> cards) {
+        return cards.stream().map(CardRef::loc).toList();
     }
 
     private List<String> cardLabels(List<CardRef> cards, int viewer) {
