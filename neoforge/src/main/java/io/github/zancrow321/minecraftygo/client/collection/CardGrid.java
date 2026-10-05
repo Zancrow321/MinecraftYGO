@@ -144,8 +144,14 @@ final class CardGrid {
             return lines;
         }
         lines.add(Component.literal(card.name()).withStyle(ChatFormatting.WHITE));
-        lines.add(Component.literal(CardItem.typeLine(card)).withStyle(ChatFormatting.GRAY));
-        for (String line : wrap(card.description(), 40)) {
+        // Narrow enough to fit beside the cursor on a small window, so the game doesn't wrap the lines again.
+        String type = CardItem.typeLine(card);
+        int stats = type.indexOf(" · ATK");
+        lines.add(Component.literal(stats < 0 ? type : type.substring(0, stats)).withStyle(ChatFormatting.GRAY));
+        if (stats >= 0) {
+            lines.add(Component.literal(type.substring(stats + 3)).withStyle(ChatFormatting.GRAY));
+        }
+        for (String line : wrap(card.description(), 30)) {
             lines.add(Component.literal(line).withStyle(ChatFormatting.DARK_GRAY));
         }
         if (action != null) {

@@ -156,10 +156,10 @@ public final class RandomResponder implements Responder {
         int bestMask = -1;
         for (int mask = 1; mask < (1 << n); mask++) {
             int count = Integer.bitCount(mask) + p.mustSelect().size();
-            if (count < p.min() || count > p.max()) {
+            if (!p.atLeast() && (count < p.min() || count > p.max())) {
                 continue;
             }
-            if (sumMatches(p, mask, mustTotal)) {
+            if (p.atLeast() ? reachesWithoutSpare(p, mask) : sumMatches(p, mask, mustTotal)) {
                 bestMask = mask;
                 break;
             }
@@ -171,6 +171,31 @@ public final class RandomResponder implements Responder {
             }
         }
         return Responses.cards(chosen);
+    }
+
+    /**
+     * The core's rule for "at least" sums (Ritual tributes): the cards can reach the target, and dropping the
+     * smallest one would not still reach it.
+     */
+    private static boolean reachesWithoutSpare(SelectSum p, int mask) {
+        int least = 0;
+        int most = 0;
+        int smallest = Integer.MAX_VALUE;
+        List<SumCandidate> chosen = new ArrayList<>(p.mustSelect());
+        for (int i = 0; i < 20 && i < p.selectable().size(); i++) {
+            if ((mask & (1 << i)) != 0) {
+                chosen.add(p.selectable().get(i));
+            }
+        }
+        for (SumCandidate c : chosen) {
+            int primary = c.param() & 0xFFFF;
+            int alt = c.param() >>> 16;
+            int low = alt != 0 && alt < primary ? alt : primary;
+            least += low;
+            most += Math.max(primary, alt);
+            smallest = Math.min(smallest, low);
+        }
+        return most >= p.target() && least - smallest < p.target();
     }
 
     private static boolean sumMatches(SelectSum p, int mask, int mustTotal) {

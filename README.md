@@ -28,6 +28,7 @@ python3 -m pip install meson ninja
 
 ./native/build.sh                       # Linux/macOS; on Windows run native/build.ps1 from a VS developer shell
 ./gradlew :engine:test -PengineOnly     # engine smoke tests against the native library
+./gradlew :engine:test -PengineOnly -Pplaytest=1000 --tests '*PlaytestTest'   # long bot playtest, report in engine/build/playtest.txt
 ./gradlew :neoforge:build               # mod jar in neoforge/build/libs/
 ./gradlew :neoforge:runClient           # dev client
 ```

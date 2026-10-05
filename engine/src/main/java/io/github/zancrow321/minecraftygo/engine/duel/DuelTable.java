@@ -197,13 +197,17 @@ public final class DuelTable implements AutoCloseable {
     }
 
     private Map<Integer, DuelView> run(DuelController.Step step) {
-        for (int botSteps = 0; botSteps < BOT_STEPS_PER_CALL; botSteps++) {
+        for (int botSteps = 0; ; botSteps++) {
             if (step != null) {
                 record(step);
                 if (step.finished()) {
                     result = step.result();
                     return views(null);
                 }
+            }
+            if (botSteps == BOT_STEPS_PER_CALL) {
+                // The step just recorded must not be dropped: the next pump picks up at its prompt.
+                return views(null);
             }
             DuelMessage.Prompt prompt = pendingPrompt();
             if (prompt instanceof DuelMessage.SelectChain chain && chain.chains().isEmpty() && !chain.forced()) {
@@ -224,7 +228,6 @@ public final class DuelTable implements AutoCloseable {
             duel.respond(seats.get(seat).bot().respond(prompt, duel.board().viewedBy(prompt.player()), botRetries));
             step = duel.advance();
         }
-        return views(null);
     }
 
     private void record(DuelController.Step step) {

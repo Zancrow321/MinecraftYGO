@@ -24,6 +24,12 @@ tasks.withType(JavaCompile).configureEach {
 
 test {
     useJUnitPlatform()
+    // The long playtest (PlaytestTest) only runs when asked for: -Pplaytest=<duels> [-PplaytestSeed=<first seed>]
+    if (project.hasProperty('playtest')) {
+        systemProperty 'ygo.playtest', project.property('playtest')
+        systemProperty 'ygo.playtest.seed', project.findProperty('playtestSeed') ?: '1'
+        outputs.upToDateWhen { false }
+    }
     testLogging {
         events 'passed', 'skipped', 'failed'
         exceptionFormat 'full'

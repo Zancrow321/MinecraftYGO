@@ -29,6 +29,10 @@ public final class DuelHud {
     private static final int TEXT = 0xFFFFFFFF;
     private static final int DIM = 0xFFB0C4D8;
     private static final int PANEL = 0xA0081828;
+    /** Right edge of the life panels, plus a gap. */
+    private static final int LIFE_PANEL_RIGHT = 108;
+    private static final int PROMPT_HALF_WIDTH = 160;
+    private static final int MIN_PROMPT_HALF_WIDTH = 110;
     private static final ResourceLocation CARD_BACK =
             ResourceLocation.fromNamespaceAndPath("minecraftygo", "textures/field/card_back.png");
 
@@ -54,11 +58,18 @@ public final class DuelHud {
         lifePanel(g, font, 6, h - 70, view.names().get(me), board.side(me), true);
         damagePopups(g, font, me, h, partial);
 
-        // Turn and phase, top centre.
+        // Turn and phase, top centre, between the life panel and the right edge.
         String phase = "Turn " + board.turn() + "  ·  " + YgoData.text().phase(board.phase())
                 + (board.turnPlayer() == me ? "  (your turn)" : "");
-        g.drawCenteredString(font, phase, w / 2, 6, DIM);
+        g.drawCenteredString(font, font.plainSubstrByWidth(phase, w - 2 * LIFE_PANEL_RIGHT), w / 2, 6, DIM);
 
+        // The prompt sits next to the opponent's life panel, or below it when the screen is too narrow for that.
+        int half = Math.min(PROMPT_HALF_WIDTH, w / 2 - LIFE_PANEL_RIGHT);
+        int top = 18;
+        if (half < MIN_PROMPT_HALF_WIDTH) {
+            half = Math.min(PROMPT_HALF_WIDTH, w / 2 - 6);
+            top = 50;
+        }
         PromptView prompt = ClientDuel.prompt();
         if (view.result() != null) {
             g.pose().pushPose();
@@ -66,19 +77,26 @@ public final class DuelHud {
             g.drawCenteredString(font, view.result(), w / 4, h / 4 - 20, GOLD);
             g.pose().popPose();
         } else if (prompt != null) {
-            g.fill(w / 2 - 160, 18, w / 2 + 160, 44, PANEL);
-            g.drawCenteredString(font, font.plainSubstrByWidth(prompt.title(), 312), w / 2, 22, GOLD);
+            g.fill(w / 2 - half, top, w / 2 + half, top + 26, PANEL);
+            g.drawCenteredString(font, font.plainSubstrByWidth(prompt.title(), 2 * half - 8), w / 2, top + 4, GOLD);
             String help = prompt.multi() != null
                     ? "Right-click zones to pick (" + ClientDuel.selected().size() + "/" + prompt.multi().max()
                     + ")  ·  Y to confirm or pick from the hand"
                     : "Right-click a glowing zone  ·  Y for every choice";
-            g.drawCenteredString(font, help, w / 2, 33, DIM);
+            if (font.width(help) > 2 * half - 8) {
+                help = prompt.multi() != null
+                        ? "Pick " + ClientDuel.selected().size() + "/" + prompt.multi().max() + "  ·  Y to confirm"
+                        : "Right-click a zone  ·  Y for all";
+            }
+            g.drawCenteredString(font, help, w / 2, top + 15, DIM);
         } else {
-            g.drawCenteredString(font, "Waiting for " + view.names().get(opp) + "...", w / 2, 22, DIM);
+            g.drawCenteredString(font, font.plainSubstrByWidth("Waiting for " + view.names().get(opp) + "...",
+                    2 * half), w / 2, top + 4, DIM);
         }
 
         hand(g, font, board.side(me).hand(), prompt, w, h);
-        hovered(g, font, board, w);
+        // The card panel goes below the prompt when the prompt spans the whole top.
+        hovered(g, font, board, w, top == 18 ? 50 : top + 32);
     }
 
     /** A tag team's name ("Alex & Steve") goes on two lines so it fits the panel. */
@@ -110,7 +128,7 @@ public final class DuelHud {
             }
             boolean damage = e.kind() == FieldEvent.Kind.DAMAGE;
             String text = (damage ? "-" : "+") + e.amount();
-            g.drawString(font, text, 104, y, (alpha << 24) | (damage ? 0xFF4040 : 0x40FF80));
+            g.drawString(font, text, 62, y, (alpha << 24) | (damage ? 0xFF4040 : 0x40FF80));
         }
     }
 
@@ -153,7 +171,7 @@ public final class DuelHud {
     }
 
     /** Name, stats and art of the card under the crosshair, on the right. */
-    private static void hovered(GuiGraphics g, Font font, Board board, int w) {
+    private static void hovered(GuiGraphics g, Font font, Board board, int w, int y) {
         Loc loc = ClientField.hovered();
         if (loc == null) {
             return;
@@ -161,23 +179,25 @@ public final class DuelHud {
         CardState card = FieldRenderer.cardAt(board, loc);
         String zone = (loc.controller() == ClientDuel.view().you() ? "Your " : "Opponent's ")
                 + YgoData.text().location(loc.location()).toLowerCase();
-        int x = w - 112;
-        int y = 50;
+        String name = card == null || card.code() == 0 ? "" : YgoData.text().cardName(card.code());
+        // Wide enough for the zone and card name, within reason; longer names are cut.
+        int width = Math.max(104, Math.min(160, Math.max(font.width(zone), font.width(name))));
+        int x = w - 8 - width;
         if (card == null || card.code() == 0) {
             g.fill(x - 4, y - 4, w - 4, y + 12, PANEL);
-            g.drawString(font, zone, x, y, DIM);
+            g.drawString(font, font.plainSubstrByWidth(zone, width), x, y, DIM);
             return;
         }
         CardInfo info = YgoData.cards().card(card.code());
         g.fill(x - 4, y - 4, w - 4, y + 132, PANEL);
-        g.drawString(font, font.plainSubstrByWidth(zone, 104), x, y, DIM);
-        g.drawString(font, font.plainSubstrByWidth(YgoData.text().cardName(card.code()), 104), x, y + 11, TEXT);
+        g.drawString(font, font.plainSubstrByWidth(zone, width), x, y, DIM);
+        g.drawString(font, font.plainSubstrByWidth(name, width), x, y + 11, TEXT);
         if (info != null && info.is(TYPE_MONSTER)) {
             g.drawString(font, "ATK " + card.attack() + "  DEF " + card.defense(), x, y + 22, GOLD);
         }
         CardArt.Texture art = CardArt.get(card.code());
         if (art != null) {
-            g.blit(art.location(), x + 20, y + 34, 64, 94, 0, 0, art.width(), art.height(), art.width(),
+            g.blit(art.location(), x + width / 2 - 32, y + 34, 64, 94, 0, 0, art.width(), art.height(), art.width(),
                     art.height());
         }
     }
