@@ -178,9 +178,9 @@ public final class DiskModel {
      */
     public void renderOnArm(PoseStack poses, MultiBufferSource buffers, int light, int overlay, Pose pose) {
         poses.pushPose();
-        // Entity model space is Blockbench space turned upside down (y down, x mirrored), in blocks not pixels.
-        poses.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(180));
-        poses.scale(1 / 16f, 1 / 16f, 1 / 16f);
+        // Figura's Blockbench space is entity model space with y pointing up instead of down (the left arm is on
+        // +x and the player faces -z in both), in pixels instead of blocks.
+        poses.scale(1 / 16f, -1 / 16f, 1 / 16f);
         poses.translate(-pivot.x, -pivot.y, -pivot.z);
         render(poses, buffers, light, overlay, pose);
         poses.popPose();
@@ -192,8 +192,8 @@ public final class DiskModel {
         float scale = 1 / Math.max(size.x, Math.max(size.y, size.z));
         poses.pushPose();
         poses.translate(0.5, 0.5, 0.5);
-        // The side facing away from the arm (-x in Blockbench) faces the viewer (+z).
-        poses.mulPose(com.mojang.math.Axis.YP.rotationDegrees(90));
+        // The side facing away from the left arm (+x in Figura) faces the viewer (+z).
+        poses.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-90));
         poses.scale(scale, scale, scale);
         poses.translate(-(boundsMin.x + boundsMax.x) / 2, -(boundsMin.y + boundsMax.y) / 2,
                 -(boundsMin.z + boundsMax.z) / 2);

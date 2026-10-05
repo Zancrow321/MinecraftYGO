@@ -7,7 +7,7 @@ hierarchy (pivot, rest rotation) for animation, and copies the animations' keyfr
 transforms the way Blockbench displays them, so what you see in Blockbench is what you get on the arm.
 
 Only the group named LeftArm (Figura's left-arm part) and everything inside it is exported, so reference models
-next to it are ignored. Textures are written next to the model; a texture named <name>_e is the emissive layer of
+next to it are ignored. Coordinates are Figura's: the left arm sits on +x and the player faces -z. Textures are written next to the model; a texture named <name>_e is the emissive layer of
 <name>, as in Figura.
 
     python3 tools/disk/convert_disk.py [--model tools/disk/duel_disk.bbmodel] [--root LeftArm]
