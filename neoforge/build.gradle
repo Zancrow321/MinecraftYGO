@@ -54,6 +54,10 @@ neoForge {
             if (project.hasProperty('autoplay')) {
                 systemProperty 'minecraftygo.autoplay', 'true'
             }
+            // -PuseItem=80,200 uses the main-hand item at those ticks, for screenshots of the collection screens.
+            if (project.hasProperty('useItem')) {
+                systemProperty 'minecraftygo.useItem', project.property('useItem').toString()
+            }
             // -Pcamera=THIRD_PERSON_FRONT[:bodyYawOffset] locks the camera, for screenshots of the player's duel disk.
             if (project.hasProperty('camera')) {
                 systemProperty 'minecraftygo.camera', project.property('camera').toString()

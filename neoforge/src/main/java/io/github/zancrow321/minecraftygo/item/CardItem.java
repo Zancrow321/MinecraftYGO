@@ -1,0 +1,140 @@
+package io.github.zancrow321.minecraftygo.item;
+
+import io.github.zancrow321.minecraftygo.YgoData;
+import io.github.zancrow321.minecraftygo.engine.OcgConstants;
+import io.github.zancrow321.minecraftygo.engine.data.BoosterSets.Rarity;
+import io.github.zancrow321.minecraftygo.engine.data.CardInfo;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+
+import java.util.List;
+
+/**
+ * One Yu-Gi-Oh! card. Which card it is lives in the {@code minecraftygo:card} component; cards of the same
+ * passcode and rarity stack.
+ */
+public final class CardItem extends Item {
+    public CardItem(Properties properties) {
+        super(properties);
+    }
+
+    public static ItemStack of(int code, Rarity rarity) {
+        ItemStack stack = new ItemStack(YgoItems.CARD.get());
+        stack.set(YgoComponents.CARD.get(), new YgoComponents.CardStack(code, rarity.id()));
+        return stack;
+    }
+
+    public static ItemStack of(int code) {
+        return of(code, Rarity.COMMON);
+    }
+
+    /** @return the card's passcode, or 0 for a blank card */
+    public static int code(ItemStack stack) {
+        YgoComponents.CardStack card = stack.get(YgoComponents.CARD.get());
+        return card == null ? 0 : card.code();
+    }
+
+    public static Rarity rarity(ItemStack stack) {
+        YgoComponents.CardStack card = stack.get(YgoComponents.CARD.get());
+        try {
+            return card == null ? Rarity.COMMON : Rarity.parse(card.rarity());
+        } catch (IllegalArgumentException e) {
+            return Rarity.COMMON;
+        }
+    }
+
+    public static ChatFormatting color(Rarity rarity) {
+        return switch (rarity) {
+            case COMMON -> ChatFormatting.WHITE;
+            case RARE -> ChatFormatting.AQUA;
+            case SUPER -> ChatFormatting.GOLD;
+            case ULTRA -> ChatFormatting.LIGHT_PURPLE;
+            case SECRET -> ChatFormatting.RED;
+        };
+    }
+
+    public static String rarityName(Rarity rarity) {
+        return switch (rarity) {
+            case COMMON -> "Common";
+            case RARE -> "Rare";
+            case SUPER -> "Super Rare";
+            case ULTRA -> "Ultra Rare";
+            case SECRET -> "Secret Rare";
+        };
+    }
+
+    @Override
+    public Component getName(ItemStack stack) {
+        int code = code(stack);
+        CardInfo card = code == 0 ? null : YgoData.cards().card(code);
+        if (card == null) {
+            return super.getName(stack);
+        }
+        return Component.literal(card.name()).withStyle(color(rarity(stack)));
+    }
+
+    @Override
+    public boolean isFoil(ItemStack stack) {
+        return rarity(stack).ordinal() >= Rarity.SUPER.ordinal();
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        int code = code(stack);
+        CardInfo card = code == 0 ? null : YgoData.cards().card(code);
+        if (card == null) {
+            return;
+        }
+        tooltip.add(Component.literal(typeLine(card)).withStyle(ChatFormatting.GRAY));
+        Rarity rarity = rarity(stack);
+        if (rarity != Rarity.COMMON) {
+            tooltip.add(Component.literal(rarityName(rarity)).withStyle(color(rarity)));
+        }
+        if (flag.hasShiftDown()) {
+            for (String line : wrap(card.description(), 48)) {
+                tooltip.add(Component.literal(line).withStyle(ChatFormatting.DARK_GRAY));
+            }
+        } else {
+            tooltip.add(Component.literal("Shift for card text").withStyle(ChatFormatting.DARK_GRAY));
+        }
+    }
+
+    /** "DARK Spellcaster · Level 7 · ATK 2500 / DEF 2100", or "Spell Card" / "Trap Card". */
+    public static String typeLine(CardInfo card) {
+        if (card.is(OcgConstants.TYPE_SPELL)) {
+            return "Spell Card";
+        }
+        if (card.is(OcgConstants.TYPE_TRAP)) {
+            return "Trap Card";
+        }
+        var data = card.data();
+        String attribute = YgoData.text().system(1010 + Integer.numberOfTrailingZeros(Math.max(1, data.attribute())));
+        String race = YgoData.text().system(1020 + Long.numberOfTrailingZeros(Math.max(1, data.race())));
+        String atk = data.attack() < 0 ? "?" : String.valueOf(data.attack());
+        String def = data.defense() < 0 ? "?" : String.valueOf(data.defense());
+        return attribute + " " + race + (card.is(OcgConstants.TYPE_FUSION) ? " / Fusion" : "")
+                + " · Level " + data.level() + " · ATK " + atk + " / DEF " + def;
+    }
+
+    static List<String> wrap(String text, int width) {
+        List<String> lines = new java.util.ArrayList<>();
+        for (String paragraph : text.split("\\R")) {
+            StringBuilder line = new StringBuilder();
+            for (String word : paragraph.split(" ")) {
+                if (line.length() + word.length() + 1 > width && !line.isEmpty()) {
+                    lines.add(line.toString());
+                    line.setLength(0);
+                }
+                if (!line.isEmpty()) {
+                    line.append(' ');
+                }
+                line.append(word);
+            }
+            lines.add(line.toString());
+        }
+        return lines;
+    }
+}

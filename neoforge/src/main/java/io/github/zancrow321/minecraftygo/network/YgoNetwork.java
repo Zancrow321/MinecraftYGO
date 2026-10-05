@@ -1,6 +1,8 @@
 package io.github.zancrow321.minecraftygo.network;
 
 import io.github.zancrow321.minecraftygo.client.ClientDuel;
+import io.github.zancrow321.minecraftygo.client.ClientScreens;
+import io.github.zancrow321.minecraftygo.collection.CollectionActions;
 import io.github.zancrow321.minecraftygo.client.disk.DiskClient;
 import io.github.zancrow321.minecraftygo.client.field.ClientField;
 import io.github.zancrow321.minecraftygo.duel.DuelManager;
@@ -21,6 +23,14 @@ public final class YgoNetwork {
                 (payload, context) -> context.enqueueWork(() -> ClientField.receive(payload)));
         registrar.playToClient(DuelistStatePayload.TYPE, DuelistStatePayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> DiskClient.receive(payload)));
+        registrar.playToClient(PackOpenedPayload.TYPE, PackOpenedPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.packOpened(payload)));
+        registrar.playToServer(CollectionActionPayload.TYPE, CollectionActionPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        CollectionActions.handle(player, payload);
+                    }
+                }));
         registrar.playToServer(DuelResponsePayload.TYPE, DuelResponsePayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer player) {

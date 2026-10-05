@@ -1,0 +1,28 @@
+package io.github.zancrow321.minecraftygo.client;
+
+import io.github.zancrow321.minecraftygo.client.collection.BinderScreen;
+import io.github.zancrow321.minecraftygo.client.collection.DeckBoxScreen;
+import io.github.zancrow321.minecraftygo.client.collection.PackOpenScreen;
+import io.github.zancrow321.minecraftygo.network.PackOpenedPayload;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.InteractionHand;
+
+/**
+ * Opens the collection screens. Items call this only on the client, so its screen classes never load on a server.
+ */
+public final class ClientScreens {
+    private ClientScreens() {
+    }
+
+    public static void openBinder(InteractionHand hand) {
+        Minecraft.getInstance().setScreen(new BinderScreen(hand));
+    }
+
+    public static void openDeckBox(InteractionHand hand) {
+        Minecraft.getInstance().setScreen(new DeckBoxScreen(hand));
+    }
+
+    public static void packOpened(PackOpenedPayload payload) {
+        Minecraft.getInstance().setScreen(new PackOpenScreen(payload.setName(), payload.cards()));
+    }
+}

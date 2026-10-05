@@ -15,6 +15,8 @@ the engine behind EDOPro, running on the server. Monster models come from
 | `native/build.sh`, `native/build.ps1` | Build OCG-Core for the host into `engine/src/main/resources/natives/<platform>/`. |
 | `tools/models/import_models.py` | Converts YGOMCModels to GeckoLib assets, maps each model to its card and writes the era pool (`pool.json`). |
 | `tools/carddata/build_carddata.py` | Bundles card data, Lua scripts and system strings for the pool. Run it after `import_models.py`. |
+| `tools/carddata/build_collection.py` | Picks the booster sets for the pool (with each card's rarity) and writes the era banlist. |
+| `tools/textures/make_collection_textures.py` | Draws the pack, binder, deck box, Card Shop and Card Trader textures. |
 | `tools/disk/convert_disk.py` | Converts the duel disk `.bbmodel` (Figura format, meshes allowed) into the mod's disk model. |
 
 ## Building
@@ -36,6 +38,20 @@ In game:
 - Craft a **Duel Disk** (glass pane, redstone, glass pane / three iron ingots / one iron ingot below the middle) and
   wear it in its Curios slot, or in your off hand without Curios. Right-click another player who has a disk to
   challenge them; they right-click you back (or click [Accept]) and both disks unfold before the field appears.
+- **Collecting:** cards come from **Booster Packs** (9 cards, one of them rare or better). Packs and single cards
+  turn up in dungeon, temple, mineshaft and treasure chests, and players sometimes get one from a mob they kill.
+  The **Card Trader** villager sells packs, binders, deck boxes, the two starter decks and later a duel disk; any
+  villager takes the job at a **Card Shop Counter** (glass panes / plank, book, plank / three planks).
+- A **Binder** (leather and paper around a string) holds your collection: "Put all cards in" moves every loose card
+  into it, and clicking a card takes it back out (shift-click for every copy).
+- A **Deck Box** (eight leather) holds a deck. Click a card on the right to add it, click it on the left to put it
+  back. A legal deck has 40 to 60 main deck cards, up to 15 Fusion monsters and at most three copies of a card, fewer
+  for cards on the banlist. Your first legal deck box (hands first, then inventory) is the deck you duel with. Without
+  one you duel with Yugi's starter deck; servers can require a deck box with `starterDecksWithoutDeckBox = false` in the
+  world's `serverconfig/minecraftygo-server.toml`.
+- The banlist is an approximation of the OCG list from May 2000. A server can replace it with
+  `config/minecraftygo/banlist.json`, in the same format as the bundled
+  `engine/src/main/resources/minecraftygo/banlist.json` (`"limits": {"<card code>": <copies allowed>}`).
 - `/ygo version` reports the loaded OCG-Core version.
 - `/ygo duel bot` or `/ygo duel <player>` (then `/ygo accept`) starts a duel; press Y to open the duel screen.
 - `/ygo gallery [page]` puts a page of modeled monsters in front of you (operators only); `/ygo gallery clear` removes them.
@@ -60,6 +76,9 @@ New models in YGOMCModels join the pool on the next run. A folder whose name doe
 `tools/models/overrides.json`. The era cutoff is the newest release date shared by at least three modeled
 monsters, and every spell and trap released up to it is playable.
 
+The booster sets are rebuilt from the same YGOPRODeck dump: `python3 tools/carddata/build_collection.py --ygoprodeck
+ygoprodeck.json`. A set is included when at least 60% of its cards are in the pool.
+
 ## Updating the duel disk model
 
 Save the model from Blockbench with textures embedded as `tools/disk/duel_disk.bbmodel`, then run
@@ -68,7 +87,8 @@ the left-arm pivot (5, 22, 0), the arm on +X and the player facing north (-Z). A
 named `deploy` and `fold` play when a duel starts and ends; the rest pose is the disk when not dueling.
 
 To check it in a dev client, `./gradlew :neoforge:runClient -PquickPlay=<world> -Pcamera=THIRD_PERSON_FRONT:90`
-turns the body sideways so the disk faces the camera. `-PnoCurios` runs without Curios.
+turns the body sideways so the disk faces the camera. `-PnoCurios` runs without Curios, and `-PuseItem=80,200`
+uses the main-hand item at those ticks (to open packs, binders and deck boxes without a mouse).
 
 ## Licenses and credits
 

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": ["GGG", "PBP", "PPP"],
+  "key": {
+    "G": {"item": "minecraft:glass_pane"},
+    "B": {"item": "minecraft:book"},
+    "P": {"tag": "minecraft:planks"}
+  },
+  "result": {"id": "minecraftygo:card_shop", "count": 1}
+}
