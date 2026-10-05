@@ -59,6 +59,11 @@ In game:
 - **Tag duels (2v2):** `/ygo tag <partner> <opponent1> <opponent2>`, where any of them can be `bot`. Partners share
   life points and the field and take turns with their own decks; only the one whose turn it is answers prompts and
   sees the team's hand.
+- **Battle City duels (2v2):** `/ygo battlecity <partner> <opponent1> <opponent2>` is a tag duel where each partner
+  plays on their own half of the team's zones: monster and spell/trap zones 1-2 for the first partner, 4-5 for the
+  second, the middle column shared. The second partner's half is drawn in green (orange for the opponents), and each
+  half shows its owner's card sleeves. Anyone can attack any opponent's monster, and each team shares life points,
+  since OCG-Core only knows two players (see the research note in the PR).
 - **Rules:** `ruleset` in `serverconfig/minecraftygo-server.toml` is `mr1` (original, the default), `goat` or
   `modern`; `startingLifePoints` defaults to 8000.
 - **Duel Dome:** craft a **Duel Dome Kit** (a Duel Dome Core, two Duelist Platforms, two quartz blocks, a sea lantern

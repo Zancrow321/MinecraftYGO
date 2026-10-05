@@ -52,7 +52,14 @@ final class YgoCommands {
                                         .suggests(YgoCommands::duelists)
                                         .then(Commands.argument("opponent2", StringArgumentType.word())
                                                 .suggests(YgoCommands::duelists)
-                                                .executes(YgoCommands::tag)))))
+                                                .executes(ctx -> tag(ctx, false))))))
+                .then(Commands.literal("battlecity")
+                        .then(Commands.argument("partner", StringArgumentType.word()).suggests(YgoCommands::duelists)
+                                .then(Commands.argument("opponent1", StringArgumentType.word())
+                                        .suggests(YgoCommands::duelists)
+                                        .then(Commands.argument("opponent2", StringArgumentType.word())
+                                                .suggests(YgoCommands::duelists)
+                                                .executes(ctx -> tag(ctx, true))))))
                 .then(Commands.literal("gallery")
                         .requires(source -> source.hasPermission(2))
                         .executes(ctx -> Gallery.show(ctx.getSource(), 1))
@@ -74,8 +81,11 @@ final class YgoCommands {
                 })));
     }
 
-    /** {@code /ygo tag <partner> <opponent1> <opponent2>}, each a player name or {@code bot}. */
-    private static int tag(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+    /**
+     * {@code /ygo tag|battlecity <partner> <opponent1> <opponent2>}, each a player name or {@code bot}; Battle City
+     * gives each partner their own half of the field.
+     */
+    private static int tag(CommandContext<CommandSourceStack> ctx, boolean split) throws CommandSyntaxException {
         ServerPlayer host = ctx.getSource().getPlayerOrException();
         ServerPlayer[] others = new ServerPlayer[3];
         String[] args = {"partner", "opponent1", "opponent2"};
@@ -90,7 +100,7 @@ final class YgoCommands {
                 return 0;
             }
         }
-        manager(ctx).tag(host, others[0], others[1], others[2]);
+        manager(ctx).tag(host, others[0], others[1], others[2], split);
         return 1;
     }
 

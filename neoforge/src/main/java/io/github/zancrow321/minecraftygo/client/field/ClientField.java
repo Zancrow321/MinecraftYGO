@@ -1,6 +1,7 @@
 package io.github.zancrow321.minecraftygo.client.field;
 
 import io.github.zancrow321.minecraftygo.cosmetics.Cosmetics;
+import io.github.zancrow321.minecraftygo.engine.duel.DuelTable;
 import net.minecraft.resources.ResourceLocation;
 import io.github.zancrow321.minecraftygo.client.ClientDuel;
 import io.github.zancrow321.minecraftygo.client.DuelScreen;
@@ -39,7 +40,9 @@ public final class ClientField {
     private static double scale = 1;
     private static final List<FieldAnimation> animations = new ArrayList<>();
     private static Loc hovered;
-    private static final ResourceLocation[] sleeves = new ResourceLocation[2];
+    /** Card backs per team, or per duelist (team * 2 + partner) on a split field. */
+    private static final List<ResourceLocation> sleeves = new ArrayList<>();
+    private static boolean split;
 
     private ClientField() {
     }
@@ -50,9 +53,9 @@ public final class ClientField {
             return;
         }
         center = new Vec3(payload.x(), payload.y(), payload.z());
-        for (int team = 0; team < 2; team++) {
-            sleeves[team] = Cosmetics.sleeveTexture(payload.sleeve(team));
-        }
+        split = payload.layout().split();
+        sleeves.clear();
+        payload.layout().sleeves().forEach(s -> sleeves.add(Cosmetics.sleeveTexture(s)));
         forward = Vec3.directionFromRotation(0, payload.yaw());
         right = new Vec3(-forward.z, 0, forward.x);
         endsAt = -1;
@@ -75,10 +78,27 @@ public final class ClientField {
         return center != null && ClientDuel.view() != null;
     }
 
+    /** Whether each partner of a team plays on their own half of the zones (a Battle City duel). */
+    public static boolean split() {
+        return split;
+    }
+
     /** The back of team {@code team}'s face-down cards, in their sleeve. */
     public static ResourceLocation sleeve(int team) {
-        ResourceLocation sleeve = sleeves[team & 1];
-        return sleeve != null ? sleeve : Cosmetics.sleeveTexture(null);
+        return sleeve(team, -1);
+    }
+
+    /**
+     * The back of a face-down card in zone column {@code seq} (-1 for piles): on a split field, the sleeve of the
+     * partner whose half it is on.
+     */
+    public static ResourceLocation sleeve(int team, int seq) {
+        int index = team & 1;
+        if (split) {
+            int owner = seq < 0 ? -1 : DuelTable.zoneOwner(seq);
+            index = index * 2 + Math.max(owner, 0);
+        }
+        return index < sleeves.size() ? sleeves.get(index) : Cosmetics.sleeveTexture(null);
     }
 
     public static long tick() {

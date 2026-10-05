@@ -69,12 +69,13 @@ public final class DuelManager {
     /**
      * A duel waiting for everyone invited to accept.
      *
-     * @param npc the NPC duelist sitting in the bot seat, or {@code null}
+     * @param npc   the NPC duelist sitting in the bot seat, or {@code null}
+     * @param split a Battle City tag duel, each partner on their own half of the team's zones
      */
     private record Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt,
-                          DuelistNpc npc) {
-        Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt) {
-            this(host, entrants, pending, ante, expiresAt, null);
+                          DuelistNpc npc, boolean split) {
+        Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt, DuelistNpc npc) {
+            this(host, entrants, pending, ante, expiresAt, npc, false);
         }
     }
 
@@ -126,9 +127,10 @@ public final class DuelManager {
 
     /**
      * Invites players to a tag duel: the host and {@code partner} against {@code opponents}. A {@code null} player
-     * is a bot.
+     * is a bot. With {@code split}, it is a Battle City duel: each partner plays on their own half of the field.
      */
-    public void tag(ServerPlayer host, ServerPlayer partner, ServerPlayer opponent1, ServerPlayer opponent2) {
+    public void tag(ServerPlayer host, ServerPlayer partner, ServerPlayer opponent1, ServerPlayer opponent2,
+                    boolean split) {
         List<Entrant> entrants = new ArrayList<>();
         entrants.add(new Entrant(0, host.getUUID(), host.getScoreboardName()));
         int bots = 0;
@@ -146,10 +148,14 @@ public final class DuelManager {
                 return;
             }
         }
-        invite(host, entrants, false);
+        invite(host, entrants, false, split);
     }
 
     private void invite(ServerPlayer host, List<Entrant> entrants, boolean ante) {
+        invite(host, entrants, ante, false);
+    }
+
+    private void invite(ServerPlayer host, List<Entrant> entrants, boolean ante, boolean split) {
         for (Entrant e : entrants) {
             ServerPlayer player = player(e.player());
             if (player != null && inDuel(player)) {
@@ -161,12 +167,12 @@ public final class DuelManager {
         entrants.stream().map(Entrant::player).filter(Objects::nonNull).filter(id -> !id.equals(host.getUUID()))
                 .forEach(pending::add);
         Invite invite = new Invite(host.getUUID(), List.copyOf(entrants), pending, ante,
-                server.getTickCount() + INVITE_TIMEOUT_TICKS);
+                server.getTickCount() + INVITE_TIMEOUT_TICKS, null, split);
         if (pending.isEmpty()) {
             launch(invite);
             return;
         }
-        String matchup = matchup(entrants) + (ante ? " (ante)" : "");
+        String matchup = matchup(entrants) + (ante ? " (ante)" : split ? " (Battle City)" : "");
         host.sendSystemMessage(Component.literal("Invitation sent: " + matchup + "."));
         for (UUID id : pending) {
             invites.put(id, invite);
@@ -300,7 +306,7 @@ public final class DuelManager {
         if (field == null) {
             field = team1.isEmpty() ? fieldInFrontOf(team0.get(0)) : fieldBetween(team0.get(0), team1.get(0));
         }
-        start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc());
+        start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split());
     }
 
     private static int teamOf(List<Entrant> entrants, ServerPlayer player) {
@@ -397,7 +403,7 @@ public final class DuelManager {
      * @param anteBoxes each person's deck box to take the ante from, or {@code null} for a duel without an ante
      */
     private void start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes,
-                       DuelistNpc npc) {
+                       DuelistNpc npc, boolean split) {
         var random = server.overworld().getRandom();
         long[] seed = {random.nextLong(), random.nextLong(), random.nextLong(), random.nextLong() | 1};
         List<DuelTable.Seat> seats = new ArrayList<>();
@@ -421,7 +427,22 @@ public final class DuelManager {
             return;
         }
         UUID ante = anteBoxes == null ? null : takeAnte(entrants, anteBoxes, random);
-        field = field.withSleeves(List.of(sleeveOf(entrants, 0, npc), sleeveOf(entrants, 1, npc)));
+        table.splitField(split);
+        if (split) {
+            // One sleeve per duelist, in seat order within each team, for their own half of the field.
+            List<String> sleeves = new ArrayList<>();
+            for (int side = 0; side < 2; side++) {
+                for (Entrant e : entrants) {
+                    if (e.team() == side) {
+                        ServerPlayer player = player(e.player());
+                        sleeves.add(player != null ? PlayerCosmetics.sleeve(player) : Cosmetics.DEFAULT_SLEEVE);
+                    }
+                }
+            }
+            field = field.withLayout(true, sleeves);
+        } else {
+            field = field.withLayout(false, List.of(sleeveOf(entrants, 0, npc), sleeveOf(entrants, 1, npc)));
+        }
         ServerDuel duel = new ServerDuel(table, people, field, ante, npc);
         duels.add(duel);
         if (npc != null) {
@@ -441,9 +462,10 @@ public final class DuelManager {
                         new DuelistStatePayload(player.getId(), true));
                 PacketDistributor.sendToPlayer(player, field);
             }
-            message(seat, Component.literal((tag ? "Tag duel! " : "Duel! ") + matchup(entrants) + ", "
+            message(seat, Component.literal((split ? "Battle City duel! " : tag ? "Tag duel! " : "Duel! ") + matchup(entrants) + ", "
                     + ruleset.displayName() + " rules. Right-click glowing zones on the field, or press Y for every "
-                    + "choice." + (tag ? " Partners take turns; you answer when it's yours." : "")));
+                    + "choice." + (tag ? " Partners take turns; you answer when it's yours." : "")
+                    + (split ? " Each partner plays on their own half of the field." : "")));
         }
         run(duel, table::start);
     }
