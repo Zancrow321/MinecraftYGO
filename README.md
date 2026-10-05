@@ -17,6 +17,7 @@ the engine behind EDOPro, running on the server. Monster models come from
 | `tools/carddata/build_carddata.py` | Bundles card data, Lua scripts and system strings for the pool. Run it after `import_models.py`. |
 | `tools/carddata/build_collection.py` | Picks the booster sets for the pool (with each card's rarity) and writes the era banlist. |
 | `tools/textures/make_collection_textures.py` | Draws the pack, binder, deck box, Card Shop and Card Trader textures. |
+| `tools/textures/make_logo.py` | Draws the mod logo (`minecraftygo_logo.png`) from the card back. |
 | `tools/disk/convert_disk.py` | Converts the duel disk `.bbmodel` (Figura format, meshes allowed) into the mod's disk model. |
 
 ## Building
@@ -100,6 +101,11 @@ In game:
 Card artwork is downloaded on first view and cached in `minecraftygo/card_art/`. The source URL can be changed,
 or downloads turned off, in `config/minecraftygo-client.toml`.
 
+## Releasing
+
+See [docs/release/README.md](docs/release/README.md): pushing a `v<version>` tag builds the jar and the Figura
+starter avatar and attaches them to a GitHub Release. What changed is in [CHANGELOG.md](CHANGELOG.md).
+
 ## Updating the card pool
 
 ```sh
@@ -138,4 +144,4 @@ uses the main-hand item at those ticks (to open packs, binders and deck boxes wi
 - Monster models: MIT, © iconmaster ([YGOMCModels](https://github.com/iconmaster5326/YGOMCModels)); the license ships as `assets/minecraftygo/YGOMCModels-LICENSE.md`.
 - Card data and scripts: BabelCDB and CardScripts by Project Ignis (AGPL-3.0).
 - Rendering: [GeckoLib](https://github.com/bernie-g/geckolib) (required dependency, MIT).
-- Yu-Gi-Oh! is a trademark of Konami. This is an unofficial fan project, and no card artwork is bundled.
+- Yu-Gi-Oh! is a trademark of Konami. This is an unofficial fan project, not affiliated with or endorsed by Konami, and no card artwork is bundled.
