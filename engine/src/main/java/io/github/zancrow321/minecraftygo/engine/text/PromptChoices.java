@@ -48,10 +48,12 @@ public final class PromptChoices {
                     p.cancelable());
             case SelectSum p -> PromptView.multi(or(hinted, "Select cards totalling " + p.target()),
                     p.selectable().stream().map(c -> cardLabel(c.card(), p.player())).toList(),
-                    locs(p.selectable().stream().map(SumCandidate::card).toList()), 0,
-                    Math.max(0, p.max() - p.mustSelect().size()), Responses::cards, false);
+                    locs(p.selectable().stream().map(SumCandidate::card).toList()), 0, sumMax(p),
+                    Responses::cards, false);
             case SelectChain p -> chain(p);
-            case SelectPlace p -> place(p, hinted);
+            // The core's hint for a zone choice is the card being placed, not a text id.
+            case SelectPlace p -> place(p, hint != 0 && text.cards().card((int) hint) != null
+                    ? "Choose a zone for " + text.cardName((int) hint) : hinted);
             case SelectPosition p -> {
                 List<Choice> choices = new ArrayList<>();
                 addPosition(choices, p.positions(), 0x1, "Face-up Attack");
@@ -99,6 +101,14 @@ public final class PromptChoices {
                 yield PromptView.choices(or(hinted, "Declare a number"), choices);
             }
         };
+    }
+
+    /**
+     * How many cards a sum prompt allows. "At least" sums (Ritual tributes) have no count limit: the core sends 0 and
+     * only checks that the total reaches the target without a card to spare.
+     */
+    private static int sumMax(SelectSum p) {
+        return p.atLeast() ? p.selectable().size() : Math.max(0, p.max() - p.mustSelect().size());
     }
 
     private PromptView idle(SelectIdleCmd p) {
