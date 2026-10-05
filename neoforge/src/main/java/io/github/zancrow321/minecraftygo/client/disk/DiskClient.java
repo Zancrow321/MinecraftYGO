@@ -3,6 +3,7 @@ package io.github.zancrow321.minecraftygo.client.disk;
 import io.github.zancrow321.minecraftygo.duel.DuelDisks;
 import io.github.zancrow321.minecraftygo.network.DuelistStatePayload;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.HashMap;
@@ -34,9 +35,9 @@ public final class DiskClient {
         states.clear();
     }
 
-    /** The disk's pose for this player: rest, unfolding or unfolded while dueling, folding back afterwards. */
-    public static DiskModel.Pose pose(Player player, float partialTick) {
-        State state = states.get(player.getId());
+    /** The disk's pose for this duelist: rest, unfolding or unfolded while dueling, folding back afterwards. */
+    public static DiskModel.Pose pose(Entity duelist, float partialTick) {
+        State state = states.get(duelist.getId());
         DiskModel model = DiskModel.get();
         if (state == null || model == null) {
             return DiskModel.Pose.REST;

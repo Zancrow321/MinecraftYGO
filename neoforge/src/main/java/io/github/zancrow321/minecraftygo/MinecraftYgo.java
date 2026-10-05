@@ -61,8 +61,8 @@ public final class MinecraftYgo {
             }
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.StartTracking event) -> {
-            if (event.getEntity() instanceof ServerPlayer tracker && event.getTarget() instanceof ServerPlayer target) {
-                DuelManager.get(tracker.server).onStartTracking(tracker, target);
+            if (event.getEntity() instanceof ServerPlayer tracker) {
+                DuelManager.get(tracker.server).onStartTracking(tracker, event.getTarget());
             }
         });
         NeoForge.EVENT_BUS.addListener(this::onInteractPlayer);

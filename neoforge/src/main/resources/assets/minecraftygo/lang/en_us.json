@@ -40,5 +40,7 @@
   "block.minecraftygo.duelist_platform": "Duelist Platform",
   "item.minecraftygo.duel_dome_kit": "Duel Dome Kit",
   "item.minecraftygo.duel_dome_kit.tooltip": "Use on flat ground to build a Duel Dome (13 × 21) facing the way you look. Duelists on its platforms duel over the core.",
-  "message.minecraftygo.duel_dome.blocked": "Something is in the way at %s %s %s. The Duel Dome needs a clear 13 × 21 area."
+  "message.minecraftygo.duel_dome.blocked": "Something is in the way at %s %s %s. The Duel Dome needs a clear 13 × 21 area.",
+  "entity.minecraftygo.duelist": "Duelist",
+  "item.minecraftygo.duelist_spawn_egg": "Duelist Spawn Egg"
 }

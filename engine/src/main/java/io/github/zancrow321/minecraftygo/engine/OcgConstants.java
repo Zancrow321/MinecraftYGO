@@ -15,6 +15,7 @@ public final class OcgConstants {
     public static final int TYPE_FUSION = 0x40;
     public static final int TYPE_RITUAL = 0x80;
     public static final int TYPE_TOKEN = 0x4000;
+    public static final int TYPE_EQUIP = 0x40000;
 
     public static final int LOCATION_DECK = 0x01;
     public static final int LOCATION_HAND = 0x02;

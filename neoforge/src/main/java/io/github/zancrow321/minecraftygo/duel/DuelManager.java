@@ -6,12 +6,13 @@ import io.github.zancrow321.minecraftygo.YgoServerConfig;
 import io.github.zancrow321.minecraftygo.arena.DuelDome;
 import io.github.zancrow321.minecraftygo.engine.DuelSettings;
 import io.github.zancrow321.minecraftygo.engine.Ruleset;
-import io.github.zancrow321.minecraftygo.engine.ai.RandomResponder;
+import io.github.zancrow321.minecraftygo.engine.ai.DuelistAi;
 import io.github.zancrow321.minecraftygo.engine.data.BundledScripts;
 import io.github.zancrow321.minecraftygo.engine.data.Deck;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelTable;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
 import io.github.zancrow321.minecraftygo.engine.duel.ViewCodec;
+import io.github.zancrow321.minecraftygo.entity.DuelistNpc;
 import io.github.zancrow321.minecraftygo.item.DeckBoxItem;
 import io.github.zancrow321.minecraftygo.item.YgoComponents;
 import io.github.zancrow321.minecraftygo.item.YgoItems;
@@ -23,6 +24,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -62,16 +64,25 @@ public final class DuelManager {
     private record Entrant(int team, UUID player, String name) {
     }
 
-    /** A duel waiting for everyone invited to accept. */
-    private record Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt) {
+    /**
+     * A duel waiting for everyone invited to accept.
+     *
+     * @param npc the NPC duelist sitting in the bot seat, or {@code null}
+     */
+    private record Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt,
+                          DuelistNpc npc) {
+        Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt) {
+            this(host, entrants, pending, ante, expiresAt, null);
+        }
     }
 
     /**
      * A running duel and who sits where ({@code null} seats are bots).
      *
      * @param ante the escrow id of the ante, or {@code null} for a duel without one
+     * @param npc the NPC duelist playing the bot seat, or {@code null}
      */
-    private record ServerDuel(DuelTable table, UUID[] seats, DuelFieldPayload field, UUID ante) {
+    private record ServerDuel(DuelTable table, UUID[] seats, DuelFieldPayload field, UUID ante, DuelistNpc npc) {
     }
 
     private DuelManager(MinecraftServer server) {
@@ -228,6 +239,21 @@ public final class DuelManager {
                 new Entrant(1, null, BOT_NAMES.get(0))), false);
     }
 
+    /** {@code player} right-clicked an NPC duelist: duel it, unless it is busy or wants a rematch break. */
+    public void duelNpc(ServerPlayer player, DuelistNpc npc) {
+        if (inDuel(player)) {
+            player.sendSystemMessage(Component.literal("You are already in a duel."));
+            return;
+        }
+        Component refusal = npc.refusal(player);
+        if (refusal != null) {
+            player.sendSystemMessage(refusal);
+            return;
+        }
+        launch(new Invite(player.getUUID(), List.of(new Entrant(0, player.getUUID(), player.getScoreboardName()),
+                new Entrant(1, null, npc.duelistName())), Set.of(), false, 0, npc));
+    }
+
     /** Everyone accepted: checks decks, takes the ante and starts the duel. */
     private void launch(Invite invite) {
         List<Entrant> entrants = invite.entrants();
@@ -248,7 +274,8 @@ public final class DuelManager {
         int botIndex = 0;
         for (Entrant e : entrants) {
             if (e.player() == null) {
-                decks.add(Deck.bundled(BOT_DECKS.get(botIndex++ % BOT_DECKS.size())));
+                decks.add(invite.npc() != null ? invite.npc().deck()
+                        : Deck.bundled(BOT_DECKS.get(botIndex++ % BOT_DECKS.size())));
                 boxes.add(ItemStack.EMPTY);
                 continue;
             }
@@ -265,10 +292,13 @@ public final class DuelManager {
         List<ServerPlayer> team0 = online.stream().filter(p -> teamOf(entrants, p) == 0).toList();
         List<ServerPlayer> team1 = online.stream().filter(p -> teamOf(entrants, p) == 1).toList();
         DuelFieldPayload field = DuelDome.field(team0, team1);
+        if (field == null && invite.npc() != null) {
+            field = fieldAgainstNpc(team0.get(0), invite.npc());
+        }
         if (field == null) {
             field = team1.isEmpty() ? fieldInFrontOf(team0.get(0)) : fieldBetween(team0.get(0), team1.get(0));
         }
-        start(entrants, decks, field, invite.ante() ? boxes : null);
+        start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc());
     }
 
     private static int teamOf(List<Entrant> entrants, ServerPlayer player) {
@@ -283,6 +313,30 @@ public final class DuelManager {
             return fieldInFrontOf(first);
         }
         float yaw = (float) Math.toDegrees(Math.atan2(-(b.x - a.x), b.z - a.z));
+        return new DuelFieldPayload(true, (a.x + b.x) / 2, Math.min(a.y, b.y), (a.z + b.z) / 2, yaw);
+    }
+
+    /**
+     * Projected ahead of the player toward the NPC, which steps over to the far end so it doesn't stand on the
+     * cards. If there's no room over there it stays put and the field goes between the two of them.
+     */
+    private static DuelFieldPayload fieldAgainstNpc(ServerPlayer player, DuelistNpc npc) {
+        Vec3 a = player.position();
+        Vec3 b = npc.position();
+        if (a.distanceToSqr(b) < 1 || player.level() != npc.level()) {
+            return fieldInFrontOf(player);
+        }
+        float yaw = (float) Math.toDegrees(Math.atan2(-(b.x - a.x), b.z - a.z));
+        Vec3 forward = Vec3.directionFromRotation(0, yaw);
+        Vec3 end = a.add(forward.scale(2 * BOT_FIELD_DISTANCE));
+        Vec3 spot = new Vec3(end.x, b.y, end.z);
+        if (npc.level().noCollision(npc, npc.getBoundingBox().move(spot.subtract(b)))) {
+            npc.moveTo(spot.x, spot.y, spot.z, yaw + 180, 0);
+            npc.setYHeadRot(yaw + 180);
+            npc.setYBodyRot(yaw + 180);
+            Vec3 center = a.add(forward.scale(BOT_FIELD_DISTANCE));
+            return new DuelFieldPayload(true, center.x, Math.min(a.y, b.y), center.z, yaw);
+        }
         return new DuelFieldPayload(true, (a.x + b.x) / 2, Math.min(a.y, b.y), (a.z + b.z) / 2, yaw);
     }
 
@@ -340,7 +394,8 @@ public final class DuelManager {
     /**
      * @param anteBoxes each person's deck box to take the ante from, or {@code null} for a duel without an ante
      */
-    private void start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes) {
+    private void start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes,
+                       DuelistNpc npc) {
         var random = server.overworld().getRandom();
         long[] seed = {random.nextLong(), random.nextLong(), random.nextLong(), random.nextLong() | 1};
         List<DuelTable.Seat> seats = new ArrayList<>();
@@ -349,7 +404,7 @@ public final class DuelManager {
             Entrant e = entrants.get(i);
             people[i] = e.player();
             seats.add(new DuelTable.Seat(e.team(), e.name(),
-                    e.player() == null ? new RandomResponder(random.nextLong(), YgoData.cards()) : null));
+                    e.player() == null ? new DuelistAi(random.nextLong(), YgoData.cards()) : null));
         }
         Ruleset ruleset = Ruleset.parse(YgoServerConfig.RULESET.get());
         DuelSettings.Team team = new DuelSettings.Team(YgoServerConfig.STARTING_LIFE_POINTS.get(), 5, 1);
@@ -364,8 +419,12 @@ public final class DuelManager {
             return;
         }
         UUID ante = anteBoxes == null ? null : takeAnte(entrants, anteBoxes, random);
-        ServerDuel duel = new ServerDuel(table, people, field, ante);
+        ServerDuel duel = new ServerDuel(table, people, field, ante, npc);
         duels.add(duel);
+        if (npc != null) {
+            npc.setDueling(true);
+            PacketDistributor.sendToPlayersTrackingEntity(npc, new DuelistStatePayload(npc.getId(), true));
+        }
         boolean tag = entrants.size() > 2;
         for (UUID seat : people) {
             if (seat == null) {
@@ -429,9 +488,10 @@ public final class DuelManager {
         run(duel, () -> duel.table().forfeit(seatOf(duel, player.getUUID())));
     }
 
-    /** A player came into view of {@code tracker}: show their disk unfolded if they're dueling. */
-    public void onStartTracking(ServerPlayer tracker, ServerPlayer target) {
-        if (inDuel(target)) {
+    /** A duelist came into view of {@code tracker}: show their disk unfolded if they're dueling. */
+    public void onStartTracking(ServerPlayer tracker, Entity target) {
+        if (target instanceof ServerPlayer player ? inDuel(player)
+                : target instanceof DuelistNpc npc && npc.isDueling()) {
             PacketDistributor.sendToPlayer(tracker, new DuelistStatePayload(target.getId(), true));
         }
     }
@@ -492,6 +552,11 @@ public final class DuelManager {
                             new DuelistStatePayload(player.getId(), false));
                 }
             }
+        }
+        if (duel.npc() != null) {
+            DuelistNpc npc = duel.npc();
+            PacketDistributor.sendToPlayersTrackingEntity(npc, new DuelistStatePayload(npc.getId(), false));
+            npc.duelEnded(player(duel.seats()[0]), duel.table().winner() == 0);
         }
         if (duel.ante() != null) {
             // Only 1v1 duels between two people have an ante, so the winning team has exactly one person.

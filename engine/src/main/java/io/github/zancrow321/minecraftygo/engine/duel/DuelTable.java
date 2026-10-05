@@ -3,7 +3,7 @@ package io.github.zancrow321.minecraftygo.engine.duel;
 import io.github.zancrow321.minecraftygo.engine.DuelLogHandler;
 import io.github.zancrow321.minecraftygo.engine.DuelSettings;
 import io.github.zancrow321.minecraftygo.engine.ScriptProvider;
-import io.github.zancrow321.minecraftygo.engine.ai.RandomResponder;
+import io.github.zancrow321.minecraftygo.engine.ai.Responder;
 import io.github.zancrow321.minecraftygo.engine.data.Deck;
 import io.github.zancrow321.minecraftygo.engine.protocol.CardState;
 import io.github.zancrow321.minecraftygo.engine.protocol.DuelMessage;
@@ -35,7 +35,7 @@ public final class DuelTable implements AutoCloseable {
      * @param team 0 or 1; a team's seats play in the order they are listed
      * @param bot  answers for this seat, {@code null} for a person
      */
-    public record Seat(int team, String name, RandomResponder bot) {
+    public record Seat(int team, String name, Responder bot) {
     }
 
     private final DuelController duel;
@@ -57,7 +57,7 @@ public final class DuelTable implements AutoCloseable {
 
     /** A 1v1 duel. @param bots a responder per seat, {@code null} for a person */
     public DuelTable(DuelText text, ScriptProvider scripts, DuelSettings settings, Deck deck0, Deck deck1,
-                     List<String> names, RandomResponder[] bots, DuelLogHandler log) {
+                     List<String> names, Responder[] bots, DuelLogHandler log) {
         this(text, scripts, settings, List.of(new Seat(0, names.get(0), bots[0]), new Seat(1, names.get(1), bots[1])),
                 List.of(deck0, deck1), log);
     }
@@ -182,7 +182,7 @@ public final class DuelTable implements AutoCloseable {
             if (botRetries > MAX_BOT_RETRIES) {
                 throw new IllegalStateException("Bot could not answer " + prompt);
             }
-            duel.respond(seats.get(seat).bot().respond(prompt, botRetries));
+            duel.respond(seats.get(seat).bot().respond(prompt, duel.board().viewedBy(prompt.player()), botRetries));
             step = duel.advance();
         }
         return views(null);

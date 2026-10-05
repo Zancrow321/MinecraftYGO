@@ -65,4 +65,18 @@ class CollectionDataTest {
         problems = DeckRules.problems(new Deck("x", main.subList(0, 20), List.of(), List.of()), cards, banlist);
         assertTrue(problems.get(0).contains("40 to 60"), problems.toString());
     }
+
+    @Test
+    void randomNpcDecksAreLegal() {
+        CardDatabase cards = CardDatabase.loadBundled();
+        CardPool pool = CardPool.loadBundled();
+        Banlist banlist = Banlist.loadBundled();
+        for (long seed = 0; seed < 50; seed++) {
+            Deck deck = DeckBuilder.random("npc", seed, cards, pool, banlist);
+            assertEquals(List.of(), DeckRules.problems(deck, cards, banlist), "seed " + seed);
+            assertEquals(DeckRules.MAIN_MIN, deck.main().size(), "seed " + seed);
+        }
+        assertEquals(DeckBuilder.random("a", 7, cards, pool, banlist).main(),
+                DeckBuilder.random("a", 7, cards, pool, banlist).main());
+    }
 }
