@@ -81,7 +81,9 @@ In game:
   Locked ones show how to unlock them: winning duels, beating NPC duelists or opening booster packs. The skin is
   stored on the disk, so it goes wherever the disk goes.
 - **Figura** (optional): avatar scripts get a `ygo` API and duel events, and can hide the disk to draw their own. See
-  [docs/figura.md](docs/figura.md).
+  [docs/figura.md](docs/figura.md). A ready-made starter avatar (Millennium Puzzle, Battle City coat, duel reactions,
+  emotes) lives in [figura/ygo-duelist](figura/ygo-duelist) and is built as its own download by
+  `./gradlew figuraStarterKit`.
 - `/ygo version` reports the loaded OCG-Core version.
 - `/ygo duel bot` or `/ygo duel <player>` (then `/ygo accept`) starts a duel; press Y to open the duel screen.
 - `/ygo gallery [page]` puts a page of modeled monsters in front of you (operators only); `/ygo gallery clear` removes them.
