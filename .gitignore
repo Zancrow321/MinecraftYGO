@@ -19,3 +19,5 @@ native/build/
 engine/src/main/resources/natives/
 
 .DS_Store
+neoforge/run/
+neoforge/runs/
