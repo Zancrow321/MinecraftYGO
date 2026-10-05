@@ -26,7 +26,8 @@ effects, chains and timing work the way they do in the real game.
 
 Craft a Duel Disk (glass pane, redstone, glass pane / three iron ingots / one iron ingot), wear it in its Curios
 slot or your off hand, and right-click another player who has one. Or type `/ygo duel bot` to duel the AI right
-away. Press **Y** to open the duel screen and **K** for cosmetics.
+away. In a duel you play with the mouse from above the field: **V** switches the camera, **Escape** opens the duel
+menu, and **K** opens cosmetics.
 
 ## Requirements
 

@@ -3,6 +3,7 @@ package io.github.zancrow321.minecraftygo.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.client.disk.DiskClient;
+import io.github.zancrow321.minecraftygo.client.duel.DuelMode;
 import io.github.zancrow321.minecraftygo.client.collection.CardItemRenderer;
 import io.github.zancrow321.minecraftygo.client.disk.DiskItemRenderer;
 import io.github.zancrow321.minecraftygo.client.disk.DiskLayer;
@@ -46,8 +47,9 @@ import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = MinecraftYgo.MOD_ID, value = Dist.CLIENT)
 public final class YgoClient {
-    public static final KeyMapping OPEN_DUEL = new KeyMapping("key.minecraftygo.open_duel",
-            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Y, "key.categories.minecraftygo");
+    /** Switches between the top-down and first-person view in duel mode (read by the duel mode screen). */
+    public static final KeyMapping DUEL_CAMERA = new KeyMapping("key.minecraftygo.duel_camera",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_V, "key.categories.minecraftygo");
     public static final KeyMapping COSMETICS = new KeyMapping("key.minecraftygo.cosmetics",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "key.categories.minecraftygo");
 
@@ -154,7 +156,7 @@ public final class YgoClient {
 
         @SubscribeEvent
         public static void registerKeys(RegisterKeyMappingsEvent event) {
-            event.register(OPEN_DUEL);
+            event.register(DUEL_CAMERA);
             event.register(COSMETICS);
         }
     }
@@ -184,6 +186,7 @@ public final class YgoClient {
         ClientField.clientTick();
         DiskClient.clientTick();
         ClientDuel.autoplayTick();
+        DuelMode.clientTick();
         Minecraft mc = Minecraft.getInstance();
         if (TEST_CAMERA != null && mc.player != null) {
             String[] camera = TEST_CAMERA.split(":");
@@ -206,11 +209,6 @@ public final class YgoClient {
         while (COSMETICS.consumeClick()) {
             if (mc.screen == null && mc.player != null) {
                 mc.player.connection.sendCommand("ygo cosmetics");
-            }
-        }
-        while (OPEN_DUEL.consumeClick()) {
-            if (mc.screen == null && ClientDuel.view() != null) {
-                mc.setScreen(new DuelScreen());
             }
         }
     }

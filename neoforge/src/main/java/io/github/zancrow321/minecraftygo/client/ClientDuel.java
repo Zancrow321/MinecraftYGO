@@ -2,10 +2,13 @@ package io.github.zancrow321.minecraftygo.client;
 
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.YgoData;
+import io.github.zancrow321.minecraftygo.client.duel.DuelMode;
 import io.github.zancrow321.minecraftygo.client.field.ClientField;
 import io.github.zancrow321.minecraftygo.compat.figura.FiguraCompat;
 import io.github.zancrow321.minecraftygo.client.field.FieldLayout;
+import io.github.zancrow321.minecraftygo.engine.OcgConstants;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
+import io.github.zancrow321.minecraftygo.engine.protocol.Loc;
 import io.github.zancrow321.minecraftygo.engine.duel.ViewCodec;
 import io.github.zancrow321.minecraftygo.engine.text.PromptChoices;
 import io.github.zancrow321.minecraftygo.engine.text.PromptView;
@@ -60,18 +63,24 @@ public final class ClientDuel {
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof DuelScreen screen) {
             screen.refresh();
-        } else if (prompt != null && mc.screen == null && !AUTOPLAY && !(ClientField.active() && onField(prompt))) {
+        } else if (prompt != null && DuelMode.showsHud(mc.screen) && !AUTOPLAY
+                && !(ClientField.active() && onField(prompt))) {
             // Prompts with nothing to click on the mat (yes/no, positions, options) open the screen straight away.
             mc.setScreen(new DuelScreen());
         }
     }
 
-    /** Whether some of the prompt's options are zones on the mat. */
+    /** Whether some of the prompt's options are zones on the mat or cards in your hand, to click on. */
     private static boolean onField(PromptView prompt) {
         if (prompt.multi() != null) {
-            return prompt.multi().locs().stream().anyMatch(l -> l != null && FieldLayout.slot(l) != null);
+            return prompt.multi().locs().stream().anyMatch(ClientDuel::clickable);
         }
-        return prompt.choices().stream().anyMatch(c -> c.at() != null && FieldLayout.slot(c.at()) != null);
+        return prompt.choices().stream().anyMatch(c -> clickable(c.at()));
+    }
+
+    private static boolean clickable(Loc loc) {
+        return loc != null && (FieldLayout.slot(loc) != null
+                || loc.location() == OcgConstants.LOCATION_HAND && loc.controller() == view.you());
     }
 
     /** For headless testing: {@code -Dminecraftygo.autoplay=true} answers prompts at random after a pause. */

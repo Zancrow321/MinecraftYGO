@@ -3,6 +3,7 @@ package io.github.zancrow321.minecraftygo.client.field;
 import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.client.CardArt;
 import io.github.zancrow321.minecraftygo.client.ClientDuel;
+import io.github.zancrow321.minecraftygo.client.duel.DuelMode;
 import io.github.zancrow321.minecraftygo.engine.data.CardInfo;
 import io.github.zancrow321.minecraftygo.engine.duel.Board;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
@@ -41,7 +42,7 @@ public final class DuelHud {
 
     public static void render(GuiGraphics g, DeltaTracker delta) {
         Minecraft mc = Minecraft.getInstance();
-        if (!ClientField.active() || mc.options.hideGui || mc.screen != null) {
+        if (!ClientField.active() || mc.options.hideGui || !DuelMode.showsHud(mc.screen)) {
             return;
         }
         DuelView view = ClientDuel.view();
@@ -80,13 +81,13 @@ public final class DuelHud {
             g.fill(w / 2 - half, top, w / 2 + half, top + 26, PANEL);
             g.drawCenteredString(font, font.plainSubstrByWidth(prompt.title(), 2 * half - 8), w / 2, top + 4, GOLD);
             String help = prompt.multi() != null
-                    ? "Right-click zones to pick (" + ClientDuel.selected().size() + "/" + prompt.multi().max()
-                    + ")  ·  Y to confirm or pick from the hand"
-                    : "Right-click a glowing zone  ·  Y for every choice";
+                    ? "Click cards to pick (" + ClientDuel.selected().size() + "/" + prompt.multi().max()
+                    + ")  ·  Esc for every choice"
+                    : "Click a glowing card or zone  ·  Esc for every choice";
             if (font.width(help) > 2 * half - 8) {
                 help = prompt.multi() != null
-                        ? "Pick " + ClientDuel.selected().size() + "/" + prompt.multi().max() + "  ·  Y to confirm"
-                        : "Right-click a zone  ·  Y for all";
+                        ? "Pick " + ClientDuel.selected().size() + "/" + prompt.multi().max() + "  ·  Esc for all"
+                        : "Click a glowing zone  ·  Esc for all";
             }
             g.drawCenteredString(font, help, w / 2, top + 15, DIM);
         } else {
@@ -132,14 +133,39 @@ public final class DuelHud {
         }
     }
 
-    /** Your hand as small cards above the hotbar; cards with something to do are outlined. */
+    private static final int HAND_CARD_WIDTH = 20;
+    private static final int HAND_CARD_HEIGHT = 29;
+    private static final int HAND_GAP = 3;
+
+    /** Left edge of the first hand card. */
+    private static int handLeft(int cards, int w) {
+        return w / 2 - (cards * (HAND_CARD_WIDTH + HAND_GAP) - HAND_GAP) / 2;
+    }
+
+    private static int handTop(int h) {
+        return h - 8 - HAND_CARD_HEIGHT;
+    }
+
+    /** @return which of your hand cards is at a screen point, or -1 */
+    public static int handCardAt(double mx, double my, int w, int h) {
+        DuelView view = ClientDuel.view();
+        if (view == null || my < handTop(h) || my >= handTop(h) + HAND_CARD_HEIGHT) {
+            return -1;
+        }
+        int cards = view.board().side(view.you()).hand().size();
+        double offset = mx - handLeft(cards, w);
+        int index = (int) Math.floor(offset / (HAND_CARD_WIDTH + HAND_GAP));
+        boolean onCard = offset >= 0 && offset - index * (HAND_CARD_WIDTH + HAND_GAP) < HAND_CARD_WIDTH;
+        return onCard && index < cards ? index : -1;
+    }
+
+    /** Your hand as small cards along the bottom; cards with something to do are outlined. */
     private static void hand(GuiGraphics g, Font font, List<CardState> hand, PromptView prompt, int w, int h) {
-        int cw = 20;
-        int ch = 29;
-        int gap = 3;
-        int total = hand.size() * (cw + gap) - gap;
-        int x = w / 2 - total / 2;
-        int y = h - 64 - ch;
+        int cw = HAND_CARD_WIDTH;
+        int ch = HAND_CARD_HEIGHT;
+        int gap = HAND_GAP;
+        int x = handLeft(hand.size(), w);
+        int y = handTop(h);
         for (int i = 0; i < hand.size(); i++) {
             CardState card = hand.get(i);
             boolean playable = prompt != null && actsOnHand(prompt, i);

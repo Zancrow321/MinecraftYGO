@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Duel mode
+- A duel now feels like its own mode: you stand still and safe at your end of the field (no damage, mobs leave you
+  alone), the camera looks down on the field, and you play with the mouse cursor. Click a glowing card in your hand
+  or a glowing zone on the field.
+- V switches between the top-down camera and your own eyes; hold the right mouse button to look around.
+- Escape opens the duel menu: back to the duel, every choice as a list (for emergencies), camera, surrender and the
+  game menu. The Y key is gone.
+- Monster models face the opponent.
+
 ## 0.1.0 (first public beta)
 
 Minecraft 1.21.1, NeoForge 21.1. Requires GeckoLib 4.9 or newer; Curios and Figura are optional.
