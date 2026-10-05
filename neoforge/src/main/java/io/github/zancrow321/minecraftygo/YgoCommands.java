@@ -1,21 +1,29 @@
 package io.github.zancrow321.minecraftygo;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.zancrow321.minecraftygo.duel.DuelManager;
 import io.github.zancrow321.minecraftygo.engine.OcgCore;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
+
 /**
  * The {@code /ygo} command tree.
  */
 final class YgoCommands {
+    private static final String BOT = "bot";
     private YgoCommands() {
     }
 
@@ -30,9 +38,20 @@ final class YgoCommands {
                         }))
                         .then(Commands.argument("player", EntityArgument.player()).executes(ctx -> {
                             manager(ctx).challenge(ctx.getSource().getPlayerOrException(),
-                                    EntityArgument.getPlayer(ctx, "player"));
+                                    EntityArgument.getPlayer(ctx, "player"), false);
                             return 1;
-                        })))
+                        }).then(Commands.literal("ante").executes(ctx -> {
+                            manager(ctx).challenge(ctx.getSource().getPlayerOrException(),
+                                    EntityArgument.getPlayer(ctx, "player"), true);
+                            return 1;
+                        }))))
+                .then(Commands.literal("tag")
+                        .then(Commands.argument("partner", StringArgumentType.word()).suggests(YgoCommands::duelists)
+                                .then(Commands.argument("opponent1", StringArgumentType.word())
+                                        .suggests(YgoCommands::duelists)
+                                        .then(Commands.argument("opponent2", StringArgumentType.word())
+                                                .suggests(YgoCommands::duelists)
+                                                .executes(YgoCommands::tag)))))
                 .then(Commands.literal("gallery")
                         .requires(source -> source.hasPermission(2))
                         .executes(ctx -> Gallery.show(ctx.getSource(), 1))
@@ -48,6 +67,32 @@ final class YgoCommands {
                     manager(ctx).forfeit(ctx.getSource().getPlayerOrException());
                     return 1;
                 })));
+    }
+
+    /** {@code /ygo tag <partner> <opponent1> <opponent2>}, each a player name or {@code bot}. */
+    private static int tag(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        ServerPlayer host = ctx.getSource().getPlayerOrException();
+        ServerPlayer[] others = new ServerPlayer[3];
+        String[] args = {"partner", "opponent1", "opponent2"};
+        for (int i = 0; i < 3; i++) {
+            String name = StringArgumentType.getString(ctx, args[i]);
+            if (name.equalsIgnoreCase(BOT)) {
+                continue;
+            }
+            others[i] = ctx.getSource().getServer().getPlayerList().getPlayerByName(name);
+            if (others[i] == null) {
+                ctx.getSource().sendFailure(Component.literal("No player named " + name + " is online."));
+                return 0;
+            }
+        }
+        manager(ctx).tag(host, others[0], others[1], others[2]);
+        return 1;
+    }
+
+    private static CompletableFuture<Suggestions> duelists(CommandContext<CommandSourceStack> ctx,
+                                                           SuggestionsBuilder builder) {
+        return SharedSuggestionProvider.suggest(Stream.concat(Stream.of(BOT),
+                Stream.of(ctx.getSource().getServer().getPlayerNames())), builder);
     }
 
     private static DuelManager manager(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

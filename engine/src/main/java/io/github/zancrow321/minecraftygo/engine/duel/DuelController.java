@@ -18,7 +18,7 @@ import java.util.List;
 import static io.github.zancrow321.minecraftygo.engine.OcgConstants.*;
 
 /**
- * Runs one 1v1 duel: sets it up from two decks, drives the core until a player must choose, and accepts their
+ * Runs one duel, 1v1 or tag (several duelists per team taking turns): sets it up from the decks, drives the core until a player must choose, and accepts their
  * responses. Not thread-safe; the owner calls it from one thread.
  */
 public final class DuelController implements AutoCloseable {
@@ -30,9 +30,22 @@ public final class DuelController implements AutoCloseable {
     private int turn;
     private int turnPlayer;
     private int phase;
+    private final int[] duelists = new int[2];
+    private final int[] activeDuelist = new int[2];
 
     public DuelController(CardDatabase cards, ScriptProvider scripts, DuelSettings settings, Deck deck0, Deck deck1,
                           DuelLogHandler log) {
+        this(cards, scripts, settings, List.of(List.of(deck0), List.of(deck1)), log);
+    }
+
+    /**
+     * @param teams each team's decks, one per duelist in turn order; a team with two decks plays tag
+     */
+    public DuelController(CardDatabase cards, ScriptProvider scripts, DuelSettings settings, List<List<Deck>> teams,
+                          DuelLogHandler log) {
+        if (teams.size() != 2 || teams.stream().anyMatch(List::isEmpty)) {
+            throw new IllegalArgumentException("Need two teams with at least one deck each");
+        }
         this.duel = OcgCore.get().createDuel(settings, cards, scripts, log);
         try {
             for (String base : BASE_SCRIPTS) {
@@ -41,8 +54,12 @@ public final class DuelController implements AutoCloseable {
                     throw new IllegalStateException("Could not load " + base);
                 }
             }
-            addDeck(0, deck0);
-            addDeck(1, deck1);
+            for (int team = 0; team < 2; team++) {
+                duelists[team] = teams.get(team).size();
+                for (int duelist = 0; duelist < duelists[team]; duelist++) {
+                    addDeck(team, duelist, teams.get(team).get(duelist));
+                }
+            }
             duel.start();
         } catch (RuntimeException e) {
             duel.close();
@@ -50,13 +67,18 @@ public final class DuelController implements AutoCloseable {
         }
     }
 
-    private void addDeck(int team, Deck deck) {
+    private void addDeck(int team, int duelist, Deck deck) {
         for (int code : deck.main()) {
-            duel.newCard(team, 0, code, team, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE);
+            duel.newCard(team, duelist, code, team, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE);
         }
         for (int code : deck.extra()) {
-            duel.newCard(team, 0, code, team, LOCATION_EXTRA, 0, POS_FACEDOWN_DEFENSE);
+            duel.newCard(team, duelist, code, team, LOCATION_EXTRA, 0, POS_FACEDOWN_DEFENSE);
         }
+    }
+
+    /** Which of the team's duelists (in the order their decks were given) is playing now. */
+    public int activeDuelist(int team) {
+        return activeDuelist[team];
     }
 
     /** What happened since the last call, and what the duel is waiting for now. */
@@ -104,6 +126,8 @@ public final class DuelController implements AutoCloseable {
                 turnPlayer = newTurn.player();
             }
             case DuelMessage.NewPhase newPhase -> phase = newPhase.phase();
+            case DuelMessage.TagSwap swap -> activeDuelist[swap.player()] =
+                    (activeDuelist[swap.player()] + 1) % duelists[swap.player()];
             // On MSG_RETRY the core does not resend the prompt, so pendingPrompt stays as it was.
             default -> {
             }

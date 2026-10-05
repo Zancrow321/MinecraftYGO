@@ -27,12 +27,21 @@ public record Board(int turn, int turnPlayer, int phase, List<Side> sides) {
 
     /** @return a copy with every card {@code viewer} may not see replaced by a blank (code 0) card */
     public Board viewedBy(int viewer) {
+        return viewedBy(viewer, true);
+    }
+
+    /**
+     * @param handVisible whether the viewer may see their own side's hand; in a tag duel only the partner who is
+     *                    playing holds it
+     */
+    public Board viewedBy(int viewer, boolean handVisible) {
         List<Side> censored = new ArrayList<>(2);
         for (int player = 0; player < 2; player++) {
             Side s = sides.get(player);
             boolean own = player == viewer;
+            boolean ownHand = own && handVisible;
             censored.add(new Side(s.lifePoints(), s.deckCount(),
-                    map(s.hand(), c -> own || c.isPublic() ? c : hidden(c)),
+                    map(s.hand(), c -> ownHand || c.isPublic() ? c : hidden(c)),
                     map(s.monsters(), c -> own || isFaceUp(c) ? c : hidden(c)),
                     map(s.spells(), c -> own || isFaceUp(c) ? c : hidden(c)),
                     s.graveyard(),

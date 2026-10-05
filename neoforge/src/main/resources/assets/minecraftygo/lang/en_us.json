@@ -35,5 +35,10 @@
   "screen.minecraftygo.deck_box.owned": "Search your cards",
   "screen.minecraftygo.deck_box.no_cards": "No cards in your binders or inventory",
   "screen.minecraftygo.pack.close": "Click to close",
-  "screen.minecraftygo.search": "Search"
+  "screen.minecraftygo.search": "Search",
+  "block.minecraftygo.duel_dome_core": "Duel Dome Core",
+  "block.minecraftygo.duelist_platform": "Duelist Platform",
+  "item.minecraftygo.duel_dome_kit": "Duel Dome Kit",
+  "item.minecraftygo.duel_dome_kit.tooltip": "Use on flat ground to build a Duel Dome (13 × 21) facing the way you look. Duelists on its platforms duel over the core.",
+  "message.minecraftygo.duel_dome.blocked": "Something is in the way at %s %s %s. The Duel Dome needs a clear 13 × 21 area."
 }

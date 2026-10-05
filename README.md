@@ -52,6 +52,20 @@ In game:
 - The banlist is an approximation of the OCG list from May 2000. A server can replace it with
   `config/minecraftygo/banlist.json`, in the same format as the bundled
   `engine/src/main/resources/minecraftygo/banlist.json` (`"limits": {"<card code>": <copies allowed>}`).
+- **Ante:** `/ygo duel <player> ante`, or sneak while right-clicking with the disk. Each duelist puts up a random
+  card from their deck box and the winner takes both. The cards are held by the server until the duel ends (a
+  crash or restart returns them), and a winner who logged off gets them on their next login. Servers can turn
+  ante off with `allowAnte = false`.
+- **Tag duels (2v2):** `/ygo tag <partner> <opponent1> <opponent2>`, where any of them can be `bot`. Partners share
+  life points and the field and take turns with their own decks; only the one whose turn it is answers prompts and
+  sees the team's hand.
+- **Rules:** `ruleset` in `serverconfig/minecraftygo-server.toml` is `mr1` (original, the default), `goat` or
+  `modern`; `startingLifePoints` defaults to 8000.
+- **Duel Dome:** craft a **Duel Dome Kit** (a Duel Dome Core, two Duelist Platforms, two quartz blocks, a sea lantern
+  and light blue concrete) and use it on flat ground to build a 13 by 21 arena facing the way you look. When every
+  duelist stands on a platform, one team at each end, the field appears over the core instead of between the
+  players. Cores and platforms can also be placed by hand: platforms 4 to 14 blocks from the core, up to 2 off the
+  center line.
 - `/ygo version` reports the loaded OCG-Core version.
 - `/ygo duel bot` or `/ygo duel <player>` (then `/ygo accept`) starts a duel; press Y to open the duel screen.
 - `/ygo gallery [page]` puts a page of modeled monsters in front of you (operators only); `/ygo gallery clear` removes them.

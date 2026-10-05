@@ -1,6 +1,7 @@
 package io.github.zancrow321.minecraftygo;
 
 import com.mojang.logging.LogUtils;
+import io.github.zancrow321.minecraftygo.arena.DuelDome;
 import io.github.zancrow321.minecraftygo.client.YgoClientConfig;
 import io.github.zancrow321.minecraftygo.duel.DuelManager;
 import io.github.zancrow321.minecraftygo.engine.OcgCore;
@@ -40,6 +41,7 @@ public final class MinecraftYgo {
         YgoComponents.register(modBus);
         YgoVillagers.register(modBus);
         RandomCardFunction.register(modBus);
+        DuelDome.register(modBus);
         container.registerConfig(ModConfig.Type.SERVER, YgoServerConfig.SPEC);
         modBus.addListener(YgoNetwork::register);
         if (FMLEnvironment.dist == Dist.CLIENT) {
@@ -48,6 +50,11 @@ public final class MinecraftYgo {
         NeoForge.EVENT_BUS.addListener(this::onServerStarting);
         NeoForge.EVENT_BUS.addListener((ServerStoppingEvent event) -> DuelManager.shutdown());
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> DuelManager.get(event.getServer()).tick());
+        NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) {
+                DuelManager.get(player.server).onLogin(player);
+            }
+        });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
                 DuelManager.get(player.server).onLogout(player);

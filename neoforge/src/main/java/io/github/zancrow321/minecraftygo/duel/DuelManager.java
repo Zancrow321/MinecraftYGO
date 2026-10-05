@@ -3,17 +3,18 @@ package io.github.zancrow321.minecraftygo.duel;
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.YgoServerConfig;
-import io.github.zancrow321.minecraftygo.item.DeckBoxItem;
-import io.github.zancrow321.minecraftygo.item.YgoItems;
-import net.minecraft.world.item.ItemStack;
+import io.github.zancrow321.minecraftygo.arena.DuelDome;
 import io.github.zancrow321.minecraftygo.engine.DuelSettings;
-import io.github.zancrow321.minecraftygo.engine.OcgConstants;
+import io.github.zancrow321.minecraftygo.engine.Ruleset;
 import io.github.zancrow321.minecraftygo.engine.ai.RandomResponder;
 import io.github.zancrow321.minecraftygo.engine.data.BundledScripts;
 import io.github.zancrow321.minecraftygo.engine.data.Deck;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelTable;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
 import io.github.zancrow321.minecraftygo.engine.duel.ViewCodec;
+import io.github.zancrow321.minecraftygo.item.DeckBoxItem;
+import io.github.zancrow321.minecraftygo.item.YgoComponents;
+import io.github.zancrow321.minecraftygo.item.YgoItems;
 import io.github.zancrow321.minecraftygo.network.DuelFieldPayload;
 import io.github.zancrow321.minecraftygo.network.DuelistStatePayload;
 import io.github.zancrow321.minecraftygo.network.DuelViewPayload;
@@ -22,44 +23,60 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 /**
- * Tracks challenges and running duels on one server. All methods run on the server thread.
+ * Tracks invitations and running duels on one server: 1v1 challenges (optionally with an ante), tag duels for two
+ * teams of two, and duels against bots. All methods run on the server thread.
  */
 public final class DuelManager {
-    private static final long CHALLENGE_TIMEOUT_TICKS = 20 * 60;
+    private static final long INVITE_TIMEOUT_TICKS = 20 * 60;
     /** Lent to players without a deck box, if the server allows it. */
     private static final String STARTER_DECK = "starter_yugi";
-    private static final String BOT_DECK = "starter_kaiba";
+    private static final List<String> BOT_DECKS = List.of("starter_kaiba", "starter_yugi");
+    private static final List<String> BOT_NAMES = List.of("Duel Bot", "Bandit Bot", "Rare Hunter Bot");
+    /** How far in front of a player a duel against bots is projected (the field is about 16 blocks long). */
+    private static final double BOT_FIELD_DISTANCE = 8;
 
     private static DuelManager instance;
 
     private final MinecraftServer server;
-    /** target -> challenge */
-    private final Map<UUID, Challenge> challenges = new HashMap<>();
+    /** invitee -> the invitation waiting for their answer */
+    private final Map<UUID, Invite> invites = new HashMap<>();
     private final Map<UUID, ServerDuel> duelsByPlayer = new HashMap<>();
     private final List<ServerDuel> duels = new ArrayList<>();
 
-    private record Challenge(UUID challenger, long expiresAt) {
+    /** One duelist: a person, or a bot when {@code player} is {@code null}. */
+    private record Entrant(int team, UUID player, String name) {
     }
 
-    /** A running duel, who sits where ({@code null} seats are bots), and where its field is projected. */
-    private record ServerDuel(DuelTable table, UUID[] seats, DuelFieldPayload field) {
+    /** A duel waiting for everyone invited to accept. */
+    private record Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt) {
     }
 
-    /** How far in front of a player a duel against a bot is projected (the field is about 16 blocks long). */
-    private static final double BOT_FIELD_DISTANCE = 8;
+    /**
+     * A running duel and who sits where ({@code null} seats are bots).
+     *
+     * @param ante the escrow id of the ante, or {@code null} for a duel without one
+     */
+    private record ServerDuel(DuelTable table, UUID[] seats, DuelFieldPayload field, UUID ante) {
+    }
 
     private DuelManager(MinecraftServer server) {
         this.server = server;
+        AnteEscrow.get(server).refundUnsettled();
     }
 
     public static DuelManager get(MinecraftServer server) {
@@ -80,69 +97,126 @@ public final class DuelManager {
         return duelsByPlayer.containsKey(player.getUUID());
     }
 
-    public void challenge(ServerPlayer challenger, ServerPlayer target) {
+    /** Invites {@code target} to a 1v1 duel, with an ante if {@code ante} and the server allows it. */
+    public void challenge(ServerPlayer challenger, ServerPlayer target, boolean ante) {
         if (challenger == target) {
             challenger.sendSystemMessage(Component.literal("You can't duel yourself. Try /ygo duel bot"));
             return;
         }
-        if (inDuel(challenger) || inDuel(target)) {
-            challenger.sendSystemMessage(Component.literal("One of you is already in a duel."));
+        if (ante && !YgoServerConfig.ALLOW_ANTE.get()) {
+            challenger.sendSystemMessage(Component.literal("Ante duels are turned off on this server."));
             return;
         }
-        challenges.put(target.getUUID(), new Challenge(challenger.getUUID(),
-                server.getTickCount() + CHALLENGE_TIMEOUT_TICKS));
-        challenger.sendSystemMessage(Component.literal("Challenge sent to " + target.getScoreboardName() + "."));
-        target.sendSystemMessage(Component.literal(challenger.getScoreboardName() + " challenges you to a duel! "
-                        + (DuelDisks.has(target) ? "Right-click them with your Duel Disk or click " : ""))
-                .append(Component.literal("[Accept]").withStyle(s -> s.withColor(ChatFormatting.GREEN)
-                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ygo accept")))));
+        invite(challenger, List.of(new Entrant(0, challenger.getUUID(), challenger.getScoreboardName()),
+                new Entrant(1, target.getUUID(), target.getScoreboardName())), ante);
     }
 
     /**
-     * {@code player} right-clicked {@code other} with a duel disk: accepts their challenge if they sent one,
-     * otherwise challenges them.
+     * Invites players to a tag duel: the host and {@code partner} against {@code opponents}. A {@code null} player
+     * is a bot.
+     */
+    public void tag(ServerPlayer host, ServerPlayer partner, ServerPlayer opponent1, ServerPlayer opponent2) {
+        List<Entrant> entrants = new ArrayList<>();
+        entrants.add(new Entrant(0, host.getUUID(), host.getScoreboardName()));
+        int bots = 0;
+        ServerPlayer[] others = {partner, opponent1, opponent2};
+        for (int i = 0; i < others.length; i++) {
+            int team = i == 0 ? 0 : 1;
+            entrants.add(others[i] == null
+                    ? new Entrant(team, null, BOT_NAMES.get(bots++ % BOT_NAMES.size()))
+                    : new Entrant(team, others[i].getUUID(), others[i].getScoreboardName()));
+        }
+        Set<UUID> people = new HashSet<>();
+        for (Entrant e : entrants) {
+            if (e.player() != null && !people.add(e.player())) {
+                host.sendSystemMessage(Component.literal("Each duelist can only take one seat."));
+                return;
+            }
+        }
+        invite(host, entrants, false);
+    }
+
+    private void invite(ServerPlayer host, List<Entrant> entrants, boolean ante) {
+        for (Entrant e : entrants) {
+            ServerPlayer player = player(e.player());
+            if (player != null && inDuel(player)) {
+                host.sendSystemMessage(Component.literal(e.name() + " is already in a duel."));
+                return;
+            }
+        }
+        Set<UUID> pending = new LinkedHashSet<>();
+        entrants.stream().map(Entrant::player).filter(Objects::nonNull).filter(id -> !id.equals(host.getUUID()))
+                .forEach(pending::add);
+        Invite invite = new Invite(host.getUUID(), List.copyOf(entrants), pending, ante,
+                server.getTickCount() + INVITE_TIMEOUT_TICKS);
+        if (pending.isEmpty()) {
+            launch(invite);
+            return;
+        }
+        String matchup = matchup(entrants) + (ante ? " (ante)" : "");
+        host.sendSystemMessage(Component.literal("Invitation sent: " + matchup + "."));
+        for (UUID id : pending) {
+            invites.put(id, invite);
+            ServerPlayer target = player(id);
+            if (target == null) {
+                continue;
+            }
+            Component accept = Component.literal("[Accept]").withStyle(style -> style.withColor(ChatFormatting.GREEN)
+                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ygo accept")));
+            String how = entrants.size() == 2 && DuelDisks.has(target)
+                    ? " Right-click them with your Duel Disk or click " : " Click ";
+            target.sendSystemMessage(Component.literal(host.getScoreboardName() + " invites you: " + matchup
+                    + (ante ? ". The winner takes a random card from the loser's deck box." : ".") + how)
+                    .append(accept));
+        }
+    }
+
+    private static String matchup(List<Entrant> entrants) {
+        return teamName(entrants, 0) + " vs " + teamName(entrants, 1);
+    }
+
+    private static String teamName(List<Entrant> entrants, int team) {
+        return String.join(" & ", entrants.stream().filter(e -> e.team() == team).map(Entrant::name).toList());
+    }
+
+    /**
+     * {@code player} right-clicked {@code other} with a duel disk: accepts their invitation if they sent one,
+     * otherwise challenges them (with an ante when sneaking).
      */
     public void diskInteract(ServerPlayer player, ServerPlayer other) {
         if (!DuelDisks.has(other)) {
             player.sendSystemMessage(Component.literal(other.getScoreboardName() + " has no Duel Disk."));
             return;
         }
-        long now = server.getTickCount();
-        Challenge received = challenges.get(player.getUUID());
-        if (received != null && received.challenger().equals(other.getUUID()) && received.expiresAt() >= now) {
+        Invite received = invites.get(player.getUUID());
+        if (received != null && received.host().equals(other.getUUID())) {
             accept(player);
             return;
         }
-        Challenge sent = challenges.get(other.getUUID());
-        if (sent != null && sent.challenger().equals(player.getUUID()) && sent.expiresAt() >= now) {
+        Invite sent = invites.get(other.getUUID());
+        if (sent != null && sent.host().equals(player.getUUID())) {
             player.sendSystemMessage(Component.literal("Waiting for " + other.getScoreboardName() + " to accept."));
             return;
         }
-        challenge(player, other);
+        challenge(player, other, player.isShiftKeyDown() && YgoServerConfig.ALLOW_ANTE.get());
     }
 
-    public void accept(ServerPlayer target) {
-        Challenge challenge = challenges.remove(target.getUUID());
-        ServerPlayer challenger = challenge == null ? null
-                : server.getPlayerList().getPlayer(challenge.challenger());
-        if (challenger == null || challenge.expiresAt() < server.getTickCount()) {
-            target.sendSystemMessage(Component.literal("You have no pending challenge."));
+    public void accept(ServerPlayer player) {
+        Invite invite = invites.remove(player.getUUID());
+        if (invite == null || invite.expiresAt() < server.getTickCount()) {
+            player.sendSystemMessage(Component.literal("You have no pending invitation."));
             return;
         }
-        if (inDuel(challenger) || inDuel(target)) {
-            target.sendSystemMessage(Component.literal("One of you is already in a duel."));
+        invite.pending().remove(player.getUUID());
+        if (!invite.pending().isEmpty()) {
+            String waiting = String.join(", ", invite.pending().stream().map(this::nameOf).toList());
+            for (Entrant e : invite.entrants()) {
+                message(e.player(), Component.literal(player.getScoreboardName() + " is in. Waiting for "
+                        + waiting + "."));
+            }
             return;
         }
-        Deck first = deckFor(challenger);
-        Deck second = deckFor(target);
-        if (first == null || second == null) {
-            message(first == null ? target.getUUID() : challenger.getUUID(), Component.literal(
-                    (first == null ? challenger : target).getScoreboardName() + " has no legal deck."));
-            return;
-        }
-        start(new UUID[]{challenger.getUUID(), target.getUUID()},
-                List.of(challenger.getScoreboardName(), target.getScoreboardName()), new Deck[]{first, second},
-                fieldBetween(challenger, target));
+        launch(invite);
     }
 
     public void duelBot(ServerPlayer player) {
@@ -150,15 +224,58 @@ public final class DuelManager {
             player.sendSystemMessage(Component.literal("You are already in a duel."));
             return;
         }
-        Deck deck = deckFor(player);
-        if (deck == null) {
-            return;
-        }
-        start(new UUID[]{player.getUUID(), null}, List.of(player.getScoreboardName(), "Duel Bot"),
-                new Deck[]{deck, Deck.bundled(BOT_DECK)}, fieldInFrontOf(player));
+        invite(player, List.of(new Entrant(0, player.getUUID(), player.getScoreboardName()),
+                new Entrant(1, null, BOT_NAMES.get(0))), false);
     }
 
-    /** Centered between the two duelists, on the lower one's feet level, player 0's side toward player 0. */
+    /** Everyone accepted: checks decks, takes the ante and starts the duel. */
+    private void launch(Invite invite) {
+        List<Entrant> entrants = invite.entrants();
+        List<ServerPlayer> online = new ArrayList<>();
+        for (Entrant e : entrants) {
+            if (e.player() == null) {
+                continue;
+            }
+            ServerPlayer player = player(e.player());
+            if (player == null || inDuel(player)) {
+                broadcast(entrants, Component.literal(e.name() + (player == null ? " is offline." : " is already in a duel.")));
+                return;
+            }
+            online.add(player);
+        }
+        List<Deck> decks = new ArrayList<>();
+        List<ItemStack> boxes = new ArrayList<>();
+        int botIndex = 0;
+        for (Entrant e : entrants) {
+            if (e.player() == null) {
+                decks.add(Deck.bundled(BOT_DECKS.get(botIndex++ % BOT_DECKS.size())));
+                boxes.add(ItemStack.EMPTY);
+                continue;
+            }
+            ServerPlayer player = player(e.player());
+            ItemStack box = legalDeckBox(player);
+            Deck deck = box != null ? DeckBoxItem.toDeck(box) : starterFor(player, invite.ante());
+            if (deck == null) {
+                broadcast(entrants, Component.literal(e.name() + " has no legal deck."));
+                return;
+            }
+            decks.add(deck);
+            boxes.add(box == null ? ItemStack.EMPTY : box);
+        }
+        List<ServerPlayer> team0 = online.stream().filter(p -> teamOf(entrants, p) == 0).toList();
+        List<ServerPlayer> team1 = online.stream().filter(p -> teamOf(entrants, p) == 1).toList();
+        DuelFieldPayload field = DuelDome.field(team0, team1);
+        if (field == null) {
+            field = team1.isEmpty() ? fieldInFrontOf(team0.get(0)) : fieldBetween(team0.get(0), team1.get(0));
+        }
+        start(entrants, decks, field, invite.ante() ? boxes : null);
+    }
+
+    private static int teamOf(List<Entrant> entrants, ServerPlayer player) {
+        return entrants.stream().filter(e -> player.getUUID().equals(e.player())).findFirst().orElseThrow().team();
+    }
+
+    /** Centered between two duelists, on the lower one's feet level, the first one's side toward them. */
     private static DuelFieldPayload fieldBetween(ServerPlayer first, ServerPlayer second) {
         Vec3 a = first.position();
         Vec3 b = second.position();
@@ -178,12 +295,12 @@ public final class DuelManager {
     }
 
     /**
-     * The deck a player duels with: the first legal deck box they carry (hands first, then the inventory), or a
-     * starter deck if the server allows it. Tells the player why when there is none.
+     * The first legal deck box a player carries (hands first, then the inventory). Tells the player when they carry
+     * deck boxes but none is legal.
      *
-     * @return the deck, or {@code null}
+     * @return the deck box, or {@code null}
      */
-    private static Deck deckFor(ServerPlayer player) {
+    private static ItemStack legalDeckBox(ServerPlayer player) {
         List<ItemStack> boxes = new ArrayList<>();
         for (ItemStack stack : List.of(player.getMainHandItem(), player.getOffhandItem())) {
             if (stack.is(YgoItems.DECK_BOX.get())) {
@@ -197,12 +314,20 @@ public final class DuelManager {
         }
         for (ItemStack box : boxes) {
             if (DeckBoxItem.problems(box).isEmpty()) {
-                return DeckBoxItem.toDeck(box);
+                return box;
             }
         }
         if (!boxes.isEmpty()) {
             player.sendSystemMessage(Component.literal("Your deck box \"" + boxes.get(0).getHoverName().getString()
                     + "\" isn't legal: " + DeckBoxItem.problems(boxes.get(0)).get(0)));
+        }
+        return null;
+    }
+
+    /** The starter deck lent to a player without a legal deck box, or {@code null} with the reason told to them. */
+    private static Deck starterFor(ServerPlayer player, boolean ante) {
+        if (ante) {
+            player.sendSystemMessage(Component.literal("An ante duel needs a legal deck box: the ante comes from it."));
             return null;
         }
         if (YgoServerConfig.STARTER_DECKS.get()) {
@@ -212,45 +337,75 @@ public final class DuelManager {
         return null;
     }
 
-    private void start(UUID[] seats, List<String> names, Deck[] decks, DuelFieldPayload field) {
+    /**
+     * @param anteBoxes each person's deck box to take the ante from, or {@code null} for a duel without an ante
+     */
+    private void start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes) {
         var random = server.overworld().getRandom();
         long[] seed = {random.nextLong(), random.nextLong(), random.nextLong(), random.nextLong() | 1};
-        RandomResponder[] bots = new RandomResponder[2];
-        for (int i = 0; i < 2; i++) {
-            if (seats[i] == null) {
-                bots[i] = new RandomResponder(random.nextLong(), YgoData.cards());
-            }
+        List<DuelTable.Seat> seats = new ArrayList<>();
+        UUID[] people = new UUID[entrants.size()];
+        for (int i = 0; i < entrants.size(); i++) {
+            Entrant e = entrants.get(i);
+            people[i] = e.player();
+            seats.add(new DuelTable.Seat(e.team(), e.name(),
+                    e.player() == null ? new RandomResponder(random.nextLong(), YgoData.cards()) : null));
         }
+        Ruleset ruleset = Ruleset.parse(YgoServerConfig.RULESET.get());
+        DuelSettings.Team team = new DuelSettings.Team(YgoServerConfig.STARTING_LIFE_POINTS.get(), 5, 1);
         DuelTable table;
         try {
             table = new DuelTable(YgoData.text(), new BundledScripts(),
-                    DuelSettings.standard(seed, OcgConstants.DUEL_MODE_MR1), decks[0],
-                    decks[1], names, bots,
+                    new DuelSettings(seed, ruleset.flags(), team, team), seats, decks,
                     (type, message) -> MinecraftYgo.LOGGER.debug("[ocgcore {}] {}", type, message));
         } catch (UnsatisfiedLinkError | RuntimeException e) {
             MinecraftYgo.LOGGER.error("Could not start a duel", e);
-            for (UUID seat : seats) {
-                message(seat, Component.literal("The duel engine isn't available on this server."));
-            }
+            broadcast(entrants, Component.literal("The duel engine isn't available on this server."));
             return;
         }
-        ServerDuel duel = new ServerDuel(table, seats, field);
+        UUID ante = anteBoxes == null ? null : takeAnte(entrants, anteBoxes, random);
+        ServerDuel duel = new ServerDuel(table, people, field, ante);
         duels.add(duel);
-        for (UUID seat : seats) {
-            if (seat != null) {
-                duelsByPlayer.put(seat, duel);
-                ServerPlayer player = player(seat);
-                if (player != null) {
-                    // The disk unfolds first; the client grows the field once it has.
-                    PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,
-                            new DuelistStatePayload(player.getId(), true));
-                    PacketDistributor.sendToPlayer(player, field);
-                }
-                message(seat, Component.literal("Duel! " + names.get(0) + " vs " + names.get(1)
-                        + ". Right-click glowing zones on the field, or press Y for every choice."));
+        boolean tag = entrants.size() > 2;
+        for (UUID seat : people) {
+            if (seat == null) {
+                continue;
             }
+            duelsByPlayer.put(seat, duel);
+            ServerPlayer player = player(seat);
+            if (player != null) {
+                // The disk unfolds first; the client grows the field once it has.
+                PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,
+                        new DuelistStatePayload(player.getId(), true));
+                PacketDistributor.sendToPlayer(player, field);
+            }
+            message(seat, Component.literal((tag ? "Tag duel! " : "Duel! ") + matchup(entrants) + ", "
+                    + ruleset.displayName() + " rules. Right-click glowing zones on the field, or press Y for every "
+                    + "choice." + (tag ? " Partners take turns; you answer when it's yours." : "")));
         }
         run(duel, table::start);
+    }
+
+    /** Takes a random main deck card out of each person's deck box into escrow. */
+    private UUID takeAnte(List<Entrant> entrants, List<ItemStack> boxes, net.minecraft.util.RandomSource random) {
+        UUID id = UUID.randomUUID();
+        AnteEscrow escrow = AnteEscrow.get(server);
+        List<String> bets = new ArrayList<>();
+        for (int i = 0; i < entrants.size(); i++) {
+            ItemStack box = boxes.get(i);
+            if (box.isEmpty()) {
+                continue;
+            }
+            YgoComponents.DeckList list = DeckBoxItem.deck(box);
+            List<Integer> main = new ArrayList<>(list.main());
+            int code = main.remove(random.nextInt(main.size()));
+            box.set(YgoComponents.DECK.get(), new YgoComponents.DeckList(List.copyOf(main), list.extra()));
+            escrow.put(id, entrants.get(i).player(), code);
+            bets.add(entrants.get(i).name() + " puts up " + YgoData.text().cardName(code));
+        }
+        broadcast(entrants, Component.literal("Ante: " + String.join(", ", bets) + ".")
+                .withStyle(ChatFormatting.GOLD));
+        return id;
     }
 
     public void respond(ServerPlayer player, byte[] response) {
@@ -260,7 +415,7 @@ public final class DuelManager {
         }
         int seat = seatOf(duel, player.getUUID());
         if (duel.table().waitingFor() != seat) {
-            return; // stale or duplicate click
+            return; // stale or duplicate click, or the partner's turn
         }
         run(duel, () -> duel.table().respond(seat, response));
     }
@@ -281,8 +436,14 @@ public final class DuelManager {
         }
     }
 
+    /** Hands over ante cards won (or returned) while the player was away. */
+    public void onLogin(ServerPlayer player) {
+        AnteEscrow.get(server).deliver(player);
+    }
+
     public void onLogout(ServerPlayer player) {
-        challenges.remove(player.getUUID());
+        invites.remove(player.getUUID());
+        invites.values().removeIf(invite -> invite.host().equals(player.getUUID()));
         ServerDuel duel = duelsByPlayer.get(player.getUUID());
         if (duel != null) {
             run(duel, () -> duel.table().forfeit(seatOf(duel, player.getUUID())));
@@ -291,7 +452,7 @@ public final class DuelManager {
 
     public void tick() {
         long now = server.getTickCount();
-        challenges.values().removeIf(c -> c.expiresAt() < now);
+        invites.values().removeIf(invite -> invite.expiresAt() < now);
         for (ServerDuel duel : List.copyOf(duels)) {
             run(duel, duel.table()::pump);
         }
@@ -332,15 +493,40 @@ public final class DuelManager {
                 }
             }
         }
+        if (duel.ante() != null) {
+            // Only 1v1 duels between two people have an ante, so the winning team has exactly one person.
+            int winner = duel.table().winner();
+            UUID payTo = null;
+            for (int seat = 0; seat < duel.seats().length; seat++) {
+                if (winner >= 0 && winner < 2 && duel.table().seats().get(seat).team() == winner) {
+                    payTo = duel.seats()[seat];
+                }
+            }
+            AnteEscrow.get(server).settle(server, duel.ante(), payTo);
+        }
         duel.table().close();
     }
 
     private static int seatOf(ServerDuel duel, UUID player) {
-        return player.equals(duel.seats()[0]) ? 0 : 1;
+        for (int seat = 0; seat < duel.seats().length; seat++) {
+            if (player.equals(duel.seats()[seat])) {
+                return seat;
+            }
+        }
+        throw new IllegalArgumentException("Not seated: " + player);
+    }
+
+    private String nameOf(UUID id) {
+        ServerPlayer player = player(id);
+        return player == null ? "?" : player.getScoreboardName();
     }
 
     private ServerPlayer player(UUID id) {
         return id == null ? null : server.getPlayerList().getPlayer(id);
+    }
+
+    private void broadcast(List<Entrant> entrants, Component text) {
+        entrants.forEach(e -> message(e.player(), text));
     }
 
     private void message(UUID id, Component text) {

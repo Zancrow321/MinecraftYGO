@@ -2,6 +2,7 @@ package io.github.zancrow321.minecraftygo.item;
 
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.YgoData;
+import io.github.zancrow321.minecraftygo.arena.DuelDome;
 import io.github.zancrow321.minecraftygo.village.YgoVillagers;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -40,6 +41,9 @@ public final class YgoItems {
                         output.accept(starterYugi());
                         output.accept(starterKaiba());
                         output.accept(YgoVillagers.CARD_SHOP_ITEM.get());
+                        output.accept(DuelDome.KIT.get());
+                        output.accept(DuelDome.CORE_ITEM.get());
+                        output.accept(DuelDome.PLATFORM_ITEM.get());
                         output.accept(BOOSTER_PACK.get());
                         YgoData.sets().sets().keySet().forEach(id -> output.accept(BoosterPackItem.of(id)));
                     })

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "minecraftygo:block/duelist_platform_top",
+    "side": "minecraftygo:block/duelist_platform_side",
+    "bottom": "minecraftygo:block/duelist_platform_side"
+  }
+}
