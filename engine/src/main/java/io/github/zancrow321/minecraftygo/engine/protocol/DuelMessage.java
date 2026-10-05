@@ -195,6 +195,13 @@ public sealed interface DuelMessage {
         }
     }
 
+    /** In a tag duel, {@code player}'s team handed over to its next duelist (deck, hand and Extra Deck swap). */
+    record TagSwap(int player) implements DuelMessage {
+        public int type() {
+            return MessageType.TAG_SWAP;
+        }
+    }
+
     record NewPhase(int phase) implements DuelMessage {
         public int type() {
             return MessageType.NEW_PHASE;

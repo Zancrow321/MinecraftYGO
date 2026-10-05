@@ -53,8 +53,9 @@ public final class YgoClient {
     private static final String TEST_CAMERA = System.getProperty("minecraftygo.camera");
 
     /**
-     * For headless testing: {@code -Dminecraftygo.useItem=80,200} closes any screen and uses the main-hand item when
-     * the player has been in the world that many ticks (to open packs, binders and deck boxes without a mouse).
+     * For headless testing: {@code -Dminecraftygo.useItem=80,200} closes any screen and right-clicks with the
+     * main-hand item (on the block in the crosshair, if any) when the player has been in the world that many ticks,
+     * to open packs, binders and deck boxes or place things without a mouse.
      */
     private static final java.util.Set<Integer> TEST_USE_ITEM = java.util.Arrays.stream(
                     System.getProperty("minecraftygo.useItem", "").split(","))
@@ -181,7 +182,12 @@ public final class YgoClient {
         }
         if (mc.player != null && mc.gameMode != null && TEST_USE_ITEM.contains(mc.player.tickCount)) {
             mc.setScreen(null);
-            mc.gameMode.useItem(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND);
+            if (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult hit
+                    && hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) {
+                mc.gameMode.useItemOn(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+            } else {
+                mc.gameMode.useItem(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND);
+            }
         }
         while (OPEN_DUEL.consumeClick()) {
             if (mc.screen == null && ClientDuel.view() != null) {

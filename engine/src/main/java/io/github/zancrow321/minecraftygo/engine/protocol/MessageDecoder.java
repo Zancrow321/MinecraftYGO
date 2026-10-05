@@ -55,6 +55,13 @@ public final class MessageDecoder {
         return message;
     }
 
+    /** Only the team matters; the new hand and Extra Deck are read from the board afterwards. */
+    private static DuelMessage tagSwap(ByteReader r) {
+        TagSwap swap = new TagSwap(r.u8());
+        r.bytes(r.remaining());
+        return swap;
+    }
+
     private static DuelMessage read(int type, ByteReader r) {
         return switch (type) {
             case RETRY -> new Retry();
@@ -180,6 +187,7 @@ public final class MessageDecoder {
             }
             case DECK_TOP -> new DeckTop(r.u8(), r.i32(), r.i32(), r.i32());
             case NEW_TURN -> new NewTurn(r.u8());
+            case TAG_SWAP -> tagSwap(r);
             case NEW_PHASE -> new NewPhase(r.u16());
             case MOVE -> new Move(r.i32(), r.loc(), r.loc(), r.i32());
             case POS_CHANGE -> {

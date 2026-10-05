@@ -84,7 +84,7 @@ class DuelTableTest {
         assertTrue(log.stream().anyMatch(l -> l.contains("wins the duel") || l.contains("You win")), log.toString());
     }
 
-    private static byte[] pick(PromptView prompt, Random random) {
+    static byte[] pick(PromptView prompt, Random random) {
         if (prompt.multi() == null) {
             // Favour the last choices (phase changes) a little so the person keeps the duel moving.
             List<PromptView.Choice> c = prompt.choices();

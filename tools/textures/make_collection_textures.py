@@ -1,4 +1,5 @@
-"""Draws the 16x16 item and block textures for the card collection items and the Card Trader's clothes.
+"""Draws the 16x16 item and block textures for the card collection items, the Card Trader's clothes and the Duel
+Dome blocks.
 
 Run from the repository root: python3 tools/textures/make_collection_textures.py
 """
@@ -174,6 +175,119 @@ def trader_clothes():
     return img
 
 
+def metal_tile(base, glow, pattern):
+    """A metal tile with a glowing pattern: '#' glow, '+' bright glow, '.' metal."""
+    img = Image.new("RGBA", (16, 16))
+    r, g, b = base
+    for y in range(16):
+        for x in range(16):
+            edge = x in (0, 15) or y in (0, 15)
+            shade = -30 if edge else (8 if (x + y) % 7 == 0 else 0)
+            img.putpixel((x, y), (max(min(r + shade, 255), 0), max(min(g + shade, 255), 0),
+                                  max(min(b + shade, 255), 0), 255))
+    for y, row in enumerate(pattern):
+        for x, ch in enumerate(row):
+            if ch == "#":
+                img.putpixel((x, y), glow + (255,))
+            elif ch == "+":
+                img.putpixel((x, y), (230, 250, 255, 255))
+    return img
+
+
+CORE_TOP = [
+    "................",
+    ".##############.",
+    ".#............#.",
+    ".#..########..#.",
+    ".#..#......#..#.",
+    ".#..#.####.#..#.",
+    ".#..#.#++#.#..#.",
+    ".####.#++#.####.",
+    ".####.#++#.####.",
+    ".#..#.#++#.#..#.",
+    ".#..#.####.#..#.",
+    ".#..#......#..#.",
+    ".#..########..#.",
+    ".#............#.",
+    ".##############.",
+    "................",
+]
+CORE_SIDE = [
+    "................",
+    "................",
+    "..############..",
+    "................",
+    "....#......#....",
+    "....#..++..#....",
+    "....#.+##+.#....",
+    "....#.+##+.#....",
+    "....#..++..#....",
+    "....#......#....",
+    "................",
+    "..############..",
+    "................",
+    "................",
+    "................",
+    "................",
+]
+PLATFORM_TOP = [
+    "................",
+    ".##############.",
+    ".#............#.",
+    ".#.##########.#.",
+    ".#.#........#.#.",
+    ".#.#..####..#.#.",
+    ".#.#..#++#..#.#.",
+    ".#.#..#++#..#.#.",
+    ".#.#..#++#..#.#.",
+    ".#.#..#++#..#.#.",
+    ".#.#..####..#.#.",
+    ".#.#........#.#.",
+    ".#.##########.#.",
+    ".#............#.",
+    ".##############.",
+    "................",
+]
+PLATFORM_SIDE = [
+    "................",
+    "################",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "................",
+    "################",
+    "................",
+]
+KIT = [
+    "................",
+    "................",
+    "..kkkkkkkkkkkk..",
+    "..kqqqqqqqqqqk..",
+    "..kqbbbbbbbbqk..",
+    "..kqbqqqqqqbqk..",
+    "..kqbqqppqqbqk..",
+    "..kqbccccccbqk..",
+    "..kqbqqccqqbqk..",
+    "..kqbqqqqqqbqk..",
+    "..kqbqqppqqbqk..",
+    "..kqbbbbbbbbqk..",
+    "..kqqqqqqqqqqk..",
+    "..kkkkkkkkkkkk..",
+    "................",
+    "................",
+]
+KIT_P = {"k": (40, 45, 60, 255), "q": (225, 225, 220, 255), "b": (90, 180, 230, 255),
+         "c": (40, 200, 210, 255), "p": (40, 70, 200, 255)}
+
+
 def main():
     save(from_rows(PACK_BODY, GREYS), "item/booster_pack.png")
     save(from_rows(PACK_TRIM, TRIM), "item/booster_pack_trim.png")
@@ -183,6 +297,11 @@ def main():
     save(card_shop_side(), "block/card_shop_side.png")
     save(planks((120, 85, 50)), "block/card_shop_bottom.png")
     save(trader_clothes(), "entity/villager/profession/card_trader.png")
+    save(metal_tile((70, 80, 100), (80, 220, 255), CORE_TOP), "block/duel_dome_core_top.png")
+    save(metal_tile((70, 80, 100), (80, 220, 255), CORE_SIDE), "block/duel_dome_core_side.png")
+    save(metal_tile((45, 60, 110), (90, 160, 255), PLATFORM_TOP), "block/duelist_platform_top.png")
+    save(metal_tile((45, 60, 110), (90, 160, 255), PLATFORM_SIDE), "block/duelist_platform_side.png")
+    save(from_rows([r.ljust(16, ".")[:16] for r in KIT], KIT_P), "item/duel_dome_kit.png")
 
 
 if __name__ == "__main__":

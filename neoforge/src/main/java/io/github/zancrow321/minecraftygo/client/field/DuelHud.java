@@ -81,11 +81,18 @@ public final class DuelHud {
         hovered(g, font, board, w);
     }
 
+    /** A tag team's name ("Alex & Steve") goes on two lines so it fits the panel. */
     private static void lifePanel(GuiGraphics g, Font font, int x, int y, String name, Board.Side side, boolean own) {
-        g.fill(x, y, x + 96, y + 38, PANEL);
-        g.drawString(font, name, x + 4, y + 3, own ? 0xFF88D8FF : 0xFFFF9090);
-        g.drawString(font, "LP " + side.lifePoints(), x + 4, y + 14, GOLD);
-        g.drawString(font, "Hand " + side.hand().size() + "  Deck " + side.deckCount(), x + 4, y + 26, DIM);
+        String[] names = name.split(" & ");
+        int extra = (names.length - 1) * 11;
+        g.fill(x, y - (own ? extra : 0), x + 96, y + 38 + (own ? 0 : extra), PANEL);
+        int top = own ? y - extra : y;
+        for (int i = 0; i < names.length; i++) {
+            g.drawString(font, font.plainSubstrByWidth(names[i] + (i < names.length - 1 ? " &" : ""), 88), x + 4,
+                    top + 3 + i * 11, own ? 0xFF88D8FF : 0xFFFF9090);
+        }
+        g.drawString(font, "LP " + side.lifePoints(), x + 4, top + 14 + extra, GOLD);
+        g.drawString(font, "Hand " + side.hand().size() + "  Deck " + side.deckCount(), x + 4, top + 26 + extra, DIM);
     }
 
     private static void damagePopups(GuiGraphics g, Font font, int me, int h, float partial) {
