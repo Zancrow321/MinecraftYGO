@@ -16,7 +16,10 @@ val cmakeConfigureHost = tasks.register<Exec>("cmakeConfigureHost") {
     description = "Configures the host CMake build of ocgcore"
     inputs.file("CMakeLists.txt")
     outputs.file(cmakeDir.map { it.file("CMakeCache.txt") })
-    commandLine("cmake", "-S", projectDir.absolutePath, "-B", cmakeDir.get().asFile.absolutePath, "-DCMAKE_BUILD_TYPE=Release")
+    // Extra configure arguments, e.g. -Pygo.cmakeArgs="-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64" for macOS universal builds.
+    val extraArgs = providers.gradleProperty("ygo.cmakeArgs").map { it.split(' ').filter(String::isNotBlank) }.getOrElse(emptyList())
+    inputs.property("extraArgs", extraArgs)
+    commandLine(listOf("cmake", "-S", projectDir.absolutePath, "-B", cmakeDir.get().asFile.absolutePath, "-DCMAKE_BUILD_TYPE=Release") + extraArgs)
 }
 
 tasks.register<Exec>("cmakeBuildHost") {

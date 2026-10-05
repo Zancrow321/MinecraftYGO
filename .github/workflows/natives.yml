@@ -1,0 +1,132 @@
+name: natives
+
+# Builds the ocgcore shared library for every supported platform from the pinned submodule and runs the
+# engine test suite against each build (FFM ABI, struct layouts, real duels). The merged artifact
+# "natives-all" (natives/<platform>/<library> + index.json) is what the mod jar bundles.
+on:
+  push:
+    paths:
+      - 'ocgcore-native/**'
+      - 'engine/**'
+      - '.github/workflows/natives.yml'
+  pull_request:
+    paths:
+      - 'ocgcore-native/**'
+      - 'engine/**'
+      - '.github/workflows/natives.yml'
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux-x64
+            os: ubuntu-24.04
+            container: quay.io/pypa/manylinux_2_28_x86_64
+            library: libocgcore.so
+            probe: ocg_layout_probe
+          - platform: linux-arm64
+            os: ubuntu-24.04-arm
+            container: quay.io/pypa/manylinux_2_28_aarch64
+            library: libocgcore.so
+            probe: ocg_layout_probe
+          - platform: windows-x64
+            os: windows-2022
+            library: ocgcore.dll
+            probe: ocg_layout_probe.exe
+          - platform: macos-universal
+            os: macos-15
+            library: libocgcore.dylib
+            probe: ocg_layout_probe
+            cmake_args: -DCMAKE_OSX_ARCHITECTURES=arm64;x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+    runs-on: ${{ matrix.os }}
+    container: ${{ matrix.container }}
+    steps:
+      - name: Install git (manylinux)
+        if: matrix.container != ''
+        run: dnf install -y git && git config --global --add safe.directory '*'
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build and test
+        shell: bash
+        run: ./gradlew :ocgcore-native:cmakeBuildHost :engine:test -Pygo.skipMod=true "-Pygo.cmakeArgs=${{ matrix.cmake_args }}"
+      - name: Stage library
+        shell: bash
+        run: |
+          mkdir -p staged/natives/${{ matrix.platform }} staged/probe
+          cp ocgcore-native/build/cmake/${{ matrix.library }} staged/natives/${{ matrix.platform }}/
+          cp ocgcore-native/build/cmake/${{ matrix.probe }} staged/probe/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: natives-${{ matrix.platform }}
+          path: staged/
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ matrix.platform }}
+          path: engine/build/reports/tests/
+
+  # The universal macOS library is built and tested on Apple Silicon; run the suite on Intel as well.
+  test-macos-intel:
+    needs: build
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: natives-macos-universal
+          path: prebuilt
+      - name: Engine tests against the universal library
+        run: |
+          mkdir -p prebuilt/dir
+          cp prebuilt/natives/macos-universal/libocgcore.dylib prebuilt/probe/ocg_layout_probe prebuilt/dir/
+          ./gradlew :engine:test -Pygo.skipMod=true -Pygo.nativeDir=$PWD/prebuilt/dir --tests '*LayoutProbeTest' --tests '*FfmOcgCoreTest' --tests '*BotVsBotDuelTest'
+
+  bundle:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: natives-*
+          path: downloaded
+      - name: Merge and index
+        run: |
+          mkdir -p merged/natives
+          for dir in downloaded/natives-*; do cp -r "$dir/natives/." merged/natives/; done
+          cd merged
+          python3 - <<'PY'
+          import hashlib, json, os
+          index = {}
+          for root, _, files in os.walk("natives"):
+              for name in files:
+                  path = os.path.join(root, name)
+                  with open(path, "rb") as f:
+                      index[path.replace(os.sep, "/")] = hashlib.sha256(f.read()).hexdigest()
+          with open("natives/index.json", "w") as f:
+              json.dump(index, f, indent=2, sort_keys=True)
+          print(json.dumps(index, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: natives-all
+          path: merged/

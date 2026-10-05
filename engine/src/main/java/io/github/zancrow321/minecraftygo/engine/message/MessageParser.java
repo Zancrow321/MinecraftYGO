@@ -7,6 +7,7 @@ import io.github.zancrow321.minecraftygo.engine.wire.LocInfo;
 import io.github.zancrow321.minecraftygo.engine.wire.WireFormatException;
 import io.github.zancrow321.minecraftygo.engine.wire.WireReader;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -55,16 +56,87 @@ public final class MessageParser {
 			case MSG_WIN -> new Event.Win(r.u8(), r.u8());
 			case MSG_NEW_TURN -> new Event.NewTurn(r.u8());
 			case MSG_NEW_PHASE -> new Event.NewPhase(r.u16());
+			case MSG_HAND_RES -> {
+				int packed = r.u8();
+				yield new Event.HandResult(packed & 0x3, (packed >> 2) & 0x3);
+			}
+			case MSG_TAG_SWAP -> {
+				int player = r.u8();
+				int deck = r.i32();
+				int extra = r.i32();
+				int extraFaceUp = r.i32();
+				int hand = r.i32();
+				int top = r.i32();
+				List<Event.CodePosition> handCards = list(r, hand, MessageParser::codePosition);
+				List<Event.CodePosition> extraCards = list(r, extra, MessageParser::codePosition);
+				yield new Event.TagSwap(player, deck, extra, extraFaceUp, top, handCards, extraCards);
+			}
 			case MSG_DRAW -> {
 				int player = r.u8();
-				int count = r.i32();
-				List<Event.DrawnCard> cards = new ArrayList<>(count);
-				for (int i = 0; i < count; i++) {
-					cards.add(new Event.DrawnCard(r.i32(), r.i32()));
-				}
-				yield new Event.Draw(player, cards);
+				yield new Event.Draw(player, list(r, r.i32(), MessageParser::codePosition));
 			}
 			case MSG_MOVE -> new Event.Move(r.i32(), r.locInfo(), r.locInfo(), r.i32());
+			case MSG_POS_CHANGE -> new Event.PositionChange(r.i32(), r.u8(), r.u8(), r.u8(), r.u8(), r.u8());
+			case MSG_SET -> new Event.SetCard(r.i32(), r.locInfo());
+			case MSG_SWAP -> new Event.Swap(r.i32(), r.locInfo(), r.i32(), r.locInfo());
+			case MSG_SHUFFLE_HAND, MSG_SHUFFLE_EXTRA -> {
+				int player = r.u8();
+				yield new Event.ShuffleCards(player, type == MSG_SHUFFLE_EXTRA, list(r, r.i32(), WireReader::i32));
+			}
+			case MSG_SHUFFLE_DECK -> new Event.ShuffleDeck(r.u8());
+			case MSG_SHUFFLE_SET_CARD -> {
+				int location = r.u8();
+				int count = r.u8();
+				List<LocInfo> cards = list(r, count, WireReader::locInfo);
+				List<LocInfo> overlay = list(r, count, WireReader::locInfo);
+				yield new Event.ShuffleSetCards(location, cards, overlay);
+			}
+			case MSG_REVERSE_DECK -> new Event.ReverseDeck();
+			case MSG_DECK_TOP -> new Event.DeckTop(r.u8(), r.i32(), r.i32(), r.i32());
+			case MSG_SWAP_GRAVE_DECK -> {
+				int player = r.u8();
+				int insertPosition = r.i32();
+				int size = r.i32();
+				yield new Event.SwapGraveDeck(player, insertPosition, r.bytes(size));
+			}
+			case MSG_REMOVE_CARDS -> new Event.RemoveCards(list(r, r.i32(), WireReader::locInfo));
+			case MSG_CONFIRM_DECKTOP, MSG_CONFIRM_EXTRATOP, MSG_CONFIRM_CARDS -> {
+				int player = r.u8();
+				yield new Event.Confirm(type, player, list(r, r.i32(),
+						in -> new Event.CodeLocation(in.i32(), in.u8(), in.u8(), in.i32())));
+			}
+			case MSG_SUMMONING, MSG_SPSUMMONING, MSG_FLIPSUMMONING -> new Event.Summoning(type, r.i32(), r.locInfo());
+			case MSG_SUMMONED, MSG_SPSUMMONED, MSG_FLIPSUMMONED -> new Event.Summoned(type);
+			case MSG_CHAINING -> new Event.Chaining(r.i32(), r.locInfo(), r.u8(), r.u8(), r.i32(), r.i64(), r.i32());
+			case MSG_CHAINED, MSG_CHAIN_SOLVING, MSG_CHAIN_SOLVED, MSG_CHAIN_NEGATED, MSG_CHAIN_DISABLED ->
+					new Event.ChainLink(type, r.u8());
+			case MSG_CHAIN_END -> new Event.ChainEnd();
+			case MSG_CARD_SELECTED, MSG_BECOME_TARGET -> new Event.CardsSelected(type, list(r, r.i32(), WireReader::locInfo));
+			case MSG_RANDOM_SELECTED -> {
+				int player = r.u8();
+				yield new Event.RandomSelected(player, list(r, r.i32(), WireReader::locInfo));
+			}
+			case MSG_MISSED_EFFECT -> new Event.MissedEffect(r.locInfo(), r.i32());
+			case MSG_DAMAGE, MSG_RECOVER, MSG_PAY_LPCOST, MSG_LPUPDATE -> new Event.LifePoints(type, r.u8(), r.i32());
+			case MSG_EQUIP, MSG_CARD_TARGET, MSG_CANCEL_TARGET -> new Event.CardRelation(type, r.locInfo(), r.locInfo());
+			case MSG_ADD_COUNTER, MSG_REMOVE_COUNTER -> new Event.Counter(type, r.u16(), r.u8(), r.u8(), r.u8(), r.u16());
+			case MSG_FIELD_DISABLED -> new Event.FieldDisabled(r.i32());
+			case MSG_ATTACK -> new Event.Attack(r.locInfo(), r.locInfo());
+			case MSG_BATTLE -> new Event.Battle(r.locInfo(), r.i32(), r.i32(), r.bool(), r.locInfo(), r.i32(), r.i32(), r.bool());
+			case MSG_ATTACK_DISABLED, MSG_DAMAGE_STEP_START, MSG_DAMAGE_STEP_END -> new Event.BattleStep(type);
+			case MSG_TOSS_COIN, MSG_TOSS_DICE -> {
+				int player = r.u8();
+				yield new Event.Toss(type, player, list(r, r.u8(), WireReader::u8));
+			}
+			case MSG_CARD_HINT -> new Event.CardHint(r.locInfo(), r.u8(), r.i64());
+			case MSG_PLAYER_HINT -> new Event.PlayerHint(r.u8(), r.u8(), r.i64());
+			case MSG_AI_NAME, MSG_SHOW_HINT -> {
+				int length = r.u16();
+				String text = new String(r.bytes(length), StandardCharsets.UTF_8);
+				r.u8();
+				yield new Event.Text(type, text);
+			}
+			case MSG_MATCH_KILL -> new Event.MatchKill(r.i32());
 
 			case MSG_SELECT_IDLECMD -> parseIdle(r);
 			case MSG_SELECT_BATTLECMD -> parseBattle(r);
@@ -151,6 +223,10 @@ public final class MessageParser {
 			case MSG_ROCK_PAPER_SCISSORS -> new Prompt.RockPaperScissors(r.u8());
 			default -> new Event.Unparsed(type, r.bytes(r.remaining()));
 		};
+	}
+
+	private static Event.CodePosition codePosition(WireReader r) {
+		return new Event.CodePosition(r.i32(), r.i32());
 	}
 
 	private static Prompt.IdleCommand parseIdle(WireReader r) {

@@ -32,14 +32,29 @@ dependencies {
 
 val upstreamDir = rootProject.layout.buildDirectory.dir("upstream")
 
+// -Pygo.nativeDir=<dir> runs the tests against a prebuilt library + layout probe (CI smoke tests per platform)
+// instead of building ocgcore for the host.
+val prebuiltNativeDir = providers.gradleProperty("ygo.nativeDir").orNull?.let(::file)
+
 tasks.test {
-    dependsOn(":ocgcore-native:cmakeBuildHost", ":syncUpstreamCardScripts", ":syncUpstreamBabelCdb")
+    dependsOn(":syncUpstreamCardScripts", ":syncUpstreamBabelCdb")
     @Suppress("UNCHECKED_CAST")
-    systemProperty("ygo.ocgcore.path", (native.extra["hostLibrary"] as Provider<String>).get())
-    @Suppress("UNCHECKED_CAST")
-    systemProperty("ygo.ocgcore.layoutProbe", (native.extra["layoutProbe"] as Provider<String>).get())
+    if (prebuiltNativeDir == null) {
+        dependsOn(":ocgcore-native:cmakeBuildHost")
+        systemProperty("ygo.ocgcore.path", (native.extra["hostLibrary"] as Provider<String>).get())
+        systemProperty("ygo.ocgcore.layoutProbe", (native.extra["layoutProbe"] as Provider<String>).get())
+    } else {
+        val library = prebuiltNativeDir.listFiles()?.firstOrNull { it.name.matches(Regex("(lib)?ocgcore\\.(so|dll|dylib)")) }
+            ?: error("No ocgcore library in $prebuiltNativeDir")
+        val probe = prebuiltNativeDir.listFiles()?.firstOrNull { it.name.startsWith("ocg_layout_probe") }
+            ?: error("No ocg_layout_probe in $prebuiltNativeDir")
+        systemProperty("ygo.ocgcore.path", library.absolutePath)
+        systemProperty("ygo.ocgcore.layoutProbe", probe.absolutePath)
+    }
     systemProperty("ygo.upstream.dir", upstreamDir.get().asFile.absolutePath)
     systemProperty("org.slf4j.simpleLogger.defaultLogLevel", "info")
+    providers.gradleProperty("ygo.fuzzDuels").orNull?.let { systemProperty("ygo.fuzzDuels", it) }
+    providers.gradleProperty("ygo.fuzzSeed").orNull?.let { systemProperty("ygo.fuzzSeed", it) }
     maxHeapSize = "1g"
 }
 

@@ -39,7 +39,7 @@ class MessageParserTest {
 				new Event.NewTurn(1),
 				new Event.NewPhase(PHASE_MAIN1),
 				new Event.Win(0, 1),
-				new Event.Unparsed(MSG_CHAIN_END, new byte[0]));
+				new Event.ChainEnd());
 	}
 
 	@Test
