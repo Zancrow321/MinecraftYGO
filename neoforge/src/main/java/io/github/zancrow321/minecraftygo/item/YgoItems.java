@@ -10,6 +10,8 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.neoforged.bus.api.IEventBus;
+import io.github.zancrow321.minecraftygo.entity.YgoEntities;
+import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -30,6 +32,8 @@ public final class YgoItems {
     public static final DeferredItem<DeckBoxItem> DECK_BOX = ITEMS.registerItem("deck_box", DeckBoxItem::new,
             new Item.Properties().stacksTo(1));
 
+    public static final DeferredItem<DeferredSpawnEggItem> DUELIST_SPAWN_EGG = ITEMS.registerItem("duelist_spawn_egg",
+            props -> new DeferredSpawnEggItem(YgoEntities.DUELIST, 0x2B3A67, 0xE0C060, props));
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TAB = TABS.register("main",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.minecraftygo"))
@@ -44,6 +48,7 @@ public final class YgoItems {
                         output.accept(DuelDome.KIT.get());
                         output.accept(DuelDome.CORE_ITEM.get());
                         output.accept(DuelDome.PLATFORM_ITEM.get());
+                        output.accept(DUELIST_SPAWN_EGG.get());
                         output.accept(BOOSTER_PACK.get());
                         YgoData.sets().sets().keySet().forEach(id -> output.accept(BoosterPackItem.of(id)));
                     })

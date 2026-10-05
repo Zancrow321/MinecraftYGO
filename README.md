@@ -66,6 +66,11 @@ In game:
   duelist stands on a platform, one team at each end, the field appears over the core instead of between the
   players. Cores and platforms can also be placed by hand: platforms 4 to 14 blocks from the core, up to 2 off the
   center line.
+- **NPC duelists** wander the overworld now and then, each with a title, one of the default skins, a duel disk and
+  its own random deck from the card pool. Right-click one to duel it; beat it and it gives you a booster pack, then
+  won't duel you again for a Minecraft day. They can't be hurt while dueling. A **Duelist Spawn Egg** is in the
+  creative tab. NPCs and the `bot` seats play with a heuristic AI that summons its strongest monsters, only attacks
+  when it wins the fight and saves its traps for your turn.
 - `/ygo version` reports the loaded OCG-Core version.
 - `/ygo duel bot` or `/ygo duel <player>` (then `/ygo accept`) starts a duel; press Y to open the duel screen.
 - `/ygo gallery [page]` puts a page of modeled monsters in front of you (operators only); `/ygo gallery clear` removes them.

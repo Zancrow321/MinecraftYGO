@@ -36,5 +36,7 @@
   "block.minecraftygo.duelist_platform": "Duellanten-Plattform",
   "item.minecraftygo.duel_dome_kit": "Duel-Dome-Bausatz",
   "item.minecraftygo.duel_dome_kit.tooltip": "Auf ebenem Boden benutzen, um einen Duel Dome (13 × 21) in Blickrichtung zu bauen. Duellanten auf seinen Plattformen duellieren sich über dem Kern.",
-  "message.minecraftygo.duel_dome.blocked": "Bei %s %s %s ist etwas im Weg. Der Duel Dome braucht eine freie Fläche von 13 × 21."
+  "message.minecraftygo.duel_dome.blocked": "Bei %s %s %s ist etwas im Weg. Der Duel Dome braucht eine freie Fläche von 13 × 21.",
+  "entity.minecraftygo.duelist": "Duellant",
+  "item.minecraftygo.duelist_spawn_egg": "Duellant-Spawn-Ei"
 }

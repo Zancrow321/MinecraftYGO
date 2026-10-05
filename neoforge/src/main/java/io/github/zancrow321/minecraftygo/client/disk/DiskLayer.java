@@ -2,26 +2,30 @@ package io.github.zancrow321.minecraftygo.client.disk;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.zancrow321.minecraftygo.duel.DuelDisks;
-import net.minecraft.client.model.PlayerModel;
-import net.minecraft.client.player.AbstractClientPlayer;
+import io.github.zancrow321.minecraftygo.entity.DuelistNpc;
+import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 /**
- * Draws the worn duel disk on the player's left arm, like Figura's LeftArm part.
+ * Draws the duel disk on the left arm, like Figura's LeftArm part: on players who wear one, and on NPC duelists,
+ * who always carry theirs.
  */
-public final class DiskLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
-    public DiskLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> parent) {
+public final class DiskLayer<T extends LivingEntity, M extends HumanoidModel<T>> extends RenderLayer<T, M> {
+    public DiskLayer(RenderLayerParent<T, M> parent) {
         super(parent);
     }
 
     @Override
-    public void render(PoseStack poses, MultiBufferSource buffers, int light, AbstractClientPlayer player,
-                       float limbSwing, float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw,
-                       float headPitch) {
-        if (player.isInvisible() || DuelDisks.worn(player).isEmpty()) {
+    public void render(PoseStack poses, MultiBufferSource buffers, int light, T entity, float limbSwing,
+                       float limbSwingAmount, float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+        boolean carries = entity instanceof DuelistNpc
+                || entity instanceof Player player && !DuelDisks.worn(player).isEmpty();
+        if (entity.isInvisible() || !carries) {
             return;
         }
         DiskModel model = DiskModel.get();
@@ -30,8 +34,8 @@ public final class DiskLayer extends RenderLayer<AbstractClientPlayer, PlayerMod
         }
         poses.pushPose();
         getParentModel().leftArm.translateAndRotate(poses);
-        model.renderOnArm(poses, buffers, light, LivingEntityRenderer.getOverlayCoords(player, 0),
-                DiskClient.pose(player, partialTick));
+        model.renderOnArm(poses, buffers, light, LivingEntityRenderer.getOverlayCoords(entity, 0),
+                DiskClient.pose(entity, partialTick));
         poses.popPose();
     }
 }

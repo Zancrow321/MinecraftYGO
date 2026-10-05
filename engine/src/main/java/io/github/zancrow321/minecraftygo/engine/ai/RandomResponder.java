@@ -1,6 +1,7 @@
 package io.github.zancrow321.minecraftygo.engine.ai;
 
 import io.github.zancrow321.minecraftygo.engine.data.CardDatabase;
+import io.github.zancrow321.minecraftygo.engine.duel.Board;
 import io.github.zancrow321.minecraftygo.engine.data.CardInfo;
 import io.github.zancrow321.minecraftygo.engine.protocol.DuelMessage.*;
 import io.github.zancrow321.minecraftygo.engine.protocol.Responses;
@@ -11,10 +12,10 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Answers any prompt with a random legal-looking choice. Used to test the engine end to end and as a stand-in
- * opponent until real NPC duelists exist. It favours doing something over passing, so duels actually progress.
+ * Answers any prompt with a random legal-looking choice. Used to test the engine end to end and as the
+ * fallback for {@link DuelistAi}. It favours doing something over passing, so duels actually progress.
  */
-public final class RandomResponder {
+public final class RandomResponder implements Responder {
     private final Random random;
     private final List<Integer> announceCandidates;
 
@@ -26,6 +27,11 @@ public final class RandomResponder {
         }
         Collections.sort(codes);
         this.announceCandidates = List.copyOf(codes);
+    }
+
+    @Override
+    public byte[] respond(Prompt prompt, Board board, int attempt) {
+        return respond(prompt, attempt);
     }
 
     /**

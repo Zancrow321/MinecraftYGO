@@ -10,6 +10,7 @@ import io.github.zancrow321.minecraftygo.client.disk.DiskModel;
 import io.github.zancrow321.minecraftygo.client.field.ClientField;
 import io.github.zancrow321.minecraftygo.client.field.DuelHud;
 import io.github.zancrow321.minecraftygo.client.field.FieldRenderer;
+import io.github.zancrow321.minecraftygo.client.render.DuelistNpcRenderer;
 import io.github.zancrow321.minecraftygo.client.render.MonsterRenderer;
 import io.github.zancrow321.minecraftygo.entity.YgoEntities;
 import io.github.zancrow321.minecraftygo.item.BoosterPackItem;
@@ -54,7 +55,7 @@ public final class YgoClient {
 
     /**
      * For headless testing: {@code -Dminecraftygo.useItem=80,200} closes any screen and right-clicks with the
-     * main-hand item (on the block in the crosshair, if any) when the player has been in the world that many ticks,
+     * main-hand item (on the block or entity in the crosshair, if any) when the player has been in the world that many ticks,
      * to open packs, binders and deck boxes or place things without a mouse.
      */
     private static final java.util.Set<Integer> TEST_USE_ITEM = java.util.Arrays.stream(
@@ -73,6 +74,7 @@ public final class YgoClient {
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(YgoEntities.MONSTER.get(), MonsterRenderer::new);
+            event.registerEntityRenderer(YgoEntities.DUELIST.get(), DuelistNpcRenderer::new);
         }
 
         @SubscribeEvent
@@ -82,7 +84,7 @@ public final class YgoClient {
                 if (event.getSkin(skin) instanceof LivingEntityRenderer<?, ?> renderer) {
                     var playerRenderer = (LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>)
                             renderer;
-                    playerRenderer.addLayer(new DiskLayer(playerRenderer));
+                    playerRenderer.addLayer(new DiskLayer<>(playerRenderer));
                 }
             }
         }
@@ -185,6 +187,8 @@ public final class YgoClient {
             if (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult hit
                     && hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) {
                 mc.gameMode.useItemOn(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
+            } else if (mc.hitResult instanceof net.minecraft.world.phys.EntityHitResult hit) {
+                mc.gameMode.interact(mc.player, hit.getEntity(), net.minecraft.world.InteractionHand.MAIN_HAND);
             } else {
                 mc.gameMode.useItem(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND);
             }
