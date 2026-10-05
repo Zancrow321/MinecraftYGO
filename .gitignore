@@ -1,0 +1,20 @@
+# Gradle / build output
+.gradle/
+build/
+out/
+bin/
+# IDEs
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+# Minecraft run directories
+run/
+runs/
+# Natives downloaded from CI into the mod build
+ocgcore-native/prebuilt/
+# Local Claude settings
+.claude/settings.local.json
+.DS_Store
