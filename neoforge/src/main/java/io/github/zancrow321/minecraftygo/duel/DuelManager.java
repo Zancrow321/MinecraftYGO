@@ -2,6 +2,10 @@ package io.github.zancrow321.minecraftygo.duel;
 
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.YgoData;
+import io.github.zancrow321.minecraftygo.YgoServerConfig;
+import io.github.zancrow321.minecraftygo.item.DeckBoxItem;
+import io.github.zancrow321.minecraftygo.item.YgoItems;
+import net.minecraft.world.item.ItemStack;
 import io.github.zancrow321.minecraftygo.engine.DuelSettings;
 import io.github.zancrow321.minecraftygo.engine.OcgConstants;
 import io.github.zancrow321.minecraftygo.engine.ai.RandomResponder;
@@ -32,8 +36,9 @@ import java.util.UUID;
  */
 public final class DuelManager {
     private static final long CHALLENGE_TIMEOUT_TICKS = 20 * 60;
-    private static final String CHALLENGER_DECK = "starter_yugi";
-    private static final String OPPONENT_DECK = "starter_kaiba";
+    /** Lent to players without a deck box, if the server allows it. */
+    private static final String STARTER_DECK = "starter_yugi";
+    private static final String BOT_DECK = "starter_kaiba";
 
     private static DuelManager instance;
 
@@ -128,8 +133,16 @@ public final class DuelManager {
             target.sendSystemMessage(Component.literal("One of you is already in a duel."));
             return;
         }
+        Deck first = deckFor(challenger);
+        Deck second = deckFor(target);
+        if (first == null || second == null) {
+            message(first == null ? target.getUUID() : challenger.getUUID(), Component.literal(
+                    (first == null ? challenger : target).getScoreboardName() + " has no legal deck."));
+            return;
+        }
         start(new UUID[]{challenger.getUUID(), target.getUUID()},
-                List.of(challenger.getScoreboardName(), target.getScoreboardName()), fieldBetween(challenger, target));
+                List.of(challenger.getScoreboardName(), target.getScoreboardName()), new Deck[]{first, second},
+                fieldBetween(challenger, target));
     }
 
     public void duelBot(ServerPlayer player) {
@@ -137,8 +150,12 @@ public final class DuelManager {
             player.sendSystemMessage(Component.literal("You are already in a duel."));
             return;
         }
+        Deck deck = deckFor(player);
+        if (deck == null) {
+            return;
+        }
         start(new UUID[]{player.getUUID(), null}, List.of(player.getScoreboardName(), "Duel Bot"),
-                fieldInFrontOf(player));
+                new Deck[]{deck, Deck.bundled(BOT_DECK)}, fieldInFrontOf(player));
     }
 
     /** Centered between the two duelists, on the lower one's feet level, player 0's side toward player 0. */
@@ -160,7 +177,42 @@ public final class DuelManager {
         return new DuelFieldPayload(true, center.x, player.getY(), center.z, yaw);
     }
 
-    private void start(UUID[] seats, List<String> names, DuelFieldPayload field) {
+    /**
+     * The deck a player duels with: the first legal deck box they carry (hands first, then the inventory), or a
+     * starter deck if the server allows it. Tells the player why when there is none.
+     *
+     * @return the deck, or {@code null}
+     */
+    private static Deck deckFor(ServerPlayer player) {
+        List<ItemStack> boxes = new ArrayList<>();
+        for (ItemStack stack : List.of(player.getMainHandItem(), player.getOffhandItem())) {
+            if (stack.is(YgoItems.DECK_BOX.get())) {
+                boxes.add(stack);
+            }
+        }
+        for (ItemStack stack : player.getInventory().items) {
+            if (stack.is(YgoItems.DECK_BOX.get()) && !boxes.contains(stack)) {
+                boxes.add(stack);
+            }
+        }
+        for (ItemStack box : boxes) {
+            if (DeckBoxItem.problems(box).isEmpty()) {
+                return DeckBoxItem.toDeck(box);
+            }
+        }
+        if (!boxes.isEmpty()) {
+            player.sendSystemMessage(Component.literal("Your deck box \"" + boxes.get(0).getHoverName().getString()
+                    + "\" isn't legal: " + DeckBoxItem.problems(boxes.get(0)).get(0)));
+            return null;
+        }
+        if (YgoServerConfig.STARTER_DECKS.get()) {
+            return Deck.bundled(STARTER_DECK);
+        }
+        player.sendSystemMessage(Component.literal("You need a deck box with a legal deck to duel."));
+        return null;
+    }
+
+    private void start(UUID[] seats, List<String> names, Deck[] decks, DuelFieldPayload field) {
         var random = server.overworld().getRandom();
         long[] seed = {random.nextLong(), random.nextLong(), random.nextLong(), random.nextLong() | 1};
         RandomResponder[] bots = new RandomResponder[2];
@@ -172,8 +224,8 @@ public final class DuelManager {
         DuelTable table;
         try {
             table = new DuelTable(YgoData.text(), new BundledScripts(),
-                    DuelSettings.standard(seed, OcgConstants.DUEL_MODE_MR1), Deck.bundled(CHALLENGER_DECK),
-                    Deck.bundled(OPPONENT_DECK), names, bots,
+                    DuelSettings.standard(seed, OcgConstants.DUEL_MODE_MR1), decks[0],
+                    decks[1], names, bots,
                     (type, message) -> MinecraftYgo.LOGGER.debug("[ocgcore {}] {}", type, message));
         } catch (UnsatisfiedLinkError | RuntimeException e) {
             MinecraftYgo.LOGGER.error("Could not start a duel", e);

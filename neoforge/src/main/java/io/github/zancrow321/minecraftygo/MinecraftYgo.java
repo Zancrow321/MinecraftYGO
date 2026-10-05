@@ -6,7 +6,10 @@ import io.github.zancrow321.minecraftygo.duel.DuelManager;
 import io.github.zancrow321.minecraftygo.engine.OcgCore;
 import io.github.zancrow321.minecraftygo.duel.DuelDisks;
 import io.github.zancrow321.minecraftygo.entity.YgoEntities;
+import io.github.zancrow321.minecraftygo.item.YgoComponents;
 import io.github.zancrow321.minecraftygo.item.YgoItems;
+import io.github.zancrow321.minecraftygo.loot.RandomCardFunction;
+import io.github.zancrow321.minecraftygo.village.YgoVillagers;
 import io.github.zancrow321.minecraftygo.network.YgoNetwork;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -34,6 +37,10 @@ public final class MinecraftYgo {
     public MinecraftYgo(IEventBus modBus, ModContainer container) {
         YgoEntities.register(modBus);
         YgoItems.register(modBus);
+        YgoComponents.register(modBus);
+        YgoVillagers.register(modBus);
+        RandomCardFunction.register(modBus);
+        container.registerConfig(ModConfig.Type.SERVER, YgoServerConfig.SPEC);
         modBus.addListener(YgoNetwork::register);
         if (FMLEnvironment.dist == Dist.CLIENT) {
             container.registerConfig(ModConfig.Type.CLIENT, YgoClientConfig.SPEC);

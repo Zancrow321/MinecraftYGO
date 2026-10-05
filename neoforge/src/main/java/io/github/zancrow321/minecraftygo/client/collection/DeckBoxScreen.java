@@ -1,0 +1,166 @@
+package io.github.zancrow321.minecraftygo.client.collection;
+
+import io.github.zancrow321.minecraftygo.item.BinderItem;
+import io.github.zancrow321.minecraftygo.item.CardItem;
+import io.github.zancrow321.minecraftygo.item.DeckBoxItem;
+import io.github.zancrow321.minecraftygo.item.YgoItems;
+import io.github.zancrow321.minecraftygo.network.CollectionActionPayload;
+import io.github.zancrow321.minecraftygo.network.CollectionActionPayload.Action;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Builds the deck in a deck box: the deck on the left (click to put a card back), the cards you own on the right
+ * (click to add), and whether the deck is legal at the top.
+ */
+public final class DeckBoxScreen extends Screen {
+    private static final int WIDTH = 380;
+    private static final int HEIGHT = 236;
+
+    private final InteractionHand hand;
+    private CardGrid deckGrid;
+    private CardGrid ownedGrid;
+    private EditBox search;
+    private int left;
+    private int top;
+
+    public DeckBoxScreen(InteractionHand hand) {
+        super(Component.translatable("screen.minecraftygo.deck_box"));
+        this.hand = hand;
+    }
+
+    private ItemStack box() {
+        return minecraft.player == null ? ItemStack.EMPTY : minecraft.player.getItemInHand(hand);
+    }
+
+    @Override
+    protected void init() {
+        left = (width - WIDTH) / 2;
+        top = (height - HEIGHT) / 2;
+        deckGrid = new CardGrid(left + 8, top + 40, 6, 4, 26);
+        ownedGrid = new CardGrid(left + WIDTH / 2 + 10, top + 40, 6, 4, 26);
+        search = addRenderableWidget(new EditBox(font, left + WIDTH / 2 + 10, top + 22, 100, 14,
+                Component.translatable("screen.minecraftygo.search")));
+        search.setHint(Component.translatable("screen.minecraftygo.deck_box.owned"));
+        addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.deck_box.clear"),
+                b -> send(Action.DECK_CLEAR, 0)).bounds(left + WIDTH / 2 - 52, top + 21, 44, 16).build());
+        int buttonsY = top + HEIGHT - 20;
+        addRenderableWidget(Button.builder(Component.literal("<"), b -> page(deckGrid, -1))
+                .bounds(left + 8, buttonsY, 16, 14).build());
+        addRenderableWidget(Button.builder(Component.literal(">"), b -> page(deckGrid, 1))
+                .bounds(left + WIDTH / 2 - 26, buttonsY, 16, 14).build());
+        addRenderableWidget(Button.builder(Component.literal("<"), b -> page(ownedGrid, -1))
+                .bounds(left + WIDTH / 2 + 10, buttonsY, 16, 14).build());
+        addRenderableWidget(Button.builder(Component.literal(">"), b -> page(ownedGrid, 1))
+                .bounds(left + WIDTH - 26, buttonsY, 16, 14).build());
+    }
+
+    private static void page(CardGrid grid, int delta) {
+        grid.page = Math.max(0, Math.min(grid.pages() - 1, grid.page + delta));
+    }
+
+    /** What the player can add: everything in their binders plus loose cards. */
+    private Map<Integer, Integer> owned() {
+        Map<Integer, Integer> counts = new HashMap<>();
+        var inventory = minecraft.player.getInventory();
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (stack.is(YgoItems.BINDER.get())) {
+                BinderItem.collection(stack).counts().forEach((code, n) -> counts.merge(code, n, Integer::sum));
+            } else if (stack.is(YgoItems.CARD.get()) && CardItem.code(stack) != 0) {
+                counts.merge(CardItem.code(stack), stack.getCount(), Integer::sum);
+            }
+        }
+        return counts;
+    }
+
+    @Override
+    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        ItemStack box = box();
+        if (!box.is(YgoItems.DECK_BOX.get())) {
+            onClose();
+            return;
+        }
+        var deck = DeckBoxItem.deck(box);
+        Map<Integer, Integer> inDeck = new HashMap<>();
+        deck.main().forEach(c -> inDeck.merge(c, 1, Integer::sum));
+        deck.extra().forEach(c -> inDeck.merge(c, 1, Integer::sum));
+        deckGrid.set(inDeck, "");
+        ownedGrid.set(owned(), search.getValue());
+        super.render(g, mouseX, mouseY, partialTick);
+
+        g.drawString(font, box.getHoverName(), left + 8, top + 6, 0xFFFFFFFF, false);
+        String counts = "Main " + deck.main().size() + " · Extra " + deck.extra().size();
+        g.drawString(font, counts, left + 8, top + 26, 0xFFAAAAAA, false);
+        List<String> problems = DeckBoxItem.problems(box);
+        Component status = problems.isEmpty()
+                ? Component.translatable("item.minecraftygo.deck_box.legal")
+                : Component.literal(problems.get(0));
+        g.drawString(font, font.plainSubstrByWidth(status.getString(), WIDTH - 140), left + 130, top + 6,
+                problems.isEmpty() ? 0xFF60E060 : 0xFFFF7070, false);
+        deckGrid.render(g, font, mouseX, mouseY);
+        ownedGrid.render(g, font, mouseX, mouseY);
+        if (ownedGrid.entries.isEmpty()) {
+            g.drawCenteredString(font, Component.translatable("screen.minecraftygo.deck_box.no_cards"),
+                    left + WIDTH * 3 / 4, top + HEIGHT / 2, 0xFFAAAAAA);
+        }
+
+        CardGrid.Entry hovered = deckGrid.at(mouseX, mouseY);
+        if (hovered != null) {
+            g.renderComponentTooltip(font, CardGrid.tooltip(hovered.code(), "Click: put back"), mouseX, mouseY);
+        }
+        hovered = ownedGrid.at(mouseX, mouseY);
+        if (hovered != null) {
+            g.renderComponentTooltip(font, CardGrid.tooltip(hovered.code(), "Click: add to deck"), mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public void renderBackground(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        super.renderBackground(g, mouseX, mouseY, partialTick);
+        g.fill(left, top, left + WIDTH, top + HEIGHT, 0xE0181820);
+        g.renderOutline(left, top, WIDTH, HEIGHT, 0xFF5070A0);
+        g.fill(left + WIDTH / 2, top + 20, left + WIDTH / 2 + 1, top + HEIGHT - 4, 0xFF5070A0);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        CardGrid.Entry e = deckGrid.at(mouseX, mouseY);
+        if (e != null) {
+            send(Action.DECK_REMOVE, e.code());
+            return true;
+        }
+        e = ownedGrid.at(mouseX, mouseY);
+        if (e != null) {
+            send(Action.DECK_ADD, e.code());
+            return true;
+        }
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        page(mouseX < left + WIDTH / 2.0 ? deckGrid : ownedGrid, -(int) Math.signum(scrollY));
+        return true;
+    }
+
+    private void send(Action action, int code) {
+        PacketDistributor.sendToServer(new CollectionActionPayload(action, hand == InteractionHand.OFF_HAND, code,
+                false));
+    }
+
+    @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+}

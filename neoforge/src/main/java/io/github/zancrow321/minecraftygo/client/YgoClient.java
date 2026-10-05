@@ -3,6 +3,7 @@ package io.github.zancrow321.minecraftygo.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.client.disk.DiskClient;
+import io.github.zancrow321.minecraftygo.client.collection.CardItemRenderer;
 import io.github.zancrow321.minecraftygo.client.disk.DiskItemRenderer;
 import io.github.zancrow321.minecraftygo.client.disk.DiskLayer;
 import io.github.zancrow321.minecraftygo.client.disk.DiskModel;
@@ -11,6 +12,7 @@ import io.github.zancrow321.minecraftygo.client.field.DuelHud;
 import io.github.zancrow321.minecraftygo.client.field.FieldRenderer;
 import io.github.zancrow321.minecraftygo.client.render.MonsterRenderer;
 import io.github.zancrow321.minecraftygo.entity.YgoEntities;
+import io.github.zancrow321.minecraftygo.item.BoosterPackItem;
 import io.github.zancrow321.minecraftygo.item.YgoItems;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.CameraType;
@@ -22,6 +24,8 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -47,6 +51,15 @@ public final class YgoClient {
      * the body that many degrees from the head (to see the duel disk from the side).
      */
     private static final String TEST_CAMERA = System.getProperty("minecraftygo.camera");
+
+    /**
+     * For headless testing: {@code -Dminecraftygo.useItem=80,200} closes any screen and uses the main-hand item when
+     * the player has been in the world that many ticks (to open packs, binders and deck boxes without a mouse).
+     */
+    private static final java.util.Set<Integer> TEST_USE_ITEM = java.util.Arrays.stream(
+                    System.getProperty("minecraftygo.useItem", "").split(","))
+            .filter(t -> !t.isBlank()).map(String::trim).map(Integer::valueOf)
+            .collect(java.util.stream.Collectors.toSet());
 
     private YgoClient() {
     }
@@ -86,6 +99,34 @@ public final class YgoClient {
                     return renderer;
                 }
             }, YgoItems.DUEL_DISK.get());
+            event.registerItem(new IClientItemExtensions() {
+                private CardItemRenderer renderer;
+
+                @Override
+                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                    if (renderer == null) {
+                        renderer = new CardItemRenderer();
+                    }
+                    return renderer;
+                }
+            }, YgoItems.CARD.get());
+        }
+
+        @SubscribeEvent
+        public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
+            event.register((stack, layer) -> layer == 0 ? packColor(stack) : -1, YgoItems.BOOSTER_PACK.get());
+        }
+
+        /** Each set's pack has its own wrapper color; a random pack is grey-green. */
+        private static int packColor(ItemStack stack) {
+            var set = BoosterPackItem.set(stack);
+            int rgb = set == null ? 0x6A8F6A : switch (set.code()) {
+                case "LOB" -> 0x3D6FD8;
+                case "MRD" -> 0x8A4FB8;
+                case "MRL" -> 0xC8463C;
+                default -> 0x40A0A0 ^ (set.code().hashCode() & 0x3F3F3F);
+            };
+            return 0xFF000000 | rgb;
         }
 
         @SubscribeEvent
@@ -137,6 +178,10 @@ public final class YgoClient {
             float body = mc.player.getYRot() + (camera.length > 1 ? Float.parseFloat(camera[1]) : 0);
             mc.player.setYBodyRot(body);
             mc.player.yBodyRotO = body;
+        }
+        if (mc.player != null && mc.gameMode != null && TEST_USE_ITEM.contains(mc.player.tickCount)) {
+            mc.setScreen(null);
+            mc.gameMode.useItem(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND);
         }
         while (OPEN_DUEL.consumeClick()) {
             if (mc.screen == null && ClientDuel.view() != null) {
