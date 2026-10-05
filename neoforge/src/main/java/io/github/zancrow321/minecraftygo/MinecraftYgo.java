@@ -24,6 +24,9 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
+import net.minecraft.tags.DamageTypeTags;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
@@ -68,6 +71,19 @@ public final class MinecraftYgo {
             }
         });
         NeoForge.EVENT_BUS.addListener(this::onInteractPlayer);
+        // People at a duel stand still at their end of the field: nothing hurts them and mobs leave them be.
+        NeoForge.EVENT_BUS.addListener((LivingIncomingDamageEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player && DuelManager.get(player.server).protects(player)
+                    && !event.getSource().is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+                event.setCanceled(true);
+            }
+        });
+        NeoForge.EVENT_BUS.addListener((LivingChangeTargetEvent event) -> {
+            if (event.getNewAboutToBeSetTarget() instanceof ServerPlayer player
+                    && DuelManager.get(player.server).protects(player)) {
+                event.setCanceled(true);
+            }
+        });
         NeoForge.EVENT_BUS.addListener(YgoCommands::register);
     }
 

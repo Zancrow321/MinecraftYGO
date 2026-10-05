@@ -27,6 +27,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
@@ -61,6 +62,8 @@ public final class DuelManager {
     private final Map<UUID, Invite> invites = new HashMap<>();
     private final Map<UUID, ServerDuel> duelsByPlayer = new HashMap<>();
     private final List<ServerDuel> duels = new ArrayList<>();
+    /** Where each dueling person stands (once they're on the ground); they are held there until the duel ends. */
+    private final Map<UUID, Vec3> anchors = new HashMap<>();
 
     /** One duelist: a person, or a bot when {@code player} is {@code null}. */
     private record Entrant(int team, UUID player, String name) {
@@ -457,14 +460,18 @@ public final class DuelManager {
             duelsByPlayer.put(seat, duel);
             ServerPlayer player = player(seat);
             if (player != null) {
+                if (player.onGround()) {
+                    anchors.put(seat, player.position());
+                }
+                calmMobs(player);
                 // The disk unfolds first; the client grows the field once it has.
                 PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,
                         new DuelistStatePayload(player.getId(), true));
                 PacketDistributor.sendToPlayer(player, field);
             }
             message(seat, Component.literal((split ? "Battle City duel! " : tag ? "Tag duel! " : "Duel! ") + matchup(entrants) + ", "
-                    + ruleset.displayName() + " rules. Right-click glowing zones on the field, or press Y for every "
-                    + "choice." + (tag ? " Partners take turns; you answer when it's yours." : "")
+                    + ruleset.displayName() + " rules. Click glowing cards and zones, V switches the camera and Esc "
+                    + "opens the duel menu." + (tag ? " Partners take turns; you answer when it's yours." : "")
                     + (split ? " Each partner plays on their own half of the field." : "")));
         }
         run(duel, table::start);
@@ -552,6 +559,35 @@ public final class DuelManager {
         for (ServerDuel duel : List.copyOf(duels)) {
             run(duel, duel.table()::pump);
         }
+        for (UUID id : duelsByPlayer.keySet()) {
+            ServerPlayer player = player(id);
+            if (player == null) {
+                continue;
+            }
+            Vec3 spot = anchors.get(id);
+            if (spot == null) {
+                // Someone who started the duel mid-jump is held where they land.
+                if (player.onGround()) {
+                    anchors.put(id, player.position());
+                }
+            } else if (player.position().distanceToSqr(spot) > 0.01) {
+                player.connection.teleport(spot.x, spot.y, spot.z, player.getYRot(), player.getXRot());
+                player.setDeltaMovement(Vec3.ZERO);
+            }
+        }
+    }
+
+    /** Whether {@code entity} is a person at a duel, who can't be hurt or targeted by mobs. */
+    public boolean protects(Entity entity) {
+        return entity instanceof ServerPlayer player && duelsByPlayer.containsKey(player.getUUID());
+    }
+
+    /** Mobs that are already after the player give up when the duel starts. */
+    private static void calmMobs(ServerPlayer player) {
+        for (Mob mob : player.serverLevel().getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(48),
+                mob -> mob.getTarget() == player)) {
+            mob.setTarget(null);
+        }
     }
 
     private void run(ServerDuel duel, java.util.function.Supplier<Map<Integer, DuelView>> action) {
@@ -582,6 +618,7 @@ public final class DuelManager {
         for (UUID seat : duel.seats()) {
             if (seat != null) {
                 duelsByPlayer.remove(seat);
+                anchors.remove(seat);
                 ServerPlayer player = player(seat);
                 if (player != null) {
                     PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,

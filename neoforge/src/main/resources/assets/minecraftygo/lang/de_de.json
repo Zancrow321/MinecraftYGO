@@ -1,5 +1,4 @@
 {
-  "key.minecraftygo.open_duel": "Duell-Bildschirm öffnen",
   "item.minecraftygo.duel_disk": "Duel Disk",
   "item.minecraftygo.duel_disk.tooltip": "Im Duel-Disk-Slot oder in der Nebenhand tragen, dann einen anderen Duellanten rechtsklicken, um ihn herauszufordern.",
   "curios.identifier.duel_disk": "Duel Disk",
@@ -39,5 +38,16 @@
   "message.minecraftygo.duel_dome.blocked": "Bei %s %s %s ist etwas im Weg. Der Duel Dome braucht eine freie Fläche von 13 × 21.",
   "entity.minecraftygo.duelist": "Duellant",
   "item.minecraftygo.duelist_spawn_egg": "Duellant-Spawn-Ei",
-  "key.minecraftygo.cosmetics": "Cosmetics (Disk-Skin, Hüllen)"
+  "key.minecraftygo.cosmetics": "Cosmetics (Disk-Skin, Hüllen)",
+  "key.minecraftygo.duel_camera": "Duell-Kamera: Draufsicht oder Ego-Sicht",
+  "screen.minecraftygo.duel_mode": "Duell",
+  "screen.minecraftygo.duel_menu": "Duell",
+  "screen.minecraftygo.duel_menu.continue": "Weiterspielen",
+  "screen.minecraftygo.duel_menu.all_choices": "Alle Optionen (Notfall)",
+  "screen.minecraftygo.duel_menu.camera": "Kamera: %s",
+  "screen.minecraftygo.duel_menu.camera.top_down": "Draufsicht",
+  "screen.minecraftygo.duel_menu.camera.first_person": "Ego-Sicht",
+  "screen.minecraftygo.duel_menu.surrender": "Aufgeben",
+  "screen.minecraftygo.duel_menu.surrender.confirm": "Wirklich aufgeben? Nochmal klicken",
+  "screen.minecraftygo.duel_menu.game_menu": "Spielmenü"
 }

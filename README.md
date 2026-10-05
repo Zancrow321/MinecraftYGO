@@ -96,7 +96,9 @@ In game:
   emotes) lives in [figura/ygo-duelist](figura/ygo-duelist) and is built as its own download by
   `./gradlew figuraStarterKit`.
 - `/ygo version` reports the loaded OCG-Core version.
-- `/ygo duel bot` or `/ygo duel <player>` (then `/ygo accept`) starts a duel; press Y to open the duel screen.
+- `/ygo duel bot` or `/ygo duel <player>` (then `/ygo accept`) starts a duel. In a duel you stand still
+  and play with the mouse: click glowing cards and zones, V switches between the top-down and first-person
+  camera, and Escape opens the duel menu (surrender, every choice as a list).
 - `/ygo gallery [page]` puts a page of modeled monsters in front of you (operators only); `/ygo gallery clear` removes them.
 
 Card artwork is downloaded on first view and cached in `minecraftygo/card_art/`. The source URL can be changed,

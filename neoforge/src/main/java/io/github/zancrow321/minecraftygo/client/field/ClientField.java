@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import io.github.zancrow321.minecraftygo.client.ClientDuel;
 import io.github.zancrow321.minecraftygo.client.DuelScreen;
 import io.github.zancrow321.minecraftygo.client.disk.DiskClient;
+import io.github.zancrow321.minecraftygo.client.duel.DuelMode;
 import io.github.zancrow321.minecraftygo.engine.duel.Board;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
 import io.github.zancrow321.minecraftygo.engine.duel.FieldEvent;
@@ -133,6 +134,16 @@ public final class ClientField {
         return player == 0 ? yaw : yaw + 180;
     }
 
+    /** The middle of the mat, at its full size. */
+    public static Vec3 center() {
+        return center;
+    }
+
+    /** Toward player 1, level and one block long, whatever the field's size. */
+    public static Vec3 direction() {
+        return forward;
+    }
+
     /** Toward player 1, as long as the field is grown (so sizes built from it grow with the field). */
     public static Vec3 forward() {
         return forward.scale(scale);
@@ -202,7 +213,14 @@ public final class ClientField {
             return;
         }
         FieldRenderer.tickEffects();
-        hovered = lookedAtZone();
+        if (!DuelMode.active()) {
+            hovered = lookedAtZone();
+        }
+    }
+
+    /** In duel mode: the zone under the mouse cursor, from a ray through the camera. */
+    public static void hoverRay(Vec3 origin, Vec3 dir) {
+        hovered = center == null ? null : zoneOnRay(origin, dir);
     }
 
     /** The zone under the crosshair, if the player is looking at the mat. */
@@ -211,8 +229,11 @@ public final class ClientField {
         if (mc.player == null) {
             return null;
         }
-        Vec3 eye = mc.player.getEyePosition();
-        Vec3 look = mc.player.getViewVector(1);
+        return zoneOnRay(mc.player.getEyePosition(), mc.player.getViewVector(1));
+    }
+
+    /** The zone where a ray meets the mat. */
+    private static Loc zoneOnRay(Vec3 eye, Vec3 look) {
         double planeY = center.y + 0.01;
         if (Math.abs(look.y) < 1e-4) {
             return null;
@@ -238,31 +259,39 @@ public final class ClientField {
         if (!active() || hovered == null) {
             return false;
         }
+        clickAt(hovered);
+        return true;
+    }
+
+    /**
+     * Picks {@code zone} for the current prompt: answers if exactly one choice is about it, toggles it in a
+     * multi-select, or opens the duel screen narrowed to that zone.
+     */
+    public static void clickAt(Loc zone) {
         PromptView prompt = ClientDuel.prompt();
         if (prompt == null) {
-            return true;
+            return;
         }
         if (prompt.multi() != null) {
             PromptView.MultiSelect multi = prompt.multi();
             for (int i = 0; i < multi.locs().size(); i++) {
-                if (FieldLayout.sameZone(multi.locs().get(i), hovered)) {
+                if (FieldLayout.sameZone(multi.locs().get(i), zone)) {
                     ClientDuel.toggle(i);
                     List<Integer> selected = ClientDuel.selected();
                     if (selected.size() == multi.max() && multi.canConfirm(selected)) {
                         ClientDuel.answer(multi.encode(List.copyOf(selected)));
                     }
-                    return true;
+                    return;
                 }
             }
-            return true;
+            return;
         }
-        List<PromptView.Choice> matching = choicesAt(prompt, hovered);
+        List<PromptView.Choice> matching = choicesAt(prompt, zone);
         if (matching.size() == 1) {
             ClientDuel.answer(matching.getFirst().response());
         } else if (!matching.isEmpty()) {
-            Minecraft.getInstance().setScreen(new DuelScreen(hovered));
+            Minecraft.getInstance().setScreen(new DuelScreen(zone));
         }
-        return true;
     }
 
     public static List<PromptView.Choice> choicesAt(PromptView prompt, Loc zone) {

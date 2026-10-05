@@ -84,7 +84,10 @@ public final class FieldLayout {
         return null;
     }
 
-    /** Whether two places are the same zone (positions and overlay flags ignored; piles match any sequence). */
+    /**
+     * Whether two places are the same zone (positions and overlay flags ignored; piles match any sequence, hand
+     * cards only themselves).
+     */
     public static boolean sameZone(Loc a, Loc b) {
         if (a == null || b == null || a.controller() != b.controller()) {
             return false;
@@ -94,6 +97,6 @@ public final class FieldLayout {
         if (la != lb) {
             return false;
         }
-        return (la != LOCATION_MZONE && la != LOCATION_SZONE) || a.sequence() == b.sequence();
+        return (la != LOCATION_MZONE && la != LOCATION_SZONE && la != LOCATION_HAND) || a.sequence() == b.sequence();
     }
 }
