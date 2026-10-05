@@ -88,10 +88,16 @@ jobs:
           merge-multiple: true
 
       - name: Build
-        run: ./gradlew :neoforge:build
+        run: ./gradlew :neoforge:build figuraStarterKit
 
       - uses: actions/upload-artifact@v4
         with:
           name: minecraftygo-jar
           path: neoforge/build/libs/*.jar
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: figura-starter-kit
+          path: build/distributions/*.zip
           if-no-files-found: error
