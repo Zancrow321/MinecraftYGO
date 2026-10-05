@@ -8,6 +8,14 @@ public final class OcgConstants {
     }
 
     // Locations
+    public static final int TYPE_MONSTER = 0x1;
+    public static final int TYPE_SPELL = 0x2;
+    public static final int TYPE_TRAP = 0x4;
+    public static final int TYPE_NORMAL = 0x10;
+    public static final int TYPE_FUSION = 0x40;
+    public static final int TYPE_RITUAL = 0x80;
+    public static final int TYPE_TOKEN = 0x4000;
+
     public static final int LOCATION_DECK = 0x01;
     public static final int LOCATION_HAND = 0x02;
     public static final int LOCATION_MZONE = 0x04;

@@ -1,0 +1,1 @@
+{"format_version":"1.12.0","minecraft:geometry":[{"description":{"identifier":"geometry.fiend_sword","texture_width":128,"texture_height":128,"visible_bounds_width":1,"visible_bounds_height":1,"visible_bounds_offset":[0,0,0]},"bones":[{"name":"root_cubes","pivot":[0,0,0],"cubes":[{"origin":[-7,13,-12],"size":[14,0,29],"pivot":[0,13,1],"rotation":[-90,0,0],"uv":[-3,0]}]}]}]}

@@ -1,0 +1,1 @@
+{"format_version":"1.8.0","animations":{"idle":{"loop":true,"bones":{"wing":{"rotation":{"vector":[5,40,0]}},"wing2":{"rotation":{"vector":[2.5,-42.5,0]}},"foot":{"rotation":{"vector":[15,0,0]}},"foot2":{"rotation":{"vector":[12.5,0,0]}},"arm":{"rotation":{"vector":[0,0,12.5]}},"arm2":{"rotation":{"vector":[0,0,-7.5]}}}}}}

@@ -8,7 +8,9 @@ for just the cards in the pool:
   engine/src/main/resources/minecraftygo/scripts/      base scripts and c<code>.lua for each card
   engine/src/main/resources/minecraftygo/system_strings.json   EDOPro's system strings (prompt texts)
 
-The pool is every card in the deck lists under engine/src/main/resources/minecraftygo/decks/*.ydk.
+The pool is pool.json (written by tools/models/import_models.py), every card in the deck lists under
+engine/src/main/resources/minecraftygo/decks/*.ydk, and every card those cards' scripts mention by passcode
+(tokens, fusion materials), so the engine never asks for a card it doesn't know.
 
 Usage:
   git clone --depth 1 https://github.com/ProjectIgnis/BabelCDB
@@ -19,6 +21,7 @@ Usage:
 """
 import argparse
 import json
+import re
 import shutil
 import sqlite3
 import sys
@@ -29,7 +32,14 @@ RESOURCES = ROOT / "engine/src/main/resources/minecraftygo"
 
 # Sub-folders of CardScripts searched for c<code>.lua, in priority order.
 SCRIPT_DIRS = ["official", "pre-errata", "goat", "pre-release"]
+TYPE_NORMAL = 0x10
+TYPE_TOKEN = 0x4000
 TYPE_LINK = 0x4000000
+
+
+def find_script(scripts, code):
+    name = f"c{code}.lua"
+    return next((scripts / d / name for d in SCRIPT_DIRS if (scripts / d / name).exists()), None)
 
 
 def read_ydk(path):
@@ -78,23 +88,40 @@ def main():
     args = parser.parse_args()
 
     pool = set()
+    pool_file = RESOURCES / "pool.json"
+    if pool_file.exists():
+        data = json.loads(pool_file.read_text(encoding="utf-8"))
+        pool.update(data["monsters"], data["spellsTraps"])
     for deck in sorted((RESOURCES / "decks").glob("*.ydk")):
         pool.update(read_ydk(deck))
 
     db = sqlite3.connect(args.cdb)
+    known = {code for (code,) in db.execute("select id from datas")}
+    missing = sorted(pool - known)
+    if missing:
+        sys.exit(f"cards missing from the database: {missing}")
+
+    # Pull in cards the scripts refer to, until nothing new turns up.
+    sources = {}
+    todo = set(pool)
+    while todo:
+        found = set()
+        for code in todo:
+            source = find_script(args.scripts, code)
+            sources[code] = source
+            if source is not None:
+                text = source.read_text(encoding="utf-8", errors="replace")
+                found.update(int(m) for m in re.findall(r"(?<![\w.])(\d{4,9})(?![\w.])", text))
+        todo = (found & known) - pool
+        pool |= todo
+
     cards = []
-    missing = []
     for code in sorted(pool):
         row = db.execute("select id, alias, setcode, type, atk, def, level, race, attribute from datas where id=?",
                          (code,)).fetchone()
         text = db.execute("select name, desc, " + ", ".join(f"str{i}" for i in range(1, 17))
                           + " from texts where id=?", (code,)).fetchone()
-        if row is None or text is None:
-            missing.append(code)
-            continue
         cards.append(card_row(row, text))
-    if missing:
-        sys.exit(f"cards missing from the database: {missing}")
 
     (RESOURCES / "cards.json").write_text(json.dumps(cards, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
 
@@ -103,15 +130,18 @@ def main():
     out.mkdir(parents=True)
     for base in sorted(args.scripts.glob("*.lua")):
         shutil.copy(base, out / base.name)
+    unscripted = []
     for card in cards:
-        name = f"c{card['code']}.lua"
-        source = next((args.scripts / d / name for d in SCRIPT_DIRS if (args.scripts / d / name).exists()), None)
+        source = sources[card["code"]]
         if source is None:
-            # Normal monsters have no script; the core falls back to built-in behaviour.
-            if card["type"] & 0x10:
+            # Normal monsters and tokens have no script; the core falls back to built-in behaviour.
+            if card["type"] & (TYPE_NORMAL | TYPE_TOKEN):
                 continue
-            sys.exit(f"no script for {card['code']} {card['name']}")
-        shutil.copy(source, out / name)
+            unscripted.append(f"{card['code']} {card['name']}")
+            continue
+        shutil.copy(source, out / source.name)
+    if unscripted:
+        sys.exit(f"no script for {unscripted}")
 
     system = {}
     for line in args.strings.read_text(encoding="utf-8").splitlines():

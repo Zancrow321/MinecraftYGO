@@ -7,6 +7,7 @@ import io.github.zancrow321.minecraftygo.engine.OcgCoreTest;
 import io.github.zancrow321.minecraftygo.engine.ai.RandomResponder;
 import io.github.zancrow321.minecraftygo.engine.data.BundledScripts;
 import io.github.zancrow321.minecraftygo.engine.data.CardDatabase;
+import io.github.zancrow321.minecraftygo.engine.data.CardPool;
 import io.github.zancrow321.minecraftygo.engine.data.Deck;
 import io.github.zancrow321.minecraftygo.engine.protocol.DuelMessage;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,8 +15,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,6 +42,31 @@ class BotDuelTest {
     @ParameterizedTest
     @ValueSource(longs = {1, 2, 3, 4, 5, 6, 7, 8})
     void botsFinishADuel(long seed) {
+        play(seed, Deck.bundled("starter_yugi"), Deck.bundled("starter_kaiba"));
+    }
+
+    /** Random decks from the whole pool, so every card script gets loaded and many get played. */
+    @ParameterizedTest
+    @ValueSource(longs = {11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26})
+    void botsFinishAPoolDuel(long seed) {
+        CardDatabase cards = CardDatabase.loadBundled();
+        CardPool pool = CardPool.loadBundled();
+        play(seed, randomDeck(cards, pool, new Random(seed)), randomDeck(cards, pool, new Random(seed * 7919)));
+    }
+
+    static Deck randomDeck(CardDatabase cards, CardPool pool, Random random) {
+        List<Integer> main = new ArrayList<>();
+        List<Integer> extra = new ArrayList<>();
+        for (int code : pool.monsters()) {
+            (cards.card(code).is(OcgConstants.TYPE_FUSION) ? extra : main).add(code);
+        }
+        main.addAll(pool.spellsTraps());
+        Collections.shuffle(main, random);
+        Collections.shuffle(extra, random);
+        return new Deck("random", main.subList(0, 40), extra.subList(0, 15), List.of());
+    }
+
+    private static void play(long seed, Deck first, Deck second) {
         CardDatabase cards = CardDatabase.loadBundled();
         List<String> errors = new ArrayList<>();
         DuelLogHandler log = (type, message) -> {
@@ -52,7 +80,7 @@ class BotDuelTest {
         Map<String, Integer> promptCounts = new TreeMap<>();
 
         try (DuelController duel = new DuelController(cards, new BundledScripts(), settings,
-                Deck.bundled("starter_yugi"), Deck.bundled("starter_kaiba"), log)) {
+                first, second, log)) {
             DuelController.Step step = duel.advance();
             DuelMessage.Prompt last = null;
             int attempt = 0;

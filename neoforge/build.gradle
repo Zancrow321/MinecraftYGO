@@ -12,6 +12,18 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(21)
 }
 
+repositories {
+    maven {
+        name = 'GeckoLib'
+        url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content { includeGroup 'software.bernie.geckolib' }
+    }
+}
+
+dependencies {
+    implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolib_version}"
+}
+
 // The engine (OCG-Core bindings + bundled natives) is compiled straight into the mod jar.
 sourceSets.main {
     java.srcDir project(':engine').file('src/main/java')
@@ -24,6 +36,10 @@ neoForge {
     runs {
         client {
             client()
+            // ./gradlew :neoforge:runClient -PquickPlay=<world> opens that singleplayer world directly.
+            if (project.hasProperty('quickPlay')) {
+                programArguments.addAll('--quickPlaySingleplayer', project.property('quickPlay').toString())
+            }
         }
         server {
             server()
@@ -55,6 +71,7 @@ var generateModMetadata = tasks.register('generateModMetadata', ProcessResources
             mod_version            : mod_version,
             mod_authors            : mod_authors,
             mod_description        : mod_description,
+            geckolib_version_range : geckolib_version_range,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

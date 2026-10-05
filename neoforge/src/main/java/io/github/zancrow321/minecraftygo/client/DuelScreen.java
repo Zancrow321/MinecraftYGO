@@ -153,11 +153,26 @@ public final class DuelScreen extends Screen {
             if (hover.contains(mouseX, mouseY) && hover.code() != 0) {
                 CardInfo card = YgoData.cards().card(hover.code());
                 if (card != null) {
+                    drawArt(g, hover.code());
                     List<FormattedCharSequence> lines = new ArrayList<>(font.split(Component.literal(card.name()), 220));
                     lines.addAll(font.split(Component.literal(card.description()), 220));
                     g.renderTooltip(font, lines, mouseX, mouseY);
                 }
             }
+        }
+    }
+
+    /** The hovered card's artwork in the top-right corner, once it has downloaded. */
+    private void drawArt(GuiGraphics g, int code) {
+        CardArt.Texture art = CardArt.get(code);
+        int w = 84;
+        int h = 123;
+        int x = width - MARGIN - w;
+        g.fill(x - 2, MARGIN - 2, x + w + 2, MARGIN + h + 2, 0xE0101010);
+        if (art != null) {
+            g.blit(art.location(), x, MARGIN, w, h, 0, 0, art.width(), art.height(), art.width(), art.height());
+        } else {
+            g.drawCenteredString(font, "...", x + w / 2, MARGIN + h / 2 - 4, DIM);
         }
     }
 
