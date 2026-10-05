@@ -68,7 +68,11 @@ In game:
   are posed from the model's bone names). Fan favourites have their own moves: Blue-Eyes' White Lightning (three beams
   for the Ultimate Dragon), Red-Eyes' Inferno Fire Blast, Dark Magic Attack and Summoned Skull's Lightning Strike, and
   Raigeki, Dark Hole, Mirror Force, Monster Reborn, Pot of Greed and Swords of Revealing Light have their own spell
-  effects. Right-click a gallery monster to see its attack.
+  effects. So do Gaia's Spiral Shaver, the sword slashes of Black Luster Soldier, Celtic Guardian and Flame Swordsman,
+  the dragons' breath (Curse of Dragon, Thousand Dragon, Baby Dragon), Barrel Dragon's shots, the Harpies, Exodia's
+  summoning circle and Obliterate, Kuriboh's Multiply and Time Wizard's roulette, and Polymerization, Change of Heart,
+  Harpie's Feather Duster, Mystical Space Typhoon, Heavy Storm, Trap Hole, Fissure, Hinotama, Ookazi, Sparks, Dian
+  Keto, Waboku and the counter traps. Right-click a gallery monster to see its attack.
 - **Rules:** `ruleset` in `serverconfig/minecraftygo-server.toml` is `mr1` (original, the default), `goat` or
   `modern`; `startingLifePoints` defaults to 8000.
 - **Duel Dome:** craft a **Duel Dome Kit** (a Duel Dome Core, two Duelist Platforms, two quartz blocks, a sea lantern
