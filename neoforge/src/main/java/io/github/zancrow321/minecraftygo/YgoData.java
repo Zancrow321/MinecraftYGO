@@ -1,6 +1,7 @@
 package io.github.zancrow321.minecraftygo;
 
 import io.github.zancrow321.minecraftygo.engine.data.CardDatabase;
+import io.github.zancrow321.minecraftygo.engine.data.CardPool;
 import io.github.zancrow321.minecraftygo.engine.text.DuelText;
 
 /**
@@ -8,6 +9,7 @@ import io.github.zancrow321.minecraftygo.engine.text.DuelText;
  */
 public final class YgoData {
     private static volatile DuelText text;
+    private static volatile CardPool pool;
 
     private YgoData() {
     }
@@ -23,6 +25,19 @@ public final class YgoData {
             }
         }
         return t;
+    }
+
+    public static CardPool pool() {
+        CardPool p = pool;
+        if (p == null) {
+            synchronized (YgoData.class) {
+                p = pool;
+                if (p == null) {
+                    p = pool = CardPool.loadBundled();
+                }
+            }
+        }
+        return p;
     }
 
     public static CardDatabase cards() {

@@ -1,5 +1,6 @@
 package io.github.zancrow321.minecraftygo;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.zancrow321.minecraftygo.duel.DuelManager;
@@ -32,6 +33,13 @@ final class YgoCommands {
                                     EntityArgument.getPlayer(ctx, "player"));
                             return 1;
                         })))
+                .then(Commands.literal("gallery")
+                        .requires(source -> source.hasPermission(2))
+                        .executes(ctx -> Gallery.show(ctx.getSource(), 1))
+                        .then(Commands.literal("clear").executes(ctx -> Gallery.clear(ctx.getSource())))
+                        .then(Commands.argument("page", IntegerArgumentType.integer(1))
+                                .executes(ctx -> Gallery.show(ctx.getSource(),
+                                        IntegerArgumentType.getInteger(ctx, "page")))))
                 .then(Commands.literal("accept").executes(ctx -> {
                     manager(ctx).accept(ctx.getSource().getPlayerOrException());
                     return 1;

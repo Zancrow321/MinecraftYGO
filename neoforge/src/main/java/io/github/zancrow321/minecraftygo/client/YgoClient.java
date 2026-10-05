@@ -2,12 +2,15 @@ package io.github.zancrow321.minecraftygo.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
+import io.github.zancrow321.minecraftygo.client.render.MonsterRenderer;
+import io.github.zancrow321.minecraftygo.entity.YgoEntities;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import org.lwjgl.glfw.GLFW;
 
@@ -22,6 +25,11 @@ public final class YgoClient {
     @EventBusSubscriber(modid = MinecraftYgo.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
     public static final class ModEvents {
         private ModEvents() {
+        }
+
+        @SubscribeEvent
+        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(YgoEntities.MONSTER.get(), MonsterRenderer::new);
         }
 
         @SubscribeEvent
