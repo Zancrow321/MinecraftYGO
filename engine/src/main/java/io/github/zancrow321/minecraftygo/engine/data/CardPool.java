@@ -32,9 +32,11 @@ public record CardPool(String cutoff, List<Integer> monsters, List<Integer> spel
     /**
      * @param id         the model's resource name under {@code geo/monster/}, {@code animations/monster/} and
      *                   {@code textures/monster/}
+     * @param width      the larger horizontal extent of the model, in blocks
+     * @param height     the model's height above its origin, in blocks
      * @param animations the animations the model has; there is always an {@code idle} when there are any
      */
-    public record Model(int code, String id, List<String> animations) {
+    public record Model(int code, String id, double width, double height, List<String> animations) {
     }
 
     public CardPool {
@@ -53,7 +55,8 @@ public record CardPool(String cutoff, List<Integer> monsters, List<Integer> spel
                 animations.add(a.getAsString());
             }
             int code = o.get("code").getAsInt();
-            models.put(code, new Model(code, o.get("model").getAsString(), List.copyOf(animations)));
+            models.put(code, new Model(code, o.get("model").getAsString(), o.get("width").getAsDouble(),
+                    o.get("height").getAsDouble(), List.copyOf(animations)));
         }
         return new CardPool(pool.get("cutoff").getAsString(), ints(pool.getAsJsonArray("monsters")),
                 ints(pool.getAsJsonArray("spellsTraps")), models);

@@ -10,12 +10,14 @@ import io.github.zancrow321.minecraftygo.engine.data.Deck;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelTable;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
 import io.github.zancrow321.minecraftygo.engine.duel.ViewCodec;
+import io.github.zancrow321.minecraftygo.network.DuelFieldPayload;
 import io.github.zancrow321.minecraftygo.network.DuelViewPayload;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -43,9 +45,12 @@ public final class DuelManager {
     private record Challenge(UUID challenger, long expiresAt) {
     }
 
-    /** A running duel and who sits where; {@code null} seats are bots. */
-    private record ServerDuel(DuelTable table, UUID[] seats) {
+    /** A running duel, who sits where ({@code null} seats are bots), and where its field is projected. */
+    private record ServerDuel(DuelTable table, UUID[] seats, DuelFieldPayload field) {
     }
+
+    /** How far in front of a player a duel against a bot is projected (the field is about 16 blocks long). */
+    private static final double BOT_FIELD_DISTANCE = 8;
 
     private DuelManager(MinecraftServer server) {
         this.server = server;
@@ -99,7 +104,7 @@ public final class DuelManager {
             return;
         }
         start(new UUID[]{challenger.getUUID(), target.getUUID()},
-                List.of(challenger.getScoreboardName(), target.getScoreboardName()));
+                List.of(challenger.getScoreboardName(), target.getScoreboardName()), fieldBetween(challenger, target));
     }
 
     public void duelBot(ServerPlayer player) {
@@ -107,10 +112,30 @@ public final class DuelManager {
             player.sendSystemMessage(Component.literal("You are already in a duel."));
             return;
         }
-        start(new UUID[]{player.getUUID(), null}, List.of(player.getScoreboardName(), "Duel Bot"));
+        start(new UUID[]{player.getUUID(), null}, List.of(player.getScoreboardName(), "Duel Bot"),
+                fieldInFrontOf(player));
     }
 
-    private void start(UUID[] seats, List<String> names) {
+    /** Centered between the two duelists, on the lower one's feet level, player 0's side toward player 0. */
+    private static DuelFieldPayload fieldBetween(ServerPlayer first, ServerPlayer second) {
+        Vec3 a = first.position();
+        Vec3 b = second.position();
+        if (a.distanceToSqr(b) < 1 || first.level() != second.level()) {
+            return fieldInFrontOf(first);
+        }
+        float yaw = (float) Math.toDegrees(Math.atan2(-(b.x - a.x), b.z - a.z));
+        return new DuelFieldPayload(true, (a.x + b.x) / 2, Math.min(a.y, b.y), (a.z + b.z) / 2, yaw);
+    }
+
+    /** Projected ahead of the player, who stands at their own end of the field. */
+    private static DuelFieldPayload fieldInFrontOf(ServerPlayer player) {
+        float yaw = player.getYRot();
+        Vec3 forward = Vec3.directionFromRotation(0, yaw);
+        Vec3 center = player.position().add(forward.scale(BOT_FIELD_DISTANCE));
+        return new DuelFieldPayload(true, center.x, player.getY(), center.z, yaw);
+    }
+
+    private void start(UUID[] seats, List<String> names, DuelFieldPayload field) {
         var random = server.overworld().getRandom();
         long[] seed = {random.nextLong(), random.nextLong(), random.nextLong(), random.nextLong() | 1};
         RandomResponder[] bots = new RandomResponder[2];
@@ -132,13 +157,17 @@ public final class DuelManager {
             }
             return;
         }
-        ServerDuel duel = new ServerDuel(table, seats);
+        ServerDuel duel = new ServerDuel(table, seats, field);
         duels.add(duel);
         for (UUID seat : seats) {
             if (seat != null) {
                 duelsByPlayer.put(seat, duel);
+                ServerPlayer player = player(seat);
+                if (player != null) {
+                    PacketDistributor.sendToPlayer(player, field);
+                }
                 message(seat, Component.literal("Duel! " + names.get(0) + " vs " + names.get(1)
-                        + ". Press Y to open the duel screen."));
+                        + ". Right-click glowing zones on the field, or press Y for every choice."));
             }
         }
         run(duel, table::start);

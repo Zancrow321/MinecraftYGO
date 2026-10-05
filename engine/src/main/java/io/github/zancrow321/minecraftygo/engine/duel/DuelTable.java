@@ -35,6 +35,7 @@ public final class DuelTable implements AutoCloseable {
     private final List<String> names;
     private final RandomResponder[] bots;
     private final List<List<String>> pendingLog = List.of(new ArrayList<>(), new ArrayList<>());
+    private final List<List<FieldEvent>> pendingEvents = List.of(new ArrayList<>(), new ArrayList<>());
     private long hint;
     private int botRetries;
     private String forfeitResult;
@@ -155,6 +156,10 @@ public final class DuelTable implements AutoCloseable {
                     pendingLog.get(viewer).add("That choice isn't allowed, try again");
                     continue;
                 }
+                FieldEvent event = FieldEvent.of(message, viewer);
+                if (event != null) {
+                    pendingEvents.get(viewer).add(event);
+                }
                 String line = new DuelLog(text, names, viewer, loc -> faceUpCodeAt(board, loc)).describe(message);
                 if (line != null) {
                     pendingLog.get(viewer).add(line);
@@ -199,7 +204,9 @@ public final class DuelTable implements AutoCloseable {
                     : null;
             List<String> log = List.copyOf(pendingLog.get(viewer));
             pendingLog.get(viewer).clear();
-            views.put(viewer, new DuelView(viewer, names, board.viewedBy(viewer), log, mine,
+            List<FieldEvent> events = List.copyOf(pendingEvents.get(viewer));
+            pendingEvents.get(viewer).clear();
+            views.put(viewer, new DuelView(viewer, names, board.viewedBy(viewer), log, events, mine,
                     mine != null ? hint : 0, viewer == 0 ? final0 : final1));
         }
         return views;

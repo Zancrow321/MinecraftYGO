@@ -1,0 +1,99 @@
+package io.github.zancrow321.minecraftygo.client.field;
+
+import io.github.zancrow321.minecraftygo.engine.protocol.Loc;
+
+import static io.github.zancrow321.minecraftygo.engine.OcgConstants.*;
+
+/**
+ * Where each zone sits on the projected field, in field-local blocks: {@code x} runs to player 0's right and
+ * {@code z} from player 0's end toward player 1's. The layout follows the real mat: monster row in front of the
+ * spell/trap row, Field Zone and Extra Deck on the left, Graveyard and Deck on the right (from each owner's view).
+ */
+public final class FieldLayout {
+    public static final double ZONE_WIDTH = 2.2;
+    public static final double ZONE_DEPTH = 2.6;
+    public static final double MONSTER_ROW = 1.75;
+    public static final double SPELL_ROW = 4.55;
+    public static final double CARD_WIDTH = 1.4;
+    public static final double CARD_HEIGHT = 2.04;
+    /** Half the field's length, used to keep clicks and rendering near the mat. */
+    public static final double HALF_LENGTH = SPELL_ROW + ZONE_DEPTH / 2;
+    public static final double HALF_WIDTH = 4.5 * ZONE_WIDTH;
+
+    private FieldLayout() {
+    }
+
+    /** A zone's centre in field-local coordinates. */
+    public record Slot(double x, double z) {
+    }
+
+    /** @return the centre of the zone holding {@code loc}, or {@code null} for places not on the mat (hand) */
+    public static Slot slot(int controller, int location, int sequence) {
+        double side = controller == 0 ? -1 : 1;  // player 0 sits at negative z
+        double right = controller == 0 ? 1 : -1; // player 1 sees the field mirrored
+        return switch (location & ~LOCATION_OVERLAY) {
+            case LOCATION_MZONE -> sequence <= 4 ? new Slot(right * (sequence - 2) * ZONE_WIDTH, side * MONSTER_ROW)
+                    // Extra Monster Zones (Master Rule 4+) sit on the centre line.
+                    : new Slot(right * (sequence == 5 ? -1 : 1) * ZONE_WIDTH, 0);
+            case LOCATION_SZONE -> switch (sequence) {
+                case 5 -> new Slot(right * -3 * ZONE_WIDTH, side * MONSTER_ROW); // Field Zone
+                case 6, 7 -> new Slot(right * (sequence == 6 ? -4 : 4) * ZONE_WIDTH, side * SPELL_ROW);
+                default -> new Slot(right * (sequence - 2) * ZONE_WIDTH, side * SPELL_ROW);
+            };
+            case LOCATION_GRAVE -> new Slot(right * 3 * ZONE_WIDTH, side * MONSTER_ROW);
+            case LOCATION_DECK -> new Slot(right * 3 * ZONE_WIDTH, side * SPELL_ROW);
+            case LOCATION_EXTRA -> new Slot(right * -3 * ZONE_WIDTH, side * SPELL_ROW);
+            case LOCATION_REMOVED -> new Slot(right * 4 * ZONE_WIDTH, side * MONSTER_ROW);
+            default -> null;
+        };
+    }
+
+    public static Slot slot(Loc loc) {
+        return slot(loc.controller(), loc.location(), loc.sequence());
+    }
+
+    /** Every zone drawn on the mat, as (controller, location, sequence). */
+    public static final int[][] ZONES = zones();
+
+    private static int[][] zones() {
+        int[][] out = new int[2 * 16][];
+        int i = 0;
+        for (int p = 0; p < 2; p++) {
+            for (int s = 0; s < 5; s++) {
+                out[i++] = new int[]{p, LOCATION_MZONE, s};
+                out[i++] = new int[]{p, LOCATION_SZONE, s};
+            }
+            out[i++] = new int[]{p, LOCATION_SZONE, 5};
+            out[i++] = new int[]{p, LOCATION_GRAVE, 0};
+            out[i++] = new int[]{p, LOCATION_DECK, 0};
+            out[i++] = new int[]{p, LOCATION_EXTRA, 0};
+            out[i++] = new int[]{p, LOCATION_REMOVED, 0};
+            out[i++] = null;
+        }
+        return java.util.Arrays.stream(out).filter(java.util.Objects::nonNull).toArray(int[][]::new);
+    }
+
+    /** @return the zone under a field-local point, or {@code null} */
+    public static Loc zoneAt(double x, double z) {
+        for (int[] zone : ZONES) {
+            Slot s = slot(zone[0], zone[1], zone[2]);
+            if (Math.abs(x - s.x()) <= ZONE_WIDTH / 2 - 0.05 && Math.abs(z - s.z()) <= ZONE_DEPTH / 2 - 0.05) {
+                return new Loc(zone[0], zone[1], zone[2], 0);
+            }
+        }
+        return null;
+    }
+
+    /** Whether two places are the same zone (positions and overlay flags ignored; piles match any sequence). */
+    public static boolean sameZone(Loc a, Loc b) {
+        if (a == null || b == null || a.controller() != b.controller()) {
+            return false;
+        }
+        int la = a.location() & ~LOCATION_OVERLAY;
+        int lb = b.location() & ~LOCATION_OVERLAY;
+        if (la != lb) {
+            return false;
+        }
+        return (la != LOCATION_MZONE && la != LOCATION_SZONE) || a.sequence() == b.sequence();
+    }
+}

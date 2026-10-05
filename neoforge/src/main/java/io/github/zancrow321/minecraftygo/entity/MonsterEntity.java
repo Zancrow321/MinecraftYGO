@@ -29,6 +29,9 @@ public final class MonsterEntity extends Entity implements GeoEntity {
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("idle");
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    /** Client-only drawing state for duel field stand-ins: opacity and an RGB tint (white = none). */
+    public float alpha = 1;
+    public int tint = 0xFFFFFF;
 
     public MonsterEntity(EntityType<? extends MonsterEntity> type, Level level) {
         super(type, level);
