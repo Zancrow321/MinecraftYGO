@@ -23,6 +23,16 @@ repositories {
         url = 'https://maven.theillusivec4.top/'
         content { includeGroup 'top.theillusivec4.curios' }
     }
+    maven {
+        name = 'Figura'
+        url = 'https://maven.figuramc.org/releases/'
+        content { includeGroup 'org.figuramc' }
+    }
+    maven {
+        name = 'JitPack (Figura\'s luaj)'
+        url = 'https://jitpack.io'
+        content { includeGroup 'com.github.FiguraMC.luaj' }
+    }
 }
 
 dependencies {
@@ -31,6 +41,13 @@ dependencies {
     compileOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}:api"
     if (!project.hasProperty('noCurios')) {
         runtimeOnly "top.theillusivec4.curios:curios-neoforge:${curios_version}"
+    }
+    // Optional: avatars can read duels and hide the disk. Figura is never bundled (it isn't GPL-compatible), so it
+    // is only compiled against; dev runs include it with -Pfigura.
+    compileOnly "org.figuramc:figura-neoforge:${figura_version}"
+    compileOnly "com.github.FiguraMC.luaj:luaj-core:3.0.8-figura"
+    if (project.hasProperty('figura')) {
+        runtimeOnly "org.figuramc:figura-neoforge:${figura_version}"
     }
 }
 

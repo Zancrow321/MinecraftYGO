@@ -4,6 +4,8 @@ import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.YgoServerConfig;
 import io.github.zancrow321.minecraftygo.arena.DuelDome;
+import io.github.zancrow321.minecraftygo.cosmetics.Cosmetics;
+import io.github.zancrow321.minecraftygo.cosmetics.PlayerCosmetics;
 import io.github.zancrow321.minecraftygo.engine.DuelSettings;
 import io.github.zancrow321.minecraftygo.engine.Ruleset;
 import io.github.zancrow321.minecraftygo.engine.ai.DuelistAi;
@@ -419,6 +421,7 @@ public final class DuelManager {
             return;
         }
         UUID ante = anteBoxes == null ? null : takeAnte(entrants, anteBoxes, random);
+        field = field.withSleeves(List.of(sleeveOf(entrants, 0, npc), sleeveOf(entrants, 1, npc)));
         ServerDuel duel = new ServerDuel(table, people, field, ante, npc);
         duels.add(duel);
         if (npc != null) {
@@ -443,6 +446,17 @@ public final class DuelManager {
                     + "choice." + (tag ? " Partners take turns; you answer when it's yours." : "")));
         }
         run(duel, table::start);
+    }
+
+    /** A team's card sleeve: its first person's pick, the NPC's own, or the classic back for bots. */
+    private String sleeveOf(List<Entrant> entrants, int team, DuelistNpc npc) {
+        for (Entrant e : entrants) {
+            ServerPlayer player = player(e.player());
+            if (e.team() == team && player != null) {
+                return PlayerCosmetics.sleeve(player);
+            }
+        }
+        return npc != null ? npc.sleeve() : Cosmetics.DEFAULT_SLEEVE;
     }
 
     /** Takes a random main deck card out of each person's deck box into escrow. */
@@ -553,6 +567,13 @@ public final class DuelManager {
                 }
             }
         }
+        int winner = duel.table().winner();
+        for (int seat = 0; seat < duel.seats().length; seat++) {
+            ServerPlayer player = player(duel.seats()[seat]);
+            if (player != null && winner >= 0 && winner < 2 && duel.table().seats().get(seat).team() == winner) {
+                PlayerCosmetics.wonDuel(player, duel.npc() != null);
+            }
+        }
         if (duel.npc() != null) {
             DuelistNpc npc = duel.npc();
             PacketDistributor.sendToPlayersTrackingEntity(npc, new DuelistStatePayload(npc.getId(), false));
@@ -560,7 +581,6 @@ public final class DuelManager {
         }
         if (duel.ante() != null) {
             // Only 1v1 duels between two people have an ante, so the winning team has exactly one person.
-            int winner = duel.table().winner();
             UUID payTo = null;
             for (int seat = 0; seat < duel.seats().length; seat++) {
                 if (winner >= 0 && winner < 2 && duel.table().seats().get(seat).team() == winner) {

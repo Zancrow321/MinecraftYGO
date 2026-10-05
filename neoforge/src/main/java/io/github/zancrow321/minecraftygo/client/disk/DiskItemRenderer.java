@@ -1,6 +1,7 @@
 package io.github.zancrow321.minecraftygo.client.disk;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import io.github.zancrow321.minecraftygo.cosmetics.PlayerCosmetics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -32,6 +33,6 @@ public final class DiskItemRenderer extends BlockEntityWithoutLevelRenderer {
         DiskModel.Pose pose = firstPerson && mc.player != null
                 ? DiskClient.pose(mc.player, mc.getTimer().getGameTimeDeltaPartialTick(false))
                 : DiskModel.Pose.REST;
-        model.renderAsItem(poses, buffers, light, overlay, pose);
+        model.renderAsItem(poses, buffers, light, overlay, pose, PlayerCosmetics.skin(stack));
     }
 }

@@ -3,6 +3,7 @@ package io.github.zancrow321.minecraftygo.client;
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.client.field.ClientField;
+import io.github.zancrow321.minecraftygo.compat.figura.FiguraCompat;
 import io.github.zancrow321.minecraftygo.client.field.FieldLayout;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
 import io.github.zancrow321.minecraftygo.engine.duel.ViewCodec;
@@ -41,7 +42,9 @@ public final class ClientDuel {
         if (view == null || view.result() != null) {
             log.clear(); // a new duel
         }
+        DuelView previous = view;
         view = next;
+        FiguraCompat.onView(previous, next);
         log.addAll(next.log());
         if (next.result() != null) {
             log.add(next.result());

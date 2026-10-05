@@ -84,6 +84,7 @@ public final class BoosterPackItem extends Item {
         level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1, 0.8f);
         if (player instanceof ServerPlayer serverPlayer) {
             PacketDistributor.sendToPlayer(serverPlayer, new PackOpenedPayload(set.name(), shown));
+            io.github.zancrow321.minecraftygo.cosmetics.PlayerCosmetics.openedPack(serverPlayer);
         }
         return InteractionResultHolder.consume(stack);
     }

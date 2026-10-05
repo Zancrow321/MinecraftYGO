@@ -1,5 +1,7 @@
 package io.github.zancrow321.minecraftygo.client.field;
 
+import io.github.zancrow321.minecraftygo.cosmetics.Cosmetics;
+import net.minecraft.resources.ResourceLocation;
 import io.github.zancrow321.minecraftygo.client.ClientDuel;
 import io.github.zancrow321.minecraftygo.client.DuelScreen;
 import io.github.zancrow321.minecraftygo.client.disk.DiskClient;
@@ -37,6 +39,7 @@ public final class ClientField {
     private static double scale = 1;
     private static final List<FieldAnimation> animations = new ArrayList<>();
     private static Loc hovered;
+    private static final ResourceLocation[] sleeves = new ResourceLocation[2];
 
     private ClientField() {
     }
@@ -47,6 +50,9 @@ public final class ClientField {
             return;
         }
         center = new Vec3(payload.x(), payload.y(), payload.z());
+        for (int team = 0; team < 2; team++) {
+            sleeves[team] = Cosmetics.sleeveTexture(payload.sleeve(team));
+        }
         forward = Vec3.directionFromRotation(0, payload.yaw());
         right = new Vec3(-forward.z, 0, forward.x);
         endsAt = -1;
@@ -67,6 +73,12 @@ public final class ClientField {
 
     public static boolean active() {
         return center != null && ClientDuel.view() != null;
+    }
+
+    /** The back of team {@code team}'s face-down cards, in their sleeve. */
+    public static ResourceLocation sleeve(int team) {
+        ResourceLocation sleeve = sleeves[team & 1];
+        return sleeve != null ? sleeve : Cosmetics.sleeveTexture(null);
     }
 
     public static long tick() {

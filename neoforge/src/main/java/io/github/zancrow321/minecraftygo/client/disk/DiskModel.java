@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
+import io.github.zancrow321.minecraftygo.cosmetics.Cosmetics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -41,7 +42,8 @@ public final class DiskModel {
     private final List<Bone> bones;
     private final Map<String, Animation> animations;
 
-    private record Layer(ResourceLocation texture, ResourceLocation emissive) {
+    /** A texture of the model; skins swap it for a recolored copy. */
+    private record Layer(String id, boolean emissive) {
     }
 
     private record Quad(int layer, float[] vertices, Vector3f normal) {
@@ -101,7 +103,7 @@ public final class DiskModel {
         for (JsonElement t : json.getAsJsonArray("textures")) {
             String id = t.getAsJsonObject().get("id").getAsString();
             boolean emissive = t.getAsJsonObject().get("emissive").getAsBoolean();
-            layers.add(new Layer(texture(id), emissive ? texture(id + "_e") : null));
+            layers.add(new Layer(id, emissive));
         }
         bones = new ArrayList<>();
         for (JsonElement b : json.getAsJsonArray("bones")) {
@@ -176,18 +178,20 @@ public final class DiskModel {
      * Draws the disk on a player's left arm. {@code poses} must be in the arm's space, as after
      * {@code leftArm.translateAndRotate}.
      */
-    public void renderOnArm(PoseStack poses, MultiBufferSource buffers, int light, int overlay, Pose pose) {
+    public void renderOnArm(PoseStack poses, MultiBufferSource buffers, int light, int overlay, Pose pose,
+                            String skin) {
         poses.pushPose();
         // Figura's Blockbench space is entity model space with y pointing up instead of down (the left arm is on
         // +x and the player faces -z in both), in pixels instead of blocks.
         poses.scale(1 / 16f, -1 / 16f, 1 / 16f);
         poses.translate(-pivot.x, -pivot.y, -pivot.z);
-        render(poses, buffers, light, overlay, pose);
+        render(poses, buffers, light, overlay, pose, skin);
         poses.popPose();
     }
 
     /** Draws the disk centred in a 1×1×1 item box, its face toward the viewer. */
-    public void renderAsItem(PoseStack poses, MultiBufferSource buffers, int light, int overlay, Pose pose) {
+    public void renderAsItem(PoseStack poses, MultiBufferSource buffers, int light, int overlay, Pose pose,
+                             String skin) {
         Vector3f size = new Vector3f(boundsMax).sub(boundsMin);
         float scale = 1 / Math.max(size.x, Math.max(size.y, size.z));
         poses.pushPose();
@@ -197,18 +201,19 @@ public final class DiskModel {
         poses.scale(scale, scale, scale);
         poses.translate(-(boundsMin.x + boundsMax.x) / 2, -(boundsMin.y + boundsMax.y) / 2,
                 -(boundsMin.z + boundsMax.z) / 2);
-        render(poses, buffers, light, overlay, pose);
+        render(poses, buffers, light, overlay, pose, skin);
         poses.popPose();
     }
 
-    private void render(PoseStack poses, MultiBufferSource buffers, int light, int overlay, Pose pose) {
+    private void render(PoseStack poses, MultiBufferSource buffers, int light, int overlay, Pose pose, String skin) {
         Matrix4f[] transforms = boneTransforms(pose);
         for (int layer = 0; layer < layers.size(); layer++) {
             Layer l = layers.get(layer);
-            draw(poses, buffers.getBuffer(RenderType.entityCutoutNoCull(l.texture())), transforms, layer, light,
-                    overlay);
-            if (l.emissive() != null) {
-                draw(poses, buffers.getBuffer(RenderType.eyes(l.emissive())), transforms, layer,
+            draw(poses, buffers.getBuffer(RenderType.entityCutoutNoCull(Cosmetics.diskTexture(l.id(), skin, false))),
+                    transforms, layer, light, overlay);
+            if (l.emissive()) {
+                draw(poses, buffers.getBuffer(RenderType.eyes(Cosmetics.diskTexture(l.id(), skin, true))), transforms,
+                        layer,
                         0xF000F0, overlay);
             }
         }
@@ -276,9 +281,6 @@ public final class DiskModel {
         return out;
     }
 
-    private static ResourceLocation texture(String id) {
-        return ResourceLocation.fromNamespaceAndPath(MinecraftYgo.MOD_ID, "textures/disk/" + id + ".png");
-    }
 
     private static Vector3f vec(JsonArray a) {
         return new Vector3f(a.get(0).getAsFloat(), a.get(1).getAsFloat(), a.get(2).getAsFloat());

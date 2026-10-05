@@ -71,6 +71,12 @@ In game:
   won't duel you again for a Minecraft day. They can't be hurt while dueling. A **Duelist Spawn Egg** is in the
   creative tab. NPCs and the `bot` seats play with a heuristic AI that summons its strongest monsters, only attacks
   when it wins the fight and saves its traps for your turn.
+- **Cosmetics:** `/ygo cosmetics` (or K) picks your **disk skin** (Battle City, Slifer Red, Ra Yellow, Obelisk Blue,
+  Shadow, Crimson, Gold) and your **card sleeves**, which your opponent sees on your face-down cards and piles.
+  Locked ones show how to unlock them: winning duels, beating NPC duelists or opening booster packs. The skin is
+  stored on the disk, so it goes wherever the disk goes.
+- **Figura** (optional): avatar scripts get a `ygo` API and duel events, and can hide the disk to draw their own. See
+  [docs/figura.md](docs/figura.md).
 - `/ygo version` reports the loaded OCG-Core version.
 - `/ygo duel bot` or `/ygo duel <player>` (then `/ygo accept`) starts a duel; press Y to open the duel screen.
 - `/ygo gallery [page]` puts a page of modeled monsters in front of you (operators only); `/ygo gallery clear` removes them.

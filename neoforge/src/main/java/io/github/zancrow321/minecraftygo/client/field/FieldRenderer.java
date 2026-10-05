@@ -50,7 +50,6 @@ import static io.github.zancrow321.minecraftygo.engine.OcgConstants.*;
  * spell/trap cards, face-down cards and piles, ATK/DEF readouts, and the effects queued in {@link ClientField}.
  */
 public final class FieldRenderer {
-    private static final ResourceLocation CARD_BACK = texture("card_back");
     private static final ResourceLocation CARD_BLANK = texture("card_blank");
     private static final int FULL_BRIGHT = LightTexture.FULL_BRIGHT;
     private static final double MAT_Y = 0.02;
@@ -306,7 +305,7 @@ public final class FieldRenderer {
     private static void drawSpell(Draw draw, int player, int seq, CardState card, long now, float partial) {
         Slot s = slot(player, LOCATION_SZONE, seq);
         if (!faceUp(card)) {
-            flatCard(draw, player, s, CARD_BACK, false, 0, 0xFFFFFFFF);
+            flatCard(draw, player, s, ClientField.sleeve(player), false, 0, 0xFFFFFFFF);
             return;
         }
         if (seq == 5) { // Field Spells lie flat, face-up.
@@ -324,7 +323,7 @@ public final class FieldRenderer {
     private static void drawFlatOrStanding(Draw draw, int player, int seq, CardState card, long now, float partial) {
         Slot s = slot(player, LOCATION_MZONE, seq);
         if (!faceUp(card)) {
-            flatCard(draw, player, s, CARD_BACK, defense(card), 0, 0xFFFFFFFF);
+            flatCard(draw, player, s, ClientField.sleeve(player), defense(card), 0, 0xFFFFFFFF);
             return;
         }
         if (defense(card)) {
@@ -364,15 +363,15 @@ public final class FieldRenderer {
     }
 
     private static void drawPiles(Draw draw, int player, Board.Side side) {
-        pile(draw, player, slot(player, LOCATION_DECK, 0), CARD_BACK, side.deckCount());
-        pile(draw, player, slot(player, LOCATION_EXTRA, 0), CARD_BACK, side.extra().size());
+        pile(draw, player, slot(player, LOCATION_DECK, 0), ClientField.sleeve(player), side.deckCount());
+        pile(draw, player, slot(player, LOCATION_EXTRA, 0), ClientField.sleeve(player), side.extra().size());
         if (!side.graveyard().isEmpty()) {
             pile(draw, player, slot(player, LOCATION_GRAVE, 0), front(side.graveyard().getLast().code()),
                     side.graveyard().size());
         }
         if (!side.banished().isEmpty()) {
             CardState top = side.banished().getLast();
-            pile(draw, player, slot(player, LOCATION_REMOVED, 0), top.code() == 0 ? CARD_BACK : front(top.code()),
+            pile(draw, player, slot(player, LOCATION_REMOVED, 0), top.code() == 0 ? ClientField.sleeve(player) : front(top.code()),
                     side.banished().size());
         }
     }

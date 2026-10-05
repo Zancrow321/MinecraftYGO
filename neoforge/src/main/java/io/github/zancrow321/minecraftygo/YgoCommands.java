@@ -9,6 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.zancrow321.minecraftygo.duel.DuelManager;
 import io.github.zancrow321.minecraftygo.engine.OcgCore;
 import net.minecraft.commands.CommandSourceStack;
+import io.github.zancrow321.minecraftygo.cosmetics.PlayerCosmetics;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -59,6 +60,10 @@ final class YgoCommands {
                         .then(Commands.argument("page", IntegerArgumentType.integer(1))
                                 .executes(ctx -> Gallery.show(ctx.getSource(),
                                         IntegerArgumentType.getInteger(ctx, "page")))))
+                .then(Commands.literal("cosmetics").executes(ctx -> {
+                    PlayerCosmetics.open(ctx.getSource().getPlayerOrException());
+                    return 1;
+                }))
                 .then(Commands.literal("accept").executes(ctx -> {
                     manager(ctx).accept(ctx.getSource().getPlayerOrException());
                     return 1;

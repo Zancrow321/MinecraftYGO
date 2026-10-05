@@ -11,6 +11,8 @@ import io.github.zancrow321.minecraftygo.client.field.ClientField;
 import io.github.zancrow321.minecraftygo.client.field.DuelHud;
 import io.github.zancrow321.minecraftygo.client.field.FieldRenderer;
 import io.github.zancrow321.minecraftygo.client.render.DuelistNpcRenderer;
+import io.github.zancrow321.minecraftygo.compat.figura.FiguraCompat;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import io.github.zancrow321.minecraftygo.client.render.MonsterRenderer;
 import io.github.zancrow321.minecraftygo.entity.YgoEntities;
 import io.github.zancrow321.minecraftygo.item.BoosterPackItem;
@@ -46,6 +48,8 @@ import org.lwjgl.glfw.GLFW;
 public final class YgoClient {
     public static final KeyMapping OPEN_DUEL = new KeyMapping("key.minecraftygo.open_duel",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Y, "key.categories.minecraftygo");
+    public static final KeyMapping COSMETICS = new KeyMapping("key.minecraftygo.cosmetics",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "key.categories.minecraftygo");
 
     /**
      * For headless testing: {@code -Dminecraftygo.camera=THIRD_PERSON_FRONT:90} keeps the camera there and turns
@@ -144,8 +148,14 @@ public final class YgoClient {
         }
 
         @SubscribeEvent
+        public static void setup(FMLClientSetupEvent event) {
+            event.enqueueWork(FiguraCompat::init);
+        }
+
+        @SubscribeEvent
         public static void registerKeys(RegisterKeyMappingsEvent event) {
             event.register(OPEN_DUEL);
+            event.register(COSMETICS);
         }
     }
 
@@ -191,6 +201,11 @@ public final class YgoClient {
                 mc.gameMode.interact(mc.player, hit.getEntity(), net.minecraft.world.InteractionHand.MAIN_HAND);
             } else {
                 mc.gameMode.useItem(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND);
+            }
+        }
+        while (COSMETICS.consumeClick()) {
+            if (mc.screen == null && mc.player != null) {
+                mc.player.connection.sendCommand("ygo cosmetics");
             }
         }
         while (OPEN_DUEL.consumeClick()) {

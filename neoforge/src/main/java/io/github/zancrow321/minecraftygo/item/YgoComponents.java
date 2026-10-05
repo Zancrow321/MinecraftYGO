@@ -106,6 +106,11 @@ public final class YgoComponents {
             COMPONENTS.registerComponentType("deck", b -> b.persistent(DeckList.CODEC)
                     .networkSynchronized(DeckList.STREAM_CODEC));
 
+    /** The skin a duel disk wears; see {@code Cosmetics.SKINS}. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> DISK_SKIN =
+            COMPONENTS.registerComponentType("disk_skin", b -> b.persistent(Codec.STRING)
+                    .networkSynchronized(ByteBufCodecs.STRING_UTF8));
+
     private YgoComponents() {
     }
 

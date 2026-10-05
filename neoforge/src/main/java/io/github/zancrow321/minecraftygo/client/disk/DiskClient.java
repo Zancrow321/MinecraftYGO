@@ -50,6 +50,12 @@ public final class DiskClient {
         return new DiskModel.Pose(animation, Math.min(seconds, animation.length()));
     }
 
+    /** Whether this client last heard that the duelist is dueling. */
+    public static boolean dueling(Entity duelist) {
+        State state = states.get(duelist.getId());
+        return state != null && state.dueling();
+    }
+
     /** How long the local player's disk takes to unfold, in ticks; 0 if they don't wear one. */
     public static int deployTicks() {
         Player player = Minecraft.getInstance().player;
