@@ -15,7 +15,8 @@ on a Duel Arena, face-up monsters appear as 3D figures from
 |---|---|
 | `ocgcore-native/` | ygopro-core as git submodule + CMake build of the shared library, layout probe, constants dump |
 | `engine/` | Pure Java 25 engine (no Minecraft dependency): FFM bindings, message parser, prompt/response encoding, duel session, bots |
-| `tools/` | Build-time data pipeline (card pool, model conversion) |
+| `tools/` | Build-time data pipeline (card pool, model conversion, hand-made asset contract) |
+| `assets-src/` | Blockbench sources of hand-made assets (see `docs/assets.md`) |
 | `neoforge/` | The mod (coming) |
 
 ## Building
@@ -30,6 +31,9 @@ git submodule update --init --recursive
 ```
 
 Pinned upstream revisions live in `sources.lock.json`; ygopro-core, CardScripts and BabelCDB must be bumped together.
+`./gradlew :tools:regenerate` rebuilds all generated data (card pool, texts, GeckoLib monster assets, placeholders);
+the outputs are committed. See `docs/PoolReport.md` for the current card pool (1081 cards) and `docs/AssetStatus.md`
+for the hand-made models.
 
 ## License
 

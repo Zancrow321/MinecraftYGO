@@ -1,0 +1,94 @@
+{
+  "_comment": "Source of truth for the hand-made (Blockbench MCP) assets. Units: 1 px = 1/16 block. Bones listed under 'bones' must exist as groups with exactly these names (anchors may be empty groups). Animations must be exported with the GeckoLib plugin to assets-src/blockbench/<id>.animation.json. Coordinate origin: see 'origin' per asset; +Z points towards the opponent / the front.",
+  "format": 1,
+  "card": { "widthPx": 10, "heightPx": 14, "_comment": "A card lying on the field is 10 x 14 px (0.625 x 0.875 blocks)." },
+  "assets": [
+    {
+      "id": "duel_disk",
+      "kind": "item",
+      "texture": [128, 128],
+      "maxCubes": 120,
+      "origin": "Wrist centre of the left forearm; the disk extends along -X (away from the body) when deployed.",
+      "bones": {
+        "root": "Everything; pivot at the wrist",
+        "arm_mount": "Bracer around the forearm",
+        "disk_body": "Main disk / life point counter housing",
+        "blade": "Folding card-zone blade (rotates during deploy)",
+        "card_tray": "Card zone strip on the blade",
+        "card_slot_0": "Monster zone 1 (anchor)", "card_slot_1": "Monster zone 2 (anchor)", "card_slot_2": "Monster zone 3 (anchor)",
+        "card_slot_3": "Monster zone 4 (anchor)", "card_slot_4": "Monster zone 5 (anchor)",
+        "deck_slot": "Deck holder (anchor at the card's centre)",
+        "gy_slot": "Graveyard slot (anchor)",
+        "field_slot": "Field spell slot (anchor)",
+        "lp_display": "Flat display face for the life points, facing +Z"
+      },
+      "animations": {
+        "idle_folded": "loop, static folded pose",
+        "deploy": "once, ~0.75 s, blade unfolds",
+        "idle_deployed": "loop, static deployed pose",
+        "retract": "once, ~0.5 s"
+      }
+    },
+    {
+      "id": "duel_arena",
+      "kind": "block",
+      "texture": [256, 256],
+      "maxCubes": 400,
+      "origin": "Centre of the playing field at floor level (the controller block's position). Team 0 sits at -Z, team 1 at +Z. The field is 9 x 13 blocks.",
+      "bones": {
+        "root": "Everything",
+        "anchor_t0_m0": "Team 0 monster zone 1 centre (on the floor)", "anchor_t0_m1": "", "anchor_t0_m2": "", "anchor_t0_m3": "", "anchor_t0_m4": "",
+        "anchor_t0_s0": "Team 0 spell/trap zone 1 centre", "anchor_t0_s1": "", "anchor_t0_s2": "", "anchor_t0_s3": "", "anchor_t0_s4": "",
+        "anchor_t0_field": "Team 0 field zone", "anchor_t0_deck": "Team 0 deck", "anchor_t0_extra": "Team 0 extra deck",
+        "anchor_t0_grave": "Team 0 graveyard", "anchor_t0_banish": "Team 0 banished pile",
+        "anchor_t1_m0": "Team 1 (mirrored)", "anchor_t1_m1": "", "anchor_t1_m2": "", "anchor_t1_m3": "", "anchor_t1_m4": "",
+        "anchor_t1_s0": "", "anchor_t1_s1": "", "anchor_t1_s2": "", "anchor_t1_s3": "", "anchor_t1_s4": "",
+        "anchor_t1_field": "", "anchor_t1_deck": "", "anchor_t1_extra": "", "anchor_t1_grave": "", "anchor_t1_banish": "",
+        "anchor_spot_t0_d0": "Where duelist 0 of team 0 stands (feet)", "anchor_spot_t0_d1": "Tag partner of team 0",
+        "anchor_spot_t1_d0": "", "anchor_spot_t1_d1": "",
+        "anchor_hand_t0_d0": "Centre of the hand fan (chest height in front of the duelist)", "anchor_hand_t0_d1": "",
+        "anchor_hand_t1_d0": "", "anchor_hand_t1_d1": "",
+        "anchor_prompt_t0_d0": "Centre of prompt holograms (eye height)", "anchor_prompt_t0_d1": "",
+        "anchor_prompt_t1_d0": "", "anchor_prompt_t1_d1": "",
+        "anchor_lp_t0": "Life point hologram of team 0", "anchor_lp_t1": "",
+        "anchor_phase": "Phase / turn hologram", "anchor_chain": "Bottom of the chain column"
+      },
+      "animations": {
+        "idle": "loop",
+        "activate": "once, duel start"
+      }
+    },
+    {
+      "id": "arena_controller",
+      "kind": "block",
+      "texture": [64, 64],
+      "maxCubes": 60,
+      "origin": "Block centre, bottom at y=0.",
+      "bones": { "root": "Everything", "core": "Base", "crystal": "Floating crystal that glows during duels" },
+      "animations": { "idle": "loop", "active": "loop, duel running" }
+    },
+    { "id": "millennium_puzzle", "kind": "item", "texture": [64, 64], "maxCubes": 80, "origin": "Item centre.",
+      "bones": { "root": "", "glow": "Emissive parts", "curio_anchor": "Where the chain/necklace attaches", "eye_glyph": "Wedjat eye on the front" },
+      "animations": { "idle": "loop", "activate": "once" } },
+    { "id": "millennium_eye", "kind": "item", "texture": [32, 32], "maxCubes": 40, "origin": "Item centre.",
+      "bones": { "root": "", "glow": "", "curio_anchor": "" }, "animations": { "idle": "loop", "activate": "once" } },
+    { "id": "millennium_ring", "kind": "item", "texture": [64, 64], "maxCubes": 80, "origin": "Item centre.",
+      "bones": { "root": "", "glow": "", "curio_anchor": "", "pointer_0": "Pointer 1 (rotates towards a target)",
+        "pointer_1": "", "pointer_2": "", "pointer_3": "", "pointer_4": "" },
+      "animations": { "idle": "loop", "activate": "once" } },
+    { "id": "millennium_rod", "kind": "item", "texture": [64, 64], "maxCubes": 60, "origin": "Grip centre.",
+      "bones": { "root": "", "glow": "", "curio_anchor": "", "blade": "Hidden dagger (slides out on activate)" },
+      "animations": { "idle": "loop", "activate": "once" } },
+    { "id": "millennium_key", "kind": "item", "texture": [32, 32], "maxCubes": 40, "origin": "Item centre.",
+      "bones": { "root": "", "glow": "", "curio_anchor": "", "bit": "Key bit" }, "animations": { "idle": "loop", "activate": "once" } },
+    { "id": "millennium_scale", "kind": "item", "texture": [64, 64], "maxCubes": 80, "origin": "Base centre.",
+      "bones": { "root": "", "glow": "", "curio_anchor": "", "beam": "Balance beam (tilts)", "pan_left": "", "pan_right": "" },
+      "animations": { "idle": "loop", "activate": "once" } },
+    { "id": "millennium_necklace", "kind": "item", "texture": [32, 32], "maxCubes": 40, "origin": "Pendant centre.",
+      "bones": { "root": "", "glow": "", "curio_anchor": "", "pendant": "" }, "animations": { "idle": "loop", "activate": "once" } },
+    { "id": "deck_box", "kind": "item", "optional": true, "texture": [32, 32], "maxCubes": 20, "origin": "Item centre.",
+      "bones": { "root": "", "lid": "Hinged lid" }, "animations": { "open": "once" } },
+    { "id": "card_table", "kind": "block", "optional": true, "texture": [64, 64], "maxCubes": 60, "origin": "Block centre, bottom at y=0.",
+      "bones": { "root": "" }, "animations": {} }
+  ]
+}

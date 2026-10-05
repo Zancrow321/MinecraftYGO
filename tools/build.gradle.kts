@@ -43,10 +43,26 @@ val convertModels = tasks.register<JavaExec>("convertModels") {
     maxHeapSize = "2g"
 }
 
+val processAssets = tasks.register<JavaExec>("processAssets") {
+    group = "data"
+    description = "Validates/converts the Blockbench assets in assets-src (placeholders for missing ones) and arena layouts"
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass = "io.github.zancrow321.minecraftygo.tools.assets.ProcessAssets"
+    args(rootProject.projectDir)
+}
+
+tasks.register<JavaExec>("validateAssets") {
+    group = "verification"
+    description = "Checks assets-src/blockbench against assets-src/asset-contract.json without writing anything"
+    classpath = sourceSets.main.get().runtimeClasspath
+    mainClass = "io.github.zancrow321.minecraftygo.tools.assets.ProcessAssets"
+    args(rootProject.projectDir, "--check")
+}
+
 tasks.register("regenerate") {
     group = "data"
     description = "Runs the complete data pipeline"
-    dependsOn(generatePool, convertModels)
+    dependsOn(generatePool, convertModels, processAssets)
 }
 
 tasks.test {

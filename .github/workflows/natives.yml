@@ -99,6 +99,7 @@ jobs:
         run: |
           mkdir -p prebuilt/dir
           cp prebuilt/natives/macos-universal/libocgcore.dylib prebuilt/probe/ocg_layout_probe prebuilt/dir/
+          chmod +x prebuilt/dir/ocg_layout_probe
           ./gradlew :engine:test -Pygo.skipMod=true -Pygo.nativeDir=$PWD/prebuilt/dir --tests '*LayoutProbeTest' --tests '*FfmOcgCoreTest' --tests '*BotVsBotDuelTest'
 
   bundle:

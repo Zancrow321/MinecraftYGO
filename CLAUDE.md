@@ -23,6 +23,10 @@ Minecraft (NeoForge 26.1.2, Java 25) Yu-Gi-Oh! dueling mod on top of edo9300/ygo
   plus `docs/PoolReport.md`; `bbmodel.ConvertModels` writes GeckoLib assets to `neoforge/src/generated/resources`
   (`geckolib/models/monster/<code>.geo.json`, animations, `textures/monster/<code>.png`, `ygo/monster_models.json`).
   All outputs are committed; `.github/workflows/data.yml` checks they are current.
+- Hand-made assets: `assets-src/asset-contract.json` (required bones/animations per asset), sources in
+  `assets-src/blockbench/<id>.bbmodel` + `<id>.animation.json`; `:tools:processAssets` converts them (placeholders
+  when missing) and writes `data/minecraftygo/arena_layout/*.json`; `:tools:validateAssets` checks only. Workflow for
+  Blockbench MCP sessions: `docs/assets.md`.
 - `engine:bundleScripts` zips the scripts listed in `scripts.txt` into `minecraftygo/scripts.zip` (engine resources);
   `BundledData` loads cards/pool/texts/scripts from the classpath.
 

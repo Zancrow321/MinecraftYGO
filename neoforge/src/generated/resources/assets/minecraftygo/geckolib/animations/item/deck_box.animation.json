@@ -1,0 +1,20 @@
+{
+  "format_version": "1.8.0",
+  "animations": {
+    "open": {
+      "loop": false,
+      "bones": {
+        "root": {
+          "rotation": {
+            "vector": [
+              0,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    }
+  },
+  "geckolib_format_version": 2
+}
