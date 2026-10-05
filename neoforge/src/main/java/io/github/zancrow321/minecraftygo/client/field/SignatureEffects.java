@@ -51,7 +51,7 @@ final class SignatureEffects {
         return switch (code) {
             case RAIGEKI, DARK_HOLE, MIRROR_FORCE, SWORDS_OF_REVEALING_LIGHT -> 46;
             case MONSTER_REBORN, POT_OF_GREED -> 36;
-            default -> FieldAnimation.duration(FieldEvent.Kind.ACTIVATE);
+            default -> ClassicEffects.activateDuration(code);
         };
     }
 
@@ -75,6 +75,7 @@ final class SignatureEffects {
             default -> {
             }
         }
+        ClassicEffects.tick(a, elapsed);
     }
 
     private static void summon(FieldEvent e) {
@@ -225,6 +226,7 @@ final class SignatureEffects {
             default -> {
             }
         }
+        ClassicEffects.draw(draw, vc, a, p, now, partial);
     }
 
     private static void drawAttack(FieldRenderer.Draw draw, VertexConsumer vc, FieldAnimation a, float p, long now) {
@@ -366,12 +368,12 @@ final class SignatureEffects {
 
     // ------------------------------------------------------------------ shapes
 
-    private static int glow(double alpha, int rgb) {
+    static int glow(double alpha, int rgb) {
         return ((int) Mth.clamp(alpha, 0, 255) << 24) | rgb;
     }
 
     /** A quad seen from both sides. */
-    private static void quad(FieldRenderer.Draw draw, VertexConsumer vc, Vec3 a, Vec3 b, Vec3 c, Vec3 d, int argb) {
+    static void quad(FieldRenderer.Draw draw, VertexConsumer vc, Vec3 a, Vec3 b, Vec3 c, Vec3 d, int argb) {
         if ((argb >>> 24) == 0) {
             return;
         }
@@ -380,7 +382,7 @@ final class SignatureEffects {
     }
 
     /** A beam from {@code a} to {@code b}: two crossed strips, which read as a solid glow from any side. */
-    private static void tube(FieldRenderer.Draw draw, VertexConsumer vc, Vec3 a, Vec3 b, double radius, int argb) {
+    static void tube(FieldRenderer.Draw draw, VertexConsumer vc, Vec3 a, Vec3 b, double radius, int argb) {
         Vec3 dir = b.subtract(a);
         if (dir.lengthSqr() < 1e-6 || radius <= 0) {
             return;
@@ -397,7 +399,7 @@ final class SignatureEffects {
     }
 
     /** A glowing ball: three crossed squares. */
-    private static void star(FieldRenderer.Draw draw, VertexConsumer vc, Vec3 c, double size, int argb) {
+    static void star(FieldRenderer.Draw draw, VertexConsumer vc, Vec3 c, double size, int argb) {
         if (size <= 0) {
             return;
         }
@@ -410,7 +412,7 @@ final class SignatureEffects {
     }
 
     /** A lightning bolt that re-forks whenever {@code seed} changes. */
-    private static void bolt(FieldRenderer.Draw draw, VertexConsumer vc, Vec3 top, Vec3 bottom, long seed, int argb) {
+    static void bolt(FieldRenderer.Draw draw, VertexConsumer vc, Vec3 top, Vec3 bottom, long seed, int argb) {
         RandomSource random = RandomSource.create(seed);
         int segments = 9;
         Vec3 previous = top;
@@ -426,7 +428,7 @@ final class SignatureEffects {
     }
 
     /** A flat ring of broken arcs lying on the field, turned by {@code spin} radians. */
-    private static void ring(FieldRenderer.Draw draw, VertexConsumer vc, Vec3 c, double radius, double width,
+    static void ring(FieldRenderer.Draw draw, VertexConsumer vc, Vec3 c, double radius, double width,
                              double spin, int argb) {
         if (radius <= 0) {
             return;
@@ -475,26 +477,26 @@ final class SignatureEffects {
 
     // ------------------------------------------------------------------ positions
 
-    private static double side(int player) {
+    static double side(int player) {
         return player == 0 ? -1 : 1;
     }
 
-    private static Vec3 sideCenter(int player) {
+    static Vec3 sideCenter(int player) {
         return ClientField.toWorld(0, side(player) * HALF_LENGTH * 0.5, 1);
     }
 
-    private static Vec3 zone(Loc loc, double up) {
+    static Vec3 zone(Loc loc, double up) {
         Slot s = loc == null || loc.isNone() ? null : slot(loc);
         return s == null ? null : ClientField.toWorld(s.x(), s.z(), up);
     }
 
-    private static Vec3 activation(FieldEvent e) {
+    static Vec3 activation(FieldEvent e) {
         Vec3 at = zone(e.from(), 0);
         return at != null ? at : ClientField.toWorld(0, side(e.player()) * MONSTER_ROW, 0);
     }
 
     /** Where an attacker's breath or spell comes from: near the top of its model, a little toward the target. */
-    private static Vec3 mouth(FieldAnimation a) {
+    static Vec3 mouth(FieldAnimation a) {
         Loc from = a.event().from();
         CardPool.Model model = a.actor() == 0 ? null : YgoData.pool().model(a.actor());
         double height = model != null ? model.height() * FieldRenderer.modelScale(model) * 0.8 : 1.2;
@@ -506,7 +508,7 @@ final class SignatureEffects {
         return target == null ? at : at.add(target.subtract(at).multiply(1, 0, 1).normalize().scale(0.6));
     }
 
-    private static Vec3 target(FieldAnimation a) {
+    static Vec3 target(FieldAnimation a) {
         FieldEvent e = a.event();
         Vec3 to = zone(e.to(), 1.0);
         if (to != null) {
@@ -517,12 +519,12 @@ final class SignatureEffects {
     }
 
     /** A sideways offset, across the line of the attack. */
-    private static Vec3 across(FieldAnimation a, double amount) {
+    static Vec3 across(FieldAnimation a, double amount) {
         return ClientField.right().normalize().scale(amount);
     }
 
     /** Face-up monsters on {@code player}'s side, at chest height. */
-    private static List<Vec3> monsters(int player) {
+    static List<Vec3> monsters(int player) {
         Board board = ClientDuel.view() == null ? null : ClientDuel.view().board();
         if (board == null) {
             return List.of();
@@ -539,31 +541,31 @@ final class SignatureEffects {
 
     // ------------------------------------------------------------------ helpers
 
-    private static Vec3 lerp(Vec3 a, Vec3 b, double t) {
+    static Vec3 lerp(Vec3 a, Vec3 b, double t) {
         return a.add(b.subtract(a).scale(Mth.clamp(t, 0, 1)));
     }
 
-    private static double smooth(double x) {
+    static double smooth(double x) {
         x = Mth.clamp(x, 0, 1);
         return x * x * (3 - 2 * x);
     }
 
-    private static float fraction(FieldAnimation a, int elapsed) {
+    static float fraction(FieldAnimation a, int elapsed) {
         return elapsed / (float) a.duration();
     }
 
     /** Whether this tick is the one {@code fraction} of the way through {@code a}. */
-    private static boolean at(FieldAnimation a, int elapsed, float fraction) {
+    static boolean at(FieldAnimation a, int elapsed, float fraction) {
         return elapsed == Math.round(fraction * a.duration());
     }
 
-    private static void burst(ParticleOptions particle, Vec3 at, int count, double spread, double speed) {
+    static void burst(ParticleOptions particle, Vec3 at, int count, double spread, double speed) {
         if (at != null) {
             FieldRenderer.burst(particle, at, count, spread, speed);
         }
     }
 
-    private static void sound(SoundEvent sound, Vec3 at, float pitch) {
+    static void sound(SoundEvent sound, Vec3 at, float pitch) {
         if (at != null) {
             FieldRenderer.sound(sound, at, pitch);
         }
