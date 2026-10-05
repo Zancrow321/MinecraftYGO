@@ -8,6 +8,7 @@ import io.github.zancrow321.minecraftygo.client.CardArt;
 import io.github.zancrow321.minecraftygo.client.ClientDuel;
 import io.github.zancrow321.minecraftygo.engine.data.CardPool;
 import io.github.zancrow321.minecraftygo.engine.duel.Board;
+import io.github.zancrow321.minecraftygo.engine.duel.DuelTable;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
 import io.github.zancrow321.minecraftygo.engine.duel.FieldEvent;
 import io.github.zancrow321.minecraftygo.engine.protocol.CardState;
@@ -250,6 +251,12 @@ public final class FieldRenderer {
             boolean own = zone[0] == you;
             int fill = own ? 0x5018506E : 0x50401C40;
             int edge = own ? 0xC038E0FF : 0xC0E040A0;
+            if (ClientField.split() && (zone[1] == LOCATION_MZONE || zone[1] == LOCATION_SZONE) && zone[2] < 5
+                    && DuelTable.zoneOwner(zone[2]) == 1) {
+                // The second partner's half: green for your team, orange for theirs.
+                fill = own ? 0x50186E40 : 0x506E4018;
+                edge = own ? 0xC040FFA0 : 0xC0FFA040;
+            }
             if (ClientField.selected(loc)) {
                 fill = 0x8030C060;
                 edge = 0xFF60FF90;
@@ -305,7 +312,7 @@ public final class FieldRenderer {
     private static void drawSpell(Draw draw, int player, int seq, CardState card, long now, float partial) {
         Slot s = slot(player, LOCATION_SZONE, seq);
         if (!faceUp(card)) {
-            flatCard(draw, player, s, ClientField.sleeve(player), false, 0, 0xFFFFFFFF);
+            flatCard(draw, player, s, ClientField.sleeve(player, seq), false, 0, 0xFFFFFFFF);
             return;
         }
         if (seq == 5) { // Field Spells lie flat, face-up.
@@ -323,7 +330,7 @@ public final class FieldRenderer {
     private static void drawFlatOrStanding(Draw draw, int player, int seq, CardState card, long now, float partial) {
         Slot s = slot(player, LOCATION_MZONE, seq);
         if (!faceUp(card)) {
-            flatCard(draw, player, s, ClientField.sleeve(player), defense(card), 0, 0xFFFFFFFF);
+            flatCard(draw, player, s, ClientField.sleeve(player, seq), defense(card), 0, 0xFFFFFFFF);
             return;
         }
         if (defense(card)) {

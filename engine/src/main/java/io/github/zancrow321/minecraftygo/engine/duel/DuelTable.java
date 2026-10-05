@@ -54,6 +54,7 @@ public final class DuelTable implements AutoCloseable {
     private String forfeitResult;
     private int forfeitWinner = -1;
     private DuelMessage.Win result;
+    private boolean splitField;
 
     /** A 1v1 duel. @param bots a responder per seat, {@code null} for a person */
     public DuelTable(DuelText text, ScriptProvider scripts, DuelSettings settings, Deck deck0, Deck deck1,
@@ -83,6 +84,44 @@ public final class DuelTable implements AutoCloseable {
         }
         this.names = List.copyOf(teamNames);
         this.duel = new DuelController(text.cards(), scripts, settings, teamDecks, log);
+    }
+
+    /**
+     * Battle City style: in a tag duel each partner gets their own half of the team's zones, monster and spell/trap
+     * zones 1-2 for the first and 4-5 for the second, with the middle column shared. Placement prompts only offer the
+     * playing partner's half (and the middle) while one of those is free.
+     */
+    public DuelTable splitField(boolean split) {
+        this.splitField = split;
+        return this;
+    }
+
+    /** In a split field, which partner (0 or 1) owns zone column {@code seq}, or -1 if it is shared. */
+    public static int zoneOwner(int seq) {
+        return seq <= 1 ? 0 : seq == 3 || seq == 4 ? 1 : -1;
+    }
+
+    /** {@code prompt} with the partner's zones blocked, for duelist {@code duelist} of the team placing a card. */
+    static DuelMessage.SelectPlace restrict(DuelMessage.SelectPlace prompt, int duelist) {
+        int partnerZones = 0;
+        for (int seq = 0; seq < 5; seq++) {
+            if (zoneOwner(seq) == 1 - duelist) {
+                partnerZones |= 1 << seq | 1 << (8 + seq);
+            }
+        }
+        int blocked = prompt.blockedZones() | partnerZones;
+        int free = Integer.bitCount(~blocked & 0x1F7F1F7F);
+        return free < prompt.count() ? prompt
+                : new DuelMessage.SelectPlace(prompt.player(), prompt.count(), blocked, prompt.disableField());
+    }
+
+    private DuelMessage.Prompt pendingPrompt() {
+        DuelMessage.Prompt prompt = duel.pendingPrompt();
+        if (splitField && prompt instanceof DuelMessage.SelectPlace place && !place.disableField()
+                && teams.get(place.player()).size() == 2) {
+            return restrict(place, duel.activeDuelist(place.player()));
+        }
+        return prompt;
     }
 
     public List<Seat> seats() {
@@ -166,7 +205,7 @@ public final class DuelTable implements AutoCloseable {
                     return views(null);
                 }
             }
-            DuelMessage.Prompt prompt = duel.pendingPrompt();
+            DuelMessage.Prompt prompt = pendingPrompt();
             if (prompt instanceof DuelMessage.SelectChain chain && chain.chains().isEmpty() && !chain.forced()) {
                 // Nothing can respond: pass automatically instead of asking (EDOPro does the same).
                 duel.respond(Responses.index(-1));
