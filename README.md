@@ -16,7 +16,6 @@ the engine behind EDOPro, running on the server. Monster models come from
 | `tools/models/import_models.py` | Converts YGOMCModels to GeckoLib assets, maps each model to its card and writes the era pool (`pool.json`). |
 | `tools/carddata/build_carddata.py` | Bundles card data, Lua scripts and system strings for the pool. Run it after `import_models.py`. |
 | `tools/disk/convert_disk.py` | Converts the duel disk `.bbmodel` (Figura format, meshes allowed) into the mod's disk model. |
-| `tools/disk/make_placeholder.py` | Writes the stand-in `duel_disk.bbmodel` used until the real one is committed. |
 
 ## Building
 
@@ -64,8 +63,8 @@ monsters, and every spell and trap released up to it is playable.
 ## Updating the duel disk model
 
 Save the model from Blockbench with textures embedded as `tools/disk/duel_disk.bbmodel`, then run
-`python3 tools/disk/convert_disk.py`. Only the `LeftArm` group is exported, with its pivot on Figura's left-arm
-pivot and the player facing north (-Z). A texture named `<name>_e` is the glowing layer of `<name>`. The animations
+`python3 tools/disk/convert_disk.py`. Only the `LeftArm` group is exported, in Figura's coordinates: the pivot on
+the left-arm pivot (5, 22, 0), the arm on +X and the player facing north (-Z). A texture named `<name>_e` is the glowing layer of `<name>`. The animations
 named `deploy` and `fold` play when a duel starts and ends; the rest pose is the disk when not dueling.
 
 To check it in a dev client, `./gradlew :neoforge:runClient -PquickPlay=<world> -Pcamera=THIRD_PERSON_FRONT:90`
