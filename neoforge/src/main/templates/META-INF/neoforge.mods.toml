@@ -38,3 +38,10 @@ type = "optional"
 versionRange = "${curios_version_range}"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "figura"
+type = "optional"
+versionRange = "[0.1.5,)"
+ordering = "NONE"
+side = "CLIENT"

@@ -1,6 +1,7 @@
 package io.github.zancrow321.minecraftygo.entity;
 
 import io.github.zancrow321.minecraftygo.YgoData;
+import io.github.zancrow321.minecraftygo.cosmetics.Cosmetics;
 import io.github.zancrow321.minecraftygo.duel.DuelManager;
 import io.github.zancrow321.minecraftygo.engine.data.Deck;
 import io.github.zancrow321.minecraftygo.engine.data.DeckBuilder;
@@ -46,12 +47,15 @@ import java.util.UUID;
 public final class DuelistNpc extends PathfinderMob {
     private static final EntityDataAccessor<Integer> SKIN =
             SynchedEntityData.defineId(DuelistNpc.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<String> DISK_SKIN =
+            SynchedEntityData.defineId(DuelistNpc.class, EntityDataSerializers.STRING);
     public static final int SKINS = 9;
     private static final List<String> TITLES = List.of("Rare Hunter", "Card Shark", "Wandering Duelist",
             "Duel Monk", "Tournament Hopeful", "Puzzle Duelist", "Dragon Tamer", "Bug Collector", "Ghoul");
     private static final long REMATCH_TICKS = 24000;
 
     private long deckSeed;
+    private String sleeve = Cosmetics.DEFAULT_SLEEVE;
     private boolean dueling;
     /** player -> game time they last beat this duelist */
     private final Map<UUID, Long> beatenBy = new HashMap<>();
@@ -63,6 +67,8 @@ public final class DuelistNpc extends PathfinderMob {
             RandomSource random = level.getRandom();
             entityData.set(SKIN, random.nextInt(SKINS));
             deckSeed = random.nextLong();
+            entityData.set(DISK_SKIN, Cosmetics.SKINS.get(random.nextInt(Cosmetics.SKINS.size())).id());
+            sleeve = Cosmetics.SLEEVES.get(random.nextInt(Cosmetics.SLEEVES.size())).id();
             setCustomName(Component.literal(TITLES.get(random.nextInt(TITLES.size()))));
             setCustomNameVisible(true);
         }
@@ -76,6 +82,7 @@ public final class DuelistNpc extends PathfinderMob {
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
         super.defineSynchedData(builder);
         builder.define(SKIN, 0);
+        builder.define(DISK_SKIN, Cosmetics.DEFAULT_SKIN);
     }
 
     @Override
@@ -93,6 +100,14 @@ public final class DuelistNpc extends PathfinderMob {
 
     public int skin() {
         return entityData.get(SKIN);
+    }
+
+    public String diskSkin() {
+        return entityData.get(DISK_SKIN);
+    }
+
+    public String sleeve() {
+        return sleeve;
     }
 
     public String duelistName() {
@@ -168,6 +183,8 @@ public final class DuelistNpc extends PathfinderMob {
         super.addAdditionalSaveData(tag);
         tag.putInt("Skin", skin());
         tag.putLong("DeckSeed", deckSeed);
+        tag.putString("DiskSkin", diskSkin());
+        tag.putString("Sleeve", sleeve);
         ListTag beaten = new ListTag();
         beatenBy.forEach((id, time) -> {
             CompoundTag entry = new CompoundTag();
@@ -183,6 +200,8 @@ public final class DuelistNpc extends PathfinderMob {
         super.readAdditionalSaveData(tag);
         entityData.set(SKIN, Math.floorMod(tag.getInt("Skin"), SKINS));
         deckSeed = tag.getLong("DeckSeed");
+        entityData.set(DISK_SKIN, Cosmetics.skin(tag.getString("DiskSkin")).id());
+        sleeve = Cosmetics.sleeve(tag.getString("Sleeve")).id();
         for (Tag t : tag.getList("BeatenBy", Tag.TAG_COMPOUND)) {
             CompoundTag entry = (CompoundTag) t;
             beatenBy.put(entry.getUUID("Player"), entry.getLong("Time"));

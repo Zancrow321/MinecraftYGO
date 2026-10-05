@@ -5,6 +5,7 @@ import io.github.zancrow321.minecraftygo.client.ClientScreens;
 import io.github.zancrow321.minecraftygo.collection.CollectionActions;
 import io.github.zancrow321.minecraftygo.client.disk.DiskClient;
 import io.github.zancrow321.minecraftygo.client.field.ClientField;
+import io.github.zancrow321.minecraftygo.cosmetics.PlayerCosmetics;
 import io.github.zancrow321.minecraftygo.duel.DuelManager;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -25,6 +26,14 @@ public final class YgoNetwork {
                 (payload, context) -> context.enqueueWork(() -> DiskClient.receive(payload)));
         registrar.playToClient(PackOpenedPayload.TYPE, PackOpenedPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.packOpened(payload)));
+        registrar.playToClient(CosmeticsPayload.TYPE, CosmeticsPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.cosmetics(payload)));
+        registrar.playToServer(SelectCosmeticPayload.TYPE, SelectCosmeticPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        PlayerCosmetics.select(player, payload.skin(), payload.id());
+                    }
+                }));
         registrar.playToServer(CollectionActionPayload.TYPE, CollectionActionPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer player) {
