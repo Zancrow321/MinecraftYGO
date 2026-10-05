@@ -11,6 +11,7 @@ import io.github.zancrow321.minecraftygo.engine.duel.DuelTable;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
 import io.github.zancrow321.minecraftygo.engine.duel.ViewCodec;
 import io.github.zancrow321.minecraftygo.network.DuelFieldPayload;
+import io.github.zancrow321.minecraftygo.network.DuelistStatePayload;
 import io.github.zancrow321.minecraftygo.network.DuelViewPayload;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
@@ -86,9 +87,33 @@ public final class DuelManager {
         challenges.put(target.getUUID(), new Challenge(challenger.getUUID(),
                 server.getTickCount() + CHALLENGE_TIMEOUT_TICKS));
         challenger.sendSystemMessage(Component.literal("Challenge sent to " + target.getScoreboardName() + "."));
-        target.sendSystemMessage(Component.literal(challenger.getScoreboardName() + " challenges you to a duel! ")
+        target.sendSystemMessage(Component.literal(challenger.getScoreboardName() + " challenges you to a duel! "
+                        + (DuelDisks.has(target) ? "Right-click them with your Duel Disk or click " : ""))
                 .append(Component.literal("[Accept]").withStyle(s -> s.withColor(ChatFormatting.GREEN)
                         .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/ygo accept")))));
+    }
+
+    /**
+     * {@code player} right-clicked {@code other} with a duel disk: accepts their challenge if they sent one,
+     * otherwise challenges them.
+     */
+    public void diskInteract(ServerPlayer player, ServerPlayer other) {
+        if (!DuelDisks.has(other)) {
+            player.sendSystemMessage(Component.literal(other.getScoreboardName() + " has no Duel Disk."));
+            return;
+        }
+        long now = server.getTickCount();
+        Challenge received = challenges.get(player.getUUID());
+        if (received != null && received.challenger().equals(other.getUUID()) && received.expiresAt() >= now) {
+            accept(player);
+            return;
+        }
+        Challenge sent = challenges.get(other.getUUID());
+        if (sent != null && sent.challenger().equals(player.getUUID()) && sent.expiresAt() >= now) {
+            player.sendSystemMessage(Component.literal("Waiting for " + other.getScoreboardName() + " to accept."));
+            return;
+        }
+        challenge(player, other);
     }
 
     public void accept(ServerPlayer target) {
@@ -164,6 +189,9 @@ public final class DuelManager {
                 duelsByPlayer.put(seat, duel);
                 ServerPlayer player = player(seat);
                 if (player != null) {
+                    // The disk unfolds first; the client grows the field once it has.
+                    PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,
+                            new DuelistStatePayload(player.getId(), true));
                     PacketDistributor.sendToPlayer(player, field);
                 }
                 message(seat, Component.literal("Duel! " + names.get(0) + " vs " + names.get(1)
@@ -192,6 +220,13 @@ public final class DuelManager {
             return;
         }
         run(duel, () -> duel.table().forfeit(seatOf(duel, player.getUUID())));
+    }
+
+    /** A player came into view of {@code tracker}: show their disk unfolded if they're dueling. */
+    public void onStartTracking(ServerPlayer tracker, ServerPlayer target) {
+        if (inDuel(target)) {
+            PacketDistributor.sendToPlayer(tracker, new DuelistStatePayload(target.getId(), true));
+        }
     }
 
     public void onLogout(ServerPlayer player) {
@@ -238,6 +273,11 @@ public final class DuelManager {
         for (UUID seat : duel.seats()) {
             if (seat != null) {
                 duelsByPlayer.remove(seat);
+                ServerPlayer player = player(seat);
+                if (player != null) {
+                    PacketDistributor.sendToPlayersTrackingEntityAndSelf(player,
+                            new DuelistStatePayload(player.getId(), false));
+                }
             }
         }
         duel.table().close();

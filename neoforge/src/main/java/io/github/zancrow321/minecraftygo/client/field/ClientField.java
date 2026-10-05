@@ -2,12 +2,14 @@ package io.github.zancrow321.minecraftygo.client.field;
 
 import io.github.zancrow321.minecraftygo.client.ClientDuel;
 import io.github.zancrow321.minecraftygo.client.DuelScreen;
+import io.github.zancrow321.minecraftygo.client.disk.DiskClient;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
 import io.github.zancrow321.minecraftygo.engine.duel.FieldEvent;
 import io.github.zancrow321.minecraftygo.engine.protocol.Loc;
 import io.github.zancrow321.minecraftygo.engine.text.PromptView;
 import io.github.zancrow321.minecraftygo.network.DuelFieldPayload;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
@@ -21,6 +23,8 @@ public final class ClientField {
     /** How long the field stays up after the duel ends, in ticks. */
     private static final int LINGER_TICKS = 200;
     private static final double REACH = 40;
+    /** How long the field takes to grow out of its centre once the disk has unfolded, in ticks. */
+    private static final int GROW_TICKS = 16;
 
     private static Vec3 center;
     private static Vec3 forward;
@@ -28,6 +32,9 @@ public final class ClientField {
     private static long tick;
     private static long endsAt = -1;
     private static long queueFree;
+    /** When the field starts growing, and its current size (0 to 1) for this frame. */
+    private static long revealAt;
+    private static double scale = 1;
     private static final List<FieldAnimation> animations = new ArrayList<>();
     private static Loc hovered;
 
@@ -44,7 +51,10 @@ public final class ClientField {
         right = new Vec3(-forward.z, 0, forward.x);
         endsAt = -1;
         animations.clear();
-        queueFree = tick;
+        // Wait for the duel disk to unfold, then grow the field; queued effects start once it is full size.
+        revealAt = tick + DiskClient.deployTicks();
+        queueFree = revealAt + GROW_TICKS;
+        scale = 0;
         FieldRenderer.reset();
     }
 
@@ -63,9 +73,20 @@ public final class ClientField {
         return tick;
     }
 
+    /** Updates how far the field has grown, once per frame before it is drawn. */
+    public static void updateScale(float partialTick) {
+        double t = Mth.clamp((tick - revealAt + partialTick) / GROW_TICKS, 0, 1);
+        scale = t * t * (3 - 2 * t);
+    }
+
+    /** Whether the field has finished growing. */
+    public static boolean grown() {
+        return scale >= 1;
+    }
+
     /** World position of a field-local point, {@code up} blocks above the mat. */
     public static Vec3 toWorld(double x, double z, double up) {
-        return center.add(right.scale(x)).add(forward.scale(z)).add(0, up, 0);
+        return center.add(right.scale(x * scale)).add(forward.scale(z * scale)).add(0, up * scale, 0);
     }
 
     /** Minecraft yaw (degrees) that faces from player {@code player}'s side toward the other side. */
@@ -74,12 +95,13 @@ public final class ClientField {
         return player == 0 ? yaw : yaw + 180;
     }
 
+    /** Toward player 1, as long as the field is grown (so sizes built from it grow with the field). */
     public static Vec3 forward() {
-        return forward;
+        return forward.scale(scale);
     }
 
     public static Vec3 right() {
-        return right;
+        return right.scale(scale);
     }
 
     public static Loc hovered() {
@@ -141,6 +163,9 @@ public final class ClientField {
         }
         double t = (planeY - eye.y) / look.y;
         if (t <= 0 || t > REACH) {
+            return null;
+        }
+        if (!grown()) {
             return null;
         }
         Vec3 hit = eye.add(look.scale(t)).subtract(center);

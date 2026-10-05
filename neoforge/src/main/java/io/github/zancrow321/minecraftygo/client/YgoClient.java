@@ -2,13 +2,27 @@ package io.github.zancrow321.minecraftygo.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
+import io.github.zancrow321.minecraftygo.client.disk.DiskClient;
+import io.github.zancrow321.minecraftygo.client.disk.DiskItemRenderer;
+import io.github.zancrow321.minecraftygo.client.disk.DiskLayer;
+import io.github.zancrow321.minecraftygo.client.disk.DiskModel;
 import io.github.zancrow321.minecraftygo.client.field.ClientField;
 import io.github.zancrow321.minecraftygo.client.field.DuelHud;
 import io.github.zancrow321.minecraftygo.client.field.FieldRenderer;
 import io.github.zancrow321.minecraftygo.client.render.MonsterRenderer;
 import io.github.zancrow321.minecraftygo.entity.YgoEntities;
+import io.github.zancrow321.minecraftygo.item.YgoItems;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -28,6 +42,12 @@ public final class YgoClient {
     public static final KeyMapping OPEN_DUEL = new KeyMapping("key.minecraftygo.open_duel",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_Y, "key.categories.minecraftygo");
 
+    /**
+     * For headless testing: {@code -Dminecraftygo.camera=THIRD_PERSON_FRONT:90} keeps the camera there and turns
+     * the body that many degrees from the head (to see the duel disk from the side).
+     */
+    private static final String TEST_CAMERA = System.getProperty("minecraftygo.camera");
+
     private YgoClient() {
     }
 
@@ -39,6 +59,38 @@ public final class YgoClient {
         @SubscribeEvent
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(YgoEntities.MONSTER.get(), MonsterRenderer::new);
+        }
+
+        @SubscribeEvent
+        @SuppressWarnings("unchecked")
+        public static void addLayers(EntityRenderersEvent.AddLayers event) {
+            for (var skin : event.getSkins()) {
+                if (event.getSkin(skin) instanceof LivingEntityRenderer<?, ?> renderer) {
+                    var playerRenderer = (LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>)
+                            renderer;
+                    playerRenderer.addLayer(new DiskLayer(playerRenderer));
+                }
+            }
+        }
+
+        @SubscribeEvent
+        public static void registerItemRenderers(RegisterClientExtensionsEvent event) {
+            event.registerItem(new IClientItemExtensions() {
+                private DiskItemRenderer renderer;
+
+                @Override
+                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                    if (renderer == null) {
+                        renderer = new DiskItemRenderer();
+                    }
+                    return renderer;
+                }
+            }, YgoItems.DUEL_DISK.get());
+        }
+
+        @SubscribeEvent
+        public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
+            event.registerReloadListener((ResourceManagerReloadListener) manager -> DiskModel.reload());
         }
 
         @SubscribeEvent
@@ -70,13 +122,22 @@ public final class YgoClient {
     @SubscribeEvent
     public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         ClientField.clear();
+        DiskClient.clear();
     }
 
     @SubscribeEvent
     public static void onClientTick(ClientTickEvent.Post event) {
         ClientField.clientTick();
+        DiskClient.clientTick();
         ClientDuel.autoplayTick();
         Minecraft mc = Minecraft.getInstance();
+        if (TEST_CAMERA != null && mc.player != null) {
+            String[] camera = TEST_CAMERA.split(":");
+            mc.options.setCameraType(CameraType.valueOf(camera[0]));
+            float body = mc.player.getYRot() + (camera.length > 1 ? Float.parseFloat(camera[1]) : 0);
+            mc.player.setYBodyRot(body);
+            mc.player.yBodyRotO = body;
+        }
         while (OPEN_DUEL.consumeClick()) {
             if (mc.screen == null && ClientDuel.view() != null) {
                 mc.setScreen(new DuelScreen());

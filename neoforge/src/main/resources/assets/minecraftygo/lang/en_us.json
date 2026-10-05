@@ -2,5 +2,9 @@
   "commands.minecraftygo.version": "OCG-Core %s is loaded",
   "commands.minecraftygo.version.unavailable": "OCG-Core is unavailable: %s",
   "key.categories.minecraftygo": "MinecraftYGO",
-  "key.minecraftygo.open_duel": "Open duel screen"
+  "key.minecraftygo.open_duel": "Open duel screen",
+  "item.minecraftygo.duel_disk": "Duel Disk",
+  "item.minecraftygo.duel_disk.tooltip": "Wear it in the Duel Disk slot or your off hand, then right-click another duelist to challenge them.",
+  "itemGroup.minecraftygo": "MinecraftYGO",
+  "curios.identifier.duel_disk": "Duel Disk"
 }

@@ -15,6 +15,8 @@ the engine behind EDOPro, running on the server. Monster models come from
 | `native/build.sh`, `native/build.ps1` | Build OCG-Core for the host into `engine/src/main/resources/natives/<platform>/`. |
 | `tools/models/import_models.py` | Converts YGOMCModels to GeckoLib assets, maps each model to its card and writes the era pool (`pool.json`). |
 | `tools/carddata/build_carddata.py` | Bundles card data, Lua scripts and system strings for the pool. Run it after `import_models.py`. |
+| `tools/disk/convert_disk.py` | Converts the duel disk `.bbmodel` (Figura format, meshes allowed) into the mod's disk model. |
+| `tools/disk/make_placeholder.py` | Writes the stand-in `duel_disk.bbmodel` used until the real one is committed. |
 
 ## Building
 
@@ -32,6 +34,9 @@ CI builds OCG-Core for Linux x86_64, Windows x86_64 and macOS (universal), runs 
 and packages all three into one mod jar.
 
 In game:
+- Craft a **Duel Disk** (glass pane, redstone, glass pane / three iron ingots / one iron ingot below the middle) and
+  wear it in its Curios slot, or in your off hand without Curios. Right-click another player who has a disk to
+  challenge them; they right-click you back (or click [Accept]) and both disks unfold before the field appears.
 - `/ygo version` reports the loaded OCG-Core version.
 - `/ygo duel bot` or `/ygo duel <player>` (then `/ygo accept`) starts a duel; press Y to open the duel screen.
 - `/ygo gallery [page]` puts a page of modeled monsters in front of you (operators only); `/ygo gallery clear` removes them.
@@ -55,6 +60,16 @@ python3 tools/carddata/build_carddata.py --cdb BabelCDB/cards.cdb --scripts Card
 New models in YGOMCModels join the pool on the next run. A folder whose name doesn't match a card goes in
 `tools/models/overrides.json`. The era cutoff is the newest release date shared by at least three modeled
 monsters, and every spell and trap released up to it is playable.
+
+## Updating the duel disk model
+
+Save the model from Blockbench with textures embedded as `tools/disk/duel_disk.bbmodel`, then run
+`python3 tools/disk/convert_disk.py`. Only the `LeftArm` group is exported, with its pivot on Figura's left-arm
+pivot and the player facing north (-Z). A texture named `<name>_e` is the glowing layer of `<name>`. The animations
+named `deploy` and `fold` play when a duel starts and ends; the rest pose is the disk when not dueling.
+
+To check it in a dev client, `./gradlew :neoforge:runClient -PquickPlay=<world> -Pcamera=THIRD_PERSON_FRONT:90`
+turns the body sideways so the disk faces the camera. `-PnoCurios` runs without Curios.
 
 ## Licenses and credits
 
