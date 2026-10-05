@@ -1,0 +1,21 @@
+# Gradle
+.gradle/
+build/
+out/
+run/
+runs/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+bin/
+
+# Native build output (built by native/build.sh or CI, never committed)
+native/build/
+engine/src/main/resources/natives/
+
+.DS_Store

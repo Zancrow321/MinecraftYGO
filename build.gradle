@@ -1,0 +1,8 @@
+subprojects {
+    group = mod_group_id
+    version = mod_version
+
+    repositories {
+        mavenCentral()
+    }
+}
