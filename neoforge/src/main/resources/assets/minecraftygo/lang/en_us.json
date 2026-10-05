@@ -1,0 +1,6 @@
+{
+  "commands.minecraftygo.version": "OCG-Core %s is loaded",
+  "commands.minecraftygo.version.unavailable": "OCG-Core is unavailable: %s",
+  "key.categories.minecraftygo": "MinecraftYGO",
+  "key.minecraftygo.open_duel": "Open duel screen"
+}
