@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import software.bernie.geckolib.util.Color;
 
@@ -30,6 +31,18 @@ public final class MonsterRenderer extends GeoEntityRenderer<MonsterEntity> {
         } finally {
             model.undoPose();
         }
+    }
+
+    /**
+     * GeckoLib only turns living entities, so a monster would always face the same way. Face where the field points
+     * it (toward the opponent), and turn models that were built facing south around.
+     */
+    @Override
+    protected void applyRotations(MonsterEntity monster, PoseStack poses, float ageInTicks, float rotationYaw,
+                                  float partialTick, float nativeScale) {
+        float yaw = Mth.rotLerp(partialTick, monster.yRotO, monster.getYRot())
+                + (model.forward(monster) < 0 ? 180 : 0);
+        super.applyRotations(monster, poses, ageInTicks, yaw, partialTick, nativeScale);
     }
 
     /** Fading monsters (summons, departures) need a translucent pass. */

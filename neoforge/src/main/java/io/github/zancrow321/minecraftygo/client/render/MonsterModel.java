@@ -64,7 +64,7 @@ public final class MonsterModel extends GeoModel<MonsterEntity> {
         if (t < 0) {
             return;
         }
-        Rig rig = rigs.computeIfAbsent(id(monster), id -> Rig.of(getAnimationProcessor().getRegisteredBones()));
+        Rig rig = rig(monster);
         // Rear back over the first third, strike, hold the blow, then settle.
         float windup = t < 0.35f ? smooth(t / 0.35f) : t < 0.5f ? 1 - smooth((t - 0.35f) / 0.15f) : 0;
         float strike = t < 0.35f ? 0 : t < 0.5f ? smooth((t - 0.35f) / 0.15f) : t < 0.75f ? 1
@@ -93,6 +93,24 @@ public final class MonsterModel extends GeoModel<MonsterEntity> {
                 turn(b, 0, side * Mth.DEG_TO_RAD * (40 * windup - 25 * strike));
             }
         }
+    }
+
+    /** 1 if the monster's model faces north (-z) like most do, -1 if it was built facing south. */
+    float forward(MonsterEntity monster) {
+        return rig(monster).forward;
+    }
+
+    private Rig rig(MonsterEntity monster) {
+        return rigs.computeIfAbsent(id(monster), id -> {
+            List<GeoBone> bones = new ArrayList<>();
+            getBakedModel(getModelResource(monster)).topLevelBones().forEach(bone -> collect(bone, bones));
+            return Rig.of(bones);
+        });
+    }
+
+    private static void collect(GeoBone bone, List<GeoBone> into) {
+        into.add(bone);
+        bone.getChildBones().forEach(child -> collect(child, into));
     }
 
     private void pitch(String name, float degrees) {
