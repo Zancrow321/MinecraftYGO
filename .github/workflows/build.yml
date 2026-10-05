@@ -3,6 +3,7 @@ name: Build
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
@@ -101,3 +102,44 @@ jobs:
           name: figura-starter-kit
           path: build/distributions/*.zip
           if-no-files-found: error
+
+  release:
+    name: GitHub Release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: mod
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag against mod_version
+        id: version
+        run: |
+          version=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
+          if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match mod_version $version" >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          # The changelog section for this version becomes the release notes.
+          awk -v v="$version" '/^## / { found = index($0, "## " v) == 1; next } found' CHANGELOG.md > notes.md
+          test -s notes.md
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: minecraftygo-jar
+          path: dist/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: figura-starter-kit
+          path: dist/
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: MinecraftYGO ${{ steps.version.outputs.version }}
+          body_path: notes.md
+          prerelease: ${{ startsWith(steps.version.outputs.version, '0.') }}
+          files: dist/*
+          fail_on_unmatched_files: true
