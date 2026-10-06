@@ -5,6 +5,7 @@ import io.github.zancrow321.minecraftygo.arena.DuelDome;
 import io.github.zancrow321.minecraftygo.client.YgoClientConfig;
 import io.github.zancrow321.minecraftygo.cosmetics.PlayerCosmetics;
 import io.github.zancrow321.minecraftygo.duel.DuelManager;
+import io.github.zancrow321.minecraftygo.progression.Progress;
 import io.github.zancrow321.minecraftygo.engine.OcgCore;
 import io.github.zancrow321.minecraftygo.duel.DuelDisks;
 import io.github.zancrow321.minecraftygo.entity.YgoEntities;
@@ -53,10 +54,14 @@ public final class MinecraftYgo {
             container.registerConfig(ModConfig.Type.CLIENT, YgoClientConfig.SPEC);
         }
         NeoForge.EVENT_BUS.addListener(this::onServerStarting);
-        NeoForge.EVENT_BUS.addListener((ServerStoppingEvent event) -> DuelManager.shutdown());
+        NeoForge.EVENT_BUS.addListener((ServerStoppingEvent event) -> {
+            DuelManager.shutdown();
+            Progress.stopped();
+        });
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> DuelManager.get(event.getServer()).tick());
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
+                Progress.sync(player);
                 DuelManager.get(player.server).onLogin(player);
             }
         });
@@ -112,6 +117,8 @@ public final class MinecraftYgo {
     }
 
     private void onServerStarting(ServerStartingEvent event) {
+        YgoServerConfig.migrate();
+        Progress.started(event.getServer());
         // Duels run on the server, so load the engine there and fail loudly but harmlessly if it's unavailable.
         try {
             LOGGER.info("Loaded OCG-Core {} with {} cards", OcgCore.get().version(), YgoData.cards().all().size());

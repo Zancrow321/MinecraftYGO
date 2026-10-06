@@ -7,6 +7,40 @@
   in front and one behind; when a duel starts the short wing swings under the hub and joins the long one into the
   bent five-zone blade. The disk skins are recolors of the new model.
 
+### Progression
+- New worlds start with Legend of Blue Eyes White Dragon, and operators unlock the TCG sets in release order:
+  `/ygo progression status`, `next [count]`, `until <set code or date>`, `set <set code or date>` and `list`. Chat
+  says what is new. Reprint products come along with the next set that brings new cards.
+- This is the new default (`[pool] mode = "progression"`), also for worlds that already have a config file: they
+  switch from the modeled pool, which held almost only LOB, MRD and MRL cards anyway. `mode = "modeled"` brings the
+  old pool back.
+- Rules and banlist follow the unlocked cards (`ruleset = "auto"` and `banlist = "auto"`, the new defaults): Master
+  Rule 1 to 5 as Xyz, Pendulum and Link sets arrive, and the TCG Forbidden & Limited List of the time (all 73 lists
+  since 1999 are bundled). New rule sets `mr2`, `mr3` and `mr4`; a fixed `banlist` names a file in
+  `config/minecraftygo/banlists/`.
+- `[progression] scope = "player"` gives each player their own progress. When two players at different steps duel,
+  the one further along sets the rules; an NPC builds its deck from the cards of the player it duels.
+- Cards from locked sets show a padlock in the binder (which can show only unlocked cards) and the deck box, and
+  can't be added to decks unless `[cards] lockedInDeck = false`.
+- Card traders sell the newest unlocked sets.
+- Old config files are updated once: `mode` becomes `progression` and `ruleset` becomes `auto`. A server's own
+  `config/minecraftygo/banlist.json` now only counts for the modeled pool; elsewhere put it in
+  `config/minecraftygo/banlists/` and name it in `banlist`.
+
+### All cards (first step)
+- Every official card is bundled now: about 14,700 cards with their scripts (the jar grows to about 20 MB).
+- New server setting `[pool] mode`: `modeled` or `all`, which plays with every card. With
+  `all`, packs, loot and NPC decks draw from every card and booster packs exist for every TCG booster, from Legend
+  of Blue Eyes to today. Monsters without a model stand on the field as an artwork hologram (below).
+- Decks may only hold cards the server plays with; a deck box with other cards says which one isn't allowed.
+- Monsters without a model stand on the field as an artwork hologram: the art floats above the zone in a frame of
+  its attribute's color, with the name above and ATK/DEF below. It flickers in when summoned, lunges when it
+  attacks, tilts back with a blue frame in defense and fades when it leaves the field.
+- Resource packs can give any monster a 3D model (or replace a bundled one). `tools/models/make_pack.py` builds such
+  a pack from Blockbench files; see `docs/resource-pack-models.md`.
+- Synchro, Xyz and Link monsters count as extra deck cards.
+- "Declare a card name" lists only the names the card allows, and long lists can be searched by typing.
+
 ### Duel mode
 - Your hand is big along the bottom. Click a card for its actions (Normal Summon, Set, Activate...), or drag it
   onto a zone to play it right there. Cards played from the menu go to the middle-most free zone, unless

@@ -91,6 +91,8 @@ public final class DuelUi {
     private static boolean autoZone;
     private static int page;
     private static boolean collapsed;
+    /** What was typed to narrow down a long list of choices, such as every card name to declare. */
+    private static String search = "";
     private static int pressedHand = -1;
     private static double pressX;
     private static double pressY;
@@ -156,6 +158,7 @@ public final class DuelUi {
         menu = null;
         page = 0;
         collapsed = false;
+        search = "";
         if (p == null) {
             return;
         }
@@ -481,6 +484,35 @@ public final class DuelUi {
     }
 
     /** A question with plain answers: yes or no, a position, an option. */
+    /** A dialog with this many plain choices or more can be narrowed down by typing. */
+    private static final int SEARCH_FROM = 24;
+
+    private static boolean searchable(PromptView p) {
+        return p != null && p.multi() == null && p.choices().size() >= SEARCH_FROM
+                && p.choices().stream().allMatch(c -> c.code() == 0 && c.at() == null && c.kind() == Kind.OTHER);
+    }
+
+    /** Whether typed keys go to a dialog's search right now (so they don't also work as hotkeys). */
+    public static boolean searching() {
+        return searchable(shown) && shown == ClientDuel.prompt() && !collapsed;
+    }
+
+    /** A key typed while {@link #searching()}. */
+    public static void type(char c) {
+        if (searching() && c >= ' ') {
+            search += c;
+            page = 0;
+        }
+    }
+
+    /** Backspace while {@link #searching()}. */
+    public static void erase() {
+        if (searching() && !search.isEmpty()) {
+            search = search.substring(0, search.length() - 1);
+            page = 0;
+        }
+    }
+
     private static void dialog(GuiGraphics g, Font font, PromptView p, int mx, int my, int w, int h) {
         int width = windowWidth(w, 260);
         int x = w / 2 - width / 2;
@@ -488,12 +520,17 @@ public final class DuelUi {
         List<FormattedCharSequence> title = font.split(Component.literal(p.title()), width - (p.card() != 0 ? 58 : 8));
         int artHeight = p.card() != 0 ? 72 : 0;
         int textHeight = Math.max(artHeight, title.size() * 10 + 4);
-        int perPage = Math.max(2, (windowBottom(h) - y - 6 - textHeight - 18) / (BUTTON_HEIGHT + 2));
-        List<Choice> choices = p.choices();
+        boolean searchable = searchable(p);
+        int searchHeight = searchable ? 14 : 0;
+        int perPage = Math.max(2, (windowBottom(h) - y - 6 - textHeight - searchHeight - 18) / (BUTTON_HEIGHT + 2));
+        String needle = search.toLowerCase(java.util.Locale.ROOT);
+        List<Choice> choices = searchable && !needle.isEmpty() ? p.choices().stream()
+                .filter(c -> c.label().toLowerCase(java.util.Locale.ROOT).contains(needle)).toList() : p.choices();
         int pages = Math.max(1, (choices.size() + perPage - 1) / perPage);
         page = Math.min(page, pages - 1);
         int shownCount = Math.min(perPage, choices.size() - page * perPage);
-        int height = collapsed ? 16 : 6 + textHeight + shownCount * (BUTTON_HEIGHT + 2) + (pages > 1 ? 18 : 0);
+        int height = collapsed ? 16
+                : 6 + textHeight + searchHeight + shownCount * (BUTTON_HEIGHT + 2) + (pages > 1 ? 18 : 0);
         panel(g, x, y, width, height);
         if (collapsed) {
             windowTop(g, font, p.title(), x, y, width, mx, my);
@@ -512,6 +549,13 @@ public final class DuelUi {
             g.drawString(font, title.get(i), textX, y + 4 + i * 10, GOLD);
         }
         int by = y + 6 + textHeight;
+        if (searchable) {
+            g.fill(x + 4, by, x + width - 4, by + 11, 0xC0000000);
+            boolean blink = (System.currentTimeMillis() / 500) % 2 == 0;
+            g.drawString(font, search.isEmpty() ? "Type to search (" + p.choices().size() + ")"
+                    : search + (blink ? "_" : ""), x + 7, by + 2, search.isEmpty() ? DIM : 0xFFFFFFFF, false);
+            by += searchHeight;
+        }
         for (int i = page * perPage; i < page * perPage + shownCount; i++) {
             Choice c = choices.get(i);
             button(g, font, x + 4, by, width - 8, c.label(), true, mx, my, () -> choose(c, null));
@@ -525,8 +569,10 @@ public final class DuelUi {
             return;
         }
         button(g, font, x, y, 16, "<", page > 0, mx, my, () -> page--);
-        g.drawString(font, (page + 1) + "/" + pages, x + 22, y + 3, DIM);
-        button(g, font, x + 48, y, 16, ">", page < pages - 1, mx, my, () -> page++);
+        String label = (page + 1) + "/" + pages;
+        g.drawString(font, label, x + 22, y + 3, DIM);
+        button(g, font, x + Math.max(48, 28 + font.width(label)), y, 16, ">", page < pages - 1, mx, my,
+                () -> page++);
     }
 
     /** Buttons for a pick made on the field go under the phase buttons, clear of the zones. */

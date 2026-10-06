@@ -37,6 +37,8 @@ final class CardGrid {
     final int cardHeight;
     int page;
     List<Entry> entries = List.of();
+    /** Cards from sets that are still locked: dimmed, with a padlock. */
+    java.util.function.IntPredicate locked = code -> false;
 
     CardGrid(int x, int y, int columns, int rows, int cardWidth) {
         this.x = x;
@@ -92,6 +94,9 @@ final class CardGrid {
             int cx = x + (i % columns) * (cardWidth + 4);
             int cy = y + (i / columns) * (cardHeight + 4);
             drawCard(g, font, e.code(), cx, cy, cardWidth, cardHeight);
+            if (locked.test(e.code())) {
+                drawLock(g, cx, cy, cardWidth, cardHeight);
+            }
             if (e.count() > 1) {
                 String n = "×" + e.count();
                 g.fill(cx + cardWidth - font.width(n) - 3, cy + cardHeight - 10, cx + cardWidth, cy + cardHeight,
@@ -129,6 +134,28 @@ final class CardGrid {
             g.drawString(font, lines.get(i), 0, i * 9, 0xFF202020, false);
         }
         g.pose().popPose();
+    }
+
+    /** Dims a card and puts a padlock on it. */
+    static void drawLock(GuiGraphics g, int x, int y, int w, int h) {
+        g.fill(x, y, x + w, y + h, 0xA0101018);
+        int cx = x + w / 2;
+        int cy = y + h / 2;
+        // shackle
+        g.fill(cx - 4, cy - 7, cx + 4, cy - 5, 0xFFE0C060);
+        g.fill(cx - 4, cy - 7, cx - 2, cy - 1, 0xFFE0C060);
+        g.fill(cx + 2, cy - 7, cx + 4, cy - 1, 0xFFE0C060);
+        // body and keyhole
+        g.fill(cx - 6, cy - 2, cx + 6, cy + 7, 0xFFE0C060);
+        g.fill(cx - 1, cy + 1, cx + 1, cy + 4, 0xFF402810);
+    }
+
+    /** The tooltip line of a locked card: which set unlocks it. */
+    static Component lockedLine(int code) {
+        var product = YgoData.progression().unlockedBy(code);
+        return Component.literal(product == null ? "Locked: unlocks with the last set"
+                : "Locked: unlocks with " + product.name() + " (" + product.code() + ")")
+                .withStyle(ChatFormatting.GOLD);
     }
 
     static String name(int code) {

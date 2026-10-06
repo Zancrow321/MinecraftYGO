@@ -32,6 +32,9 @@ public final class YgoNetwork {
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.packOpened(payload)));
         registrar.playToClient(CosmeticsPayload.TYPE, CosmeticsPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.cosmetics(payload)));
+        registrar.playToClient(PoolModePayload.TYPE, PoolModePayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> io.github.zancrow321.minecraftygo.YgoData
+                        .joined(payload)));
         registrar.playToServer(SelectCosmeticPayload.TYPE, SelectCosmeticPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer player) {

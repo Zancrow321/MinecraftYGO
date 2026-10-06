@@ -50,7 +50,12 @@ public final class MonsterModel extends GeoModel<MonsterEntity> {
     }
 
     private static ResourceLocation location(String folder, String extension, MonsterEntity monster) {
-        return ResourceLocation.fromNamespaceAndPath(MinecraftYgo.MOD_ID, folder + id(monster) + extension);
+        String id = id(monster);
+        int colon = id.indexOf(':');
+        // Models from resource packs name their namespace: "mypack:dragon".
+        return colon < 0 ? ResourceLocation.fromNamespaceAndPath(MinecraftYgo.MOD_ID, folder + id + extension)
+                : ResourceLocation.fromNamespaceAndPath(id.substring(0, colon), folder + id.substring(colon + 1)
+                + extension);
     }
 
     private static String id(MonsterEntity monster) {

@@ -43,8 +43,18 @@ public final class DeckBoxItem extends Item {
         return new Deck(stack.getHoverName().getString(), list.main(), list.extra(), List.of());
     }
 
+    /** What keeps the deck from being played, for the local player on a client (empty if legal). */
     public static List<String> problems(ItemStack stack) {
-        return DeckRules.problems(toDeck(stack), YgoData.cards(), YgoData.banlist());
+        return problems(stack, null, YgoData.banlist());
+    }
+
+    /**
+     * @param player  whose cards count as unlocked ({@code null}: the world's, or on a client the local player's)
+     * @param banlist the banlist the deck is played under
+     */
+    public static List<String> problems(ItemStack stack, net.minecraft.world.entity.player.Player player,
+                                        io.github.zancrow321.minecraftygo.engine.data.Banlist banlist) {
+        return DeckRules.problems(toDeck(stack), YgoData.cards(), banlist, YgoData.playable(player));
     }
 
     @Override

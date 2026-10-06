@@ -82,6 +82,13 @@ public final class DuelModeScreen extends Screen {
             minecraft.setScreen(new DuelMenuScreen());
             return true;
         }
+        if (DuelUi.searching()) {
+            // Letters go to the search (charTyped), not to the hotkeys.
+            if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
+                DuelUi.erase();
+            }
+            return true;
+        }
         if (YgoClient.DUEL_LOG.matches(keyCode, scanCode)) {
             DuelUi.toggleLog();
             return true;
@@ -99,5 +106,14 @@ public final class DuelModeScreen extends Screen {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (DuelUi.searching()) {
+            DuelUi.type(codePoint);
+            return true;
+        }
+        return super.charTyped(codePoint, modifiers);
     }
 }
