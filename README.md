@@ -62,6 +62,10 @@ In game:
   Your first legal deck box (hands first, then inventory) is the deck you duel with. Without one you duel with
   Yugi's starter deck; servers can require a deck box with `starterDecksWithoutDeckBox = false` in the world's
   `serverconfig/minecraftygo-server.toml`.
+  The cards you own can be searched, filtered by type (monsters, spells, traps, extra deck), attribute and level,
+  and sorted by name, ATK, DEF or level; the deck is listed monsters first, then spells and traps, with their counts
+  under it. Export copies the deck as a YDK list (the format of YGOPro, EDOPro and most deck builders) and Import
+  replaces it with the YDK list in the clipboard, built from the cards you own and saying which ones were missing.
 - **Progression** (the default `[pool] mode = "progression"`): a new world starts with Legend of Blue Eyes White
   Dragon, and operators unlock the TCG products in release order. Every TCG product with new cards is a step; reprint
   packs come along with the next one. Cards from sets that are still locked show a padlock in binders and can't go in

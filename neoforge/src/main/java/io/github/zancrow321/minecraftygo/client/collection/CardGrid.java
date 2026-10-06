@@ -51,14 +51,21 @@ final class CardGrid {
 
     /** Sorts the counts by card name and keeps those whose name contains {@code filter}. */
     void set(Map<Integer, Integer> counts, String filter) {
+        set(counts, filter, code -> true,
+                (a, b) -> name(a).compareToIgnoreCase(name(b)));
+    }
+
+    /** Keeps the counts whose name contains {@code filter} and that pass {@code keep}, in the given order. */
+    void set(Map<Integer, Integer> counts, String filter, java.util.function.IntPredicate keep,
+            java.util.Comparator<Integer> order) {
         String f = filter.toLowerCase(Locale.ROOT);
         List<Entry> list = new ArrayList<>();
         counts.forEach((code, n) -> {
-            if (n > 0 && (f.isEmpty() || name(code).toLowerCase(Locale.ROOT).contains(f))) {
+            if (n > 0 && (f.isEmpty() || name(code).toLowerCase(Locale.ROOT).contains(f)) && keep.test(code)) {
                 list.add(new Entry(code, n));
             }
         });
-        list.sort((a, b) -> name(a.code()).compareToIgnoreCase(name(b.code())));
+        list.sort((a, b) -> order.compare(a.code(), b.code()));
         entries = list;
         page = Math.max(0, Math.min(page, pages() - 1));
     }

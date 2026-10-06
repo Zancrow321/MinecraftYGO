@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Deck editor
+- The deck box filters the cards you own by type (monsters, spells, traps, extra deck), attribute and level and sorts
+  them by name, ATK, DEF or level. Click a filter to step through it, shift-click to step back.
+- The deck is listed monsters first, then spells and traps, and shows how many of each it has.
+- Export copies the deck to the clipboard as a YDK list for YGOPro, EDOPro and most deck builders. Import replaces
+  the deck with a YDK list from the clipboard, built from the cards you own (another printing of a card stands in
+  for it), and says which cards were missing or not allowed.
+
 ### Duel Arena
 - New Duel Arena Kit: sets up the Duelist Kingdom arena from the anime as one big model: a box 3 blocks tall and
   21 by 27 blocks with steps up at each end, grey-green glass tiles, white sides with dark markings, a ribbed red
