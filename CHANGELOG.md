@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### NPC decks
+- NPC duelists play real decks: about a third play a famous tournament deck once its era has come (Goat Control
+  2005, Chaos Return 2006, Tele-DAD 2009), a third a starter or structure deck that is out, the rest a random deck
+  from the pool. They say which deck they play when the duel starts. Copies the current banlist forbids are left
+  out.
+- Random NPC decks get an Extra Deck of whatever the pool offers: Fusions, Synchros (with Tuners in the main deck),
+  Xyz monsters of ranks the deck can build and small Links. Cards with a 3D model are picked about three times as
+  often.
+- The AI brings out a Synchro, Xyz or Link monster when it is stronger than everything it already has, picks its
+  least valuable cards as materials, sets Pendulum scales and Pendulum Summons as many monsters as it may.
+- The AI no longer tributes a monster that is stronger than the one it Tribute Summons.
+
 ### Extra deck and newer summons
 - The field follows the duel's rules. From Master Rule 4 the two Extra Monster Zones sit between the halves, which
   move apart to make room for them, and under Master Rule 3 the Pendulum Zones are their own zones at both ends of
