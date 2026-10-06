@@ -67,6 +67,10 @@ neoForge {
             if (project.hasProperty('quickPlay')) {
                 programArguments.addAll('--quickPlaySingleplayer', project.property('quickPlay').toString())
             }
+            // -PquickPlayServer=localhost joins that server directly (a dev server from runServer, for multiplayer tests).
+            if (project.hasProperty('quickPlayServer')) {
+                programArguments.addAll('--quickPlayMultiplayer', project.property('quickPlayServer').toString())
+            }
             // -Pautoplay answers duel prompts at random, for watching the field without a person at the keys.
             if (project.hasProperty('autoplay')) {
                 systemProperty 'minecraftygo.autoplay', 'true'

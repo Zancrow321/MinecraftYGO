@@ -7,6 +7,7 @@ import io.github.zancrow321.minecraftygo.client.YgoClientConfig;
 import io.github.zancrow321.minecraftygo.cosmetics.PlayerCosmetics;
 import io.github.zancrow321.minecraftygo.duel.DuelManager;
 import io.github.zancrow321.minecraftygo.progression.Progress;
+import io.github.zancrow321.minecraftygo.tournament.TournamentManager;
 import io.github.zancrow321.minecraftygo.engine.OcgCore;
 import io.github.zancrow321.minecraftygo.duel.DuelDisks;
 import io.github.zancrow321.minecraftygo.entity.YgoEntities;
@@ -60,10 +61,12 @@ public final class MinecraftYgo {
         NeoForge.EVENT_BUS.addListener(this::onServerStarting);
         NeoForge.EVENT_BUS.addListener((ServerStoppingEvent event) -> {
             DuelManager.shutdown();
+            TournamentManager.shutdown();
             Progress.stopped();
         });
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> {
             DuelManager.get(event.getServer()).tick();
+            TournamentManager.get(event.getServer()).tick();
             io.github.zancrow321.minecraftygo.village.CardShop.tick(event.getServer());
             io.github.zancrow321.minecraftygo.points.Points.tick(event.getServer());
         });
@@ -72,6 +75,7 @@ public final class MinecraftYgo {
                 Progress.sync(player);
                 io.github.zancrow321.minecraftygo.progression.StarterDecks.offer(player);
                 DuelManager.get(player.server).onLogin(player);
+                TournamentManager.get(player.server).onLogin(player);
                 io.github.zancrow321.minecraftygo.points.Points.login(player);
             }
         });

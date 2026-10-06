@@ -60,7 +60,7 @@ public final class DuelistNpc extends PathfinderMob {
     private static final EntityDataAccessor<String> DISK_SKIN =
             SynchedEntityData.defineId(DuelistNpc.class, EntityDataSerializers.STRING);
     public static final int SKINS = 9;
-    private static final List<String> TITLES = List.of("Rare Hunter", "Card Shark", "Wandering Duelist",
+    public static final List<String> TITLES = List.of("Rare Hunter", "Card Shark", "Wandering Duelist",
             "Duel Monk", "Tournament Hopeful", "Puzzle Duelist", "Dragon Tamer", "Bug Collector", "Ghoul");
     private static final Pattern STRUCTURE = Pattern.compile("starter deck|structure deck");
 
@@ -131,8 +131,12 @@ public final class DuelistNpc extends PathfinderMob {
      * they all build their own.
      */
     public Deck deck(int step) {
+        return deckFor(duelistName(), deckSeed, step, YgoData.banlist(step));
+    }
+
+    /** The deck a duelist with this name and deck seed plays at a progression step, see {@link #deck(int)}. */
+    public static Deck deckFor(String name, long deckSeed, int step, Banlist banlist) {
         PoolMode mode = YgoData.poolMode();
-        Banlist banlist = YgoData.banlist(step);
         Random random = new Random(deckSeed);
         int kind = random.nextInt(3);
         if (mode != PoolMode.MODELED && kind < 2) {
@@ -141,7 +145,7 @@ public final class DuelistNpc extends PathfinderMob {
                 return curated;
             }
         }
-        return DeckBuilder.random(duelistName(), deckSeed, YgoData.cards(),
+        return DeckBuilder.random(name, deckSeed, YgoData.cards(),
                 mode == PoolMode.PROGRESSION ? YgoData.progression().pool(step) : YgoData.pool(), banlist);
     }
 
@@ -176,6 +180,16 @@ public final class DuelistNpc extends PathfinderMob {
         // Lean towards the newer decks, as with the tournament decks.
         int newest = decks.size() - 1;
         return decks.get(random.nextInt(2) == 0 ? newest : random.nextInt(decks.size()));
+    }
+
+    /** Gives this duelist the name, look and sleeve that belong to {@code seed}, for a tournament stand-in. */
+    public void dressAs(String name, long seed) {
+        Random random = new Random(seed);
+        entityData.set(SKIN, random.nextInt(SKINS));
+        entityData.set(DISK_SKIN, Cosmetics.SKINS.get(random.nextInt(Cosmetics.SKINS.size())).id());
+        sleeve = Cosmetics.SLEEVES.get(random.nextInt(Cosmetics.SLEEVES.size())).id();
+        deckSeed = seed;
+        setCustomName(Component.literal(name));
     }
 
     public boolean isDueling() {
