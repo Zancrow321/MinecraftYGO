@@ -74,14 +74,15 @@ public final class YgoServerConfig {
             .define("lockedInDeck", true);
 
     public static final ModConfigSpec.ConfigValue<String> SHOP_CURRENCY = BUILDER.pop().push("shop")
-            .comment("The item card traders take for their goods and pay for paper, as an item id, e.g. "
-                    + "\"minecraft:diamond\" or \"minecraft:gold_ingot\". Changes apply to traders right away.")
-            .define("currency", "minecraft:emerald", v -> v instanceof String s
+            .comment("What the shops take: \"points\" for Duel Points, a balance each player has (see "
+                    + "[shop.points]), or an item id such as \"minecraft:emerald\" or \"minecraft:diamond\" for "
+                    + "the villager trade window paid in that item. Changes apply to traders right away.")
+            .define("currency", "points", v -> v instanceof String s
                     && net.minecraft.resources.ResourceLocation.tryParse(s) != null);
 
     public static final ModConfigSpec.DoubleValue SHOP_PRICE_MULTIPLIER = BUILDER
             .comment("Every price in [shop.prices] is multiplied by this and rounded, e.g. 0.5 for half price or 2 "
-                    + "for double; a price is at least 1 and at most a stack of the currency.")
+                    + "for double; a price is at least 1 and at most 64.")
             .defineInRange("priceMultiplier", 1.0, 0.01, 100.0);
 
     public static final ModConfigSpec.BooleanValue SHOP_DYNAMIC_PRICES = BUILDER
@@ -103,8 +104,9 @@ public final class YgoServerConfig {
 
     /** What card traders ask, in {@code [shop.prices]}. */
     public static final Prices PRICES = new Prices(BUILDER
-            .comment("What card traders ask, in the [shop] currency (emeralds unless changed). 0 means traders "
-                    + "don't sell it (and stop selling it if they did).").push("prices"));
+            .comment("What card traders ask, in the [shop] currency; with points, each 1 here is "
+                    + "[shop.points] pricePoints Duel Points. 0 means traders don't sell it (and stop selling it if "
+                    + "they did).").push("prices"));
 
     /** How many of each a card trader has, in {@code [shop.stock]}. */
     public static final Stock STOCK = new Stock(BUILDER.pop()
@@ -120,6 +122,11 @@ public final class YgoServerConfig {
     public static final PlayerShops PLAYER_SHOPS = new PlayerShops(BUILDER.pop()
             .comment("Shop Stands: shops that players set up to sell their own cards, packs and anything else.")
             .push("players"));
+
+    /** Duel Points, the currency of {@code currency = "points"}, in {@code [shop.points]}. */
+    public static final Points POINTS = new Points(BUILDER.pop()
+            .comment("Duel Points: with currency = \"points\", every player has a balance the shops take and pay "
+                    + "out. /ygo dp shows it.").push("points"));
 
     static {
         BUILDER.pop();
@@ -232,6 +239,43 @@ public final class YgoServerConfig {
         }
     }
 
+    /** The settings of Duel Points. */
+    public static final class Points {
+        public final ModConfigSpec.ConfigValue<String> symbol;
+        public final ModConfigSpec.IntValue startBalance;
+        public final ModConfigSpec.IntValue pricePoints;
+        public final ModConfigSpec.IntValue dailyBonus;
+        public final ModConfigSpec.BooleanValue transfers;
+        public final ModConfigSpec.IntValue sellCommon;
+        public final ModConfigSpec.IntValue sellRare;
+        public final ModConfigSpec.IntValue sellSuper;
+        public final ModConfigSpec.IntValue sellUltra;
+        public final ModConfigSpec.IntValue sellSecret;
+        public final ModConfigSpec.IntValue emeraldExchange;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private Points(ModConfigSpec.Builder builder) {
+            symbol = builder.comment("What the points are called after a number, e.g. \"500 DP\".")
+                    .define("symbol", "DP");
+            startBalance = builder.comment("What a player has when they first join.")
+                    .defineInRange("startBalance", 500, 0, 1_000_000_000);
+            pricePoints = builder.comment("How many points each 1 of a [shop.prices] price costs, so a core pack of "
+                    + "4 is 100 DP.").defineInRange("pricePoints", 25, 1, 1_000_000);
+            dailyBonus = builder.comment("Points a player gets once a day (a real day) when they play; 0 for none.")
+                    .defineInRange("dailyBonus", 50, 0, 1_000_000_000);
+            transfers = builder.comment("Players can give each other points with /ygo dp pay.")
+                    .define("transfers", true);
+            sellCommon = builder.comment("Card Vending Machines buy loose cards for this many points, by rarity; "
+                    + "0 means they don't buy that rarity.").defineInRange("sellCommon", 5, 0, 1_000_000);
+            sellRare = builder.defineInRange("sellRare", 15, 0, 1_000_000);
+            sellSuper = builder.defineInRange("sellSuper", 30, 0, 1_000_000);
+            sellUltra = builder.defineInRange("sellUltra", 60, 0, 1_000_000);
+            sellSecret = builder.defineInRange("sellSecret", 120, 0, 1_000_000);
+            emeraldExchange = builder.comment("Card Vending Machines take emeralds for this many points each; 0 for "
+                    + "no exchange.").defineInRange("emeraldExchange", 10, 0, 1_000_000);
+        }
+    }
+
     /** The settings of Shop Stands. */
     public static final class PlayerShops {
         public final ModConfigSpec.BooleanValue enabled;
@@ -248,8 +292,9 @@ public final class YgoServerConfig {
                     + "take their things out).").define("enabled", true);
             maxPerPlayer = builder.comment("How many Shop Stands each player can set up; 0 means any number.")
                     .defineInRange("maxPerPlayer", 3, 0, 1000);
-            currencyOnly = builder.comment("Prices must be in the [shop] currency. Off, owners can ask for any item "
-                    + "(diamonds, a rare card...).").define("currencyOnly", false);
+            currencyOnly = builder.comment("With an item currency, prices must be in it. Off, owners can ask for any "
+                    + "item (diamonds, a rare card...). With points, stands always ask points.")
+                    .define("currencyOnly", false);
             taxPercent = builder.comment("This share of every price is kept back from the owner, in percent, "
                     + "rounded down (so a price of 1 is never taxed).").defineInRange("taxPercent", 0, 0, 100);
             onlyYgoItems = builder.comment("Stands only sell this mod's items: cards, packs, decks, tins, binders, "

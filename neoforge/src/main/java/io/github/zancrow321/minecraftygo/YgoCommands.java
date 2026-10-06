@@ -80,6 +80,7 @@ final class YgoCommands {
                     io.github.zancrow321.minecraftygo.village.MachineShop.open(player, null);
                     return 1;
                 }))
+                .then(io.github.zancrow321.minecraftygo.points.PointsCommands.build())
                 .then(Commands.literal("cosmetics").executes(ctx -> {
                     PlayerCosmetics.open(ctx.getSource().getPlayerOrException());
                     return 1;

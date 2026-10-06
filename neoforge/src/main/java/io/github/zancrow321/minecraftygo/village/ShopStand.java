@@ -104,6 +104,9 @@ public final class ShopStand extends BaseEntityBlock {
 
     /** Tells the owner, when they close the stand, about prices {@code currencyOnly} or {@code onlyYgoItems} hide. */
     static void warnPrices(ShopStandBlockEntity stand, Player player) {
+        if (io.github.zancrow321.minecraftygo.points.Points.active()) {
+            return;
+        }
         for (int column = 0; column < ShopStandMenu.OFFERS; column++) {
             ItemStack ware = stand.slots().getItem(column);
             ItemStack price = stand.slots().getItem(ShopStandMenu.PRICES + column);

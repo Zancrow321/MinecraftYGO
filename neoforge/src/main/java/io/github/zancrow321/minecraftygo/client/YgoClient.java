@@ -96,6 +96,8 @@ public final class YgoClient {
         public static void registerScreens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
             event.register(io.github.zancrow321.minecraftygo.village.PlayerShops.STAND_MENU.get(),
                     io.github.zancrow321.minecraftygo.client.shop.ShopStandScreen::new);
+            event.register(io.github.zancrow321.minecraftygo.points.Points.SHOP_MENU.get(),
+                    io.github.zancrow321.minecraftygo.client.shop.PointShopScreen::new);
         }
 
         @SubscribeEvent
@@ -224,6 +226,7 @@ public final class YgoClient {
             mc.player.yBodyRotO = body;
         }
         if (mc.player != null && mc.gameMode != null && TEST_USE_ITEM.contains(mc.player.tickCount)) {
+            MinecraftYgo.LOGGER.info("Test hook: using the item at tick {}", mc.player.tickCount);
             if (mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>) {
                 mc.player.closeContainer(); // tells the server too, so a villager stops trading
             } else {

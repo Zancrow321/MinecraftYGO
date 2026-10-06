@@ -25,6 +25,8 @@ public final class ShopStandBlockEntity extends BlockEntity {
             ShopStandBlockEntity.this.setChanged();
         }
     };
+    /** The price of each ware in points, for {@code currency = "points"}; 0 for not for sale. */
+    private final int[] points = new int[ShopStandMenu.OFFERS];
     private UUID owner;
     private String ownerName = "";
     private Component customName;
@@ -37,6 +39,15 @@ public final class ShopStandBlockEntity extends BlockEntity {
 
     SimpleContainer slots() {
         return slots;
+    }
+
+    int points(int column) {
+        return points[column];
+    }
+
+    void points(int column, int price) {
+        points[column] = Math.max(0, price);
+        setChanged();
     }
 
     UUID owner() {
@@ -92,6 +103,7 @@ public final class ShopStandBlockEntity extends BlockEntity {
             tag.putUUID("owner", owner);
         }
         tag.putString("ownerName", ownerName);
+        tag.putIntArray("points", points);
         if (customName != null) {
             tag.putString("customName", Component.Serializer.toJson(customName, registries));
         }
@@ -104,6 +116,9 @@ public final class ShopStandBlockEntity extends BlockEntity {
         ContainerHelper.loadAllItems(tag, slots.getItems(), registries);
         owner = tag.hasUUID("owner") ? tag.getUUID("owner") : null;
         ownerName = tag.getString("ownerName");
+        int[] saved = tag.getIntArray("points");
+        java.util.Arrays.fill(points, 0);
+        System.arraycopy(saved, 0, points, 0, Math.min(saved.length, points.length));
         customName = tag.contains("customName") ? Component.Serializer.fromJson(tag.getString("customName"),
                 registries) : null;
     }

@@ -2,7 +2,13 @@ package io.github.zancrow321.minecraftygo.village;
 
 import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.YgoServerConfig;
+import io.github.zancrow321.minecraftygo.engine.data.BoosterSets;
 import io.github.zancrow321.minecraftygo.engine.data.Products;
+import io.github.zancrow321.minecraftygo.item.YgoComponents;
+import io.github.zancrow321.minecraftygo.item.YgoItems;
+import io.github.zancrow321.minecraftygo.points.PointShopMenu;
+import io.github.zancrow321.minecraftygo.points.PointShops;
+import io.github.zancrow321.minecraftygo.points.Points;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -15,6 +21,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
@@ -31,9 +38,10 @@ import java.util.UUID;
 /**
  * The shop of a Card Vending Machine, made for the one player using it: the trade window of a villager, with the
  * {@code [shop]} prices and currency and what {@code [shop.machine]} says it sells. Prices don't change with demand,
- * and with {@code limitPerPlayer} each player can buy the {@code [shop.stock]} amounts a day.
+ * and with {@code limitPerPlayer} each player can buy the {@code [shop.stock]} amounts a day. With {@code currency =
+ * "points"} it is a points shop instead, which also buys loose cards and exchanges emeralds ({@code [shop.points]}).
  */
-public final class MachineShop implements Merchant {
+public final class MachineShop implements Merchant, PointShopMenu.Seller {
     /** The supplies a machine sells besides products, from the card trader's level trades. */
     private static final List<CardShop.Trade> SUPPLIES = List.of(CardShop.Trade.RANDOM_PACK_NOVICE,
             CardShop.Trade.BINDER, CardShop.Trade.DECK_BOX, CardShop.Trade.STARTER_YUGI, CardShop.Trade.STARTER_KAIBA,
@@ -47,6 +55,8 @@ public final class MachineShop implements Merchant {
     /** What each offer is, to count it per player: a product id or a supply's name. */
     private final List<String> keys = new ArrayList<>();
     private Player tradingPlayer;
+    /** In the points shop, what each line does: an offer's index, or a stack it buys from the player. */
+    private final List<Object> lines = new ArrayList<>();
 
     private MachineShop(ServerPlayer player, BlockPos pos) {
         this.player = player;
@@ -78,6 +88,10 @@ public final class MachineShop implements Merchant {
         String name = YgoServerConfig.MACHINE.name.get();
         Component title = name.isBlank() ? Component.translatable("container.minecraftygo.card_machine")
                 : Component.literal(name);
+        if (Points.active()) {
+            PointShopMenu.open(player, title, shop);
+            return;
+        }
         shop.setTradingPlayer(player);
         OptionalInt id = player.openMenu(new SimpleMenuProvider((containerId, inventory, p) ->
                 new ShopMerchantMenu(containerId, inventory, shop, shop::near), title));
@@ -86,6 +100,97 @@ public final class MachineShop implements Merchant {
         } else {
             shop.setTradingPlayer(null);
         }
+    }
+
+    @Override
+    public List<PointShopMenu.Entry> entries(ServerPlayer player) {
+        List<PointShopMenu.Entry> entries = new ArrayList<>();
+        lines.clear();
+        boolean limited = YgoServerConfig.MACHINE.limitPerPlayer.get();
+        for (int i = 0; i < offers.size(); i++) {
+            MerchantOffer offer = offers.get(i);
+            entries.add(new PointShopMenu.Entry(offer.getResult().copy(), points(offer),
+                    limited ? Math.max(0, offer.getMaxUses() - offer.getUses()) : -1, false));
+            lines.add(i);
+        }
+        // Loose cards it buys, each kind once.
+        List<ItemStack> cards = new ArrayList<>();
+        for (ItemStack stack : player.getInventory().items) {
+            if (stack.is(YgoItems.CARD.get()) && sellValue(stack) > 0
+                    && cards.stream().noneMatch(c -> ItemStack.isSameItemSameComponents(c, stack))) {
+                cards.add(stack.copyWithCount(1));
+            }
+        }
+        for (ItemStack card : cards) {
+            entries.add(new PointShopMenu.Entry(card, sellValue(card),
+                    PointShops.count(player, s -> ItemStack.isSameItemSameComponents(s, card)), true));
+            lines.add(card);
+        }
+        int exchange = YgoServerConfig.POINTS.emeraldExchange.get();
+        if (exchange > 0) {
+            ItemStack emerald = new ItemStack(Items.EMERALD);
+            entries.add(new PointShopMenu.Entry(emerald, exchange, PointShops.count(player, s -> s.is(Items.EMERALD)),
+                    true));
+            lines.add(emerald);
+        }
+        return entries;
+    }
+
+    @Override
+    public boolean trade(ServerPlayer player, int index) {
+        if (index < 0 || index >= lines.size()) {
+            return false;
+        }
+        if (lines.get(index) instanceof Integer i) {
+            MerchantOffer offer = offers.get(i);
+            if (offer.isOutOfStock() || !PointShops.pay(player, points(offer))) {
+                return false;
+            }
+            PointShops.give(player, offer.getResult());
+            notifyTrade(offer);
+            return true;
+        }
+        ItemStack sold = (ItemStack) lines.get(index);
+        long value = sold.is(Items.EMERALD) ? YgoServerConfig.POINTS.emeraldExchange.get() : sellValue(sold);
+        if (value <= 0 || !PointShops.take(player, s -> ItemStack.isSameItemSameComponents(s, sold), 1)) {
+            return false;
+        }
+        PointShops.earn(player, value);
+        player.level().playSound(null, pos != null ? pos : player.blockPosition(), SoundEvents.NOTE_BLOCK_CHIME.value(),
+                SoundSource.BLOCKS, 0.6f, 1.8f);
+        return true;
+    }
+
+    @Override
+    public boolean valid(Player player) {
+        return near(player);
+    }
+
+    /** An offer's price in points: its price times {@code pricePoints}. */
+    private static long points(MerchantOffer offer) {
+        return (long) offer.getCostA().getCount() * YgoServerConfig.POINTS.pricePoints.get();
+    }
+
+    /** What a machine pays for a loose card, by its rarity; 0 if it doesn't buy it. */
+    static int sellValue(ItemStack card) {
+        YgoComponents.CardStack data = card.get(YgoComponents.CARD.get());
+        if (data == null) {
+            return 0;
+        }
+        YgoServerConfig.Points config = YgoServerConfig.POINTS;
+        BoosterSets.Rarity rarity;
+        try {
+            rarity = BoosterSets.Rarity.parse(data.rarity());
+        } catch (IllegalArgumentException e) {
+            rarity = BoosterSets.Rarity.COMMON;
+        }
+        return (switch (rarity) {
+            case COMMON -> config.sellCommon;
+            case RARE -> config.sellRare;
+            case SUPER -> config.sellSuper;
+            case ULTRA -> config.sellUltra;
+            case SECRET -> config.sellSecret;
+        }).get();
     }
 
     /** Whether a player is still at the machine, which is still there. */

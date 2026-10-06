@@ -2,6 +2,9 @@ package io.github.zancrow321.minecraftygo.village;
 
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.YgoServerConfig;
+import io.github.zancrow321.minecraftygo.points.PointShopMenu;
+import io.github.zancrow321.minecraftygo.points.PointShops;
+import io.github.zancrow321.minecraftygo.points.Points;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponentPredicate;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -27,7 +30,8 @@ import java.util.OptionalInt;
 /**
  * The buyer's view of a Shop Stand: the villager trade window, with an offer for each ware the owner set a price for.
  * A sale takes the ware out of the stock and puts the price (less {@code taxPercent}) in the till. An offer is sold
- * out when the stock runs short or the till is full.
+ * out when the stock runs short or the till is full. With {@code currency = "points"} it is a points shop instead, and
+ * the price (less the tax) goes to the owner's points.
  */
 final class StandShop implements Merchant {
     private final ShopStandBlockEntity stand;
@@ -58,6 +62,16 @@ final class StandShop implements Merchant {
 
     /** Opens the stand's shop for a buyer. */
     static void open(ShopStandBlockEntity stand, ServerPlayer player) {
+        if (Points.active()) {
+            PointsSeller seller = new PointsSeller(stand);
+            if (seller.entries(player).isEmpty()) {
+                player.displayClientMessage(Component.translatable("message.minecraftygo.shop_stand.empty"), true);
+                stand.release(player);
+            } else {
+                PointShopMenu.open(player, stand.title(), seller);
+            }
+            return;
+        }
         StandShop shop = new StandShop(stand, player);
         if (shop.offers.isEmpty()) {
             player.displayClientMessage(Component.translatable("message.minecraftygo.shop_stand.empty"), true);
@@ -77,9 +91,18 @@ final class StandShop implements Merchant {
     /** Whether a ware and its price are allowed by {@code currencyOnly} and {@code onlyYgoItems}. */
     static boolean sellable(ItemStack ware, ItemStack price) {
         YgoServerConfig.PlayerShops config = YgoServerConfig.PLAYER_SHOPS;
-        return (!config.currencyOnly.get() || price.is(CardShop.currency()))
-                && (!config.onlyYgoItems.get()
-                || BuiltInRegistries.ITEM.getKey(ware.getItem()).getNamespace().equals(MinecraftYgo.MOD_ID));
+        return (!config.currencyOnly.get() || price.is(CardShop.currency())) && allowed(ware);
+    }
+
+    /** Whether {@code onlyYgoItems} lets a stand sell a ware. */
+    static boolean allowed(ItemStack ware) {
+        return !YgoServerConfig.PLAYER_SHOPS.onlyYgoItems.get()
+                || BuiltInRegistries.ITEM.getKey(ware.getItem()).getNamespace().equals(MinecraftYgo.MOD_ID);
+    }
+
+    /** The part of a price in points the owner keeps after {@code taxPercent}. */
+    private static long kept(long price) {
+        return price - price * YgoServerConfig.PLAYER_SHOPS.taxPercent.get() / 100;
     }
 
     /** The part of a price the owner keeps after {@code taxPercent}. */
@@ -116,6 +139,20 @@ final class StandShop implements Merchant {
         return room;
     }
 
+    /** Takes a sale's worth of a ware out of the stock. */
+    private static void takeStock(Container slots, ItemStack ware) {
+        int left = ware.getCount();
+        for (int i = ShopStandMenu.STOCK; i < ShopStandMenu.TILL && left > 0; i++) {
+            ItemStack stock = slots.getItem(i);
+            if (ItemStack.isSameItemSameComponents(stock, ware)) {
+                int take = Math.min(left, stock.getCount());
+                stock.shrink(take);
+                left -= take;
+            }
+        }
+        slots.setChanged();
+    }
+
     private boolean near(Player player) {
         return !stand.isRemoved() && Container.stillValidBlockEntity(stand, player);
     }
@@ -131,15 +168,7 @@ final class StandShop implements Merchant {
         int column = columns.get(index);
         ItemStack ware = slots.getItem(column);
         // Take the ware out of the stock...
-        int left = offer.getResult().getCount();
-        for (int i = ShopStandMenu.STOCK; i < ShopStandMenu.TILL && left > 0; i++) {
-            ItemStack stock = slots.getItem(i);
-            if (ItemStack.isSameItemSameComponents(stock, offer.getResult())) {
-                int take = Math.min(left, stock.getCount());
-                stock.shrink(take);
-                left -= take;
-            }
-        }
+        takeStock(slots, offer.getResult());
         // ...and put the payment in the till.
         ItemStack pay = kept(slots.getItem(ShopStandMenu.PRICES + column).isEmpty() ? offer.getCostA()
                 : slots.getItem(ShopStandMenu.PRICES + column));
@@ -211,5 +240,91 @@ final class StandShop implements Merchant {
     @Override
     public boolean isClientSide() {
         return false;
+    }
+
+    /** The stand's shop with points as the currency: each ware with a price in points. */
+    private static final class PointsSeller implements PointShopMenu.Seller {
+        private final ShopStandBlockEntity stand;
+        /** The column of each line of the shop. */
+        private final List<Integer> columns = new ArrayList<>();
+        /** What the last clicks sold, for one message to the owner: ware columns and the points paid. */
+        private final java.util.Map<Integer, Integer> sold = new java.util.TreeMap<>();
+        private long earned;
+
+        PointsSeller(ShopStandBlockEntity stand) {
+            this.stand = stand;
+        }
+
+        @Override
+        public List<PointShopMenu.Entry> entries(ServerPlayer player) {
+            List<PointShopMenu.Entry> entries = new ArrayList<>();
+            columns.clear();
+            Container slots = stand.slots();
+            for (int column = 0; column < ShopStandMenu.OFFERS; column++) {
+                ItemStack ware = slots.getItem(column);
+                int price = stand.points(column);
+                if (ware.isEmpty() || price <= 0 || !allowed(ware)) {
+                    continue;
+                }
+                entries.add(new PointShopMenu.Entry(ware.copy(), price, count(slots, ware) / ware.getCount(),
+                        false));
+                columns.add(column);
+            }
+            return entries;
+        }
+
+        @Override
+        public boolean trade(ServerPlayer player, int index) {
+            if (index < 0 || index >= columns.size()) {
+                return false;
+            }
+            int column = columns.get(index);
+            Container slots = stand.slots();
+            ItemStack ware = slots.getItem(column).copy();
+            int price = stand.points(column);
+            if (ware.isEmpty() || price <= 0 || count(slots, ware) < ware.getCount()
+                    || !PointShops.pay(player, price)) {
+                return false;
+            }
+            takeStock(slots, ware);
+            PointShops.give(player, ware);
+            if (stand.owner() != null) {
+                Points.get(player.server).add(player.server, stand.owner(), kept(price));
+            }
+            sold.merge(column, 1, Integer::sum);
+            earned += kept(price);
+            player.level().playSound(null, stand.getBlockPos(), SoundEvents.NOTE_BLOCK_BELL.value(),
+                    SoundSource.BLOCKS, 0.6f, 1.2f);
+            return true;
+        }
+
+        @Override
+        public void traded(ServerPlayer player) {
+            ServerPlayer owner = stand.owner() == null ? null
+                    : player.server.getPlayerList().getPlayer(stand.owner());
+            if (owner != null && owner != player && !sold.isEmpty()
+                    && YgoServerConfig.PLAYER_SHOPS.notifyOwner.get()) {
+                sold.forEach((column, times) -> {
+                    ItemStack ware = stand.slots().getItem(column);
+                    owner.sendSystemMessage(Component.translatable("message.minecraftygo.shop_stand.sold_points",
+                            player.getDisplayName(), times * ware.getCount(), ware.getHoverName())
+                            .withStyle(ChatFormatting.GOLD));
+                });
+                owner.sendSystemMessage(Component.translatable("message.minecraftygo.shop_stand.earned",
+                        Points.format(earned)).withStyle(ChatFormatting.GOLD));
+            }
+            sold.clear();
+            earned = 0;
+        }
+
+        @Override
+        public boolean valid(Player player) {
+            return !stand.isRemoved() && Container.stillValidBlockEntity(stand, player);
+        }
+
+        @Override
+        public void closed(Player player) {
+            stand.release(player);
+        }
     }
 }

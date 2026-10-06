@@ -19,8 +19,8 @@
 ### Card shop
 - The card shop is set in `[shop]` of the server config, and card traders follow a change within a few seconds,
   keeping what they have sold since their last restock:
-  - `currency`: the item traders take and pay for paper, emeralds by default; any item id works, e.g.
-    `"minecraft:diamond"`.
+  - `currency`: `"points"` for Duel Points (the default, see below) or the item traders take and pay for paper, any
+    item id such as `"minecraft:emerald"` or `"minecraft:diamond"`.
   - `priceMultiplier`: every price times this, e.g. 0.5 for half price.
   - `dynamicPrices = false` keeps prices fixed; by default they rise when a trade sells out often and drop for
     players the village likes, as with other villagers.
@@ -50,6 +50,17 @@
   - `operatorsManage`: operators can open, stock and break anyone's stand.
   - `notifyOwner`: the owner gets a chat message on every sale.
   - `enabled`: off, stands are closed (owners can still empty them).
+- New currency **Duel Points (DP)**, the default `[shop] currency = "points"`: a balance per player instead of an item,
+  shown above the inventory and in the shops. Card traders, Card Vending Machines and Shop Stands open a DP shop
+  (click buys once, shift-click as many as you can); stand owners type their prices in DP and are paid straight into
+  their balance. `currency` set to an item id brings back the villager trade window paid in that item. Set in
+  `[shop.points]`:
+  - `symbol` ("DP"), `pricePoints` (each 1 of a `[shop.prices]` price is 25 DP).
+  - Earning: `startBalance` (500), `dailyBonus` (50 a day), paper sold to card traders, loose cards sold to Card
+    Vending Machines by rarity (`sellCommon` 5, `sellRare` 15, `sellSuper` 30, `sellUltra` 60, `sellSecret` 120) and
+    `emeraldExchange` (10 DP per emerald at the machines). 0 turns each off.
+  - `transfers`: `/ygo dp pay <player> <amount>`.
+  - `/ygo dp` shows your balance; operators use `/ygo dp <player>` and `/ygo dp give|take|set <players> <amount>`.
 
 ### Deck editor
 - The deck box filters the cards you own by type (monsters, spells, traps, extra deck), attribute and level and sorts
