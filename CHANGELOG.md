@@ -19,6 +19,14 @@
   Points (`points 500`). Tournament games don't give the `[results]` duel rewards; the tournament's prizes
   replace them.
 
+### Foil cards
+- Foil cards shine like the real ones, in the inventory, in your hand, in the world, in the binder and when a pack
+  is opened: a Rare has a silver name, a Super Rare holofoil artwork, an Ultra Rare holofoil artwork and a gold name,
+  a Secret Rare rainbow-lined artwork and a silver name. A glare sweeps over the foil now and then.
+- Binders keep each card's rarity. A foil put in a binder stays a foil, and the binder lists each rarity of a card
+  on its own, with its rarity (R, SR, UR, ScR) in the corner and in the tooltip. Taking a copy out gives that copy;
+  building a deck uses commons first so the foils stay in the binder.
+
 ### Duel wins and losses
 - Every player's duel record is kept: wins, losses and draws, against players and against NPCs and bots, and how
   many wins in a row. The result screen shows it after each duel; `/ygo stats` shows yours, `/ygo stats <player>`
