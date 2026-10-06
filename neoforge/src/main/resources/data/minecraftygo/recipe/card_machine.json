@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": ["III", "GEG", "IRI"],
+  "key": {
+    "I": {"item": "minecraft:iron_ingot"},
+    "G": {"item": "minecraft:glass_pane"},
+    "E": {"item": "minecraft:emerald"},
+    "R": {"item": "minecraft:redstone"}
+  },
+  "result": {"id": "minecraftygo:card_machine", "count": 1}
+}

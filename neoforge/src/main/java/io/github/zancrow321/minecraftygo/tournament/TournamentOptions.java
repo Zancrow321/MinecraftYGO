@@ -71,15 +71,17 @@ public final class TournamentOptions {
         integer("noShowMinutes", 3, 1, 1440, "A duelist who is offline or busy for this long while their match is "
                 + "due loses it.");
         integer("gamePauseSeconds", 10, 0, 600, "Seconds between the games of a match.");
-        text("entryFeeItem", "minecraft:emerald", "The item the entry fee is paid in.", TournamentOptions::validItem);
-        integer("entryFee", 0, 0, 100_000, "How many of entryFeeItem it costs to join; refunded if the tournament "
-                + "is called off.");
+        text("entryFeeCurrency", "currency", "What the entry fee is paid in: \"currency\" (the [shop] currency), "
+                + "\"points\" (Duel Points) or an item such as \"minecraft:emerald\".",
+                s -> s.strip().equals("currency") || s.strip().equals("points") || validItem(s));
+        integer("entryFee", 0, 0, 100_000, "How much of entryFeeCurrency it costs to join; refunded if the "
+                + "tournament is called off.");
         text("potShare", "60,30,10", "How the entry fees are shared out: percent for 1st, 2nd, 3rd, ... place, "
                 + "comma separated. What isn't shared out (or goes to an NPC) is kept.", TournamentOptions::validShare);
         list("prizesFirst", List.of("pack 5"), "Prizes for 1st place. Each entry is \"pack [count]\" (a random "
-                + "booster pack that is out), \"pack:<set id> [count]\", \"card <passcode> [count]\", \"xp <points>\", "
-                + "an item such as \"minecraft:diamond 3\", or \"command <command>\" run by the server with {player} "
-                + "for the winner's name.");
+                + "booster pack that is out), \"pack:<set id> [count]\", \"card <passcode> [count]\", \"points "
+                + "<amount>\" (Duel Points), \"xp <points>\", an item such as \"minecraft:diamond 3\", or \"command "
+                + "<command>\" run by the server with {player} for the winner's name.");
         list("prizesSecond", List.of("pack 3"), "Prizes for 2nd place.");
         list("prizesThird", List.of("pack 2"), "Prizes for 3rd place (both semifinal losers without a third place "
                 + "match).");

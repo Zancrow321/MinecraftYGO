@@ -4,6 +4,7 @@ import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.engine.data.BoosterSets;
 import io.github.zancrow321.minecraftygo.item.BoosterPackItem;
 import io.github.zancrow321.minecraftygo.item.CardItem;
+import io.github.zancrow321.minecraftygo.points.Points;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,8 +17,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Prize entries such as {@code "pack 3"}, {@code "pack:LOB 2"}, {@code "card 89631139"}, {@code "xp 100"},
- * {@code "minecraft:diamond 5"} and {@code "command give {player} minecraft:cake"}.
+ * Prize entries such as {@code "pack 3"}, {@code "pack:LOB 2"}, {@code "card 89631139"}, {@code "points 500"},
+ * {@code "xp 100"}, {@code "minecraft:diamond 5"} and {@code "command give {player} minecraft:cake"}.
  */
 final class Prizes {
     private Prizes() {
@@ -34,6 +35,9 @@ final class Prizes {
         }
         if (p.length == 2 && !p[1].matches("\\d{1,6}") && !(kind.equals("card") && p[1].matches("\\d+( \\d{1,4})?"))) {
             return false;
+        }
+        if (kind.equals("points")) {
+            return p.length == 2;
         }
         if (kind.equals("pack") || kind.equals("xp")) {
             return true;
@@ -61,6 +65,11 @@ final class Prizes {
                     server.getCommands().performPrefixedCommand(server.createCommandSourceStack()
                             .withSuppressedOutput(), command.startsWith("/") ? command.substring(1) : command);
                     return null;
+                }
+                case "points" -> {
+                    int n = count(p, 1, 0);
+                    Points.get(player.server).add(player.server, player.getUUID(), n);
+                    return Points.format(n);
                 }
                 case "xp" -> {
                     int xp = count(p, 1, 0);

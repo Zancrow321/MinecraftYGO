@@ -872,31 +872,63 @@ public final class DuelManager {
         int winner = duel.table().winner();
         boolean decided = winner == 0 || winner == 1;
         Map<UUID, List<String>> rewards = new HashMap<>();
+        Map<UUID, String> records = new HashMap<>();
+        Set<UUID> gifted = new HashSet<>();
+        boolean againstNpc = duel.npc() != null;
         for (int seat = 0; seat < duel.seats().length; seat++) {
-            ServerPlayer player = player(duel.seats()[seat]);
-            if (player != null) {
-                rewards.put(player.getUUID(), new ArrayList<>());
-                if (decided && duel.table().seats().get(seat).team() == winner) {
-                    PlayerCosmetics.wonDuel(player, duel.npc() != null)
-                            .forEach(u -> rewards.get(player.getUUID()).add("Unlocked: " + u));
+            UUID id = duel.seats()[seat];
+            if (id == null) {
+                continue;
+            }
+            int team = duel.table().seats().get(seat).team();
+            boolean won = decided && team == winner;
+            int outcome = !decided ? DuelResultPayload.DRAW : won ? DuelResultPayload.WON : DuelResultPayload.LOST;
+            boolean vsPlayers = !againstNpc && opponentsArePeople(duel, team);
+            // A duel cut short by an error doesn't count.
+            if (YgoServerConfig.TRACK_RECORD.get() && duel.table().finished()) {
+                DuelRecords.Record record = DuelRecords.get(server).count(id,
+                        duel.table().seats().get(seat).name(), outcome, vsPlayers);
+                records.put(id, record.summary() + (record.streak() > 1 ? ", " + record.streak() + " wins in a row"
+                        : ""));
+            }
+            ServerPlayer player = player(id);
+            if (player == null) {
+                continue;
+            }
+            List<String> lines = new ArrayList<>();
+            rewards.put(id, lines);
+            if (won) {
+                PlayerCosmetics.wonDuel(player, againstNpc).forEach(u -> lines.add("Unlocked: " + u));
+            }
+            // Tournament games bring the tournament's prizes instead.
+            if (decided && duel.match() == null
+                    && (vsPlayers || againstNpc || YgoServerConfig.REWARD_BOT_DUELS.get())) {
+                List<String> given = DuelRewards.give(player, vsPlayers ? YgoServerConfig.PLAYER_REWARDS
+                        : YgoServerConfig.NPC_REWARDS, won);
+                if (!given.isEmpty()) {
+                    gifted.add(id);
+                    lines.addAll(given);
                 }
             }
         }
-        if (duel.npc() != null && duel.match() != null) {
+        if (againstNpc && duel.match() != null) {
             // An NPC standing in for a tournament duelist only came to show; it hands out nothing.
             duel.npc().setDueling(false);
             PacketDistributor.sendToPlayersTrackingEntity(duel.npc(),
                     new DuelistStatePayload(duel.npc().getId(), false));
-        } else if (duel.npc() != null) {
+        } else if (againstNpc) {
             DuelistNpc npc = duel.npc();
             PacketDistributor.sendToPlayersTrackingEntity(npc, new DuelistStatePayload(npc.getId(), false));
             // An NPC duel has one person; the coin toss may have put them on either team.
             int seat = duel.seats()[0] != null ? 0 : 1;
             ServerPlayer person = player(duel.seats()[seat]);
-            ItemStack pack = npc.duelEnded(person, decided && duel.table().seats().get(seat).team() == winner);
-            if (person != null && !pack.isEmpty()) {
-                rewards.get(person.getUUID()).add("Won " + pack.getHoverName().getString());
-            }
+            boolean won = decided && duel.table().seats().get(seat).team() == winner;
+            npc.duelEnded(person, won, person != null && gifted.contains(person.getUUID()));
+        }
+        // A tournament announces its own results.
+        if (YgoServerConfig.ANNOUNCE_RESULTS.get() && duel.match() == null) {
+            server.getPlayerList().broadcastSystemMessage(Component.literal(announcement(duel, winner))
+                    .withStyle(ChatFormatting.GRAY), false);
         }
         if (duel.ante() != null) {
             // Only 1v1 duels between two people have an ante, so the winning team has exactly one person.
@@ -928,14 +960,36 @@ public final class DuelManager {
             if (player != null) {
                 int outcome = !decided ? DuelResultPayload.DRAW
                         : duel.table().seats().get(seat).team() == winner ? DuelResultPayload.WON : DuelResultPayload.LOST;
-                PacketDistributor.sendToPlayer(player,
-                        new DuelResultPayload(outcome, List.copyOf(rewards.get(player.getUUID()))));
+                PacketDistributor.sendToPlayer(player, new DuelResultPayload(outcome,
+                        List.copyOf(rewards.get(player.getUUID())), records.getOrDefault(player.getUUID(), "")));
             }
         }
         duel.table().close();
         if (duel.match() != null) {
             duel.match().onEnd().accept(duel.table().finished() ? winner : -1);
         }
+    }
+
+    /** Whether every seat on the other team than {@code team} is a person rather than a bot. */
+    private static boolean opponentsArePeople(ServerDuel duel, int team) {
+        for (int seat = 0; seat < duel.seats().length; seat++) {
+            if (duel.table().seats().get(seat).team() != team && duel.seats()[seat] == null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** "Yugi beat Kaiba.", "Yugi & Joey beat Mai & bot." or "Yugi and Kaiba drew." */
+    private static String announcement(ServerDuel duel, int winner) {
+        List<String> first = new ArrayList<>();
+        List<String> second = new ArrayList<>();
+        for (DuelTable.Seat seat : duel.table().seats()) {
+            (seat.team() == (winner == 1 ? 1 : 0) ? first : second).add(seat.name());
+        }
+        return winner == 0 || winner == 1
+                ? String.join(" & ", first) + " beat " + String.join(" & ", second) + "."
+                : String.join(" & ", first) + " and " + String.join(" & ", second) + " drew.";
     }
 
     private static int seatOf(ServerDuel duel, UUID player) {

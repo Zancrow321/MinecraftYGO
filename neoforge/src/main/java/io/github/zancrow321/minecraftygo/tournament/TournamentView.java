@@ -53,7 +53,8 @@ public final class TournamentView {
         }
         long people = t.entrants.stream().filter(e -> !e.npc()).count();
         v.status = switch (t.state) {
-            case Tournament.OPEN -> "Registration open: " + people + " of " + t.integer("maxPlayers")
+            case Tournament.OPEN -> "Registration open: " + people + " of " + t.integer("maxPlayers") + " players"
+                    + (t.entrants.size() > people ? " + " + (t.entrants.size() - people) + " NPC" : "")
                     + (t.closesAt > 0 ? ", starts in " + minutes(t.closesAt) : ", starts when " + t.hostName
                     + " starts it");
             case Tournament.RUNNING -> running(t);
@@ -169,6 +170,9 @@ public final class TournamentView {
         }
         if (kind.equals("xp")) {
             return n + " XP";
+        }
+        if (kind.equals("points")) {
+            return io.github.zancrow321.minecraftygo.points.Points.format(n);
         }
         if (kind.equals("command")) {
             return "a surprise";

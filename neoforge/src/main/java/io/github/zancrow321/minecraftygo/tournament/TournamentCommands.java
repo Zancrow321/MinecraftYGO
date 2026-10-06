@@ -124,6 +124,7 @@ public final class TournamentCommands {
             case "npcMatches" -> List.of("play", "coinflip");
             case "ruleset" -> List.of("server", "auto", "mr1", "goat", "mr2", "mr3", "mr4", "modern");
             case "banlist" -> List.of("server", "auto", "none");
+            case "entryFeeCurrency" -> List.of("currency", "points", "minecraft:emerald");
             case "bestOf" -> List.of("1", "3", "5");
             case "topCut" -> List.of("0", "4", "8", "16");
             default -> switch (o.kind()) {
