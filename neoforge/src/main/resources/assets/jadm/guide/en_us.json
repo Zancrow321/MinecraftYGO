@@ -40,8 +40,8 @@
         "Right-click someone who is dueling (NPCs too) or use `{cmd} watch <player>`. Spectators see the field, the life points and the log, but no hidden cards. Leave with Escape and \"Stop watching\" or `{cmd} unwatch`.",
         "# Wins and losses",
         "Every duel counts in your record: wins, losses and draws against players and against NPCs and bots, and your wins in a row. The result screen shows it, `{cmd} stats` in chat, `{cmd} stats <player>` someone else's and `{cmd} stats top` the ten best.",
-        "- Beating a player brings {server:results.players.winPacks} packs, {server:results.players.winEmeralds} emeralds and {server:results.players.winXp} XP; losing {server:results.players.lossPacks} packs, {server:results.players.lossEmeralds} emeralds, {server:results.players.lossXp} XP.",
-        "- Beating an NPC brings {server:results.npcs.winPacks} packs, {server:results.npcs.winEmeralds} emeralds and {server:results.npcs.winXp} XP; losing {server:results.npcs.lossPacks} packs, {server:results.npcs.lossEmeralds} emeralds, {server:results.npcs.lossXp} XP.",
+        "- Beating a player brings {server:results.players.winPacks} packs, {server:results.players.winPoints} DP, {server:results.players.winEmeralds} emeralds and {server:results.players.winXp} XP; losing {server:results.players.lossPacks} packs, {server:results.players.lossPoints} DP, {server:results.players.lossEmeralds} emeralds, {server:results.players.lossXp} XP.",
+        "- Beating an NPC brings {server:results.npcs.winPacks} packs, {server:results.npcs.winPoints} DP, {server:results.npcs.winEmeralds} emeralds and {server:results.npcs.winXp} XP; losing {server:results.npcs.lossPacks} packs, {server:results.npcs.lossPoints} DP, {server:results.npcs.lossEmeralds} emeralds, {server:results.npcs.lossXp} XP.",
         "# Which deck you play",
         "Your first legal deck box, looking in your hands first, then your inventory. Without one you duel with Yugi's starter deck, unless the server turned that off."
       ]
@@ -234,7 +234,7 @@
         "- `[progression] announce` = {server:progression.announce}: say unlocks in chat.",
         "- `[cards] lockedInDeck` = {server:cards.lockedInDeck}: locked cards stay out of decks.",
         "- `[results] trackRecord` = {server:results.trackRecord}, `announce` = {server:results.announce}, `rewardBotDuels` = {server:results.rewardBotDuels}: duel records, results in chat, rewards for bot duels.",
-        "- `[results.players]` and `[results.npcs]`: `winPacks`, `winEmeralds`, `winXp`, `lossPacks`, `lossEmeralds`, `lossXp` (see Dueling); `[results.npcs] rematchMinutes` = {server:results.npcs.rematchMinutes}.",
+        "- `[results.players]` and `[results.npcs]`: `winPacks`, `winPoints`, `winEmeralds`, `winXp`, `lossPacks`, `lossPoints`, `lossEmeralds`, `lossXp` (see Dueling; DP only with points as the currency); `[results.npcs] rematchMinutes` = {server:results.npcs.rematchMinutes}.",
         "- `[shop] currency` = {server:shop.currency}: \"points\" or an item such as minecraft:emerald. `priceMultiplier` = {server:shop.priceMultiplier}, `dynamicPrices` = {server:shop.dynamicPrices}, `wanderingTrader` = {server:shop.wanderingTrader}.",
         "- `[shop] newestAlways` = {server:shop.newestAlways}, `rotatingOlder` = {server:shop.rotatingOlder}, `rotationDays` = {server:shop.rotationDays}: the Card Trader's stock.",
         "- `[shop.prices]` and `[shop.stock]`: what everything costs (0 stops a trade) and how many a trader has.",
