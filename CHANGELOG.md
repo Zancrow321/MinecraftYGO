@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Holograms
+- Artwork holograms on a full board no longer run into each other: they fit their zone, all face the same way
+  instead of each turning to the camera, stand a little lower, and their name and stats lines are smaller and cut
+  to the zone's width.
+
 ### NPC decks
 - NPC duelists play real decks: about a third play a famous tournament deck once its era has come (Goat Control
   2005, Chaos Return 2006, Tele-DAD 2009), a third a starter or structure deck that is out, the rest a random deck

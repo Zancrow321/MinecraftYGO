@@ -25,17 +25,19 @@ import static io.github.zancrow321.minecraftygo.engine.OcgConstants.*;
  * monster stands as its card instead.
  */
 final class Holograms {
-    /** The artwork's side, in field blocks. */
-    static final double SIZE = 2.3;
+    /** The artwork's side, in field blocks: with its frame it fits its zone, so neighbours don't overlap. */
+    static final double SIZE = 1.5;
     /** The artwork's lower edge above the mat. */
-    private static final double LIFT = 0.7;
+    private static final double LIFT = 0.3;
     /** How far a monster in defense position tips back, in radians. */
     private static final double TILT = Math.toRadians(50);
     /** How much of the way up to the viewer's eye the artwork leans, so it reads from a high camera too. */
-    private static final double LEAN = 0.55;
+    private static final double LEAN = 0.3;
     private static final double RING_RADIUS = 0.95;
     private static final int RING_SEGMENTS = 28;
     private static final int DEFENSE_COLOR = 0x50A8FF;
+    /** Smaller than other field labels: a full board puts many of these close together. */
+    private static final float LABEL_SCALE = 0.024f;
 
     private Holograms() {
     }
@@ -165,9 +167,12 @@ final class Holograms {
         }
     }
 
-    /** Level and toward the viewer's eye from {@code at}. */
+    /**
+     * Level and toward the viewer, the same for every hologram: they all face the way the viewer looks at the field
+     * as a whole, so a row of them stands side by side instead of fanning out into each other.
+     */
     private static Vec3 towardEye(FieldRenderer.Draw draw, Vec3 at, int player) {
-        Vec3 toEye = draw.cam().subtract(at);
+        Vec3 toEye = draw.cam().subtract(ClientField.center());
         Vec3 h = new Vec3(toEye.x, 0, toEye.z);
         return h.lengthSqr() < 1e-6 ? ClientField.forward().normalize().scale(player == 0 ? -1 : 1) : h.normalize();
     }
@@ -261,24 +266,39 @@ final class Holograms {
                 .add(FieldRenderer.lunge(new Loc(player, LOCATION_MZONE, seq, 0), now, partial));
         Vec3 top = bottom.add(rise(draw, bottom, towardEye(draw, bottom, player), defense).scale(SIZE * k));
         CardInfo info = YgoData.cards().card(card.code());
-        FieldRenderer.label(draw, poses, font, top.add(0, 0.2 * k, 0), YgoData.text().cardName(card.code()),
-                0xFF000000 | frameColor(card));
-        FieldRenderer.label(draw, poses, font, bottom.subtract(0, 0.2 * k, 0), stats(info, card),
-                defense ? 0xFF80C8FF : 0xFFFFE070);
+        // Both lines stay within the zone's width, so the labels of neighbouring monsters don't run into each other.
+        int room = (int) (FieldLayout.ZONE_WIDTH * k * 0.95 / LABEL_SCALE);
+        FieldRenderer.label(draw, poses, font, top.add(0, 0.3 * k, 0),
+                fit(font, YgoData.text().cardName(card.code()), room), 0xFF000000 | frameColor(card), LABEL_SCALE);
+        String stats = stats(info, card, true);
+        FieldRenderer.label(draw, poses, font, bottom.subtract(0, 0.08 * k, 0),
+                font.width(stats) <= room ? stats : fit(font, stats(info, card, false), room),
+                defense ? 0xFF80C8FF : 0xFFFFE070, LABEL_SCALE);
     }
 
-    /** "LIGHT ★7  2500 / 2000", with rank or link rating where they apply. */
-    private static String stats(CardInfo info, CardState card) {
+    /**
+     * "LIGHT ★7  2500 / 2000", with rank or link rating where they apply; without the attribute (the ring shows its
+     * colour) when {@code attribute} is false.
+     */
+    private static String stats(CardInfo info, CardState card, boolean attribute) {
         if (info == null) {
             return card.attack() + " / " + card.defense();
         }
-        String attribute = YgoData.text().system(1010 + Integer.numberOfTrailingZeros(
-                Math.max(1, info.data().attribute())));
+        String prefix = attribute ? YgoData.text().system(1010 + Integer.numberOfTrailingZeros(
+                Math.max(1, info.data().attribute()))) + "  " : "";
         int level = info.data().level();
         if (info.is(TYPE_LINK)) {
-            return attribute + "  LINK-" + level + "  " + card.attack();
+            return prefix + "LINK-" + level + "  " + card.attack();
         }
         String stars = info.is(TYPE_XYZ) ? "Rank " + level : "★" + level;
-        return attribute + "  " + stars + "  " + card.attack() + " / " + card.defense();
+        return prefix + stars + "  " + card.attack() + "/" + card.defense();
+    }
+
+    /** {@code text}, cut with an ellipsis to {@code room} pixels. */
+    private static String fit(Font font, String text, int room) {
+        if (font.width(text) <= room) {
+            return text;
+        }
+        return font.plainSubstrByWidth(text, Math.max(0, room - font.width("…"))) + "…";
     }
 }

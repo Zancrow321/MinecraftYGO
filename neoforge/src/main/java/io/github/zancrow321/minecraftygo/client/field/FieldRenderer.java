@@ -766,11 +766,18 @@ public final class FieldRenderer {
         return card;
     }
 
+    /** World blocks per font pixel of a label over the field. */
+    static final float LABEL_SCALE = 0.03f;
+
     static void label(Draw draw, PoseStack poses, Font font, Vec3 at, String text, int color) {
+        label(draw, poses, font, at, text, color, LABEL_SCALE);
+    }
+
+    static void label(Draw draw, PoseStack poses, Font font, Vec3 at, String text, int color, float scale) {
         poses.pushPose();
         poses.translate(at.x - draw.cam().x, at.y - draw.cam().y, at.z - draw.cam().z);
         poses.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
-        poses.scale(0.03f, -0.03f, 0.03f);
+        poses.scale(scale, -scale, scale);
         Matrix4f matrix = poses.last().pose();
         float x = -font.width(text) / 2f;
         font.drawInBatch(text, x, 0, color, false, matrix, draw.buffers(), Font.DisplayMode.SEE_THROUGH, 0x60000000,
