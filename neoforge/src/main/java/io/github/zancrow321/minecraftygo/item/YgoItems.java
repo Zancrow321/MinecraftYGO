@@ -50,6 +50,8 @@ public final class YgoItems {
                         output.accept(starterYugi());
                         output.accept(starterKaiba());
                         output.accept(YgoVillagers.CARD_SHOP_ITEM.get());
+                        output.accept(YgoVillagers.CARD_MACHINE_ITEM.get());
+                        output.accept(io.github.zancrow321.minecraftygo.village.PlayerShops.STAND_ITEM.get());
                         output.accept(DuelArena.KIT.get());
                         output.accept(DuelDome.KIT.get());
                         output.accept(DuelDome.CORE_ITEM.get());

@@ -50,7 +50,39 @@ In game:
 - The **Card Trader** villager sells binders, deck boxes, the two starter decks and later a duel disk, and keeps a
   shop of packs, structure decks and tins: the newest products always, plus a few older ones that change every week
   (`[shop] newestAlways`, `rotatingOlder`, `rotationDays`). Any villager takes the job at a **Card Shop Counter**
-  (glass panes / plank, book, plank / three planks).
+  (glass panes / plank, book, plank / three planks). The rest of the shop is set in `[shop]` of the server config
+  too, and traders follow a change within a few seconds: `currency` (`"points"` for Duel Points, see below, or an item
+  such as `"minecraft:emerald"`), `priceMultiplier`, `dynamicPrices` (prices that rise when a trade sells out often, as with
+  other villagers), `wanderingTrader` (packs and a rare duel disk from wandering traders), the price of everything in
+  `[shop.prices]` (core, all-foil and small packs, structure decks, tins, random packs per trader level, binders, deck
+  boxes, starter decks, duel disks, paper bought, the wandering trader's two; 0 stops a trade) and how many a trader
+  has before it restocks in `[shop.stock]`.
+- The **Card Vending Machine** (three iron ingots / glass pane, emerald, glass pane / iron ingot, redstone, iron
+  ingot) is the same shop without a villager: right-click it for the villager's trade window with the
+  `[shop.prices]` and `currency`. Its prices don't rise with demand. `[shop.machine]` sets what it sells
+  (`products = "rotation"`, the same pick as card traders, `"all"` or `"none"`, and `supplies` for random packs,
+  binders, deck boxes, starter decks and duel disks), whether each player can only buy the `[shop.stock]` amounts a
+  day (`limitPerPlayer`), `command` to open it anywhere with `/ygo shop` (operators always can), `operatorsOnly` so
+  only operators place and break machines, `enabled` and the shop's `name`.
+- A **Shop Stand** (red wool, white wool, red wool / plank, chest, plank / three planks) is a shop any player runs.
+  The owner right-clicks it to stock it: put a ware in the top row and its price below it (both are only samples, a
+  left click with an item sets one, a right click adds one more), then the wares themselves in the stock rows. Other
+  players right-click it for a trade window with every ware that is in stock, and their payment lands in the till for
+  the owner to take out; sneak-click to see your own stand as a buyer. Renamed in an anvil, a stand takes that name. Only the
+  owner (and operators) can break it, which drops the stock and the till. `[shop.players]` sets `enabled`,
+  `maxPerPlayer` (3, 0 for any number), `currencyOnly` (prices in the `[shop] currency` only), `taxPercent` (kept back
+  from every sale), `onlyYgoItems` (stands sell only this mod's items), `operatorsManage` and `notifyOwner` (a chat
+  message to the owner on every sale).
+- **Duel Points (DP)** are the shops' currency by default (`[shop] currency = "points"`): a balance each player has,
+  not an item. It shows above the inventory and in every shop, and `/ygo dp` tells it. Card traders, Card Vending
+  Machines and Shop Stands then open a DP shop: click to buy once, shift-click to buy as many as you can. Each 1 of a
+  `[shop.prices]` price is `pricePoints` DP (25, so a core pack is 100 DP), and a Shop Stand's owner clicks a price
+  to type it in DP; what buyers pay (less `taxPercent`) goes straight to the owner, online or not. Players earn DP
+  with `startBalance` (500) when they first join, `dailyBonus` (50) once a day, paper sold to card traders, loose
+  cards sold to Card Vending Machines (`sellCommon` 5 to `sellSecret` 120 by rarity) and emeralds exchanged there
+  (`emeraldExchange`, 10 each), all in `[shop.points]`. `/ygo dp pay <player> <amount>` gives DP to another player
+  (`transfers`), and operators use `/ygo dp give|take|set <players> <amount>` and `/ygo dp <player>`. Wandering
+  traders keep taking emeralds.
 - **First deck:** on their first join a player picks a deck: Yugi's or Kaiba's starter deck, or any starter or
   structure deck that is already out. It comes in a deck box, ready to duel with. "Later" puts it off; `/ygo starter`
   opens the choice again until one is taken.
