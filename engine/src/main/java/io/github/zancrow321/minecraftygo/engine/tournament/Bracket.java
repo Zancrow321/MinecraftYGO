@@ -647,7 +647,8 @@ public final class Bracket {
             opponents.put(e, new ArrayList<>());
         }
         for (Match m : matches) {
-            if (!m.decided() || m.stage.equals("T") && format == Format.SWISS) {
+            // A grand final reset that wasn't needed was never played.
+            if (!m.decided() || m.stage.equals("T") && format == Format.SWISS || m.reset && m.walkover) {
                 continue;
             }
             for (int side = 0; side < 2; side++) {
@@ -658,7 +659,8 @@ public final class Bracket {
                 }
                 Standing s = table[me];
                 if (them < 0) {
-                    if (m.winner == me) {
+                    // Only Swiss and round robin count a bye as a won match.
+                    if (m.winner == me && (format == Format.SWISS || format == Format.ROUND_ROBIN)) {
                         s.byes++;
                         s.wins++;
                         s.points += WIN_POINTS;
@@ -698,6 +700,10 @@ public final class Bracket {
             out.sort(Comparator.comparingInt((Standing s) -> -s.points)
                     .thenComparingDouble(s -> -s.omw)
                     .thenComparingDouble(s -> -s.gw)
+                    .thenComparingInt(s -> s.entrant));
+        } else {
+            out.sort(Comparator.comparingInt((Standing s) -> s.losses)
+                    .thenComparingInt(s -> -s.wins)
                     .thenComparingInt(s -> s.entrant));
         }
         return out;
@@ -772,7 +778,7 @@ public final class Bracket {
     public String title(Match m) {
         return switch (m.stage) {
             case "F" -> "Grand final";
-            case "F2" -> "Grand final, second match";
+            case "F2" -> "Grand final reset";
             case "3" -> "Third place match";
             case "L" -> "Losers round " + m.round;
             case "S" -> "Swiss round " + m.round;

@@ -138,6 +138,15 @@ class BracketTest {
             for (int e = 0; e < n; e++) {
                 assertTrue(losses.getOrDefault(e, 0) <= 2, "lost three times");
             }
+            // The table counts played matches only: no byes, no unplayed grand final reset.
+            int played = 0;
+            for (Bracket.Match m : bracket.matches) {
+                if (m.a >= 0 && m.b >= 0 && !(m.reset && m.walkover)) {
+                    played++;
+                }
+            }
+            assertEquals(played * 2, bracket.standings().stream().mapToInt(s -> s.wins + s.losses).sum());
+            assertTrue(bracket.standings().get(0).losses <= 1);
         }
     }
 

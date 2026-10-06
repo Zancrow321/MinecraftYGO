@@ -202,7 +202,7 @@ public final class TournamentScreen extends Screen {
         int bottom = layoutStage(v, main, top, ys, xs);
         int lastColumn = v.matches.stream().filter(m -> m.stage.equals(main)).mapToInt(m -> m.round).max().orElse(1);
         if (v.format.equals("double")) {
-            int losersTop = bottom + 26;
+            int losersTop = bottom + 38;
             layoutStage(v, "L", losersTop, ys, xs);
             int lastLoser = v.matches.stream().filter(m -> m.stage.equals("L")).mapToInt(m -> m.round).max()
                     .orElse(0);
@@ -311,7 +311,7 @@ public final class TournamentScreen extends Screen {
             int losersY = placed.stream().filter(p -> p.match().stage.equals("L")).mapToInt(Placed::y).min()
                     .orElse(-1);
             if (losersY >= 0) {
-                g.drawString(font, "Losers' bracket", ox + 14, oy + losersY - 14, GOLD);
+                g.drawString(font, "Losers' bracket", ox + 14, oy + losersY - 24, GOLD);
             }
         }
         for (Placed p : placed) {
@@ -349,10 +349,10 @@ public final class TournamentScreen extends Screen {
         return out;
     }
 
-    /** "Winners quarterfinal" -> "Quarterfinal", "Losers round 3" -> "Losers 3" */
+    /** "Winners quarterfinal" -> "Quarterfinal", "Losers round 3" -> "Losers 3", "round 2" -> "Round 2" */
     private static String short_(String title) {
-        return title.replace("Winners ", "").replace("Top cut ", "Top cut: ").replace("Losers round", "Losers")
-                .replace("Grand final, second match", "Grand final 2");
+        String s = title.replace("Winners ", "").replace("Top cut ", "Top cut: ").replace("Losers round", "Losers");
+        return s.isEmpty() ? s : Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
     private void box(GuiGraphics g, TournamentView v, Bracket.Match m, int x, int y) {
@@ -405,9 +405,14 @@ public final class TournamentScreen extends Screen {
         }
         g.drawString(font, head[6], 470, y, GOLD, false);
         y += 14;
-        List<Bracket.Standing> rows = v.standings.isEmpty() ? standingsFromEntrants(v) : v.standings;
+        List<Bracket.Standing> rows = new ArrayList<>(v.standings.isEmpty() ? standingsFromEntrants(v)
+                : v.standings);
         int rank = 0;
         boolean done = v.state.equals("done");
+        if (done) {
+            rows.sort(java.util.Comparator.comparingInt(s -> v.places.get(s.entrant) > 0 ? v.places.get(s.entrant)
+                    : Integer.MAX_VALUE));
+        }
         for (Bracket.Standing s : rows) {
             rank++;
             int e = s.entrant;
@@ -452,7 +457,7 @@ public final class TournamentScreen extends Screen {
         v.matches.stream().filter(m -> v.live.containsKey(m.id) && !m.decided()).forEach(order::add);
         v.matches.stream().filter(m -> m.playable() && !v.live.containsKey(m.id)).forEach(order::add);
         List<Bracket.Match> done = new ArrayList<>(v.matches.stream()
-                .filter(m -> m.decided() && m.a >= 0 && m.b >= 0).toList());
+                .filter(m -> m.decided() && m.a >= 0 && m.b >= 0 && !(m.reset && m.walkover)).toList());
         java.util.Collections.reverse(done);
         order.addAll(done);
         if (order.isEmpty()) {

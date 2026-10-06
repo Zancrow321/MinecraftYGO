@@ -1323,7 +1323,7 @@ public final class TournamentManager {
         String a = t.entrants.get(m.a).name;
         String b = t.entrants.get(m.b).name;
         String score = t.bracket.bestOf > 1 && !m.walkover ? " " + Math.max(m.winsA, m.winsB) + "-"
-                + Math.min(m.winsA, m.winsB) : "";
+                + Math.min(m.winsA, m.winsB) + (m.draws > 0 ? "-" + m.draws : "") : "";
         String line = m.winner == Bracket.DRAW ? a + " and " + b + " drew"
                 : m.winner < 0 ? a + " and " + b + " both lose"
                 : (m.winner == m.a ? a : b) + " beat " + (m.winner == m.a ? b : a) + score
