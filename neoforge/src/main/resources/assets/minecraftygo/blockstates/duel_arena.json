@@ -1,6 +1,0 @@
-{"variants": {
-  "facing=north": {"model": "minecraftygo:block/duel_arena"},
-  "facing=south": {"model": "minecraftygo:block/duel_arena"},
-  "facing=east": {"model": "minecraftygo:block/duel_arena"},
-  "facing=west": {"model": "minecraftygo:block/duel_arena"}
-}}

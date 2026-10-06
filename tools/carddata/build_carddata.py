@@ -4,14 +4,14 @@
 Reads EDOPro's card database (BabelCDB cards.cdb) and card scripts (ProjectIgnis CardScripts) and writes,
 for the cards it bundles:
 
-  engine/src/main/resources/minecraftygo/cards.json    stats + text for each card
-  engine/src/main/resources/minecraftygo/scripts/      base scripts and c<code>.lua for each card
-  engine/src/main/resources/minecraftygo/system_strings.json   EDOPro's system strings (prompt texts)
+  engine/src/main/resources/jadm/cards.json    stats + text for each card
+  engine/src/main/resources/jadm/scripts/      base scripts and c<code>.lua for each card
+  engine/src/main/resources/jadm/system_strings.json   EDOPro's system strings (prompt texts)
 
 With --all (what the mod ships since M11a) every official card in cards.cdb is written: all OCG and TCG cards, without
 anime, Rush Duel or Speed Duel skill cards, which live in other BabelCDB files. Which of them a server lets players
 use is decided at runtime by the pool mode. Without --all, only the modeled pool is written: pool.json (from
-tools/models/import_models.py), every card in the deck lists under engine/src/main/resources/minecraftygo/decks/*.ydk,
+tools/models/import_models.py), every card in the deck lists under engine/src/main/resources/jadm/decks/*.ydk,
 and every card those cards' scripts mention by passcode (tokens, fusion materials), so the engine never asks for a
 card it doesn't know.
 
@@ -34,7 +34,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-RESOURCES = ROOT / "engine/src/main/resources/minecraftygo"
+RESOURCES = ROOT / "engine/src/main/resources/jadm"
 
 # Sub-folders of CardScripts searched for c<code>.lua, in priority order.
 SCRIPT_DIRS = ["official", "pre-errata", "goat", "pre-release"]

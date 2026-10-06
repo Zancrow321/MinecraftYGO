@@ -18,7 +18,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 REPO = Path(__file__).resolve().parents[2]
-ASSETS = REPO / "neoforge/src/main/resources/assets/minecraftygo"
+ASSETS = REPO / "neoforge/src/main/resources/assets/jadm"
 
 BLOCK = 16
 ACROSS = 21 * BLOCK // 2  # 168: 10.5 blocks either side of the middle block's centre

@@ -19,7 +19,7 @@ import math
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-ASSETS = REPO / "neoforge/src/main/resources/assets/minecraftygo"
+ASSETS = REPO / "neoforge/src/main/resources/assets/jadm"
 
 # Vertex order per cube face (top-left, top-right, bottom-right, bottom-left as seen from outside), matching
 # Blockbench's UV layout. Corners index into (x1|x2, y1|y2, z1|z2).
