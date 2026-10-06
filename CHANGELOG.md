@@ -13,6 +13,13 @@
   on the right. Yes/no, positions and options get a small dialog.
 - The card under the mouse is shown big on the left with its text and current ATK/DEF.
 - The "every choice as a list" screen is gone, from the duel menu too.
+- A duel starts with a show: the camera sweeps in over the field, a big DUEL! and a coin toss that really decides
+  who goes first (before, the challenger always started).
+- When the opponent activates or summons a card, it is shown big with a banner ("Duel Bot activates Sogen")
+  before its effect plays.
+- The duel log: L or the Log button under the phase buttons; scroll it with the mouse wheel.
+- A result screen at the end: victory or defeat, how it ended, and what it brought (booster pack, ante cards,
+  unlocked cosmetics). Continue or Escape takes you back to the game.
 
 ## 0.1.0 (first public beta)
 

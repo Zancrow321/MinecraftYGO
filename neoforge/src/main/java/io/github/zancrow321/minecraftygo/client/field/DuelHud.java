@@ -3,6 +3,7 @@ package io.github.zancrow321.minecraftygo.client.field;
 import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.client.ClientDuel;
 import io.github.zancrow321.minecraftygo.client.duel.DuelMode;
+import io.github.zancrow321.minecraftygo.client.duel.DuelStaging;
 import io.github.zancrow321.minecraftygo.client.duel.DuelUi;
 import io.github.zancrow321.minecraftygo.engine.duel.Board;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
@@ -59,12 +60,10 @@ public final class DuelHud {
             half = Math.min(PROMPT_HALF_WIDTH, w / 2 - 6);
         }
         PromptView prompt = ClientDuel.prompt();
-        if (view.result() != null) {
-            g.pose().pushPose();
-            g.pose().scale(2, 2, 1);
-            g.drawCenteredString(font, view.result(), w / 4, h / 4 - 20, GOLD);
-            g.pose().popPose();
-        } else if (prompt != null) {
+        if (view.result() != null || DuelStaging.introRunning()) {
+            return; // the start and the result screen speak for themselves
+        }
+        if (prompt != null) {
             g.fill(w / 2 - half, top, w / 2 + half, top + 26, PANEL);
             g.drawCenteredString(font, font.plainSubstrByWidth(prompt.title(), 2 * half - 8), w / 2, top + 4, GOLD);
             String help = DuelUi.help(prompt);

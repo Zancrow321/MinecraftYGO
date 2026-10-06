@@ -15,6 +15,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -42,8 +43,9 @@ public final class PlayerCosmetics {
         return Cosmetics.sleeve(get(player).sleeve()).id();
     }
 
-    public static void wonDuel(ServerPlayer player, boolean againstNpc) {
-        update(player, d -> new CosmeticsData(d.wins() + 1, d.npcWins() + (againstNpc ? 1 : 0), d.packs(),
+    /** @return what the win unlocked, e.g. "Gold card sleeve" */
+    public static List<String> wonDuel(ServerPlayer player, boolean againstNpc) {
+        return update(player, d -> new CosmeticsData(d.wins() + 1, d.npcWins() + (againstNpc ? 1 : 0), d.packs(),
                 d.sleeve()));
     }
 
@@ -51,20 +53,23 @@ public final class PlayerCosmetics {
         update(player, d -> new CosmeticsData(d.wins(), d.npcWins(), d.packs() + 1, d.sleeve()));
     }
 
-    private static void update(ServerPlayer player, UnaryOperator<CosmeticsData> change) {
+    private static List<String> update(ServerPlayer player, UnaryOperator<CosmeticsData> change) {
         CosmeticsData before = get(player);
         CosmeticsData after = change.apply(before);
         player.setData(DATA, after);
-        announce(player, before, after, Cosmetics.SKINS, "disk skin");
-        announce(player, before, after, Cosmetics.SLEEVES, "card sleeve");
+        List<String> unlocked = new ArrayList<>();
+        announce(player, before, after, Cosmetics.SKINS, "disk skin", unlocked);
+        announce(player, before, after, Cosmetics.SLEEVES, "card sleeve", unlocked);
+        return unlocked;
     }
 
     private static void announce(ServerPlayer player, CosmeticsData before, CosmeticsData after,
-                                 List<Cosmetics.Cosmetic> cosmetics, String kind) {
+                                 List<Cosmetics.Cosmetic> cosmetics, String kind, List<String> unlocked) {
         for (Cosmetics.Cosmetic c : cosmetics) {
             if (!c.unlocked(before) && c.unlocked(after)) {
                 player.sendSystemMessage(Component.literal("Unlocked the " + c.name() + " " + kind
                         + "! Pick it with /ygo cosmetics.").withStyle(ChatFormatting.GOLD));
+                unlocked.add(c.name() + " " + kind);
             }
         }
     }

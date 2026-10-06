@@ -19,6 +19,7 @@ import io.github.zancrow321.minecraftygo.item.DeckBoxItem;
 import io.github.zancrow321.minecraftygo.item.YgoComponents;
 import io.github.zancrow321.minecraftygo.item.YgoItems;
 import io.github.zancrow321.minecraftygo.network.DuelFieldPayload;
+import io.github.zancrow321.minecraftygo.network.DuelResultPayload;
 import io.github.zancrow321.minecraftygo.network.DuelistStatePayload;
 import io.github.zancrow321.minecraftygo.network.DuelViewPayload;
 import net.minecraft.ChatFormatting;
@@ -268,6 +269,10 @@ public final class DuelManager {
     /** Everyone accepted: checks decks, takes the ante and starts the duel. */
     private void launch(Invite invite) {
         List<Entrant> entrants = invite.entrants();
+        // The coin toss: OCG-Core always lets team 0 go first, so the teams trade places half the time.
+        if (server.overworld().getRandom().nextBoolean()) {
+            entrants = entrants.stream().map(e -> new Entrant(1 - e.team(), e.player(), e.name())).toList();
+        }
         List<ServerPlayer> online = new ArrayList<>();
         for (Entrant e : entrants) {
             if (e.player() == null) {
@@ -300,16 +305,27 @@ public final class DuelManager {
             decks.add(deck);
             boxes.add(box == null ? ItemStack.EMPTY : box);
         }
-        List<ServerPlayer> team0 = online.stream().filter(p -> teamOf(entrants, p) == 0).toList();
-        List<ServerPlayer> team1 = online.stream().filter(p -> teamOf(entrants, p) == 1).toList();
-        DuelFieldPayload field = DuelDome.field(team0, team1);
+        List<Entrant> seated = entrants;
+        List<ServerPlayer> team0 = online.stream().filter(p -> teamOf(seated, p) == 0).toList();
+        List<ServerPlayer> team1 = online.stream().filter(p -> teamOf(seated, p) == 1).toList();
+        DuelFieldPayload field = team0.isEmpty() ? turned(DuelDome.field(team1, team0)) : DuelDome.field(team0, team1);
         if (field == null && invite.npc() != null) {
-            field = fieldAgainstNpc(team0.get(0), invite.npc());
+            // Against an NPC the one person may be on either team; the field is built from their end.
+            ServerPlayer person = online.get(0);
+            field = fieldAgainstNpc(person, invite.npc());
+            field = teamOf(seated, person) == 0 ? field : turned(field);
         }
         if (field == null) {
-            field = team1.isEmpty() ? fieldInFrontOf(team0.get(0)) : fieldBetween(team0.get(0), team1.get(0));
+            field = team1.isEmpty() ? fieldInFrontOf(team0.get(0))
+                    : team0.isEmpty() ? turned(fieldInFrontOf(team1.get(0)))
+                    : fieldBetween(team0.get(0), team1.get(0));
         }
         start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split());
+    }
+
+    /** The same field seen from the other end: team 0 gets the far side. */
+    private static DuelFieldPayload turned(DuelFieldPayload field) {
+        return field == null ? null : new DuelFieldPayload(true, field.x(), field.y(), field.z(), field.yaw() + 180);
     }
 
     private static int teamOf(List<Entrant> entrants, ServerPlayer player) {
@@ -470,8 +486,7 @@ public final class DuelManager {
                 PacketDistributor.sendToPlayer(player, field);
             }
             message(seat, Component.literal((split ? "Battle City duel! " : tag ? "Tag duel! " : "Duel! ") + matchup(entrants) + ", "
-                    + ruleset.displayName() + " rules. Click glowing cards and zones, V switches the camera and Esc "
-                    + "opens the duel menu." + (tag ? " Partners take turns; you answer when it's yours." : "")
+                    + ruleset.displayName() + " rules. L opens the duel log, Esc the duel menu." + (tag ? " Partners take turns; you answer when it's yours." : "")
                     + (split ? " Each partner plays on their own half of the field." : "")));
         }
         run(duel, table::start);
@@ -627,26 +642,62 @@ public final class DuelManager {
             }
         }
         int winner = duel.table().winner();
+        boolean decided = winner == 0 || winner == 1;
+        Map<UUID, List<String>> rewards = new HashMap<>();
         for (int seat = 0; seat < duel.seats().length; seat++) {
             ServerPlayer player = player(duel.seats()[seat]);
-            if (player != null && winner >= 0 && winner < 2 && duel.table().seats().get(seat).team() == winner) {
-                PlayerCosmetics.wonDuel(player, duel.npc() != null);
+            if (player != null) {
+                rewards.put(player.getUUID(), new ArrayList<>());
+                if (decided && duel.table().seats().get(seat).team() == winner) {
+                    PlayerCosmetics.wonDuel(player, duel.npc() != null)
+                            .forEach(u -> rewards.get(player.getUUID()).add("Unlocked: " + u));
+                }
             }
         }
         if (duel.npc() != null) {
             DuelistNpc npc = duel.npc();
             PacketDistributor.sendToPlayersTrackingEntity(npc, new DuelistStatePayload(npc.getId(), false));
-            npc.duelEnded(player(duel.seats()[0]), duel.table().winner() == 0);
+            // An NPC duel has one person; the coin toss may have put them on either team.
+            int seat = duel.seats()[0] != null ? 0 : 1;
+            ServerPlayer person = player(duel.seats()[seat]);
+            ItemStack pack = npc.duelEnded(person, decided && duel.table().seats().get(seat).team() == winner);
+            if (person != null && !pack.isEmpty()) {
+                rewards.get(person.getUUID()).add("Won " + pack.getHoverName().getString());
+            }
         }
         if (duel.ante() != null) {
             // Only 1v1 duels between two people have an ante, so the winning team has exactly one person.
             UUID payTo = null;
             for (int seat = 0; seat < duel.seats().length; seat++) {
-                if (winner >= 0 && winner < 2 && duel.table().seats().get(seat).team() == winner) {
+                if (decided && duel.table().seats().get(seat).team() == winner) {
                     payTo = duel.seats()[seat];
                 }
             }
-            AnteEscrow.get(server).settle(server, duel.ante(), payTo);
+            AnteEscrow escrow = AnteEscrow.get(server);
+            for (AnteEscrow.Stake stake : escrow.stakes(duel.ante())) {
+                String card = YgoData.text().cardName(stake.code());
+                for (UUID person : rewards.keySet()) {
+                    if (payTo == null) {
+                        if (person.equals(stake.owner())) {
+                            rewards.get(person).add("Ante returned: " + card);
+                        }
+                    } else if (person.equals(payTo)) {
+                        rewards.get(person).add((person.equals(stake.owner()) ? "Ante kept: " : "Ante won: ") + card);
+                    } else if (person.equals(stake.owner())) {
+                        rewards.get(person).add("Ante lost: " + card);
+                    }
+                }
+            }
+            escrow.settle(server, duel.ante(), payTo);
+        }
+        for (int seat = 0; seat < duel.seats().length; seat++) {
+            ServerPlayer player = player(duel.seats()[seat]);
+            if (player != null) {
+                int outcome = !decided ? DuelResultPayload.DRAW
+                        : duel.table().seats().get(seat).team() == winner ? DuelResultPayload.WON : DuelResultPayload.LOST;
+                PacketDistributor.sendToPlayer(player,
+                        new DuelResultPayload(outcome, List.copyOf(rewards.get(player.getUUID()))));
+            }
         }
         duel.table().close();
     }

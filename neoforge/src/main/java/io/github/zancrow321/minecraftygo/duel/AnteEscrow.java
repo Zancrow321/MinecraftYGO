@@ -48,6 +48,21 @@ public final class AnteEscrow extends SavedData {
      * Ends {@code duel}'s ante: every card goes to {@code winner}, or back to its owner if {@code winner} is
      * {@code null}. Hands over what it can right away.
      */
+    /** A card put up for a duel and the person it came from. */
+    public record Stake(int code, UUID owner) {
+    }
+
+    /** @return the cards held for {@code duel} */
+    public List<Stake> stakes(UUID duel) {
+        List<Stake> out = new ArrayList<>();
+        for (Entry e : entries) {
+            if (duel.equals(e.duel())) {
+                out.add(new Stake(e.code(), e.owner()));
+            }
+        }
+        return out;
+    }
+
     public void settle(MinecraftServer server, UUID duel, UUID winner) {
         for (int i = 0; i < entries.size(); i++) {
             Entry e = entries.get(i);

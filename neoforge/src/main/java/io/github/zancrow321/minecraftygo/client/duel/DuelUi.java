@@ -219,6 +219,14 @@ public final class DuelUi {
         }
         Font font = Minecraft.getInstance().font;
         hits.clear();
+        if (DuelStaging.resultShowing()) {
+            DuelStaging.renderResult(g, font, mx, my, w, h);
+            return;
+        }
+        if (DuelStaging.introRunning()) {
+            DuelStaging.renderIntro(g, font, w, h);
+            return;
+        }
         hoverCode = 0;
         hoverCard = null;
         mouseX = mx;
@@ -253,10 +261,14 @@ public final class DuelUi {
                 }
             }
         }
+        if (logOpen) {
+            log(g, font, mx, my, w, h);
+        }
         if (menu != null) {
             menu(g, font, mx, my, w, h);
         }
         cardPanel(g, font, w, h);
+        DuelStaging.renderBanners(g, font, w, h);
         if (dragging && pressedHand >= 0) {
             List<CardState> cards = view.board().side(view.you()).hand();
             if (pressedHand < cards.size()) {
@@ -266,12 +278,12 @@ public final class DuelUi {
         }
     }
 
-    private static void panel(GuiGraphics g, int x, int y, int w, int h) {
+    static void panel(GuiGraphics g, int x, int y, int w, int h) {
         g.fill(x - 1, y - 1, x + w + 1, y + h + 1, PANEL_EDGE);
         g.fill(x, y, x + w, y + h, PANEL);
     }
 
-    private static boolean button(GuiGraphics g, Font font, int x, int y, int w, String label, boolean enabled,
+    static boolean button(GuiGraphics g, Font font, int x, int y, int w, String label, boolean enabled,
                                   int mx, int my, Runnable action) {
         boolean hover = enabled && mx >= x && mx < x + w && my >= y && my < y + BUTTON_HEIGHT;
         g.fill(x, y, x + w, y + BUTTON_HEIGHT, !enabled ? BUTTON_OFF : hover ? BUTTON_HOVER : BUTTON);
@@ -283,7 +295,7 @@ public final class DuelUi {
     }
 
     /** A card picture, or its back with the name on it until the art has downloaded. */
-    private static void card(GuiGraphics g, int code, int x, int y, int w, int h) {
+    static void card(GuiGraphics g, int code, int x, int y, int w, int h) {
         CardArt.Texture art = code == 0 ? null : CardArt.get(code);
         if (art != null) {
             g.blit(art.location(), x, y, w, h, 0, 0, art.width(), art.height(), art.width(), art.height());
@@ -414,6 +426,10 @@ public final class DuelUi {
             button(g, font, x, y, PHASE_WIDTH, phase.name(), go != null, mx, my, () -> choose(target, null));
             y += BUTTON_HEIGHT + 2;
         }
+        button(g, font, x, y + 4, PHASE_WIDTH, "Log", true, mx, my, DuelUi::toggleLog);
+        if (logOpen) {
+            outline(g, x, y + 4, PHASE_WIDTH, BUTTON_HEIGHT, GOLD);
+        }
     }
 
     // ---- The menu on a card ----
@@ -507,7 +523,7 @@ public final class DuelUi {
 
     /** Buttons for a pick made on the field go under the phase buttons, clear of the zones. */
     private static int sideButtonsTop(int h) {
-        return h / 2 + PHASES.size() * (BUTTON_HEIGHT + 2) / 2 + 8;
+        return h / 2 + PHASES.size() * (BUTTON_HEIGHT + 2) / 2 + BUTTON_HEIGHT + 14;
     }
 
     /** Confirm and cancel for a pick made on the field or in the hand. */
@@ -755,6 +771,9 @@ public final class DuelUi {
                 return true;
             }
         }
+        if (DuelStaging.introRunning() || DuelStaging.resultShowing()) {
+            return true;
+        }
         if (menu != null) {
             menu = null;
             return true;
@@ -900,8 +919,73 @@ public final class DuelUi {
         openMenu(choices, mouseX, mouseY, null);
     }
 
-    /** Escape closes an open menu first. */
+    // ---- Duel log ----
+
+    private static final int LOG_WIDTH = 130;
+    private static boolean logOpen;
+    /** How many lines up from the newest the log is scrolled. */
+    private static int logScroll;
+
+    public static void toggleLog() {
+        logOpen = !logOpen;
+        logScroll = 0;
+    }
+
+    private static int[] logBox(int w, int h) {
+        int x = w - PHASE_WIDTH - 12 - LOG_WIDTH;
+        int y = DuelHud.promptBottom(w) - 2;
+        return new int[]{x, y, LOG_WIDTH, Math.max(40, h - HAND_HEIGHT - 10 - y)};
+    }
+
+    /** Everything that happened this duel, newest at the bottom; the mouse wheel scrolls it. */
+    private static void log(GuiGraphics g, Font font, int mx, int my, int w, int h) {
+        int[] box = logBox(w, h);
+        panel(g, box[0], box[1], box[2], box[3]);
+        g.drawString(font, "Duel log", box[0] + 4, box[1] + 3, GOLD);
+        List<FormattedCharSequence> lines = new ArrayList<>();
+        List<Integer> colors = new ArrayList<>();
+        for (int e = 0; e < ClientDuel.log().size(); e++) {
+            for (FormattedCharSequence line : font.split(Component.literal(ClientDuel.log().get(e)), box[2] - 8)) {
+                lines.add(line);
+                colors.add(e % 2 == 0 ? TEXT : DIM); // every other entry dimmed, so long ones stay together
+            }
+        }
+        int rows = (box[3] - 16) / 9;
+        logScroll = Math.max(0, Math.min(logScroll, lines.size() - rows));
+        int end = lines.size() - logScroll;
+        int first = Math.max(0, end - rows);
+        int y = box[1] + 14;
+        for (int i = first; i < end; i++) {
+            g.drawString(font, lines.get(i), box[0] + 4, y, colors.get(i));
+            y += 9;
+        }
+        if (logScroll > 0) {
+            g.drawString(font, "v " + logScroll + " more", box[0] + box[2] - 50, box[1] + 3, DIM);
+        }
+        hits.add(new Hit(box[0], box[1], box[2], box[3], () -> {
+        }));
+    }
+
+    /** The mouse wheel over the log scrolls it. */
+    public static boolean scroll(double mx, double my, double amount, int w, int h) {
+        if (!logOpen) {
+            return false;
+        }
+        int[] box = logBox(w, h);
+        if (mx < box[0] || mx >= box[0] + box[2] || my < box[1] || my >= box[1] + box[3]) {
+            return false;
+        }
+        logScroll += (int) Math.signum(amount) * 3;
+        logScroll = Math.max(0, logScroll);
+        return true;
+    }
+
+    /** Escape closes an open menu first, then the result screen. */
     public static boolean closeMenu() {
+        if (DuelStaging.resultShowing()) {
+            DuelStaging.closeResult();
+            return true;
+        }
         if (menu == null) {
             return false;
         }

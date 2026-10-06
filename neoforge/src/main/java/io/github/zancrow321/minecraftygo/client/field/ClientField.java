@@ -9,6 +9,8 @@ import io.github.zancrow321.minecraftygo.client.duel.DuelMode;
 import io.github.zancrow321.minecraftygo.engine.duel.Board;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
 import io.github.zancrow321.minecraftygo.engine.duel.FieldEvent;
+import io.github.zancrow321.minecraftygo.YgoData;
+import io.github.zancrow321.minecraftygo.client.duel.DuelStaging;
 import io.github.zancrow321.minecraftygo.client.duel.DuelUi;
 import io.github.zancrow321.minecraftygo.engine.protocol.CardState;
 import io.github.zancrow321.minecraftygo.engine.protocol.Loc;
@@ -68,7 +70,7 @@ public final class ClientField {
         lastBoard = null;
         // Wait for the duel disk to unfold, then grow the field; queued effects start once it is full size.
         revealAt = tick + DiskClient.deployTicks();
-        queueFree = revealAt + GROW_TICKS;
+        queueFree = revealAt + Math.max(GROW_TICKS, DuelStaging.INTRO_TICKS);
         scale = 0;
         FieldRenderer.reset();
     }
@@ -116,6 +118,16 @@ public final class ClientField {
     public static void updateScale(float partialTick) {
         double t = Mth.clamp((tick - revealAt + partialTick) / GROW_TICKS, 0, 1);
         scale = t * t * (3 - 2 * t);
+    }
+
+    /** When the field starts growing (and the duel's start plays), as a {@link #tick()}. */
+    public static long revealAt() {
+        return revealAt;
+    }
+
+    /** Whether every queued effect has played. */
+    public static boolean idle() {
+        return animations.isEmpty() && tick >= queueFree;
     }
 
     /** Whether the field has finished growing. */
@@ -182,7 +194,15 @@ public final class ClientField {
     public static void onView(DuelView view) {
         long start = Math.max(queueFree, tick);
         for (FieldEvent event : view.events()) {
-            animations.add(new FieldAnimation(event, start, FieldAnimation.duration(event), actor(event, view)));
+            int actor = actor(event, view);
+            if (actor != 0 && event.player() != view.you()
+                    && (event.kind() == FieldEvent.Kind.ACTIVATE || event.kind() == FieldEvent.Kind.SUMMON)) {
+                // The opponent's card is shown big first, then its effect plays.
+                DuelStaging.banner(actor, view.names().get(event.player()) + (event.kind() == FieldEvent.Kind.ACTIVATE
+                        ? " activates " : " summons ") + YgoData.text().cardName(actor), start);
+                start += DuelStaging.BANNER_TICKS;
+            }
+            animations.add(new FieldAnimation(event, start, FieldAnimation.duration(event), actor));
             start += FieldAnimation.spacing(event);
         }
         lastBoard = view.board();
@@ -205,7 +225,7 @@ public final class ClientField {
     public static void clientTick() {
         tick++;
         animations.removeIf(a -> a.finished(tick));
-        if (endsAt >= 0 && tick >= endsAt) {
+        if (endsAt >= 0 && tick >= endsAt && !DuelStaging.holdsField()) {
             clear();
             return;
         }
