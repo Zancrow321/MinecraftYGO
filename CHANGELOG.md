@@ -15,6 +15,11 @@
   in a deck box. `/ygo starter` opens the choice again for someone who chose "Later". Forbidden cards stay out of it.
 - Packs from loot and duel rewards favor newer sets.
 
+### Duel disk
+- New disk model: the blocky Battle City disk by burning-icecream (CC BY-NC 4.0). Standby is the hub with one wing
+  in front and one behind; when a duel starts the short wing swings under the hub and joins the long one into the
+  bent five-zone blade. The disk skins are recolors of the new model.
+
 ### Progression
 - New worlds start with Legend of Blue Eyes White Dragon, and operators unlock the TCG sets in release order:
   `/ygo progression status`, `next [count]`, `until <set code or date>`, `set <set code or date>` and `list`. Chat
