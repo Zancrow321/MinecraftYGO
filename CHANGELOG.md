@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Duel Arena
+- New Duel Arena Kit: sets up the Duelist Kingdom arena from the anime as one big model, 21 by 21 blocks, with a
+  grid of blue tiles, red and white sides, four lantern pylons and a red and a blue podium. Duelists on the podiums
+  duel over the arena and rise 3 blocks with them when the duel starts; the podiums come back down at the end. An
+  NPC opponent takes the free podium. Breaking any part packs the arena back into its kit.
+
 ### Holograms
 - Artwork holograms on a full board no longer run into each other: they fit their zone, all face the same way
   instead of each turning to the camera, stand a little lower, and their name and stats lines are smaller and cut

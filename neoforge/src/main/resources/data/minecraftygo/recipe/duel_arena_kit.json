@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {"item": "minecraftygo:duel_dome_kit"},
+    {"item": "minecraft:white_concrete"},
+    {"item": "minecraft:white_concrete"},
+    {"item": "minecraft:red_concrete"},
+    {"item": "minecraft:blue_concrete"},
+    {"item": "minecraft:lantern"},
+    {"item": "minecraft:lantern"},
+    {"item": "minecraft:piston"},
+    {"item": "minecraft:piston"}
+  ],
+  "result": {"id": "minecraftygo:duel_arena_kit", "count": 1}
+}

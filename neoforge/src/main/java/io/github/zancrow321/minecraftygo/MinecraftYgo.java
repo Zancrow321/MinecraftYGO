@@ -1,6 +1,7 @@
 package io.github.zancrow321.minecraftygo;
 
 import com.mojang.logging.LogUtils;
+import io.github.zancrow321.minecraftygo.arena.DuelArena;
 import io.github.zancrow321.minecraftygo.arena.DuelDome;
 import io.github.zancrow321.minecraftygo.client.YgoClientConfig;
 import io.github.zancrow321.minecraftygo.cosmetics.PlayerCosmetics;
@@ -48,6 +49,7 @@ public final class MinecraftYgo {
         YgoVillagers.register(modBus);
         RandomCardFunction.register(modBus);
         DuelDome.register(modBus);
+        DuelArena.register(modBus);
         container.registerConfig(ModConfig.Type.SERVER, YgoServerConfig.SPEC);
         modBus.addListener(YgoNetwork::register);
         if (FMLEnvironment.dist == Dist.CLIENT) {

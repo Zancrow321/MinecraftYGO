@@ -3,6 +3,7 @@ package io.github.zancrow321.minecraftygo.duel;
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.YgoServerConfig;
+import io.github.zancrow321.minecraftygo.arena.DuelArena;
 import io.github.zancrow321.minecraftygo.arena.DuelDome;
 import io.github.zancrow321.minecraftygo.cosmetics.Cosmetics;
 import io.github.zancrow321.minecraftygo.cosmetics.PlayerCosmetics;
@@ -336,7 +337,10 @@ public final class DuelManager {
         List<Entrant> seated = entrants;
         List<ServerPlayer> team0 = online.stream().filter(p -> teamOf(seated, p) == 0).toList();
         List<ServerPlayer> team1 = online.stream().filter(p -> teamOf(seated, p) == 1).toList();
-        DuelFieldPayload field = team0.isEmpty() ? turned(DuelDome.field(team1, team0)) : DuelDome.field(team0, team1);
+        DuelFieldPayload field = DuelArena.claim(team0, team1, invite.npc());
+        if (field == null) {
+            field = team0.isEmpty() ? turned(DuelDome.field(team1, team0)) : DuelDome.field(team0, team1);
+        }
         if (field == null && invite.npc() != null) {
             // Against an NPC the one person may be on either team; the field is built from their end.
             ServerPlayer person = online.get(0);
@@ -473,6 +477,11 @@ public final class DuelManager {
         } catch (UnsatisfiedLinkError | RuntimeException e) {
             MinecraftYgo.LOGGER.error("Could not start a duel", e);
             broadcast(entrants, Component.literal("The duel engine isn't available on this server."));
+            List<UUID> riders = new ArrayList<>(entrants.stream().map(Entrant::player).filter(Objects::nonNull).toList());
+            if (npc != null) {
+                riders.add(npc.getUUID());
+            }
+            DuelArena.release(riders);
             return;
         }
         UUID ante = anteBoxes == null ? null : takeAnte(entrants, anteBoxes, random);
@@ -673,11 +682,16 @@ public final class DuelManager {
                 if (player.onGround()) {
                     anchors.put(id, player.position());
                 }
-            } else if (player.position().distanceToSqr(spot) > 0.01) {
-                player.connection.teleport(spot.x, spot.y, spot.z, player.getYRot(), player.getXRot());
-                player.setDeltaMovement(Vec3.ZERO);
+            } else {
+                // On an arena podium the spot goes up with it.
+                Vec3 at = spot.add(0, DuelArena.lift(id), 0);
+                if (player.position().distanceToSqr(at) > 0.01) {
+                    player.connection.teleport(at.x, at.y, at.z, player.getYRot(), player.getXRot());
+                    player.setDeltaMovement(Vec3.ZERO);
+                }
             }
         }
+        DuelArena.tick(server, id -> duelsByPlayer.containsKey(id) && anchors.containsKey(id));
     }
 
     /** Counts down the waiting person's time for this turn; once it's gone, the stand-in bot chooses for them. */
@@ -779,6 +793,16 @@ public final class DuelManager {
                 }
             }
         }
+        List<UUID> riders = new ArrayList<>();
+        for (UUID seat : duel.seats()) {
+            if (seat != null) {
+                riders.add(seat);
+            }
+        }
+        if (duel.npc() != null) {
+            riders.add(duel.npc().getUUID());
+        }
+        DuelArena.release(riders);
         int winner = duel.table().winner();
         boolean decided = winner == 0 || winner == 1;
         Map<UUID, List<String>> rewards = new HashMap<>();
