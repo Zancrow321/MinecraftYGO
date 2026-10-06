@@ -3,6 +3,7 @@ package io.github.zancrow321.jadm.duel;
 import io.github.zancrow321.jadm.JadmServerConfig;
 import io.github.zancrow321.jadm.engine.data.BoosterSets;
 import io.github.zancrow321.jadm.item.BoosterPackItem;
+import io.github.zancrow321.jadm.points.Points;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -28,6 +29,11 @@ final class DuelRewards {
             ItemStack pack = BoosterPackItem.of(set.id());
             lines.add(verb + pack.getHoverName().getString());
             hand(player, pack);
+        }
+        int points = (won ? rewards.winPoints : rewards.lossPoints).get();
+        if (points > 0 && Points.active()) {
+            Points.get(player.server).add(player.server, player.getUUID(), points);
+            lines.add(verb + Points.format(points));
         }
         int emeralds = (won ? rewards.winEmeralds : rewards.lossEmeralds).get();
         if (emeralds > 0) {

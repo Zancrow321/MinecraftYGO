@@ -40,8 +40,8 @@
         "Jemanden rechtsklicken, der sich gerade duelliert (auch NPCs), oder `{cmd} watch <player>`. Zuschauer sehen Feld, Lebenspunkte und Protokoll, aber keine verdeckten Karten. Mit Escape und \"Zuschauen beenden\" oder `{cmd} unwatch` gehst du wieder.",
         "# Siege und Niederlagen",
         "Jedes Duell zählt in deiner Bilanz: Siege, Niederlagen und Unentschieden gegen Spieler und gegen NPCs und Bots, dazu deine Siegesserie. Der Ergebnisbildschirm zeigt sie, `{cmd} stats` im Chat, `{cmd} stats <player>` die eines anderen und `{cmd} stats top` die zehn besten.",
-        "- Ein Sieg gegen einen Spieler bringt {server:results.players.winPacks} Packs, {server:results.players.winEmeralds} Smaragde und {server:results.players.winXp} XP; eine Niederlage {server:results.players.lossPacks} Packs, {server:results.players.lossEmeralds} Smaragde, {server:results.players.lossXp} XP.",
-        "- Ein Sieg gegen einen NPC bringt {server:results.npcs.winPacks} Packs, {server:results.npcs.winEmeralds} Smaragde und {server:results.npcs.winXp} XP; eine Niederlage {server:results.npcs.lossPacks} Packs, {server:results.npcs.lossEmeralds} Smaragde, {server:results.npcs.lossXp} XP.",
+        "- Ein Sieg gegen einen Spieler bringt {server:results.players.winPacks} Packs, {server:results.players.winPoints} DP, {server:results.players.winEmeralds} Smaragde und {server:results.players.winXp} XP; eine Niederlage {server:results.players.lossPacks} Packs, {server:results.players.lossPoints} DP, {server:results.players.lossEmeralds} Smaragde, {server:results.players.lossXp} XP.",
+        "- Ein Sieg gegen einen NPC bringt {server:results.npcs.winPacks} Packs, {server:results.npcs.winPoints} DP, {server:results.npcs.winEmeralds} Smaragde und {server:results.npcs.winXp} XP; eine Niederlage {server:results.npcs.lossPacks} Packs, {server:results.npcs.lossPoints} DP, {server:results.npcs.lossEmeralds} Smaragde, {server:results.npcs.lossXp} XP.",
         "# Mit welchem Deck du spielst",
         "Mit deiner ersten legalen Deckbox, zuerst in den Händen gesucht, dann im Inventar. Ohne eine spielst du mit Yugis Starter-Deck, außer der Server hat das abgeschaltet."
       ]
@@ -234,7 +234,7 @@
         "- `[progression] announce` = {server:progression.announce}: Freischaltungen im Chat ansagen.",
         "- `[cards] lockedInDeck` = {server:cards.lockedInDeck}: gesperrte Karten bleiben aus Decks draußen.",
         "- `[results] trackRecord` = {server:results.trackRecord}, `announce` = {server:results.announce}, `rewardBotDuels` = {server:results.rewardBotDuels}: Duell-Bilanzen, Ergebnisse im Chat, Belohnungen für Bot-Duelle.",
-        "- `[results.players]` und `[results.npcs]`: `winPacks`, `winEmeralds`, `winXp`, `lossPacks`, `lossEmeralds`, `lossXp` (siehe Duelle); `[results.npcs] rematchMinutes` = {server:results.npcs.rematchMinutes}.",
+        "- `[results.players]` und `[results.npcs]`: `winPacks`, `winPoints`, `winEmeralds`, `winXp`, `lossPacks`, `lossPoints`, `lossEmeralds`, `lossXp` (siehe Duelle; DP nur mit Punkten als Währung); `[results.npcs] rematchMinutes` = {server:results.npcs.rematchMinutes}.",
         "- `[shop] currency` = {server:shop.currency}: \"points\" oder ein Item wie minecraft:emerald. `priceMultiplier` = {server:shop.priceMultiplier}, `dynamicPrices` = {server:shop.dynamicPrices}, `wanderingTrader` = {server:shop.wanderingTrader}.",
         "- `[shop] newestAlways` = {server:shop.newestAlways}, `rotatingOlder` = {server:shop.rotatingOlder}, `rotationDays` = {server:shop.rotationDays}: das Sortiment des Kartenhändlers.",
         "- `[shop.prices]` und `[shop.stock]`: was alles kostet (0 schaltet einen Handel ab) und wie viel ein Händler vorrätig hat.",

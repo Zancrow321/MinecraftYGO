@@ -132,9 +132,10 @@ In game:
 - **Wins and losses:** each player's record (wins, losses, draws, against players and against NPCs and bots, wins in
   a row) shows on the result screen after a duel; `/jadm stats [player]` shows it in chat, `/jadm stats top` the ten
   players with the most wins and `/jadm stats reset <player>` (operators) clears one. What a duel brings is set in
-  `[results.players]` and `[results.npcs]` of the server config: booster packs, emeralds and experience for each
-  winner (`winPacks`, `winEmeralds`, `winXp`) and each loser (`lossPacks`, `lossEmeralds`, `lossXp`); by default
-  only beating an NPC gives a pack. `[results] rewardBotDuels` rewards duels against the bot too, `announce` says
+  `[results.players]` and `[results.npcs]` of the server config: booster packs, Duel Points, emeralds and experience
+  for each winner (`winPacks`, `winPoints`, `winEmeralds`, `winXp`) and each loser (`lossPacks`, `lossPoints`,
+  `lossEmeralds`, `lossXp`); by default a win brings 100 DP and a loss 20 DP (with points as the currency), and
+  beating an NPC a pack too. `[results] rewardBotDuels` rewards duels against the bot too, `announce` says
   in chat who won each duel and `trackRecord = false` turns the record off.
 - **Tag duels (2v2):** `/jadm tag <partner> <opponent1> <opponent2>`, where any of them can be `bot`. Partners share
   life points and the field and take turns with their own decks; only the one whose turn it is answers prompts and
