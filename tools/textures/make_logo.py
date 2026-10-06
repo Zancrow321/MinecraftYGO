@@ -1,5 +1,6 @@
 """Draws the mod's logo in a simple Minecraft pixel style: two cards with the classic brown card back and its swirl,
-facing off with a spark between them. It is drawn on a 32x32 grid and scaled up without smoothing, so every pixel stays a crisp block.
+facing off with a spark between them. It is drawn on a 32x32 grid and scaled up without smoothing, so every pixel
+stays a crisp block.
 
 Writes the icon (shown in the mod list and used as the Modrinth/CurseForge icon), the same icon without its
 background, and a 1280x400 banner with the mod's name for the top of the store descriptions.
