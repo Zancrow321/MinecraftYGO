@@ -4,12 +4,29 @@
 
 ### Handbook
 - New **Duelist's Handbook**: an open book with a title page, clickable contents and 13 chapters on dueling and duel
-  records, the duel controls, collecting and foils, decks, shops and Duel Points, progression and rules, arenas, NPC
+  records, the duel controls, collecting and foils, decks, shops and Duel Points, progression and rules, arenas and tournaments, NPC
   duelists, cosmetics, every command and every setting. Keys show your current bindings, settings show the world's current values, crafting grids come
   from the real recipes, and commands can be clicked to type them in chat. English and German.
 - Every player gets it once on their first join (also players of existing worlds, on their next join); `/ygo guide`
   opens it any time, and a book and paper craft a new one. Both can be turned off: `[guide] giveOnFirstJoin` and
   `[guide] craftable`.
+
+### Tournaments
+- Tournaments in four formats: single elimination, double elimination with a losers' bracket and a grand final
+  reset, Swiss rounds with an optional top cut, and round robin. Operators open one with `/ygo tournament create`,
+  or a schedule in the config opens them by themselves; players join from a chat link or `/ygo tournament join`.
+- Matches are played on the Duel Arenas added with `/ygo tournament arena add`: duelists are brought onto the podiums
+  when an arena is free and sent back afterwards. NPC duelists fill empty seats, stand on the podium against
+  players and play each other unseen.
+- The tournament window (`/ygo tournament`) shows the bracket, the Swiss or round robin table, the matches and the
+  rules and prizes, and follows the tournament live.
+- A new `[tournament]` config section holds every setting, and each tournament can change them while it is open
+  with `/ygo tournament set`: format, best of, number of duelists, registration time, NPC fillers, Swiss rounds and
+  top cut, rules, banlist, life points, time and turn limits, locked decks, entry fee and pot, prizes per place,
+  no-show time and announcements. A tournament survives a server restart.
+- Entry fees are paid in the shop currency (Duel Points by default, or an item), and prizes can include Duel
+  Points (`points 500`). Tournament games don't give the `[results]` duel rewards; the tournament's prizes
+  replace them.
 
 ### Foil cards
 - Foil cards shine like the real ones, in the inventory, in your hand, in the world, in the binder and when a pack

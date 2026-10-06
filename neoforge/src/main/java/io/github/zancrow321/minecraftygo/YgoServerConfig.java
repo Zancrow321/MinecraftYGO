@@ -164,7 +164,10 @@ public final class YgoServerConfig {
             .defineInRange("rematchMinutes", 20, 0, 100_000);
 
     static {
-        BUILDER.pop(2).push("guide");
+        // The defaults every new tournament starts from; its host can change them for that tournament.
+        BUILDER.pop(2).push("tournament");
+        io.github.zancrow321.minecraftygo.tournament.TournamentOptions.define(BUILDER);
+        BUILDER.pop().push("guide");
     }
 
     public static final ModConfigSpec.BooleanValue GUIDE_ON_FIRST_JOIN = BUILDER

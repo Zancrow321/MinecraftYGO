@@ -38,6 +38,11 @@ public final class ClientScreens {
                 payload.settings()));
     }
 
+    /** The tournament changed (or the player asked to see it): keep it, and open or refresh the window. */
+    public static void tournament(io.github.zancrow321.minecraftygo.network.TournamentPayload payload) {
+        io.github.zancrow321.minecraftygo.client.tournament.TournamentScreen.receive(payload.open(), payload.json());
+    }
+
     public static void packOpened(PackOpenedPayload payload) {
         Minecraft.getInstance().setScreen(new PackOpenScreen(payload.setName(), payload.cards()));
     }

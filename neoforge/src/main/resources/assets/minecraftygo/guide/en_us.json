@@ -140,7 +140,7 @@
       ]
     },
     {
-      "title": "Duel Dome and Arena",
+      "title": "Arenas and tournaments",
       "icon": "{modid}:duel_arena_kit",
       "text": [
         "# Duel Dome",
@@ -150,7 +150,15 @@
         "[recipe {modid}:duelist_platform]",
         "# Duel Arena",
         "A **Duel Arena Kit** sets up the Duelist Kingdom arena on flat ground. When everyone stands on a podium, the field appears over the arena and the podiums lift the duelists 3 blocks up. An NPC opponent walks over to the free podium. Break any part (not during a duel) to pack it back into its kit.",
-        "[recipe {modid}:duel_arena_kit]"
+        "[recipe {modid}:duel_arena_kit]",
+        "---",
+        "# Tournaments",
+        "An operator opens a tournament with `{cmd} tournament create [format] [name]`, or the server opens them by itself on a schedule. Click **[Join]** in chat or use `{cmd} tournament join`. With `lockDeck` you play the whole tournament with the deck you joined with.",
+        "- **single**: single elimination; **double**: double elimination with a losers' bracket; **swiss**: Swiss rounds, with a top cut if set; **roundrobin**: everyone plays everyone.",
+        "- When registration closes, NPC duelists fill empty seats and the field is paired round by round.",
+        "- Matches are played only on Duel Arenas added with `{cmd} tournament arena add`. When your match is due you are brought onto a podium; click **[Ready]** to start sooner. Afterwards you go back to where you were.",
+        "- If you are offline or in another duel for {server:tournament.noShowMinutes} minutes when your match is due, you lose it.",
+        "`{cmd} tournament` opens the tournament window: bracket (drag to move it), table, matches, and rules and prizes. Entry fees are paid in the shop currency, and prizes replace the usual duel rewards."
       ]
     },
     {
@@ -195,10 +203,16 @@
         "- `{cmd} starter`: pick your first deck if you haven't yet.",
         "- `{cmd} cosmetics`: disk skins and card sleeves.",
         "- `{cmd} version`: the version of the rules engine.",
+        "# Tournaments",
+        "- `{cmd} tournament`: the tournament window; `bracket`, `table`, `matches` and `rules` open it at that tab.",
+        "- `{cmd} tournament join`, `leave` and `ready`: take part, drop out, start your match.",
+        "- `{cmd} tournament status` and `settings`: where it stands and what it plays with.",
+        "- Hosts: `{cmd} tournament create [format] [name]`, `set <setting> <value>`, `start`, `cancel`, `addnpc [count]`, `kick <name>`.",
         "# For operators",
         "- `{cmd} progression status`, `next [count]`, `until <set>`, `set <set>` and `list [page]`: see Progression and rules.",
         "- `{cmd} dp <player>` and `{cmd} dp give|take|set <players> <amount>`: look at and change Duel Points.",
         "- `{cmd} stats reset <player>`: clear a duel record.",
+        "- `{cmd} tournament arena add`, `arena remove [number]` and `arena list`: the Duel Arenas tournaments play on (stand on one to add it); `{cmd} tournament award <name>`: decide a match.",
         "- `{cmd} gallery [page]`: lays out a page of monster models to look at; `{cmd} gallery clear` removes them."
       ]
     },
@@ -227,6 +241,8 @@
         "- `[shop.machine]`: `enabled` = {server:shop.machine.enabled}, `products` = {server:shop.machine.products}, `limitPerPlayer` = {server:shop.machine.limitPerPlayer}, `command` = {server:shop.machine.command}, `operatorsOnly` = {server:shop.machine.operatorsOnly}.",
         "- `[shop.players]`: `enabled` = {server:shop.players.enabled}, `maxPerPlayer` = {server:shop.players.maxPerPlayer}, `taxPercent` = {server:shop.players.taxPercent}, `currencyOnly` = {server:shop.players.currencyOnly}.",
         "- `[shop.points]`: `startBalance` = {server:shop.points.startBalance}, `dailyBonus` = {server:shop.points.dailyBonus}, `pricePoints` = {server:shop.points.pricePoints} (DP per 1 of a price), `transfers` = {server:shop.points.transfers}, `emeraldExchange` = {server:shop.points.emeraldExchange}, `sellCommon` to `sellSecret`.",
+        "- `[tournament]`: the defaults of every new tournament; its host can change them with `{cmd} tournament set`. `format` = {server:tournament.format}, `bestOf` = {server:tournament.bestOf}, `minPlayers` = {server:tournament.minPlayers}, `maxPlayers` = {server:tournament.maxPlayers}, `registrationMinutes` = {server:tournament.registrationMinutes}, `npcFill` = {server:tournament.npcFill}, `lockDeck` = {server:tournament.lockDeck}, `entryFee` = {server:tournament.entryFee}, `potShare` = {server:tournament.potShare}, `prizesFirst` to `prizesEveryone`, and more (`{cmd} tournament settings` lists them).",
+        "- `[tournament] playersCanHost` = {server:tournament.playersCanHost}: players may host. `schedule`: times such as \"20:00\" or \"SAT 18:30\" when tournaments open by themselves.",
         "- `[guide] giveOnFirstJoin` = {server:guide.giveOnFirstJoin} and `craftable` = {server:guide.craftable}: this book.",
         "# Your own settings",
         "In `config/{modid}-client.toml`:",

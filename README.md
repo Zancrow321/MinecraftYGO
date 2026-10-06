@@ -86,7 +86,7 @@ In game:
   traders keep taking emeralds.
 - **Handbook:** every player gets the **Duelist's Handbook** once on their first join (`[guide] giveOnFirstJoin`);
   `/ygo guide` opens it any time and a new one is crafted from a book and paper (`[guide] craftable`). It explains
-  dueling, the duel controls with your current key bindings, collecting, decks, the shops and Duel Points, progression, arenas,
+  dueling, the duel controls with your current key bindings, collecting, decks, the shops and Duel Points, progression, arenas and tournaments,
   NPCs, cosmetics, every command and every setting with the world's current value, with crafting grids drawn from the
   real recipes. Its pages are `assets/minecraftygo/guide/<language>.json`, a list of chapters whose paragraphs take a
   little markup (`# heading`, `- bullet`, `**bold**`, `` `command` ``, `[recipe id]`, `---` for a new page, and
@@ -178,6 +178,25 @@ In game:
   only attacks when it wins the fight and saves its traps for your turn. Tournament decks live in
   `engine/src/main/resources/minecraftygo/tournament_decks.json`, listed by card name with the date they were
   played.
+- **Tournaments:** single elimination, double elimination (with a losers' bracket and a grand final reset), Swiss
+  rounds with an optional top cut, or round robin. An operator opens one with `/ygo tournament create [format]
+  [name]` (or `[tournament] schedule` opens them by themselves, e.g. `["20:00", "SAT 18:30"]`); players join with
+  the [Join] link in chat or `/ygo tournament join`, with the deck they will play the whole tournament
+  (`lockDeck`). When registration closes, NPC duelists fill empty seats (`npcFill`, `npcCount`), the field is seeded
+  at random and paired round by round. Matches are only played on the Duel Arenas an operator added with
+  `/ygo tournament arena add` (standing on one): each match waits for a free arena, its duelists are brought onto the
+  podiums, the duel starts after a short call (or as soon as both click [Ready]), and afterwards everyone is sent
+  back to where they were. An NPC opponent stands on the other podium. Matches between two NPCs are played out by
+  bots unseen. A duelist who is offline or in another duel for `noShowMinutes` loses the match.
+  `/ygo tournament` opens the tournament window: the bracket (drag to move around), the table, the matches and the
+  rules and prizes, with buttons to join, leave, get ready, start and call off. Everything is set in the
+  `[tournament]` section of `serverconfig/minecraftygo-server.toml` and can be changed for one tournament with
+  `/ygo tournament set <setting> <value>` while it is open (`/ygo tournament settings` lists them): format, best of
+  1/3/5, minimum and maximum duelists, registration time, Swiss rounds, top cut, third place match, ruleset,
+  banlist, life points, turn time limit, a turn limit after which a game is decided on life points, entry fee and
+  how the pot is shared, and prizes per place (`pack 5`, `pack:LOB 2`, `card 89631139`, `xp 100`,
+  `minecraft:diamond 3` or `command <command>` with `{player}`). Prizes for players who are offline wait until they
+  join. Hosts can also `start`, `cancel`, `addnpc [count]`, `kick <name>`; operators can `award <name>` a match.
 - **Cosmetics:** `/ygo cosmetics` (or K) picks your **disk skin** (Battle City, Slifer Red, Ra Yellow, Obelisk Blue,
   Shadow, Crimson, Gold) and your **card sleeves**, which your opponent sees on your face-down cards and piles.
   Locked ones show how to unlock them: winning duels, beating NPC duelists or opening booster packs. The skin is

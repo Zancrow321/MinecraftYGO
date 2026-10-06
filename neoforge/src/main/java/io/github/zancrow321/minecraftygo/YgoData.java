@@ -222,7 +222,11 @@ public final class YgoData {
 
     /** The rules at a progression step (any step outside a progression world). */
     public static Ruleset ruleset(int step) {
-        String setting = YgoServerConfig.SPEC.isLoaded() ? YgoServerConfig.RULESET.get() : "auto";
+        return ruleset(step, YgoServerConfig.SPEC.isLoaded() ? YgoServerConfig.RULESET.get() : "auto");
+    }
+
+    /** The rules for a {@code ruleset} setting such as "auto" or "goat", at a progression step. */
+    public static Ruleset ruleset(int step, String setting) {
         if (!setting.strip().equalsIgnoreCase("auto")) {
             return Ruleset.parse(setting);
         }
@@ -245,7 +249,12 @@ public final class YgoData {
 
     /** The banlist at a progression step (any step outside a progression world). */
     public static Banlist banlist(int step) {
-        String setting = (YgoServerConfig.SPEC.isLoaded() ? YgoServerConfig.BANLIST.get() : joinedBanlist).strip();
+        return banlist(step, YgoServerConfig.SPEC.isLoaded() ? YgoServerConfig.BANLIST.get() : joinedBanlist);
+    }
+
+    /** The banlist for a {@code banlist} setting such as "auto", "none" or a file name, at a progression step. */
+    public static Banlist banlist(int step, String setting) {
+        setting = setting.strip();
         if (setting.equalsIgnoreCase("none")) {
             return new Banlist("none", Map.of());
         }
