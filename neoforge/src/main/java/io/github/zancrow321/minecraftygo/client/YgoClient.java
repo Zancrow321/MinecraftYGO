@@ -5,6 +5,7 @@ import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.client.disk.DiskClient;
 import io.github.zancrow321.minecraftygo.client.duel.DuelMode;
 import io.github.zancrow321.minecraftygo.client.collection.CardItemRenderer;
+import io.github.zancrow321.minecraftygo.client.collection.ProductItemRenderer;
 import io.github.zancrow321.minecraftygo.client.disk.DiskItemRenderer;
 import io.github.zancrow321.minecraftygo.client.disk.DiskLayer;
 import io.github.zancrow321.minecraftygo.client.disk.DiskModel;
@@ -30,7 +31,9 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.api.distmarker.Dist;
@@ -128,6 +131,35 @@ public final class YgoClient {
                     return renderer;
                 }
             }, YgoItems.CARD.get());
+            productRenderer(event, YgoItems.BOOSTER_PACK.get(), "booster_pack", 1, 1);
+            productRenderer(event, YgoItems.STRUCTURE_DECK.get(), "structure_deck", 3, 0.8f);
+            productRenderer(event, YgoItems.TIN.get(), "tin", 2.5f, 0.85f);
+        }
+
+        /**
+         * Real product pictures for packs, decks and tins; {@code thickness} in sixteenths, {@code size} outside slots.
+         */
+        private static void productRenderer(RegisterClientExtensionsEvent event, Item item,
+                                            String name, float thickness, float size) {
+            event.registerItem(new IClientItemExtensions() {
+                private ProductItemRenderer renderer;
+
+                @Override
+                public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                    if (renderer == null) {
+                        renderer = new ProductItemRenderer(name, thickness, size);
+                    }
+                    return renderer;
+                }
+            }, item);
+        }
+
+        /** The packs', decks' and tins' own icons, drawn when there is no product picture. */
+        @SubscribeEvent
+        public static void registerModels(ModelEvent.RegisterAdditional event) {
+            for (String item : new String[]{"booster_pack", "structure_deck", "tin"}) {
+                event.register(ProductItemRenderer.iconModel(item));
+            }
         }
 
         @SubscribeEvent

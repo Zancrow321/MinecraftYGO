@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * placeholder until {@link #get} or {@link #hologram} returns a texture.
  */
 public final class CardArt {
-    private static final HttpClient HTTP = HttpClient.newBuilder()
+    static final HttpClient HTTP = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .followRedirects(HttpClient.Redirect.NORMAL)
             .build();
@@ -141,7 +141,7 @@ public final class CardArt {
         return image;
     }
 
-    private static byte[] read(Path file) {
+    static byte[] read(Path file) {
         try {
             return Files.readAllBytes(file);
         } catch (IOException e) {
@@ -149,19 +149,27 @@ public final class CardArt {
         }
     }
 
-    private static void write(Path file, byte[] data) {
+    static void write(Path file, byte[] data) {
         try {
             Files.createDirectories(file.getParent());
             Path tmp = file.resolveSibling(file.getFileName() + ".part");
             Files.write(tmp, data);
             Files.move(tmp, file, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            MinecraftYgo.LOGGER.warn("Could not cache card art {}: {}", file, e.toString());
+            MinecraftYgo.LOGGER.warn("Could not cache image {}: {}", file, e.toString());
         }
     }
 
-    /** Decodes JPEG or PNG; Minecraft's own loader only reads PNG. */
-    private static NativeImage decode(byte[] data) {
+    static NativeImage decode(byte[] data) {
+        return toNative(pixels(data));
+    }
+
+    /** An image as ARGB pixels, row by row. */
+    record Pixels(int width, int height, int[] argb) {
+    }
+
+    /** Decodes JPEG or PNG into ARGB pixels; Minecraft's own loader only reads PNG. */
+    static Pixels pixels(byte[] data) {
         BufferedImage source;
         try {
             source = ImageIO.read(new ByteArrayInputStream(data));
@@ -171,10 +179,16 @@ public final class CardArt {
         if (source == null) {
             throw new IllegalStateException("not an image");
         }
-        NativeImage image = new NativeImage(source.getWidth(), source.getHeight(), false);
-        for (int y = 0; y < source.getHeight(); y++) {
-            for (int x = 0; x < source.getWidth(); x++) {
-                int argb = source.getRGB(x, y);
+        int w = source.getWidth();
+        int h = source.getHeight();
+        return new Pixels(w, h, source.getRGB(0, 0, w, h, null, 0, w));
+    }
+
+    static NativeImage toNative(Pixels pixels) {
+        NativeImage image = new NativeImage(pixels.width(), pixels.height(), false);
+        for (int y = 0; y < pixels.height(); y++) {
+            for (int x = 0; x < pixels.width(); x++) {
+                int argb = pixels.argb()[y * pixels.width() + x];
                 // NativeImage stores ABGR.
                 int abgr = (argb & 0xFF00FF00) | ((argb >> 16) & 0xFF) | ((argb & 0xFF) << 16);
                 image.setPixelRGBA(x, y, abgr);

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Real products
+- Booster packs, structure and starter decks and tins look like the real products: the item shows the product's
+  picture with its background cut away, in slots, in the hand, on the ground and in item frames, as a pack, a
+  thicker deck box or a tin. The pictures come from YGOPRODeck on first view, like card art, and none ship with the
+  mod. A random pack, a product without a picture, or `realProductImages = false` in the client config keeps the
+  old icon.
+
 ### Duel comfort
 - Graveyards, banished cards and extra decks of both duelists can be looked through at any time: click the pile
   (right-click when a card there can be activated) and a window shows its cards, newest first. Hovering a card
