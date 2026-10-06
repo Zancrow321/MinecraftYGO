@@ -85,8 +85,61 @@ public final class YgoServerConfig {
             .comment("Every this many days the older products change.")
             .defineInRange("rotationDays", 7, 1, 1000);
 
+    public static final ModConfigSpec.BooleanValue TRACK_RECORD = BUILDER.pop().push("results")
+            .comment("Count each player's wins, losses and draws, against players and against NPCs and bots "
+                    + "(/ygo stats, /ygo stats top and the result screen).")
+            .define("trackRecord", true);
+
+    public static final ModConfigSpec.BooleanValue ANNOUNCE_RESULTS = BUILDER
+            .comment("Tell everyone on the server in chat who won each duel.")
+            .define("announce", false);
+
+    public static final ModConfigSpec.BooleanValue REWARD_BOT_DUELS = BUILDER
+            .comment("Duels against the bot (/ygo duel bot, bot seats in tag duels) give the [results.npcs] rewards "
+                    + "too. Off, they only count for the record.")
+            .define("rewardBotDuels", false);
+
+    /** What a duel against other people brings, in {@code [results.players]}. */
+    public static final Rewards PLAYER_REWARDS = new Rewards(BUILDER
+            .comment("Rewards for duels against other players. A draw brings nothing.").push("players"), 0);
+
+    /** What a duel against an NPC duelist brings, in {@code [results.npcs]}. */
+    public static final Rewards NPC_REWARDS = new Rewards(BUILDER.pop()
+            .comment("Rewards for duels against NPC duelists. A draw brings nothing.").push("npcs"), 1);
+
+    public static final ModConfigSpec.IntValue NPC_REMATCH_MINUTES = BUILDER
+            .comment("After you beat an NPC duelist it won't duel you again for this many minutes (20 is one "
+                    + "Minecraft day); 0 means right away.")
+            .defineInRange("rematchMinutes", 20, 0, 100_000);
+
     static {
-        BUILDER.pop();
+        BUILDER.pop(2);
+    }
+
+    /** Booster packs, emeralds and experience points for the winners and the losers of a duel. */
+    public static final class Rewards {
+        public final ModConfigSpec.IntValue winPacks;
+        public final ModConfigSpec.IntValue winEmeralds;
+        public final ModConfigSpec.IntValue winXp;
+        public final ModConfigSpec.IntValue lossPacks;
+        public final ModConfigSpec.IntValue lossEmeralds;
+        public final ModConfigSpec.IntValue lossXp;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private Rewards(ModConfigSpec.Builder builder, int defaultWinPacks) {
+            winPacks = builder.comment("Booster packs each winner gets (a random set that is out).")
+                    .defineInRange("winPacks", defaultWinPacks, 0, 64);
+            winEmeralds = builder.comment("Emeralds each winner gets.")
+                    .defineInRange("winEmeralds", 0, 0, 640);
+            winXp = builder.comment("Experience points each winner gets.")
+                    .defineInRange("winXp", 0, 0, 100_000);
+            lossPacks = builder.comment("Booster packs each loser gets as a consolation.")
+                    .defineInRange("lossPacks", 0, 0, 64);
+            lossEmeralds = builder.comment("Emeralds each loser gets as a consolation.")
+                    .defineInRange("lossEmeralds", 0, 0, 640);
+            lossXp = builder.comment("Experience points each loser gets as a consolation.")
+                    .defineInRange("lossXp", 0, 0, 100_000);
+        }
     }
 
     public static final ModConfigSpec SPEC = BUILDER.build();

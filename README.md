@@ -88,6 +88,13 @@ In game:
   card from their deck box and the winner takes both. The cards are held by the server until the duel ends (a
   crash or restart returns them), and a winner who logged off gets them on their next login. Servers can turn
   ante off with `allowAnte = false`.
+- **Wins and losses:** each player's record (wins, losses, draws, against players and against NPCs and bots, wins in
+  a row) shows on the result screen after a duel; `/ygo stats [player]` shows it in chat, `/ygo stats top` the ten
+  players with the most wins and `/ygo stats reset <player>` (operators) clears one. What a duel brings is set in
+  `[results.players]` and `[results.npcs]` of the server config: booster packs, emeralds and experience for each
+  winner (`winPacks`, `winEmeralds`, `winXp`) and each loser (`lossPacks`, `lossEmeralds`, `lossXp`); by default
+  only beating an NPC gives a pack. `[results] rewardBotDuels` rewards duels against the bot too, `announce` says
+  in chat who won each duel and `trackRecord = false` turns the record off.
 - **Tag duels (2v2):** `/ygo tag <partner> <opponent1> <opponent2>`, where any of them can be `bot`. Partners share
   life points and the field and take turns with their own decks; only the one whose turn it is answers prompts and
   sees the team's hand.
@@ -124,7 +131,7 @@ In game:
   its own deck: a well-known tournament deck of an era that has come (Goat Control, Chaos Return, Tele-DAD...), a
   starter or structure deck that is out, or a random deck from the card pool with an Extra Deck of what the pool
   offers, favoring cards with a 3D model. The NPC says which deck it plays. Right-click one to duel it; beat it and
-  it gives you a booster pack, then won't duel you again for a Minecraft day. They can't be hurt while dueling. A
+  it gives you a booster pack, then won't duel you again for a Minecraft day (`[results.npcs]`). They can't be hurt while dueling. A
   **Duelist Spawn Egg** is in the creative tab. NPCs and the `bot` seats play with a heuristic AI that summons its
   strongest monsters, brings out a Synchro, Xyz or Link monster when that beats what it has, Pendulum Summons,
   only attacks when it wins the fight and saves its traps for your turn. Tournament decks live in
