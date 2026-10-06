@@ -4,7 +4,7 @@
 Reads the TCG lists of DawnbrandBots' yaml-yugi-limit-regulation (one file per list, keyed by Konami's card id) and
 YGOPRODeck's card dump (which maps Konami ids to passcodes), and writes
 
-  engine/src/main/resources/minecraftygo/banlists.json   [{"date": "2005-03-01", "name": "TCG, March 2005",
+  engine/src/main/resources/jadm/banlists.json   [{"date": "2005-03-01", "name": "TCG, March 2005",
                                                            "limits": {"<passcode>": <copies>, ...}}, ...]
 
 oldest first. A progression world plays with the newest list whose date is not after its newest unlocked product.
@@ -20,7 +20,7 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "engine/src/main/resources/minecraftygo/banlists.json"
+OUT = ROOT / "engine/src/main/resources/jadm/banlists.json"
 
 
 def main():

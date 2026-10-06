@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": ["IGI", "GDG", "IRI"],
+  "key": {
+    "I": {"item": "minecraft:iron_ingot"},
+    "G": {"item": "minecraft:light_blue_stained_glass"},
+    "D": {"item": "minecraft:diamond"},
+    "R": {"item": "minecraft:redstone_block"}
+  },
+  "result": {"id": "jadm:duel_dome_core", "count": 1}
+}

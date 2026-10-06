@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "jadm:item/booster_pack",
+    "layer1": "jadm:item/booster_pack_trim"
+  }
+}

@@ -12,7 +12,7 @@ from pathlib import Path
 
 from PIL import Image
 
-OUT = Path("neoforge/src/main/resources/assets/minecraftygo/textures/foil")
+OUT = Path("neoforge/src/main/resources/assets/jadm/textures/foil")
 
 
 def save(img, name):

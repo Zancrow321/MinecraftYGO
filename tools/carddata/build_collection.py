@@ -4,9 +4,9 @@
 Reads pool.json (from tools/models/import_models.py), cards.json (from build_carddata.py) and YGOPRODeck's card
 dump and set list, and writes:
 
-  engine/src/main/resources/minecraftygo/sets.json      booster sets of the modeled pool: their pool cards and rarities
-  engine/src/main/resources/minecraftygo/products.json  every TCG product in release order (see below)
-  engine/src/main/resources/minecraftygo/banlist.json   how many copies of each restricted card a deck may hold
+  engine/src/main/resources/jadm/sets.json      booster sets of the modeled pool: their pool cards and rarities
+  engine/src/main/resources/jadm/products.json  every TCG product in release order (see below)
+  engine/src/main/resources/jadm/banlist.json   how many copies of each restricted card a deck may hold
 
 A set becomes a booster when it is an original booster (a three-letter code without a region marker such as
 "-EN", and not a starter deck or tournament pack), at least MIN_COVERAGE of its cards are in the pool and it has at least MIN_CARDS of them. As new models
@@ -14,7 +14,7 @@ join the pool, later sets (Pharaoh's Servant, ...) start to qualify on their own
 cards.
 
 The banlist is the OCG list in force at the era cutoff as best known (May 2000): only the restricted cards that
-are in the pool are written. Server owners can replace it with config/minecraftygo/banlist.json.
+are in the pool are written. Server owners can replace it with config/jadm/banlist.json.
 
 products.json lists every TCG product YGOPRODeck knows that has a release date and at least one bundled card,
 oldest first: its id, set code, name, date, a rough kind (booster, deck, tin, promo, special), every card with
@@ -32,7 +32,7 @@ from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-RESOURCES = ROOT / "engine/src/main/resources/minecraftygo"
+RESOURCES = ROOT / "engine/src/main/resources/jadm"
 MIN_COVERAGE = 0.6
 MIN_CARDS = 60
 RARITIES = {

@@ -7,7 +7,7 @@ from pathlib import Path
 
 from PIL import Image
 
-ASSETS = Path("neoforge/src/main/resources/assets/minecraftygo/textures")
+ASSETS = Path("neoforge/src/main/resources/assets/jadm/textures")
 
 
 def save(img, path):
