@@ -56,10 +56,13 @@ public record CardPool(String cutoff, List<Integer> monsters, List<Integer> spel
         playable = Set.copyOf(playable);
     }
 
-    /** The pool for a mode, built from the bundled data. */
+    /**
+     * The pool for a mode, built from the bundled data. For {@link PoolMode#PROGRESSION} that is every card; the pool
+     * of one progression step is {@link Progression#pool}.
+     */
     public static CardPool of(PoolMode mode, CardDatabase cards) {
         CardPool modeled = loadBundled();
-        return mode == PoolMode.ALL ? everything(cards, modeled.models()) : modeled;
+        return mode == PoolMode.MODELED ? modeled : everything(cards, modeled.models());
     }
 
     /**

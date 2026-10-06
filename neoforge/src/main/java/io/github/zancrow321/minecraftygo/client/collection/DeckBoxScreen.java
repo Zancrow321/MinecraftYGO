@@ -1,5 +1,6 @@
 package io.github.zancrow321.minecraftygo.client.collection;
 
+import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.item.BinderItem;
 import io.github.zancrow321.minecraftygo.item.CardItem;
 import io.github.zancrow321.minecraftygo.item.DeckBoxItem;
@@ -52,6 +53,9 @@ public final class DeckBoxScreen extends Screen {
         search = addRenderableWidget(new EditBox(font, left + WIDTH / 2 + 10, top + 22, 100, 14,
                 Component.translatable("screen.minecraftygo.search")));
         search.setHint(Component.translatable("screen.minecraftygo.deck_box.owned"));
+        // Locked cards stay in view but can't be added (unless the server allows them in decks).
+        ownedGrid.locked = code -> !YgoData.playable(minecraft.player).test(code);
+        deckGrid.locked = ownedGrid.locked;
         addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.deck_box.clear"),
                 b -> send(Action.DECK_CLEAR, 0)).bounds(left + WIDTH / 2 - 52, top + 21, 44, 16).build());
         int buttonsY = top + HEIGHT - 20;
@@ -102,7 +106,7 @@ public final class DeckBoxScreen extends Screen {
         g.drawString(font, box.getHoverName(), left + 8, top + 6, 0xFFFFFFFF, false);
         String counts = "Main " + deck.main().size() + " · Extra " + deck.extra().size();
         g.drawString(font, counts, left + 8, top + 26, 0xFFAAAAAA, false);
-        List<String> problems = DeckBoxItem.problems(box);
+        List<String> problems = DeckBoxItem.problems(box, minecraft.player, YgoData.banlist(minecraft.player));
         Component status = problems.isEmpty()
                 ? Component.translatable("item.minecraftygo.deck_box.legal")
                 : Component.literal(problems.get(0));
@@ -117,12 +121,22 @@ public final class DeckBoxScreen extends Screen {
 
         CardGrid.Entry hovered = deckGrid.at(mouseX, mouseY);
         if (hovered != null) {
-            g.renderComponentTooltip(font, CardGrid.tooltip(hovered.code(), "Click: put back"), mouseX, mouseY);
+            g.renderComponentTooltip(font, withLock(hovered.code(), CardGrid.tooltip(hovered.code(), "Click: put back")),
+                    mouseX, mouseY);
         }
         hovered = ownedGrid.at(mouseX, mouseY);
         if (hovered != null) {
-            g.renderComponentTooltip(font, CardGrid.tooltip(hovered.code(), "Click: add to deck"), mouseX, mouseY);
+            boolean locked = ownedGrid.locked.test(hovered.code());
+            g.renderComponentTooltip(font, withLock(hovered.code(),
+                    CardGrid.tooltip(hovered.code(), locked ? null : "Click: add to deck")), mouseX, mouseY);
         }
+    }
+
+    private List<Component> withLock(int code, List<Component> tooltip) {
+        if (ownedGrid.locked.test(code)) {
+            tooltip.add(Math.min(1, tooltip.size()), CardGrid.lockedLine(code));
+        }
+        return tooltip;
     }
 
     @Override

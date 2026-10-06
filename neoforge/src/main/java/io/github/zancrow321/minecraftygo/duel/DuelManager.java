@@ -304,18 +304,21 @@ public final class DuelManager {
             }
             online.add(player);
         }
+        // In a progression world the duel is played under the rules and banlist of whoever is furthest along.
+        int step = online.stream().mapToInt(YgoData::step).max().orElse(YgoData.step(null));
+        io.github.zancrow321.minecraftygo.engine.data.Banlist banlist = YgoData.banlist(step);
         List<Deck> decks = new ArrayList<>();
         List<ItemStack> boxes = new ArrayList<>();
         int botIndex = 0;
         for (Entrant e : entrants) {
             if (e.player() == null) {
-                decks.add(invite.npc() != null ? invite.npc().deck()
+                decks.add(invite.npc() != null ? invite.npc().deck(step)
                         : Deck.bundled(BOT_DECKS.get(botIndex++ % BOT_DECKS.size())));
                 boxes.add(ItemStack.EMPTY);
                 continue;
             }
             ServerPlayer player = player(e.player());
-            ItemStack box = legalDeckBox(player);
+            ItemStack box = legalDeckBox(player, banlist);
             Deck deck = box != null ? DeckBoxItem.toDeck(box) : starterFor(player, invite.ante());
             if (deck == null) {
                 broadcast(entrants, Component.literal(e.name() + " has no legal deck."));
@@ -339,7 +342,7 @@ public final class DuelManager {
                     : team0.isEmpty() ? turned(fieldInFrontOf(team1.get(0)))
                     : fieldBetween(team0.get(0), team1.get(0));
         }
-        start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split());
+        start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step);
     }
 
     /** The same field seen from the other end: team 0 gets the far side. */
@@ -400,7 +403,8 @@ public final class DuelManager {
      *
      * @return the deck box, or {@code null}
      */
-    private static ItemStack legalDeckBox(ServerPlayer player) {
+    private static ItemStack legalDeckBox(ServerPlayer player,
+                                          io.github.zancrow321.minecraftygo.engine.data.Banlist banlist) {
         List<ItemStack> boxes = new ArrayList<>();
         for (ItemStack stack : List.of(player.getMainHandItem(), player.getOffhandItem())) {
             if (stack.is(YgoItems.DECK_BOX.get())) {
@@ -413,13 +417,13 @@ public final class DuelManager {
             }
         }
         for (ItemStack box : boxes) {
-            if (DeckBoxItem.problems(box).isEmpty()) {
+            if (DeckBoxItem.problems(box, player, banlist).isEmpty()) {
                 return box;
             }
         }
         if (!boxes.isEmpty()) {
             player.sendSystemMessage(Component.literal("Your deck box \"" + boxes.get(0).getHoverName().getString()
-                    + "\" isn't legal: " + DeckBoxItem.problems(boxes.get(0)).get(0)));
+                    + "\" isn't legal: " + DeckBoxItem.problems(boxes.get(0), player, banlist).get(0)));
         }
         return null;
     }
@@ -439,9 +443,10 @@ public final class DuelManager {
 
     /**
      * @param anteBoxes each person's deck box to take the ante from, or {@code null} for a duel without an ante
+     * @param step      the progression step whose rules the duel is played under
      */
     private void start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes,
-                       DuelistNpc npc, boolean split) {
+                       DuelistNpc npc, boolean split, int step) {
         var random = server.overworld().getRandom();
         long[] seed = {random.nextLong(), random.nextLong(), random.nextLong(), random.nextLong() | 1};
         List<DuelTable.Seat> seats = new ArrayList<>();
@@ -452,7 +457,7 @@ public final class DuelManager {
             seats.add(new DuelTable.Seat(e.team(), e.name(),
                     e.player() == null ? new DuelistAi(random.nextLong(), YgoData.cards()) : null));
         }
-        Ruleset ruleset = Ruleset.parse(YgoServerConfig.RULESET.get());
+        Ruleset ruleset = YgoData.ruleset(step);
         DuelSettings.Team team = new DuelSettings.Team(YgoServerConfig.STARTING_LIFE_POINTS.get(), 5, 1);
         DuelTable table;
         try {

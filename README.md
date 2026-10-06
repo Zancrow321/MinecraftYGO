@@ -15,6 +15,7 @@ the engine behind EDOPro, running on the server. Monster models come from
 | `native/build.sh`, `native/build.ps1` | Build OCG-Core for the host into `engine/src/main/resources/natives/<platform>/`. |
 | `tools/models/import_models.py` | Converts YGOMCModels to GeckoLib assets, maps each model to its card and writes the era pool (`pool.json`). |
 | `tools/carddata/build_carddata.py` | Bundles card data, Lua scripts and system strings for every official card. Run it after `import_models.py`. |
+| `tools/carddata/build_banlists.py` | Writes every TCG Forbidden & Limited List since 1999 with its date (`banlists.json`). |
 | `tools/carddata/build_collection.py` | Picks the booster sets of the modeled pool, lists every TCG product in release order (`products.json`) and writes the era banlist. |
 | `tools/textures/make_collection_textures.py` | Draws the pack, binder, deck box, Card Shop and Card Trader textures. |
 | `tools/textures/make_logo.py` | Draws the mod logo (`minecraftygo_logo.png`) from the card back. |
@@ -52,8 +53,23 @@ In game:
   for cards on the banlist. Your first legal deck box (hands first, then inventory) is the deck you duel with. Without
   one you duel with Yugi's starter deck; servers can require a deck box with `starterDecksWithoutDeckBox = false` in the
   world's `serverconfig/minecraftygo-server.toml`.
-- The banlist is an approximation of the OCG list from May 2000. A server can replace it with
-  `config/minecraftygo/banlist.json`, in the same format as the bundled
+- **Progression** (the default `[pool] mode = "progression"`): a new world starts with Legend of Blue Eyes White
+  Dragon, and operators unlock the TCG products in release order. Every TCG product with new cards is a step; reprint
+  packs come along with the next one. Cards from sets that are still locked show a padlock in binders and can't go in
+  a deck (`[cards] lockedInDeck`). Duels follow the newest unlocked cards: Master Rule 1 until the first Xyz set, 2
+  until the first Pendulum set, 3 until the first Link set, 4 until April 2020, then 5, with the TCG Forbidden &
+  Limited List of the time. When two players at different steps duel, the one further along sets the rules; an NPC
+  follows the player it duels.
+  - `/ygo progression status` shows the current set, rules, banlist and the next set.
+  - `/ygo progression next [count]` unlocks the next set (or several), `/ygo progression until <code or date>`
+    everything up to `MRL` or `2005-03-01`, `/ygo progression set <code or date>` also goes back.
+  - `/ygo progression list [page]` lists the sets in order with what is unlocked.
+  - `[progression] scope = "player"` gives each player their own progress (`/ygo progression next <player>`),
+    `startProduct` sets where worlds or players start and `announce` the chat messages.
+- **Banlist:** `banlist = "auto"` (the default) is the TCG list of the time in a progression world, today's list with
+  `mode = "all"` and the May 2000 OCG list for the modeled pool (which a server can still replace with
+  `config/minecraftygo/banlist.json`). `"none"` turns it off, and any other value names a file in
+  `config/minecraftygo/banlists/`, e.g. `banlist = "goat"` for `goat.json`, in the format of the bundled
   `engine/src/main/resources/minecraftygo/banlist.json` (`"limits": {"<card code>": <copies allowed>}`).
 - **Ante:** `/ygo duel <player> ante`, or sneak while right-clicking with the disk. Each duelist puts up a random
   card from their deck box and the winner takes both. The cards are held by the server until the duel ends (a
@@ -76,8 +92,8 @@ In game:
   summoning circle and Obliterate, Kuriboh's Multiply and Time Wizard's roulette, and Polymerization, Change of Heart,
   Harpie's Feather Duster, Mystical Space Typhoon, Heavy Storm, Trap Hole, Fissure, Hinotama, Ookazi, Sparks, Dian
   Keto, Waboku and the counter traps. Right-click a gallery monster to see its attack.
-- **Rules:** `ruleset` in `serverconfig/minecraftygo-server.toml` is `mr1` (original, the default), `goat` or
-  `modern`; `startingLifePoints` defaults to 8000.
+- **Rules:** `ruleset` in `serverconfig/minecraftygo-server.toml` is `auto` (the default, see Progression above),
+  `mr1` (original), `goat`, `mr2`, `mr3`, `mr4` or `modern`; `startingLifePoints` defaults to 8000.
 - **Duel Dome:** craft a **Duel Dome Kit** (a Duel Dome Core, two Duelist Platforms, two quartz blocks, a sea lantern
   and light blue concrete) and use it on flat ground to build a 13 by 21 arena facing the way you look. When every
   duelist stands on a platform, one team at each end, the field appears over the core instead of between the
@@ -129,8 +145,9 @@ python3 tools/carddata/build_carddata.py --cdb BabelCDB/cards.cdb --scripts Card
 ```
 
 Every official OCG and TCG card is bundled, with its script. Which of them a world plays with is the server
-config's `[pool] mode`: `modeled` (the default) plays with the monsters that have a model and the spells and traps
-of their era; `all` plays with every card, and packs come from every TCG booster. Monsters without a model stand
+config's `[pool] mode`: `progression` (the default) unlocks them set by set, `modeled` plays with the monsters that
+have a model and the spells and traps of their era, and `all` plays with every card, with packs from every TCG
+booster. Monsters without a model stand
 on the field as an artwork hologram. The engine test `ScriptLoadTest` loads every card once; a card whose script fails goes
 in `engine/src/main/resources/minecraftygo/broken.json`, which keeps it out of the pool.
 
@@ -146,6 +163,13 @@ python3 tools/carddata/build_collection.py --ygoprodeck ygoprodeck.json --cardse
 ```
 
 A set joins the modeled pool's boosters when at least 60% of its cards are in that pool.
+
+The banlist history comes from yaml-yugi-limit-regulation:
+
+```sh
+git clone --depth 1 https://github.com/DawnbrandBots/yaml-yugi-limit-regulation
+python3 tools/carddata/build_banlists.py --lists yaml-yugi-limit-regulation --ygoprodeck ygoprodeck.json
+```
 
 ## Updating the duel disk model
 
@@ -164,5 +188,7 @@ uses the main-hand item at those ticks (to open packs, binders and deck boxes wi
 - OCG-Core: AGPL-3.0-or-later, © Project Ignis contributors. Because the mod bundles it, the mod's source must stay public.
 - Monster models: MIT, © iconmaster ([YGOMCModels](https://github.com/iconmaster5326/YGOMCModels)); the license ships as `assets/minecraftygo/YGOMCModels-LICENSE.md`.
 - Card data and scripts: BabelCDB and CardScripts by Project Ignis (AGPL-3.0).
+- Historical Forbidden & Limited Lists: gathered by DawnbrandBots'
+  [yaml-yugi-limit-regulation](https://github.com/DawnbrandBots/yaml-yugi-limit-regulation) from Konami's published lists.
 - Rendering: [GeckoLib](https://github.com/bernie-g/geckolib) (required dependency, MIT).
 - Yu-Gi-Oh! is a trademark of Konami. This is an unofficial fan project, not affiliated with or endorsed by Konami, and no card artwork is bundled.

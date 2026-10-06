@@ -80,22 +80,34 @@ public final class YgoVillagers {
             return;
         }
         Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
-        List<String> sets = List.copyOf(YgoData.sets().sets().keySet());
-        // Novice: the first set, a binder and an empty deck box. Each later level adds the next set.
-        trades.get(1).add(sell(3, () -> BoosterPackItem.of(sets.isEmpty() ? null : sets.get(0)), 16, 2));
+        // Novice: the first set, a binder and an empty deck box. Each later level adds the next set. The sets are
+        // picked when the villager makes the offer, so traders keep up with progression.
+        trades.get(1).add(sell(3, () -> BoosterPackItem.of(soldSet(0)), 16, 2));
         trades.get(1).add(sell(4, () -> new ItemStack(YgoItems.BINDER.get()), 4, 2));
         trades.get(1).add(sell(2, () -> new ItemStack(YgoItems.DECK_BOX.get()), 8, 1));
         trades.get(1).add(buy(Items.PAPER, 24, 16, 2));
         trades.get(2).add(sell(10, YgoItems::starterYugi, 2, 10));
         trades.get(2).add(sell(10, YgoItems::starterKaiba, 2, 10));
-        // The first few sets only: with every card in play there are hundreds (the rotating stock comes later).
-        for (int i = 1; i < Math.min(sets.size(), SOLD_SETS); i++) {
-            String set = sets.get(i);
-            trades.get(Math.min(5, i + 1)).add(sell(3 + i, () -> BoosterPackItem.of(set), 16, 5));
+        // A few sets only: with every card in play there are hundreds (the rotating stock comes later).
+        for (int i = 1; i < SOLD_SETS; i++) {
+            int index = i;
+            trades.get(Math.min(5, i + 1)).add(sell(3 + i, () -> BoosterPackItem.of(soldSet(index)), 16, 5));
         }
         trades.get(3).add(sell(4, () -> BoosterPackItem.of(null), 16, 10));
         trades.get(4).add(sell(16, () -> new ItemStack(YgoItems.DUEL_DISK.get()), 3, 15));
         trades.get(5).add(sell(2, () -> BoosterPackItem.of(null), 32, 20));
+    }
+
+    /**
+     * The {@code index}th set a trader sells: the oldest first, or in a progression world the newest first. {@code null}
+     * (a random pack) when there are fewer sets.
+     */
+    private static String soldSet(int index) {
+        List<String> sets = new java.util.ArrayList<>(YgoData.sets().sets().keySet());
+        if (YgoData.poolMode() == io.github.zancrow321.minecraftygo.engine.data.PoolMode.PROGRESSION) {
+            java.util.Collections.reverse(sets);
+        }
+        return index < sets.size() ? sets.get(index) : null;
     }
 
     private static void onWandererTrades(WandererTradesEvent event) {

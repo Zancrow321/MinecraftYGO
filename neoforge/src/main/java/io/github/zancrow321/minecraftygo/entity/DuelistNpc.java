@@ -114,8 +114,12 @@ public final class DuelistNpc extends PathfinderMob {
         return getName().getString();
     }
 
-    public Deck deck() {
-        return DeckBuilder.random(duelistName(), deckSeed, YgoData.cards(), YgoData.pool(), YgoData.banlist());
+    /** The NPC's deck at a progression step: the same seed always builds from the cards out by then. */
+    public Deck deck(int step) {
+        return DeckBuilder.random(duelistName(), deckSeed, YgoData.cards(),
+                YgoData.poolMode() == io.github.zancrow321.minecraftygo.engine.data.PoolMode.PROGRESSION
+                        ? YgoData.progression().pool(step) : YgoData.pool(),
+                YgoData.banlist(step));
     }
 
     public boolean isDueling() {

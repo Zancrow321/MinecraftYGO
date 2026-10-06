@@ -82,6 +82,15 @@ public final class OcgConstants {
             | DUEL_EQUIP_NOT_SENT_IF_MISSING_TARGET | DUEL_0_ATK_DESTROYED | DUEL_STORE_ATTACK_REPLAYS
             | DUEL_SINGLE_CHAIN_IN_DAMAGE_SUBSTEP | DUEL_CAN_REPOS_IF_NON_SUMPLAYER | DUEL_TCG_SEGOC_NONPUBLIC
             | DUEL_TCG_SEGOC_FIRSTTRIGGER;
+    /** Master Rule 2: Xyz monsters, ignition effects the modern way. */
+    public static final long DUEL_MODE_MR2 = DUEL_1ST_TURN_DRAW | DUEL_1_FACEUP_FIELD | DUEL_SPSUMMON_ONCE_OLD_NEGATE
+            | DUEL_RETURN_TO_DECK_TRIGGERS | DUEL_CANNOT_SUMMON_OATH_OLD;
+    /** Master Rule 3: Pendulum Zones of their own. */
+    public static final long DUEL_MODE_MR3 = DUEL_PZONE | DUEL_SEPARATE_PZONE | DUEL_SPSUMMON_ONCE_OLD_NEGATE
+            | DUEL_RETURN_TO_DECK_TRIGGERS | DUEL_CANNOT_SUMMON_OATH_OLD;
+    /** Master Rule 4: Extra Monster Zones, Pendulum Zones in the outer spell and trap zones. */
+    public static final long DUEL_MODE_MR4 = DUEL_PZONE | DUEL_EMZONE | DUEL_SPSUMMON_ONCE_OLD_NEGATE
+            | DUEL_RETURN_TO_DECK_TRIGGERS | DUEL_CANNOT_SUMMON_OATH_OLD;
     /** Master Rule 5: current rules. */
     public static final long DUEL_MODE_MR5 = DUEL_PZONE | DUEL_EMZONE | DUEL_FSX_MMZONE
             | DUEL_TRAP_MONSTERS_NOT_USE_ZONE | DUEL_TRIGGER_ONLY_IN_LOCATION;

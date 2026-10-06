@@ -2,9 +2,29 @@
 
 ## Unreleased
 
+### Progression
+- New worlds start with Legend of Blue Eyes White Dragon, and operators unlock the TCG sets in release order:
+  `/ygo progression status`, `next [count]`, `until <set code or date>`, `set <set code or date>` and `list`. Chat
+  says what is new. Reprint products come along with the next set that brings new cards.
+- This is the new default (`[pool] mode = "progression"`), also for worlds that already have a config file: they
+  switch from the modeled pool, which held almost only LOB, MRD and MRL cards anyway. `mode = "modeled"` brings the
+  old pool back.
+- Rules and banlist follow the unlocked cards (`ruleset = "auto"` and `banlist = "auto"`, the new defaults): Master
+  Rule 1 to 5 as Xyz, Pendulum and Link sets arrive, and the TCG Forbidden & Limited List of the time (all 73 lists
+  since 1999 are bundled). New rule sets `mr2`, `mr3` and `mr4`; a fixed `banlist` names a file in
+  `config/minecraftygo/banlists/`.
+- `[progression] scope = "player"` gives each player their own progress. When two players at different steps duel,
+  the one further along sets the rules; an NPC builds its deck from the cards of the player it duels.
+- Cards from locked sets show a padlock in the binder (which can show only unlocked cards) and the deck box, and
+  can't be added to decks unless `[cards] lockedInDeck = false`.
+- Card traders sell the newest unlocked sets.
+- Old config files are updated once: `mode` becomes `progression` and `ruleset` becomes `auto`. A server's own
+  `config/minecraftygo/banlist.json` now only counts for the modeled pool; elsewhere put it in
+  `config/minecraftygo/banlists/` and name it in `banlist`.
+
 ### All cards (first step)
 - Every official card is bundled now: about 14,700 cards with their scripts (the jar grows to about 20 MB).
-- New server setting `[pool] mode`: `modeled` (as before, the default) or `all`, which plays with every card. With
+- New server setting `[pool] mode`: `modeled` or `all`, which plays with every card. With
   `all`, packs, loot and NPC decks draw from every card and booster packs exist for every TCG booster, from Legend
   of Blue Eyes to today. Monsters without a model stand on the field as an artwork hologram (below).
 - Decks may only hold cards the server plays with; a deck box with other cards says which one isn't allowed.

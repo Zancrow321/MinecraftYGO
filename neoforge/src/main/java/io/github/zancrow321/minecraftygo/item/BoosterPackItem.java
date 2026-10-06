@@ -41,7 +41,7 @@ public final class BoosterPackItem extends Item {
     /** The pack's set, or {@code null} for a pack from a random era set. */
     public static BoosterSets.BoosterSet set(ItemStack stack) {
         String id = stack.get(YgoComponents.PACK_SET.get());
-        return id == null ? null : YgoData.sets().get(id);
+        return id == null ? null : YgoData.set(id);
     }
 
     /** The product a pack is from, whether or not its set is in this server's pool; {@code null} if random. */
