@@ -1,0 +1,268 @@
+{
+  "title": "Duelist's Handbook",
+  "subtitle": "Dueling, collecting, commands and settings",
+  "intro": [
+    "Click a chapter in the contents to go there. Turn pages with the arrows, the arrow keys or the mouse wheel; the line at the top of each page leads back to the contents.",
+    "",
+    "Blue commands can be clicked, green values are this world's settings."
+  ],
+  "chapters": [
+    {
+      "title": "Getting started",
+      "icon": "{modid}:duel_disk",
+      "text": [
+        "On your first join you pick your **first deck**: Yugi's or Kaiba's starter deck, or a starter or structure deck that is already out. It comes in a deck box, ready to duel with. \"Later\" puts it off; `{cmd} starter` opens the choice again until you take one.",
+        "",
+        "Then craft a **Duel Disk** and wear it in its Curios slot, or in your off hand without Curios.",
+        "[recipe {modid}:duel_disk]",
+        "Your first duel: `{cmd} duel bot` duels the computer right away. To duel a friend, both wear a disk and one right-clicks the other.",
+        "",
+        "This book is given once on your first join. `{cmd} guide` opens it any time, and a new one is crafted from a book and paper.",
+        "[recipe {modid}:guide_book]"
+      ]
+    },
+    {
+      "title": "Dueling",
+      "icon": "{modid}:card",
+      "text": [
+        "# Challenging someone",
+        "- With a Duel Disk on, right-click another duelist. They right-click you back or click [Accept] in chat, and both disks unfold before the field appears.",
+        "- `{cmd} duel <player>` challenges by name, `{cmd} accept` takes the last challenge.",
+        "- `{cmd} duel bot` duels the computer.",
+        "# Ante duels",
+        "Sneak while right-clicking, or `{cmd} duel <player> ante`. Each duelist puts up a random card from their deck box and the winner takes both. The server keeps the cards until the duel ends, so a crash returns them.",
+        "# Two against two",
+        "- `{cmd} tag <partner> <opponent1> <opponent2>`: a tag duel. Partners share life points and the field and take turns with their own decks. Any seat can be `bot`.",
+        "- `{cmd} battlecity <partner> <opponent1> <opponent2>`: like a tag duel, but each partner plays on their own half of the team's zones.",
+        "# During a duel",
+        "You stand still and safe at your end of the field: nothing hurts you and mobs leave you alone. Surrender from the duel menu (Escape) or with `{cmd} forfeit`.",
+        "# Watching",
+        "Right-click someone who is dueling (NPCs too) or use `{cmd} watch <player>`. Spectators see the field, the life points and the log, but no hidden cards. Leave with Escape and \"Stop watching\" or `{cmd} unwatch`.",
+        "# Wins and losses",
+        "Every duel counts in your record: wins, losses and draws against players and against NPCs and bots, and your wins in a row. The result screen shows it, `{cmd} stats` in chat, `{cmd} stats <player>` someone else's and `{cmd} stats top` the ten best.",
+        "- Beating a player brings {server:results.players.winPacks} packs, {server:results.players.winEmeralds} emeralds and {server:results.players.winXp} XP; losing {server:results.players.lossPacks} packs, {server:results.players.lossEmeralds} emeralds, {server:results.players.lossXp} XP.",
+        "- Beating an NPC brings {server:results.npcs.winPacks} packs, {server:results.npcs.winEmeralds} emeralds and {server:results.npcs.winXp} XP; losing {server:results.npcs.lossPacks} packs, {server:results.npcs.lossEmeralds} emeralds, {server:results.npcs.lossXp} XP.",
+        "# Which deck you play",
+        "Your first legal deck box, looking in your hands first, then your inventory. Without one you duel with Yugi's starter deck, unless the server turned that off."
+      ]
+    },
+    {
+      "title": "Duel controls",
+      "icon": "minecraft:ender_eye",
+      "text": [
+        "In a duel the camera looks down on the field and you play with the mouse.",
+        "- **Your hand** runs along the bottom. Click a card for its actions (Normal Summon, Set, Activate...) or drag it straight onto a zone.",
+        "- **Phase buttons** on the right show the phase: DP SP M1 BP M2 EP. Click BP, M2 or EP to go there.",
+        "- **Responses** open their own window, showing what you respond to. Pick a response or \"Don't respond\"; \"-\" folds it away.",
+        "- **Card details:** the card under the mouse is shown big on the left with its text and current ATK/DEF.",
+        "- **Piles:** click a graveyard, the banished cards or an extra deck (right-click when a card there can be activated) to look through it.",
+        "- **Picks** on the field are made right there and confirmed with Confirm; picks from a pile open a card window.",
+        "# Keys",
+        "- **{key:duel_camera}**: top-down or first-person view. Hold the right mouse button to look around.",
+        "- **{key:duel_log}**: the duel log (scroll with the mouse wheel).",
+        "- **{key:duel_responses}**: be asked to respond, or pass every response you don't have to take.",
+        "- **Space**: pass a response, confirm a pick or go to the next phase.",
+        "- **Enter**: confirm a pick. **1 to 9**: pick a plain answer.",
+        "- **Escape**: the duel menu (camera, responses, surrender, game menu).",
+        "Keys can be changed in Options > Controls; this page shows your current ones."
+      ]
+    },
+    {
+      "title": "Collecting cards",
+      "icon": "{modid}:booster_pack",
+      "text": [
+        "Cards come from sealed products, opened like the real thing:",
+        "- **Booster Packs**: a core booster has 9 cards (one rare or better until 2014, a rare and a foil after), a tournament pack 3, mini boosters and battle packs 5.",
+        "- **Structure Decks** put their cards straight into your binder.",
+        "- A **Collector's Tin** gives its promo card and three packs.",
+        "Packs and single cards turn up in dungeon, temple, mineshaft and treasure chests, mobs sometimes drop one, NPC duelists give one when you beat them, and the Card Trader sells them.",
+        "# Foils",
+        "Rarer cards shine like the real ones: a Rare has a silver name, a Super Rare holofoil art, an Ultra Rare holofoil art and a gold name, a Secret Rare rainbow-lined art and a silver name.",
+        "# Card Binder",
+        "Holds your collection. \"Put all cards in\" moves every loose card into it; clicking a card takes it out again (shift-click for every copy). It keeps each card's rarity, shown in the corner (R, SR, UR, ScR), and decks use commons first so your foils stay in the binder. Cards from sets that are still locked show a padlock.",
+        "[recipe {modid}:binder]"
+      ]
+    },
+    {
+      "title": "Building decks",
+      "icon": "{modid}:deck_box",
+      "text": [
+        "A **Deck Box** holds one deck. Right-click it: your cards are on the right, click one to add it; click a card in the deck on the left to put it back. Fusion, Synchro, Xyz and Link monsters go to the extra deck.",
+        "[recipe {modid}:deck_box]",
+        "# Deck rules",
+        "- 40 to 60 cards in the main deck, up to 15 in the extra deck.",
+        "- At most three copies of a card, fewer for cards on the banlist.",
+        "- A deck box with a card that isn't allowed says which card is the problem.",
+        "# Finding cards",
+        "Search by name, filter by type (monsters, spells, traps, extra deck), attribute and level, and sort by name, ATK, DEF or level. Click a filter to step through it, shift-click to step back.",
+        "# Import and export",
+        "Export copies the deck as a YDK list, the format most deck builders read. Import replaces the deck with the YDK list in your clipboard, built from the cards you own, and says which ones were missing."
+      ]
+    },
+    {
+      "title": "Shops and Duel Points",
+      "icon": "{modid}:card_shop",
+      "text": [
+        "# Duel Points",
+        "Shops take **{server:shop.currency}** here (\"points\" means Duel Points, DP). DP are a balance, not an item: you see them above your inventory and in every shop, and `{cmd} dp` tells them.",
+        "- You start with {server:shop.points.startBalance} DP and get {server:shop.points.dailyBonus} DP once a day.",
+        "- Card Vending Machines buy loose cards ({server:shop.points.sellCommon} DP for a common up to {server:shop.points.sellSecret} for a Secret Rare) and emeralds ({server:shop.points.emeraldExchange} DP each).",
+        "- `{cmd} dp pay <player> <amount>` gives DP to someone else.",
+        "In a DP shop, click to buy once and shift-click to buy as many as you can.",
+        "# Card Trader",
+        "A villager who sells binders, deck boxes, the starter decks and later a duel disk, plus packs, structure decks and tins: the newest {server:shop.newestAlways} products always and {server:shop.rotatingOlder} older ones that change every {server:shop.rotationDays} days. Any villager without a job takes it at a **Card Shop Counter**:",
+        "[recipe {modid}:card_shop]",
+        "# Card Vending Machine",
+        "The same shop without a villager: right-click it to buy. It also buys loose cards and emeralds for DP.",
+        "[recipe {modid}:card_machine]",
+        "# Shop Stand",
+        "A shop any player runs. As the owner, right-click it: put a ware in the top row and its price below it, then the wares themselves in the stock rows. Other players right-click it to buy, and what they pay goes to you, even while you're offline. Only you and operators can break it.",
+        "[recipe {modid}:shop_stand]"
+      ]
+    },
+    {
+      "title": "Progression and rules",
+      "icon": "minecraft:clock",
+      "text": [
+        "This world plays with **{server:pool.mode}** cards.",
+        "- **progression**: a new world starts with {server:progression.startProduct}, and operators unlock the products in release order. Locked cards show a padlock and can't go in a deck.",
+        "- **modeled**: the monsters with a 3D model, and the spells and traps of their era.",
+        "- **all**: every card, with packs from every booster.",
+        "# Rules over time",
+        "Duels follow the newest unlocked cards: Master Rule 1 until the first Xyz set, 2 until the first Pendulum set, 3 until the first Link set, 4 until April 2020, then 5, each with the banlist of its time. When two players at different steps duel, the one further along sets the rules.",
+        "# For operators",
+        "- `{cmd} progression status`: the current set, rules, banlist and the next set.",
+        "- `{cmd} progression next [count]`: unlock the next set, or several.",
+        "- `{cmd} progression until <set or date>`: everything up to a set code such as MRL or a date such as 2005-03-01.",
+        "- `{cmd} progression set <set or date>`: like until, but can also go back.",
+        "- `{cmd} progression list [page]`: the sets in order, with what is unlocked.",
+        "With `[progression] scope` = {server:progression.scope}, \"player\" gives each player their own progress: add the player's name to the commands."
+      ]
+    },
+    {
+      "title": "Arenas and tournaments",
+      "icon": "{modid}:duel_arena_kit",
+      "text": [
+        "# Duel Dome",
+        "Use a **Duel Dome Kit** on flat ground to build a 13 by 21 arena facing the way you look. When every duelist stands on a Duelist Platform, one team at each end, the field appears over the Duel Dome Core. Cores and platforms can also be placed by hand: platforms 4 to 14 blocks from the core.",
+        "[recipe {modid}:duel_dome_kit]",
+        "[recipe {modid}:duel_dome_core]",
+        "[recipe {modid}:duelist_platform]",
+        "# Duel Arena",
+        "A **Duel Arena Kit** sets up the Duelist Kingdom arena on flat ground. When everyone stands on a podium, the field appears over the arena and the podiums lift the duelists 3 blocks up. An NPC opponent walks over to the free podium. Break any part (not during a duel) to pack it back into its kit.",
+        "[recipe {modid}:duel_arena_kit]",
+        "---",
+        "# Tournaments",
+        "An operator opens a tournament with `{cmd} tournament create [format] [name]`, or the server opens them by itself on a schedule. Click **[Join]** in chat or use `{cmd} tournament join`. With `lockDeck` you play the whole tournament with the deck you joined with.",
+        "- **single**: single elimination; **double**: double elimination with a losers' bracket; **swiss**: Swiss rounds, with a top cut if set; **roundrobin**: everyone plays everyone.",
+        "- When registration closes, NPC duelists fill empty seats and the field is paired round by round.",
+        "- Matches are played only on Duel Arenas added with `{cmd} tournament arena add`. When your match is due you are brought onto a podium; click **[Ready]** to start sooner. Afterwards you go back to where you were.",
+        "- If you are offline or in another duel for {server:tournament.noShowMinutes} minutes when your match is due, you lose it.",
+        "`{cmd} tournament` opens the tournament window: bracket (drag to move it), table, matches, and rules and prizes. Entry fees are paid in the shop currency, and prizes replace the usual duel rewards."
+      ]
+    },
+    {
+      "title": "NPC duelists",
+      "icon": "{modid}:duelist_spawn_egg",
+      "text": [
+        "Duelists wander the overworld now and then, each with a title, a duel disk and their own deck: a famous tournament deck whose era has come, a starter or structure deck that is out, or a random deck from the card pool. They say which deck they play.",
+        "",
+        "Right-click one to duel it. Beat it and it won't duel you again for {server:results.npcs.rematchMinutes} minutes. NPCs can't be hurt while dueling.",
+        "",
+        "They play with a computer opponent that summons its strongest monsters, brings out Synchro, Xyz and Link monsters, only attacks when it wins the fight and saves its traps for your turn. A **Duelist Spawn Egg** is in the creative tab."
+      ]
+    },
+    {
+      "title": "Cosmetics and Figura",
+      "icon": "minecraft:painting",
+      "text": [
+        "**{key:cosmetics}** or `{cmd} cosmetics` opens the cosmetics menu:",
+        "- **Disk skins**: Battle City, Slifer Red, Ra Yellow, Obelisk Blue, Shadow, Crimson and Gold. The skin is stored on the disk, so it goes wherever the disk goes.",
+        "- **Card sleeves**: Classic, Crimson, Emerald, Amethyst, Onyx and Gold. Your opponent sees them on your face-down cards and piles.",
+        "Locked ones say how to unlock them: winning duels, beating NPC duelists or opening booster packs.",
+        "# Figura",
+        "With the Figura mod installed, avatar scripts can react to duels and draw their own duel disk. A ready-made starter avatar is a separate download next to the mod."
+      ]
+    },
+    {
+      "title": "Commands",
+      "icon": "minecraft:command_block",
+      "text": [
+        "# For everyone",
+        "- `{cmd} guide`: this book.",
+        "- `{cmd} duel bot`: duel the computer.",
+        "- `{cmd} duel <player>`: challenge someone, add `ante` for an ante duel.",
+        "- `{cmd} accept`: accept a challenge.",
+        "- `{cmd} forfeit`: surrender the duel.",
+        "- `{cmd} tag <partner> <opponent1> <opponent2>`: tag duel, any seat can be `bot`.",
+        "- `{cmd} battlecity <partner> <opponent1> <opponent2>`: tag duel on split halves.",
+        "- `{cmd} watch <player>` and `{cmd} unwatch`: watch a duel and stop.",
+        "- `{cmd} stats [player]` and `{cmd} stats top`: duel records.",
+        "- `{cmd} dp` and `{cmd} dp pay <player> <amount>`: your Duel Points, and giving some away.",
+        "- `{cmd} shop`: the vending machine's shop from anywhere, if the server allows it.",
+        "- `{cmd} starter`: pick your first deck if you haven't yet.",
+        "- `{cmd} cosmetics`: disk skins and card sleeves.",
+        "- `{cmd} version`: the version of the rules engine.",
+        "# Tournaments",
+        "- `{cmd} tournament`: the tournament window; `bracket`, `table`, `matches` and `rules` open it at that tab.",
+        "- `{cmd} tournament join`, `leave` and `ready`: take part, drop out, start your match.",
+        "- `{cmd} tournament status` and `settings`: where it stands and what it plays with.",
+        "- Hosts: `{cmd} tournament create [format] [name]`, `set <setting> <value>`, `start`, `cancel`, `addnpc [count]`, `kick <name>`.",
+        "# For operators",
+        "- `{cmd} progression status`, `next [count]`, `until <set>`, `set <set>` and `list [page]`: see Progression and rules.",
+        "- `{cmd} dp <player>` and `{cmd} dp give|take|set <players> <amount>`: look at and change Duel Points.",
+        "- `{cmd} stats reset <player>`: clear a duel record.",
+        "- `{cmd} tournament arena add`, `arena remove [number]` and `arena list`: the Duel Arenas tournaments play on (stand on one to add it); `{cmd} tournament award <name>`: decide a match.",
+        "- `{cmd} gallery [page]`: lays out a page of monster models to look at; `{cmd} gallery clear` removes them."
+      ]
+    },
+    {
+      "title": "Settings",
+      "icon": "minecraft:comparator",
+      "text": [
+        "# Server settings",
+        "In the world folder: `serverconfig/{modid}-server.toml`. Edit it with the world closed or the server stopped. Green values are the current ones.",
+        "- `ruleset` = {server:ruleset}: auto (follows the cards, see Progression), mr1, goat, mr2, mr3, mr4 or modern.",
+        "- `banlist` = {server:banlist}: auto, none, or a file in `config/{modid}/banlists/`.",
+        "- `startingLifePoints` = {server:startingLifePoints}.",
+        "- `allowAnte` = {server:allowAnte}: ante duels allowed.",
+        "- `turnTimeLimit` = {server:turnTimeLimit}: seconds per person and turn, 0 for none. Afterwards the computer plays the rest of the turn.",
+        "- `starterDecksWithoutDeckBox` = {server:starterDecksWithoutDeckBox}: players without a legal deck box duel with a starter deck.",
+        "- `[pool] mode` = {server:pool.mode}: progression, modeled or all.",
+        "- `[progression] scope` = {server:progression.scope}: one progress for the server, or one per player.",
+        "- `[progression] startProduct` = {server:progression.startProduct}: where new worlds or players start.",
+        "- `[progression] announce` = {server:progression.announce}: say unlocks in chat.",
+        "- `[cards] lockedInDeck` = {server:cards.lockedInDeck}: locked cards stay out of decks.",
+        "- `[results] trackRecord` = {server:results.trackRecord}, `announce` = {server:results.announce}, `rewardBotDuels` = {server:results.rewardBotDuels}: duel records, results in chat, rewards for bot duels.",
+        "- `[results.players]` and `[results.npcs]`: `winPacks`, `winEmeralds`, `winXp`, `lossPacks`, `lossEmeralds`, `lossXp` (see Dueling); `[results.npcs] rematchMinutes` = {server:results.npcs.rematchMinutes}.",
+        "- `[shop] currency` = {server:shop.currency}: \"points\" or an item such as minecraft:emerald. `priceMultiplier` = {server:shop.priceMultiplier}, `dynamicPrices` = {server:shop.dynamicPrices}, `wanderingTrader` = {server:shop.wanderingTrader}.",
+        "- `[shop] newestAlways` = {server:shop.newestAlways}, `rotatingOlder` = {server:shop.rotatingOlder}, `rotationDays` = {server:shop.rotationDays}: the Card Trader's stock.",
+        "- `[shop.prices]` and `[shop.stock]`: what everything costs (0 stops a trade) and how many a trader has.",
+        "- `[shop.machine]`: `enabled` = {server:shop.machine.enabled}, `products` = {server:shop.machine.products}, `limitPerPlayer` = {server:shop.machine.limitPerPlayer}, `command` = {server:shop.machine.command}, `operatorsOnly` = {server:shop.machine.operatorsOnly}.",
+        "- `[shop.players]`: `enabled` = {server:shop.players.enabled}, `maxPerPlayer` = {server:shop.players.maxPerPlayer}, `taxPercent` = {server:shop.players.taxPercent}, `currencyOnly` = {server:shop.players.currencyOnly}.",
+        "- `[shop.points]`: `startBalance` = {server:shop.points.startBalance}, `dailyBonus` = {server:shop.points.dailyBonus}, `pricePoints` = {server:shop.points.pricePoints} (DP per 1 of a price), `transfers` = {server:shop.points.transfers}, `emeraldExchange` = {server:shop.points.emeraldExchange}, `sellCommon` to `sellSecret`.",
+        "- `[tournament]`: the defaults of every new tournament; its host can change them with `{cmd} tournament set`. `format` = {server:tournament.format}, `bestOf` = {server:tournament.bestOf}, `minPlayers` = {server:tournament.minPlayers}, `maxPlayers` = {server:tournament.maxPlayers}, `registrationMinutes` = {server:tournament.registrationMinutes}, `npcFill` = {server:tournament.npcFill}, `lockDeck` = {server:tournament.lockDeck}, `entryFee` = {server:tournament.entryFee}, `potShare` = {server:tournament.potShare}, `prizesFirst` to `prizesEveryone`, and more (`{cmd} tournament settings` lists them).",
+        "- `[tournament] playersCanHost` = {server:tournament.playersCanHost}: players may host. `schedule`: times such as \"20:00\" or \"SAT 18:30\" when tournaments open by themselves.",
+        "- `[guide] giveOnFirstJoin` = {server:guide.giveOnFirstJoin} and `craftable` = {server:guide.craftable}: this book.",
+        "# Your own settings",
+        "In `config/{modid}-client.toml`:",
+        "- `downloadCardArt` = {client:downloadCardArt}: card art is downloaded on first view and kept on your computer. `cardArtUrl` and `cardArtCroppedUrl` say where from.",
+        "- `realProductImages` = {client:realProductImages}: booster packs, decks and tins show the real product, its picture downloaded the same way. `productImageUrl` says where from.",
+        "- `chooseZone` = {client:chooseZone}: pick the zone yourself when playing a card from its menu.",
+        "- `skipResponses` = {client:skipResponses}: pass every response you don't have to take (switch it in a duel with {key:duel_responses})."
+      ]
+    },
+    {
+      "title": "Tips",
+      "icon": "minecraft:spyglass",
+      "text": [
+        "- Monsters without a 3D model stand on the field as a hologram of their artwork. A resource pack can give any monster a model.",
+        "- Card art needs an internet connection the first time a card is shown; after that it comes from your computer.",
+        "- Can't put a card in your deck? It is from a set that is still locked, or the banlist limits it. The deck box tells you which.",
+        "- An ante duel's cards are safe: a crash or restart gives them back, and a winner who logged off gets them on the next login.",
+        "- In a 2v2 duel only the partner whose turn it is answers prompts; both see the team's hand.",
+        "- Lost this book? `{cmd} guide` opens it, or craft a new one from a book and paper."
+      ]
+    }
+  ]
+}

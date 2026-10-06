@@ -9,6 +9,15 @@
   mod. A random pack, a product without a picture, or `realProductImages = false` in the client config keeps the
   old icon.
 
+### Handbook
+- New **Duelist's Handbook**: an open book with a title page, clickable contents and 13 chapters on dueling and duel
+  records, the duel controls, collecting and foils, decks, shops and Duel Points, progression and rules, arenas and tournaments, NPC
+  duelists, cosmetics, every command and every setting. Keys show your current bindings, settings show the world's current values, crafting grids come
+  from the real recipes, and commands can be clicked to type them in chat. English and German.
+- Every player gets it once on their first join (also players of existing worlds, on their next join); `/ygo guide`
+  opens it any time, and a book and paper craft a new one. Both can be turned off: `[guide] giveOnFirstJoin` and
+  `[guide] craftable`.
+
 ### Tournaments
 - Tournaments in four formats: single elimination, double elimination with a losers' bracket and a grand final
   reset, Swiss rounds with an optional top cut, and round robin. Operators open one with `/ygo tournament create`,

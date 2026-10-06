@@ -153,5 +153,11 @@
   "block.minecraftygo.duel_arena_floor": "Duel Arena",
   "item.minecraftygo.duel_arena_kit": "Duel Arena Kit",
   "item.minecraftygo.duel_arena_kit.tooltip": "Use on flat ground to set up a Duelist Kingdom arena (21 × 31) facing the way you look. Duelists on its podiums duel over it and rise up with them. Break any part to pack it up again.",
-  "message.minecraftygo.duel_arena.blocked": "Something is in the way at %s %s %s. The Duel Arena needs a clear 21 × 31 area."
+  "message.minecraftygo.duel_arena.blocked": "Something is in the way at %s %s %s. The Duel Arena needs a clear 21 × 31 area.",
+  "item.minecraftygo.guide_book": "Duelist's Handbook",
+  "item.minecraftygo.guide_book.tooltip": "Dueling, collecting, commands and settings. Right-click to read.",
+  "message.minecraftygo.guide.given": "You got the Duelist's Handbook: right-click it to read about dueling, commands and settings, or type %s.",
+  "screen.minecraftygo.guide.contents": "Contents",
+  "screen.minecraftygo.guide.back_to_contents": "Back to the contents",
+  "screen.minecraftygo.guide.type_command": "Click to type it in chat"
 }

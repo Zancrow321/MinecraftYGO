@@ -29,7 +29,7 @@ final class YgoCommands {
     }
 
     static void register(RegisterCommandsEvent event) {
-        event.getDispatcher().register(Commands.literal("ygo")
+        event.getDispatcher().register(Commands.literal(MinecraftYgo.COMMAND)
                 .then(Commands.literal("version").executes(YgoCommands::version))
                 .then(io.github.zancrow321.minecraftygo.progression.ProgressionCommands.build())
                 .then(io.github.zancrow321.minecraftygo.tournament.TournamentCommands.build())
@@ -72,6 +72,8 @@ final class YgoCommands {
                                         IntegerArgumentType.getInteger(ctx, "page")))))
                 .then(Commands.literal("starter").executes(ctx -> io.github.zancrow321.minecraftygo.progression
                         .StarterDecks.command(ctx.getSource().getPlayerOrException())))
+                .then(Commands.literal("guide").executes(ctx -> io.github.zancrow321.minecraftygo.guide.GuideBook
+                        .open(ctx.getSource().getPlayerOrException())))
                 .then(Commands.literal("shop").executes(ctx -> {
                     var player = ctx.getSource().getPlayerOrException();
                     if (!YgoServerConfig.MACHINE.command.get() && !ctx.getSource().hasPermission(2)) {

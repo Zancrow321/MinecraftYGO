@@ -33,6 +33,11 @@ public final class ClientScreens {
                 new io.github.zancrow321.minecraftygo.client.collection.StarterScreen(payload.choices()));
     }
 
+    public static void guide(io.github.zancrow321.minecraftygo.network.GuidePayload payload) {
+        Minecraft.getInstance().setScreen(new io.github.zancrow321.minecraftygo.client.guide.GuideScreen(
+                payload.settings()));
+    }
+
     /** The tournament changed (or the player asked to see it): keep it, and open or refresh the window. */
     public static void tournament(io.github.zancrow321.minecraftygo.network.TournamentPayload payload) {
         io.github.zancrow321.minecraftygo.client.tournament.TournamentScreen.receive(payload.open(), payload.json());
