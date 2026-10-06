@@ -247,6 +247,7 @@
         "# Deine eigenen Einstellungen",
         "In `config/{modid}-client.toml`:",
         "- `downloadCardArt` = {client:downloadCardArt}: Kartenbilder werden beim ersten Anzeigen heruntergeladen und auf deinem Rechner behalten. `cardArtUrl` und `cardArtCroppedUrl` sagen, woher.",
+        "- `realProductImages` = {client:realProductImages}: Booster, Decks und Tins zeigen das echte Produkt, das Bild wird genauso heruntergeladen. `productImageUrl` sagt, woher.",
         "- `chooseZone` = {client:chooseZone}: die Zone selbst wählen, wenn du eine Karte über ihr Menü spielst.",
         "- `skipResponses` = {client:skipResponses}: jede Antwort auslassen, die du nicht nehmen musst (im Duell mit {key:duel_responses} umschalten)."
       ]

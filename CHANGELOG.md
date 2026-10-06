@@ -8,6 +8,13 @@
 - Renamed from MinecraftYGO (mod id `minecraftygo`, command `/ygo`, config folder `config/minecraftygo`).
 - Worlds from 0.1.0 lose the mod's items, blocks and saved data (decks, binders, progress); the config starts fresh.
 
+### Real products
+- Booster packs, structure and starter decks and tins look like the real products: the item shows the product's
+  picture with its background cut away, in slots, in the hand, on the ground and in item frames, as a pack, a
+  thicker deck box or a tin. The pictures come from YGOPRODeck on first view, like card art, and none ship with the
+  mod. A random pack, a product without a picture, or `realProductImages = false` in the client config keeps the
+  old icon.
+
 ### Handbook
 - New **Duelist's Handbook**: an open book with a title page, clickable contents and 13 chapters on dueling and duel
   records, the duel controls, collecting and foils, decks, shops and Duel Points, progression and rules, arenas and tournaments, NPC
