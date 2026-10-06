@@ -6,7 +6,10 @@ import io.github.zancrow321.minecraftygo.collection.CollectionActions;
 import io.github.zancrow321.minecraftygo.client.disk.DiskClient;
 import io.github.zancrow321.minecraftygo.client.field.ClientField;
 import io.github.zancrow321.minecraftygo.cosmetics.PlayerCosmetics;
+import io.github.zancrow321.minecraftygo.client.shop.ClientPoints;
 import io.github.zancrow321.minecraftygo.duel.DuelManager;
+import io.github.zancrow321.minecraftygo.points.PointShopMenu;
+import io.github.zancrow321.minecraftygo.village.ShopStandMenu;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -53,6 +56,22 @@ public final class YgoNetwork {
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer player) {
                         CollectionActions.handle(player, payload);
+                    }
+                }));
+        registrar.playToClient(PointsPayload.TYPE, PointsPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientPoints.receive(payload)));
+        registrar.playToClient(PointShopPayload.TYPE, PointShopPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientPoints.shop(payload)));
+        registrar.playToServer(PointShopTradePayload.TYPE, PointShopTradePayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        PointShopMenu.handle(player, payload.containerId(), payload.index(), payload.all());
+                    }
+                }));
+        registrar.playToServer(StandPricePayload.TYPE, StandPricePayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        ShopStandMenu.setPrice(player, payload.column(), payload.price());
                     }
                 }));
         registrar.playToServer(DuelResponsePayload.TYPE, DuelResponsePayload.STREAM_CODEC,

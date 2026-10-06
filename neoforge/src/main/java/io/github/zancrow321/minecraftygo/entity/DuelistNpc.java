@@ -1,6 +1,7 @@
 package io.github.zancrow321.minecraftygo.entity;
 
 import io.github.zancrow321.minecraftygo.YgoData;
+import io.github.zancrow321.minecraftygo.YgoServerConfig;
 import io.github.zancrow321.minecraftygo.cosmetics.Cosmetics;
 import io.github.zancrow321.minecraftygo.duel.DuelManager;
 import io.github.zancrow321.minecraftygo.engine.data.Banlist;
@@ -10,7 +11,6 @@ import io.github.zancrow321.minecraftygo.engine.data.DeckRules;
 import io.github.zancrow321.minecraftygo.engine.data.PoolMode;
 import io.github.zancrow321.minecraftygo.engine.data.Products;
 import io.github.zancrow321.minecraftygo.engine.data.TournamentDecks;
-import io.github.zancrow321.minecraftygo.item.BoosterPackItem;
 import io.github.zancrow321.minecraftygo.progression.StarterDecks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -37,7 +37,6 @@ import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 
@@ -63,7 +62,6 @@ public final class DuelistNpc extends PathfinderMob {
     public static final int SKINS = 9;
     private static final List<String> TITLES = List.of("Rare Hunter", "Card Shark", "Wandering Duelist",
             "Duel Monk", "Tournament Hopeful", "Puzzle Duelist", "Dragon Tamer", "Bug Collector", "Ghoul");
-    private static final long REMATCH_TICKS = 24000;
     private static final Pattern STRUCTURE = Pattern.compile("starter deck|structure deck");
 
     private long deckSeed;
@@ -198,32 +196,29 @@ public final class DuelistNpc extends PathfinderMob {
             return Component.literal(duelistName() + " is already dueling.");
         }
         Long beaten = beatenBy.get(player.getUUID());
-        if (beaten != null && level().getGameTime() - beaten < REMATCH_TICKS) {
+        if (beaten != null && level().getGameTime() - beaten < YgoServerConfig.NPC_REMATCH_MINUTES.get() * 1200L) {
             return Component.literal(duelistName() + ": \"You beat me fair and square. Let me rebuild my deck, "
-                    + "come back tomorrow!\"");
+                    + "come back later!\"");
         }
         return null;
     }
 
-    /** The duel is over: a player who won gets a booster pack. */
-    public ItemStack duelEnded(ServerPlayer player, boolean playerWon) {
+    /**
+     * The duel is over: the NPC says so and, if it lost, won't duel that player again for a while.
+     *
+     * @param gifts whether the player gets something for it (handed out by the duel manager)
+     */
+    public void duelEnded(ServerPlayer player, boolean playerWon, boolean gifts) {
         setDueling(false);
         if (player == null) {
-            return ItemStack.EMPTY;
+            return;
         }
         if (playerWon) {
             beatenBy.put(player.getUUID(), level().getGameTime());
-            ItemStack pack = BoosterPackItem.of(BoosterPackItem.randomSet(getRandom()).id());
-            player.sendSystemMessage(Component.literal(duelistName() + ": \"Well played! Take this.\" ")
-                    .append(pack.getHoverName()));
-            ItemStack won = pack.copy();
-            if (!player.getInventory().add(pack)) {
-                player.drop(pack, false);
-            }
-            return won;
         }
-        player.sendSystemMessage(Component.literal(duelistName() + ": \"Better luck next time!\""));
-        return ItemStack.EMPTY;
+        player.sendSystemMessage(Component.literal(duelistName() + ": \"" + (playerWon
+                ? gifts ? "Well played! Take this." : "Well played!"
+                : gifts ? "Better luck next time! Here, for your next deck." : "Better luck next time!") + "\""));
     }
 
     @Override

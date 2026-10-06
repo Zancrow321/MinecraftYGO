@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "minecraftygo:block/shop_stand_top",
+    "side": "minecraftygo:block/shop_stand_side",
+    "bottom": "minecraftygo:block/card_shop_bottom"
+  }
+}
