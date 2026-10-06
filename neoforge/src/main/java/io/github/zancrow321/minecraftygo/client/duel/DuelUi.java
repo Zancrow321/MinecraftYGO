@@ -104,6 +104,9 @@ public final class DuelUi {
     private static CardState hoverCard;
     private static int mouseX;
     private static int mouseY;
+    /** The pile (graveyard, banished cards or extra deck) open for a look, or {@code null}. */
+    private static Loc pile;
+    private static int pilePage;
 
     private DuelUi() {
     }
@@ -116,6 +119,7 @@ public final class DuelUi {
         autoZone = false;
         pressedHand = -1;
         dragging = false;
+        pile = null;
     }
 
     // ---- What the current prompt is ----
@@ -263,6 +267,9 @@ public final class DuelUi {
                     dialog(g, font, prompt, mx, my, w, h);
                 }
             }
+        }
+        if (pile != null) {
+            pileWindow(g, font, view, mx, my, w, h);
         }
         if (logOpen) {
             log(g, font, mx, my, w, h);
@@ -694,6 +701,96 @@ public final class DuelUi {
         }
     }
 
+    /** A pile that can be looked through at any time: a graveyard, the banished cards or an extra deck. */
+    private static boolean isPile(Loc loc) {
+        int location = loc.location() & ~LOCATION_OVERLAY;
+        return location == LOCATION_GRAVE || location == LOCATION_REMOVED || location == LOCATION_EXTRA;
+    }
+
+    private static void openPile(Loc loc) {
+        pile = new Loc(loc.controller(), loc.location() & ~LOCATION_OVERLAY, 0, 0);
+        pilePage = 0;
+        menu = null;
+    }
+
+    /**
+     * The cards of an open pile, newest first, over whatever else is showing. Face-down cards (the opponent's extra
+     * deck, cards banished face-down) show their back. Hovering a card shows it in the card panel.
+     */
+    private static void pileWindow(GuiGraphics g, Font font, DuelView view, int mx, int my, int w, int h) {
+        var side = view.board().side(pile.controller());
+        List<CardState> cards = new ArrayList<>(switch (pile.location()) {
+            case LOCATION_GRAVE -> side.graveyard();
+            case LOCATION_REMOVED -> side.banished();
+            default -> side.extra();
+        });
+        java.util.Collections.reverse(cards);
+        String what = switch (pile.location()) {
+            case LOCATION_GRAVE -> "Graveyard";
+            case LOCATION_REMOVED -> "Banished";
+            default -> "Extra Deck";
+        };
+        String owner = pile.controller() == view.you() ? "Your" : view.names().get(pile.controller()) + "'s";
+        int cw = 40;
+        int ch = 58;
+        int width = windowWidth(w, 300);
+        int perRow = Math.max(1, (width - 8) / (cw + 4));
+        int top = DuelHud.promptBottom(w);
+        int rows = Math.max(1, Math.min(3, (windowBottom(h) - top - 16 - 22) / (ch + 4)));
+        int perPage = perRow * rows;
+        int pages = Math.max(1, (cards.size() + perPage - 1) / perPage);
+        pilePage = Math.max(0, Math.min(pilePage, pages - 1));
+        int x = w / 2 - width / 2;
+        int height = 16 + rows * (ch + 4) + 22;
+        // Clicks inside the window do nothing unless they hit a button or card.
+        hits.add(new Hit(x, top, width, height, () -> { }));
+        panel(g, x, top, width, height);
+        g.drawString(font, font.plainSubstrByWidth(owner + " " + what + " (" + cards.size() + ")", width - 24), x + 4,
+                top + 4, GOLD);
+        button(g, font, x + width - 18, top + 1, 16, "x", true, mx, my, () -> pile = null);
+        int y = top + 16;
+        if (cards.isEmpty()) {
+            g.drawCenteredString(font, "No cards", x + width / 2, y + rows * (ch + 4) / 2 - 4, DIM);
+        }
+        for (int i = pilePage * perPage; i < Math.min(cards.size(), (pilePage + 1) * perPage); i++) {
+            int slot = i - pilePage * perPage;
+            int cx = x + 4 + (slot % perRow) * (cw + 4);
+            int cy = y + (slot / perRow) * (ch + 4);
+            CardState card = cards.get(i);
+            card(g, card.code(), cx, cy, cw, ch);
+            if (mx >= cx && mx < cx + cw && my >= cy && my < cy + ch && card.code() != 0) {
+                hoverCode = card.code();
+                hoverCard = null;
+                outline(g, cx, cy, cw, ch, GOLD);
+            }
+        }
+        int by = y + rows * (ch + 4) + 2;
+        if (pages > 1) {
+            button(g, font, x + 4, by, 16, "<", pilePage > 0, mx, my, () -> pilePage--);
+            String label = (pilePage + 1) + "/" + pages;
+            g.drawCenteredString(font, label, x + 4 + 35, by + 3, DIM);
+            button(g, font, x + 4 + 54, by, 16, ">", pilePage < pages - 1, mx, my, () -> pilePage++);
+        }
+        String hint = "Newest first · Esc closes";
+        int room = width - (pages > 1 ? 82 : 8);
+        g.drawString(font, font.plainSubstrByWidth(hint, room), x + width - 4 - Math.min(font.width(hint), room),
+                by + 3, DIM);
+    }
+
+    /** A right click on a graveyard, the banished cards or an extra deck opens it for a look. */
+    public static boolean rightClicked(double mx, double my, int w, int h) {
+        if (ClientDuel.view() == null || !ClientField.active() || DuelStaging.introRunning()
+                || DuelStaging.resultShowing()) {
+            return false;
+        }
+        Loc zone = zoneUnder(mx, my, w, h);
+        if (zone != null && isPile(zone)) {
+            openPile(zone);
+            return true;
+        }
+        return false;
+    }
+
     /** A chance to respond: what just happened, the cards that can answer it, and "Don't respond". */
     private static void responseWindow(GuiGraphics g, Font font, PromptView p, int mx, int my, int w, int h) {
         int width = windowWidth(w, 280);
@@ -895,6 +992,9 @@ public final class DuelUi {
     private static void clickCard(Loc loc, double mx, double my) {
         PromptView p = ClientDuel.prompt();
         if (p == null) {
+            if (isPile(loc)) {
+                openPile(loc);
+            }
             return;
         }
         if (p.multi() == null && (commands(p) || chain(p))) {
@@ -902,6 +1002,8 @@ public final class DuelUi {
                     .filter(c -> c.at() != null && FieldLayout.sameZone(c.at(), loc)).toList();
             if (!here.isEmpty()) {
                 openMenu(here, mx, my, null);
+            } else if (isPile(loc)) {
+                openPile(loc);
             }
             return;
         }
@@ -1041,10 +1143,14 @@ public final class DuelUi {
         return true;
     }
 
-    /** Escape closes an open menu first, then the result screen. */
+    /** Escape closes an open menu first, then an open pile, then the result screen. */
     public static boolean closeMenu() {
         if (DuelStaging.resultShowing()) {
             DuelStaging.closeResult();
+            return true;
+        }
+        if (menu == null && pile != null) {
+            pile = null;
             return true;
         }
         if (menu == null) {

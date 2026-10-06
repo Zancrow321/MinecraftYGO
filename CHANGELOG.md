@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Duel comfort
+- Graveyards, banished cards and extra decks of both duelists can be looked through at any time: click the pile
+  (right-click when a card there can be activated) and a window shows its cards, newest first. Hovering a card
+  shows it in the card panel; the opponent's face-down cards show their back. Escape or x closes it.
+
 ### Deck editor
 - The deck box filters the cards you own by type (monsters, spells, traps, extra deck), attribute and level and sorts
   them by name, ATK, DEF or level. Click a filter to step through it, shift-click to step back.
