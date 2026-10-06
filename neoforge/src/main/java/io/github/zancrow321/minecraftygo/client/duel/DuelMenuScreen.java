@@ -1,5 +1,6 @@
 package io.github.zancrow321.minecraftygo.client.duel;
 
+import io.github.zancrow321.minecraftygo.client.field.ClientField;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.PauseScreen;
@@ -37,15 +38,23 @@ public final class DuelMenuScreen extends Screen {
             DuelMode.toggleView();
             b.setMessage(cameraLabel());
         }).bounds(x, y + SPACING, BUTTON_WIDTH, BUTTON_HEIGHT).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.duel_menu.surrender"), b -> {
-            if (!confirmSurrender) {
-                confirmSurrender = true;
-                b.setMessage(Component.translatable("screen.minecraftygo.duel_menu.surrender.confirm"));
-                return;
-            }
-            minecraft.player.connection.sendCommand("ygo forfeit");
-            onClose();
-        }).bounds(x, y + 2 * SPACING, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        if (ClientField.watching()) {
+            addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.duel_menu.stop_watching"),
+                    b -> {
+                        minecraft.player.connection.sendCommand("ygo unwatch");
+                        onClose();
+                    }).bounds(x, y + 2 * SPACING, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        } else {
+            addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.duel_menu.surrender"), b -> {
+                if (!confirmSurrender) {
+                    confirmSurrender = true;
+                    b.setMessage(Component.translatable("screen.minecraftygo.duel_menu.surrender.confirm"));
+                    return;
+                }
+                minecraft.player.connection.sendCommand("ygo forfeit");
+                onClose();
+            }).bounds(x, y + 2 * SPACING, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        }
         addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.duel_menu.game_menu"),
                 b -> minecraft.setScreen(new PauseScreen(true))).bounds(x, y + 3 * SPACING + 8, BUTTON_WIDTH,
                 BUTTON_HEIGHT).build());

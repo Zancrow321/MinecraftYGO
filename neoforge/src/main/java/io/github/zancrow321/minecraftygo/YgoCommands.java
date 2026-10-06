@@ -78,6 +78,16 @@ final class YgoCommands {
                 .then(Commands.literal("forfeit").executes(ctx -> {
                     manager(ctx).forfeit(ctx.getSource().getPlayerOrException());
                     return 1;
+                }))
+                .then(Commands.literal("watch").then(Commands.argument("player", EntityArgument.player())
+                        .executes(ctx -> {
+                            manager(ctx).watch(ctx.getSource().getPlayerOrException(),
+                                    EntityArgument.getPlayer(ctx, "player"));
+                            return 1;
+                        })))
+                .then(Commands.literal("unwatch").executes(ctx -> {
+                    manager(ctx).unwatch(ctx.getSource().getPlayerOrException());
+                    return 1;
                 })));
     }
 

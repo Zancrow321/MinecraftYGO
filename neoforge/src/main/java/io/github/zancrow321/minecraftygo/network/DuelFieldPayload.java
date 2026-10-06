@@ -18,13 +18,14 @@ public record DuelFieldPayload(boolean active, double x, double y, double z, flo
     /**
      * How the mat is split and dressed. Normally {@code sleeves} has one card sleeve per team. In a Battle City duel
      * ({@code split}) each partner has their own half of the team's zones and {@code sleeves} has one per duelist:
-     * team 0's first and second partner, then team 1's.
+     * team 0's first and second partner, then team 1's. {@code watching} is set for a spectator's copy.
      */
-    public record Layout(boolean split, List<String> sleeves) {
-        public static final Layout NONE = new Layout(false, List.of());
+    public record Layout(boolean split, List<String> sleeves, boolean watching) {
+        public static final Layout NONE = new Layout(false, List.of(), false);
         public static final StreamCodec<ByteBuf, Layout> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.BOOL, Layout::split,
                 ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), Layout::sleeves,
+                ByteBufCodecs.BOOL, Layout::watching,
                 Layout::new);
     }
 
@@ -44,7 +45,12 @@ public record DuelFieldPayload(boolean active, double x, double y, double z, flo
     }
 
     public DuelFieldPayload withLayout(boolean split, List<String> sleeves) {
-        return new DuelFieldPayload(active, x, y, z, yaw, new Layout(split, List.copyOf(sleeves)));
+        return new DuelFieldPayload(active, x, y, z, yaw, new Layout(split, List.copyOf(sleeves), false));
+    }
+
+    /** The copy sent to a spectator. */
+    public DuelFieldPayload watching() {
+        return new DuelFieldPayload(active, x, y, z, yaw, new Layout(layout.split(), layout.sleeves(), true));
     }
 
     public static DuelFieldPayload none() {

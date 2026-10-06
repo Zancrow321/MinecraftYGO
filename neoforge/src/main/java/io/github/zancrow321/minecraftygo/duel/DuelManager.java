@@ -18,6 +18,7 @@ import io.github.zancrow321.minecraftygo.entity.DuelistNpc;
 import io.github.zancrow321.minecraftygo.item.DeckBoxItem;
 import io.github.zancrow321.minecraftygo.item.YgoComponents;
 import io.github.zancrow321.minecraftygo.item.YgoItems;
+import io.github.zancrow321.minecraftygo.network.DuelClockPayload;
 import io.github.zancrow321.minecraftygo.network.DuelFieldPayload;
 import io.github.zancrow321.minecraftygo.network.DuelResultPayload;
 import io.github.zancrow321.minecraftygo.network.DuelistStatePayload;
@@ -62,6 +63,7 @@ public final class DuelManager {
     /** invitee -> the invitation waiting for their answer */
     private final Map<UUID, Invite> invites = new HashMap<>();
     private final Map<UUID, ServerDuel> duelsByPlayer = new HashMap<>();
+    private final Map<UUID, ServerDuel> duelsBySpectator = new HashMap<>();
     private final List<ServerDuel> duels = new ArrayList<>();
     /** Where each dueling person stands (once they're on the ground); they are held there until the duel ends. */
     private final Map<UUID, Vec3> anchors = new HashMap<>();
@@ -89,7 +91,24 @@ public final class DuelManager {
      * @param ante the escrow id of the ante, or {@code null} for a duel without one
      * @param npc the NPC duelist playing the bot seat, or {@code null}
      */
-    private record ServerDuel(DuelTable table, UUID[] seats, DuelFieldPayload field, UUID ante, DuelistNpc npc) {
+    private record ServerDuel(DuelTable table, UUID[] seats, DuelFieldPayload field, UUID ante, DuelistNpc npc,
+                              Set<UUID> spectators, Clock clock) {
+    }
+
+    /**
+     * The turn time limit: ticks each seat spent choosing this turn, and the bot that chooses for whoever ran out.
+     */
+    private static final class Clock {
+        final DuelistAi standIn;
+        final Map<Integer, Integer> used = new HashMap<>();
+        final Set<Integer> outOfTime = new HashSet<>();
+        int turn;
+        /** Answers the stand-in gave for the current prompt that weren't allowed. */
+        int refused;
+
+        Clock(long seed) {
+            standIn = new DuelistAi(seed, YgoData.cards());
+        }
     }
 
     private DuelManager(MinecraftServer server) {
@@ -462,7 +481,8 @@ public final class DuelManager {
         } else {
             field = field.withLayout(false, List.of(sleeveOf(entrants, 0, npc), sleeveOf(entrants, 1, npc)));
         }
-        ServerDuel duel = new ServerDuel(table, people, field, ante, npc);
+        ServerDuel duel = new ServerDuel(table, people, field, ante, npc, new HashSet<>(),
+                new Clock(random.nextLong()));
         duels.add(duel);
         if (npc != null) {
             npc.setDueling(true);
@@ -537,6 +557,58 @@ public final class DuelManager {
         run(duel, () -> duel.table().respond(seat, response));
     }
 
+    /** {@code watcher} right-clicked {@code duelist}, who is dueling: watch their duel. */
+    public void watch(ServerPlayer watcher, ServerPlayer duelist) {
+        ServerDuel duel = duelsByPlayer.get(duelist.getUUID());
+        if (duel == null) {
+            watcher.sendSystemMessage(Component.literal(duelist.getScoreboardName() + " is not in a duel."));
+            return;
+        }
+        watch(watcher, duel);
+    }
+
+    /** {@code watcher} right-clicked an NPC duelist that is dueling: watch that duel. */
+    public void watchNpc(ServerPlayer watcher, DuelistNpc npc) {
+        duels.stream().filter(d -> d.npc() == npc).findFirst().ifPresent(duel -> watch(watcher, duel));
+    }
+
+    private void watch(ServerPlayer watcher, ServerDuel duel) {
+        if (inDuel(watcher)) {
+            watcher.sendSystemMessage(Component.literal("You are in a duel yourself."));
+            return;
+        }
+        if (duel.spectators().contains(watcher.getUUID())) {
+            return;
+        }
+        unwatch(watcher, false);
+        duel.spectators().add(watcher.getUUID());
+        duelsBySpectator.put(watcher.getUUID(), duel);
+        calmMobs(watcher);
+        PacketDistributor.sendToPlayer(watcher, duel.field().watching());
+        PacketDistributor.sendToPlayer(watcher, new DuelViewPayload(ViewCodec.encode(duel.table().watchingNow())));
+        watcher.sendSystemMessage(Component.literal("Watching " + String.join(" vs ", duel.table().names())
+                + ". Esc and Stop watching to leave."));
+    }
+
+    public void unwatch(ServerPlayer watcher) {
+        if (!unwatch(watcher, true)) {
+            watcher.sendSystemMessage(Component.literal("You are not watching a duel."));
+        }
+    }
+
+    /** @return whether {@code watcher} was watching a duel */
+    private boolean unwatch(ServerPlayer watcher, boolean removeField) {
+        ServerDuel duel = duelsBySpectator.remove(watcher.getUUID());
+        if (duel == null) {
+            return false;
+        }
+        duel.spectators().remove(watcher.getUUID());
+        if (removeField) {
+            PacketDistributor.sendToPlayer(watcher, DuelFieldPayload.none());
+        }
+        return true;
+    }
+
     public void forfeit(ServerPlayer player) {
         ServerDuel duel = duelsByPlayer.get(player.getUUID());
         if (duel == null) {
@@ -560,6 +632,7 @@ public final class DuelManager {
     }
 
     public void onLogout(ServerPlayer player) {
+        unwatch(player, false);
         invites.remove(player.getUUID());
         invites.values().removeIf(invite -> invite.host().equals(player.getUUID()));
         ServerDuel duel = duelsByPlayer.get(player.getUUID());
@@ -571,8 +644,12 @@ public final class DuelManager {
     public void tick() {
         long now = server.getTickCount();
         invites.values().removeIf(invite -> invite.expiresAt() < now);
+        int limit = YgoServerConfig.TURN_TIME_LIMIT.get() * 20;
         for (ServerDuel duel : List.copyOf(duels)) {
             run(duel, duel.table()::pump);
+            if (limit > 0 && duels.contains(duel) && !duel.table().finished()) {
+                clock(duel, limit, now);
+            }
         }
         for (UUID id : duelsByPlayer.keySet()) {
             ServerPlayer player = player(id);
@@ -592,9 +669,47 @@ public final class DuelManager {
         }
     }
 
-    /** Whether {@code entity} is a person at a duel, who can't be hurt or targeted by mobs. */
+    /** Counts down the waiting person's time for this turn; once it's gone, the stand-in bot chooses for them. */
+    private void clock(ServerDuel duel, int limit, long now) {
+        Clock clock = duel.clock();
+        DuelTable table = duel.table();
+        if (table.turn() != clock.turn) {
+            clock.turn = table.turn();
+            clock.used.clear();
+            clock.outOfTime.clear();
+        }
+        int seat = table.waitingFor();
+        if (seat < 0 || table.isBot(seat)) {
+            return;
+        }
+        int used = clock.used.merge(seat, 1, Integer::sum);
+        ServerPlayer player = player(duel.seats()[seat]);
+        if (used < limit) {
+            if (player != null && (limit - used) % 20 == 0) {
+                PacketDistributor.sendToPlayer(player, new DuelClockPayload(limit - used));
+            }
+            return;
+        }
+        if (clock.outOfTime.add(seat)) {
+            message(duel.seats()[seat], Component.literal("Out of time: your choices are made for you until this "
+                    + "turn ends.").withStyle(ChatFormatting.RED));
+            if (player != null) {
+                PacketDistributor.sendToPlayer(player, new DuelClockPayload(0));
+            }
+        }
+        run(duel, () -> {
+            Map<Integer, DuelView> views = table.timeOut(seat, clock.standIn, clock.refused);
+            DuelView own = views.get(seat);
+            boolean refused = own != null && own.prompt() != null && own.log().contains(DuelTable.RETRY_LINE);
+            clock.refused = refused ? clock.refused + 1 : 0;
+            return views;
+        });
+    }
+
+    /** Whether {@code entity} is a person at a duel or watching one, who can't be hurt or targeted by mobs. */
     public boolean protects(Entity entity) {
-        return entity instanceof ServerPlayer player && duelsByPlayer.containsKey(player.getUUID());
+        return entity instanceof ServerPlayer player && (duelsByPlayer.containsKey(player.getUUID())
+                || duelsBySpectator.containsKey(player.getUUID()));
     }
 
     /** Mobs that are already after the player give up when the duel starts. */
@@ -623,6 +738,16 @@ public final class DuelManager {
                 PacketDistributor.sendToPlayer(player, new DuelViewPayload(ViewCodec.encode(view)));
             }
         });
+        if (!views.isEmpty()) {
+            // Something happened: spectators get their (public) share of it.
+            DuelViewPayload watched = new DuelViewPayload(ViewCodec.encode(duel.table().spectatorView()));
+            for (UUID id : duel.spectators()) {
+                ServerPlayer spectator = player(id);
+                if (spectator != null) {
+                    PacketDistributor.sendToPlayer(spectator, watched);
+                }
+            }
+        }
         if (duel.table().finished()) {
             end(duel);
         }
@@ -630,6 +755,8 @@ public final class DuelManager {
 
     private void end(ServerDuel duel) {
         duels.remove(duel);
+        // Spectators keep the field until they close the result screen.
+        duel.spectators().forEach(duelsBySpectator::remove);
         for (UUID seat : duel.seats()) {
             if (seat != null) {
                 duelsByPlayer.remove(seat);

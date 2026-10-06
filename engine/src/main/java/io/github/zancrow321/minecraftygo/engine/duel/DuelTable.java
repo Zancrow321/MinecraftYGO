@@ -38,6 +38,9 @@ public final class DuelTable implements AutoCloseable {
     public record Seat(int team, String name, Responder bot) {
     }
 
+    /** The log line a person gets when their answer wasn't allowed and they're asked again. */
+    public static final String RETRY_LINE = "That choice isn't allowed, try again";
+
     private final DuelController duel;
     private final DuelText text;
     private final List<Seat> seats;
@@ -49,6 +52,9 @@ public final class DuelTable implements AutoCloseable {
     private final int[] recordedActive = new int[2];
     private final List<List<String>> pendingLog = new ArrayList<>();
     private final List<List<FieldEvent>> pendingEvents = new ArrayList<>();
+    /** What spectators have not been sent yet; they see only what is public. */
+    private final List<String> spectatorLog = new ArrayList<>();
+    private final List<FieldEvent> spectatorEvents = new ArrayList<>();
     private long hint;
     private int botRetries;
     private String forfeitResult;
@@ -173,6 +179,37 @@ public final class DuelTable implements AutoCloseable {
         return run(duel.advance());
     }
 
+    /** The team names, team 0 first. */
+    public List<String> names() {
+        return names;
+    }
+
+    /** What a spectator who just sat down sees: the board as it is, with nothing that happened before. */
+    public DuelView watchingNow() {
+        return new DuelView(0, names, duel.board().viewedBy(-1, false), List.of(), List.of(), null, 0, null);
+    }
+
+    /** The current turn number, 1 for the first turn. */
+    public int turn() {
+        return duel.board().turn();
+    }
+
+    /**
+     * A person ran out of time: {@code stand-in} answers their waiting prompt instead, as a bot would, and the duel
+     * runs on to the next person's prompt. If the answer isn't allowed the prompt stays, so call it again.
+     *
+     * @param attempt how many answers for this prompt were refused so far
+     * @throws IllegalStateException if it isn't that seat's turn to answer
+     */
+    public Map<Integer, DuelView> timeOut(int seat, Responder standIn, int attempt) {
+        DuelMessage.Prompt prompt = duel.pendingPrompt();
+        if (waitingFor() != seat || isBot(seat) || prompt == null) {
+            throw new IllegalStateException("Seat " + seat + " has nothing to answer");
+        }
+        duel.respond(standIn.respond(prompt, duel.board().viewedBy(prompt.player()), attempt));
+        return run(duel.advance());
+    }
+
     /** Continues a bot-only stretch that {@link #BOT_STEPS_PER_CALL} cut short. */
     public Map<Integer, DuelView> pump() {
         int seat = waitingFor();
@@ -191,6 +228,7 @@ public final class DuelTable implements AutoCloseable {
         for (int viewer = 0; viewer < seats.size(); viewer++) {
             pendingLog.get(viewer).add((viewer == seat ? "You" : seats.get(seat).name()) + " surrendered");
         }
+        spectatorLog.add(seats.get(seat).name() + " surrendered");
         forfeitWinner = 1 - team;
         forfeitResult = names.get(1 - team) + " win" + (teams.get(1 - team).size() == 1 ? "s" : "") + " the duel";
         return views(null);
@@ -251,19 +289,27 @@ public final class DuelTable implements AutoCloseable {
                     pendingLog.get(viewer).add(viewer == team.get(recordedActive[swap.player()])
                             ? "Your turn to duel for your team" : next + " takes over");
                 }
+                spectatorLog.add(next + " takes over");
                 continue;
+            }
+            FieldEvent watched = FieldEvent.of(message, -1);
+            if (watched != null) {
+                spectatorEvents.add(watched);
+            }
+            String watchedLine = new DuelLog(text, names, -1, loc -> faceUpCodeAt(board, loc)).describe(message);
+            if (watchedLine != null && !(message instanceof DuelMessage.Retry)) {
+                spectatorLog.add(watchedLine);
             }
             for (int viewer = 0; viewer < seats.size(); viewer++) {
                 if (isBot(viewer)) {
                     continue;
                 }
                 if (message instanceof DuelMessage.Retry && waitingForHuman(viewer)) {
-                    pendingLog.get(viewer).add("That choice isn't allowed, try again");
+                    pendingLog.get(viewer).add(RETRY_LINE);
                     continue;
                 }
-                // A partner who isn't playing sees the duel like a spectator: no private card names.
-                int team = seats.get(viewer).team();
-                int as = teams.get(team).get(recordedActive[team]) == viewer ? team : -1;
+                // Partners share what their team knows, whichever of them is playing.
+                int as = seats.get(viewer).team();
                 FieldEvent event = FieldEvent.of(message, as);
                 if (event != null) {
                     pendingEvents.get(viewer).add(event);
@@ -313,10 +359,28 @@ public final class DuelTable implements AutoCloseable {
             pendingLog.get(seat).clear();
             List<FieldEvent> events = List.copyOf(pendingEvents.get(seat));
             pendingEvents.get(seat).clear();
-            Board seen = board.viewedBy(team, activeSeat(team) == seat);
+            Board seen = board.viewedBy(team, true);
             views.put(seat, new DuelView(team, names, seen, log, events, mine, mine != null ? hint : 0, finalText));
         }
         return views;
+    }
+
+    /**
+     * What a spectator sees now: the board with only public cards, from team 0's end, and everything public that
+     * happened since the previous call. Call it after each step whether or not anyone is watching, so the log
+     * doesn't pile up.
+     */
+    public DuelView spectatorView() {
+        String finalText = forfeitResult;
+        if (finalText == null && result != null) {
+            finalText = result.player() == 2 ? "The duel is a draw" : names.get(result.player()) + " win"
+                    + (teams.get(result.player()).size() == 1 ? "s" : "") + " the duel";
+        }
+        DuelView view = new DuelView(0, names, duel.board().viewedBy(-1, false), List.copyOf(spectatorLog),
+                List.copyOf(spectatorEvents), null, 0, finalText);
+        spectatorLog.clear();
+        spectatorEvents.clear();
+        return view;
     }
 
     private String resultFor(int team) {

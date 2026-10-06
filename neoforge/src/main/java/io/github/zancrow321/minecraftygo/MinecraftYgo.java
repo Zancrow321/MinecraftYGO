@@ -90,8 +90,18 @@ public final class MinecraftYgo {
     /** Right-clicking another player while wearing or holding a duel disk challenges them (or accepts). */
     private void onInteractPlayer(PlayerInteractEvent.EntityInteract event) {
         Player player = event.getEntity();
-        if (event.getHand() != InteractionHand.MAIN_HAND || !(event.getTarget() instanceof Player other)
-                || !DuelDisks.has(player)) {
+        if (event.getHand() != InteractionHand.MAIN_HAND || !(event.getTarget() instanceof Player other)) {
+            return;
+        }
+        if (player instanceof ServerPlayer serverPlayer && other instanceof ServerPlayer serverOther
+                && DuelManager.get(serverPlayer.server).inDuel(serverOther)) {
+            // Anyone can watch a duel, disk or not.
+            DuelManager.get(serverPlayer.server).watch(serverPlayer, serverOther);
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+            return;
+        }
+        if (!DuelDisks.has(player)) {
             return;
         }
         if (player instanceof ServerPlayer serverPlayer && other instanceof ServerPlayer serverOther) {

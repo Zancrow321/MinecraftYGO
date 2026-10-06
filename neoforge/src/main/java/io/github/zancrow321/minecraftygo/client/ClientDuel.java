@@ -102,6 +102,31 @@ public final class ClientDuel {
         };
     }
 
+    /** A new field arrived: whatever duel was shown before is over for this client. */
+    public static void forget() {
+        view = null;
+        prompt = null;
+        selected.clear();
+    }
+
+    private static int clockTicks = -1;
+    private static long clockAt;
+
+    /** The server's word on how much of your turn time is left (only with a turn time limit). */
+    public static void clock(int ticksLeft) {
+        clockTicks = ticksLeft;
+        clockAt = ClientField.tick();
+    }
+
+    /** @return your time left this turn in ticks, counting down, or -1 if there is no limit or nothing to choose */
+    public static int clockLeft() {
+        long since = ClientField.tick() - clockAt;
+        if (clockTicks < 0 || prompt == null || since > 40) {
+            return -1;
+        }
+        return (int) Math.max(0, clockTicks - since);
+    }
+
     public static void result(DuelResultPayload payload) {
         DuelStaging.result(payload);
     }
