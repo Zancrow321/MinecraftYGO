@@ -15,6 +15,10 @@
   effects, not ahead of them.
 - Life points count down or up when they change, in step with the damage effect, and their panel flashes red or
   green; the floating change beside them is twice as big.
+- The card panel always shows the card's artwork, big, above its name and text. Long card text is drawn smaller
+  instead of pushing the picture out, and the panel keeps the last card you looked at.
+- The materials under an Xyz monster can be looked at: right-click it (or click it when it has nothing to do) and a
+  window shows them big. The card panel lists them as small pictures while the monster is under the mouse.
 
 ### Deck editor
 - The deck box filters the cards you own by type (monsters, spells, traps, extra deck), attribute and level and sorts

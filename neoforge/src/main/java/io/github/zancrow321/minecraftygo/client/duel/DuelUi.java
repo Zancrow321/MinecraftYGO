@@ -100,11 +100,16 @@ public final class DuelUi {
     private static int hoveredHand = -1;
     private static boolean handRaised;
     private static int hoverCode;
+    /** The card shown in the card panel: the one under the mouse, or the last one that was. */
+    private static int panelCode;
     /** The card under the mouse when it's on the field, for its current stats. */
     private static CardState hoverCard;
     private static int mouseX;
     private static int mouseY;
-    /** The pile (graveyard, banished cards or extra deck) open for a look, or {@code null}. */
+    /**
+     * The pile (graveyard, banished cards, extra deck or an Xyz monster's materials) open for a look, or
+     * {@code null}.
+     */
     private static Loc pile;
     private static int pilePage;
 
@@ -120,6 +125,7 @@ public final class DuelUi {
         pressedHand = -1;
         dragging = false;
         pile = null;
+        panelCode = 0;
         DuelFeedback.reset();
     }
 
@@ -805,30 +811,63 @@ public final class DuelUi {
         return location == LOCATION_GRAVE || location == LOCATION_REMOVED || location == LOCATION_EXTRA;
     }
 
+    /** An Xyz monster with cards attached: they can be looked at like a pile. */
+    private static boolean hasMaterials(Loc loc) {
+        DuelView view = ClientDuel.view();
+        if (view == null || (loc.location() & ~LOCATION_OVERLAY) != LOCATION_MZONE) {
+            return false;
+        }
+        CardState card = FieldRenderer.cardAt(view.board(), new Loc(loc.controller(), LOCATION_MZONE,
+                loc.sequence(), 0));
+        return card != null && !card.overlayCodes().isEmpty();
+    }
+
+    /** Whether a click or right click on this zone can open it for a look. */
+    private static boolean lookable(Loc loc) {
+        return isPile(loc) || hasMaterials(loc);
+    }
+
     private static void openPile(Loc loc) {
-        pile = new Loc(loc.controller(), loc.location() & ~LOCATION_OVERLAY, 0, 0);
+        int location = loc.location() & ~LOCATION_OVERLAY;
+        pile = new Loc(loc.controller(), location, location == LOCATION_MZONE ? loc.sequence() : 0, 0);
         pilePage = 0;
         menu = null;
     }
 
     /**
-     * The cards of an open pile, newest first, over whatever else is showing. Face-down cards (the opponent's extra
-     * deck, cards banished face-down) show their back. Hovering a card shows it in the card panel.
+     * The cards of an open pile, newest first, over whatever else is showing: a graveyard, the banished cards, an
+     * extra deck or the materials under an Xyz monster. Face-down cards (the opponent's extra deck, cards banished
+     * face-down) show their back. Hovering a card shows it in the card panel.
      */
     private static void pileWindow(GuiGraphics g, Font font, DuelView view, int mx, int my, int w, int h) {
         var side = view.board().side(pile.controller());
-        List<CardState> cards = new ArrayList<>(switch (pile.location()) {
-            case LOCATION_GRAVE -> side.graveyard();
-            case LOCATION_REMOVED -> side.banished();
-            default -> side.extra();
-        });
-        java.util.Collections.reverse(cards);
-        String what = switch (pile.location()) {
-            case LOCATION_GRAVE -> "Graveyard";
-            case LOCATION_REMOVED -> "Banished";
-            default -> "Extra Deck";
-        };
-        String owner = pile.controller() == view.you() ? "Your" : view.names().get(pile.controller()) + "'s";
+        List<Integer> cards = new ArrayList<>();
+        String title;
+        if (pile.location() == LOCATION_MZONE) {
+            CardState xyz = FieldRenderer.cardAt(view.board(), pile);
+            if (xyz == null || xyz.overlayCodes().isEmpty()) {
+                pile = null; // detached or gone
+                return;
+            }
+            cards.addAll(xyz.overlayCodes());
+            title = "Materials of " + YgoData.text().cardName(xyz.code());
+        } else {
+            for (CardState card : switch (pile.location()) {
+                case LOCATION_GRAVE -> side.graveyard();
+                case LOCATION_REMOVED -> side.banished();
+                default -> side.extra();
+            }) {
+                cards.add(card.code());
+            }
+            java.util.Collections.reverse(cards);
+            String what = switch (pile.location()) {
+                case LOCATION_GRAVE -> "Graveyard";
+                case LOCATION_REMOVED -> "Banished";
+                default -> "Extra Deck";
+            };
+            String owner = pile.controller() == view.you() ? "Your" : view.names().get(pile.controller()) + "'s";
+            title = owner + " " + what;
+        }
         int cw = 40;
         int ch = 58;
         int width = windowWidth(w, 300);
@@ -843,7 +882,7 @@ public final class DuelUi {
         // Clicks inside the window do nothing unless they hit a button or card.
         hits.add(new Hit(x, top, width, height, () -> { }));
         panel(g, x, top, width, height);
-        g.drawString(font, font.plainSubstrByWidth(owner + " " + what + " (" + cards.size() + ")", width - 24), x + 4,
+        g.drawString(font, font.plainSubstrByWidth(title + " (" + cards.size() + ")", width - 24), x + 4,
                 top + 4, GOLD);
         button(g, font, x + width - 18, top + 1, 16, "x", true, mx, my, () -> pile = null);
         int y = top + 16;
@@ -854,10 +893,10 @@ public final class DuelUi {
             int slot = i - pilePage * perPage;
             int cx = x + 4 + (slot % perRow) * (cw + 4);
             int cy = y + (slot / perRow) * (ch + 4);
-            CardState card = cards.get(i);
-            card(g, card.code(), cx, cy, cw, ch);
-            if (mx >= cx && mx < cx + cw && my >= cy && my < cy + ch && card.code() != 0) {
-                hoverCode = card.code();
+            int code = cards.get(i);
+            card(g, code, cx, cy, cw, ch);
+            if (mx >= cx && mx < cx + cw && my >= cy && my < cy + ch && code != 0) {
+                hoverCode = code;
                 hoverCard = null;
                 outline(g, cx, cy, cw, ch, GOLD);
             }
@@ -869,20 +908,20 @@ public final class DuelUi {
             g.drawCenteredString(font, label, x + 4 + 35, by + 3, DIM);
             button(g, font, x + 4 + 54, by, 16, ">", pilePage < pages - 1, mx, my, () -> pilePage++);
         }
-        String hint = "Newest first · Esc closes";
+        String hint = pile.location() == LOCATION_MZONE ? "Esc closes" : "Newest first · Esc closes";
         int room = width - (pages > 1 ? 82 : 8);
         g.drawString(font, font.plainSubstrByWidth(hint, room), x + width - 4 - Math.min(font.width(hint), room),
                 by + 3, DIM);
     }
 
-    /** A right click on a graveyard, the banished cards or an extra deck opens it for a look. */
+    /** A right click on a graveyard, the banished cards, an extra deck or an Xyz monster opens it for a look. */
     public static boolean rightClicked(double mx, double my, int w, int h) {
         if (ClientDuel.view() == null || !ClientField.active() || DuelStaging.introRunning()
                 || DuelStaging.resultShowing()) {
             return false;
         }
         Loc zone = zoneUnder(mx, my, w, h);
-        if (zone != null && isPile(zone)) {
+        if (zone != null && lookable(zone)) {
             openPile(zone);
             return true;
         }
@@ -953,15 +992,24 @@ public final class DuelUi {
 
     // ---- Card panel ----
 
-    /** The card under the mouse, big, with its stats and text, on the left between the life panels. */
+    /**
+     * The card under the mouse (or the last one looked at), on the left between the life panels: its artwork on top,
+     * always, then its name, stats and text. Text that doesn't fit is drawn smaller rather than pushing the art out.
+     */
     private static void cardPanel(GuiGraphics g, Font font, int w, int h) {
-        if (hoverCode == 0) {
+        if (hoverCode != 0) {
+            panelCode = hoverCode;
+        }
+        if (panelCode == 0) {
             return;
         }
-        CardInfo info = YgoData.cards().card(hoverCode);
+        CardInfo info = YgoData.cards().card(panelCode);
         if (info == null) {
             return;
         }
+        // Live stats only while the card is under the mouse on the field; a remembered card shows its printed ones.
+        CardState live = hoverCard != null && hoverCard.code() == panelCode && hoverCode == panelCode ? hoverCard
+                : null;
         int x = 6;
         int y = 50;
         int bottom = h - 76;
@@ -970,48 +1018,78 @@ public final class DuelUi {
         }
         int width = CARD_PANEL_WIDTH;
         panel(g, x, y, width, bottom - y);
-        int ty = y + 3;
-        for (FormattedCharSequence line : font.split(Component.literal(info.name()), width - 6)) {
-            g.drawString(font, line, x + 3, ty, GOLD);
-            ty += 9;
-        }
+        int artHeight = Math.max(40, Math.min((width - 6) * 58 / 40, (bottom - y) * 11 / 20));
+        int artWidth = artHeight * 40 / 58;
+        card(g, panelCode, x + width / 2 - artWidth / 2, y + 3, artWidth, artHeight);
+        int ty = y + 3 + artHeight + 3;
+
+        List<Line> lines = new ArrayList<>();
+        lines.add(new Line(info.name(), GOLD));
         String type = CardItem.typeLine(info);
         int stats = type.indexOf(" · ATK");
-        for (String part : stats >= 0 ? new String[]{type.substring(0, stats), type.substring(stats + 3)}
-                : new String[]{type}) {
-            for (FormattedCharSequence line : font.split(Component.literal(part), width - 6)) {
-                if (ty + 9 > bottom) {
-                    return;
-                }
-                g.drawString(font, line, x + 3, ty, DIM);
-                ty += 9;
-            }
+        if (stats >= 0) {
+            lines.add(new Line(type.substring(0, stats), DIM));
+            lines.add(new Line(type.substring(stats + 3), DIM));
+        } else {
+            lines.add(new Line(type, DIM));
         }
-        if (hoverCard != null && info.is(TYPE_MONSTER) && hoverCard.code() == hoverCode && ty + 9 <= bottom) {
-            g.drawString(font, "Now " + hoverCard.attack() + (info.is(TYPE_LINK) ? "" : " / " + hoverCard.defense()),
-                    x + 3, ty, GOLD);
-            ty += 9;
-            if (!hoverCard.overlayCodes().isEmpty() && ty + 9 <= bottom) {
-                g.drawString(font, "Materials: " + hoverCard.overlayCodes().size(), x + 3, ty, GOLD);
-                ty += 9;
-            }
+        if (live != null && info.is(TYPE_MONSTER)) {
+            lines.add(new Line("Now " + live.attack() + (info.is(TYPE_LINK) ? "" : " / " + live.defense()), GOLD));
         }
-        List<FormattedCharSequence> text = font.split(Component.literal(info.description().replace("\r", "")),
-                width - 6);
-        int textRoom = Math.min(text.size(), 6) * 9;
-        int artHeight = Math.min(58, bottom - ty - 4 - textRoom);
-        if (artHeight >= 30) {
-            int artWidth = artHeight * 40 / 58;
-            card(g, hoverCode, x + width / 2 - artWidth / 2, ty + 2, artWidth, artHeight);
-            ty += artHeight + 4;
+        List<Integer> materials = live == null ? List.of() : live.overlayCodes();
+        if (!materials.isEmpty()) {
+            lines.add(new Line("Materials: " + materials.size() + " (right-click)", GOLD));
         }
-        for (FormattedCharSequence line : text) {
-            if (ty + 9 > bottom) {
+        lines.add(new Line(info.description().replace("\r", ""), TEXT));
+        int thumbs = materials.isEmpty() ? 0 : 25;
+        // The biggest text size at which everything fits; the smallest one is clipped at the bottom.
+        float[] scales = {1f, 0.75f, 0.5f};
+        float scale = 0.5f;
+        for (float s : scales) {
+            if (height(font, lines, (int) ((width - 6) / s)) * s + thumbs <= bottom - ty) {
+                scale = s;
                 break;
             }
-            g.drawString(font, line, x + 3, ty, TEXT);
-            ty += 9;
         }
+        int wrap = (int) ((width - 6) / scale);
+        g.pose().pushPose();
+        g.pose().translate(x + 3, ty, 0);
+        g.pose().scale(scale, scale, 1);
+        int ly = 0;
+        int room = (int) ((bottom - ty - thumbs) / scale);
+        for (int i = 0; i < lines.size(); i++) {
+            Line line = lines.get(i);
+            if (i == lines.size() - 1) {
+                ly += 2;
+            }
+            for (FormattedCharSequence part : font.split(Component.literal(line.text()), wrap)) {
+                if (ly + 9 > room) {
+                    break;
+                }
+                g.drawString(font, part, 0, ly, line.color());
+                ly += 9;
+            }
+        }
+        g.pose().popPose();
+        if (!materials.isEmpty()) {
+            int mw = 16;
+            int step = Math.min(mw + 2, (width - 6 - mw) / Math.max(1, materials.size() - 1));
+            for (int i = 0; i < materials.size(); i++) {
+                card(g, materials.get(i), x + 3 + i * step, bottom - 25, mw, 23);
+            }
+        }
+    }
+
+    private record Line(String text, int color) {
+    }
+
+    /** How tall lines of text are when wrapped to {@code wrap}, at full size. */
+    private static int height(Font font, List<Line> lines, int wrap) {
+        int height = 2;
+        for (Line line : lines) {
+            height += font.split(Component.literal(line.text()), wrap).size() * 9;
+        }
+        return height;
     }
 
     // ---- Input ----
@@ -1090,7 +1168,7 @@ public final class DuelUi {
     private static void clickCard(Loc loc, double mx, double my) {
         PromptView p = ClientDuel.prompt();
         if (p == null) {
-            if (isPile(loc)) {
+            if (lookable(loc)) {
                 openPile(loc);
             }
             return;
@@ -1100,7 +1178,7 @@ public final class DuelUi {
                     .filter(c -> c.at() != null && FieldLayout.sameZone(c.at(), loc)).toList();
             if (!here.isEmpty()) {
                 openMenu(here, mx, my, null);
-            } else if (isPile(loc)) {
+            } else if (lookable(loc)) {
                 openPile(loc);
             }
             return;
