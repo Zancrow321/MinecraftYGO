@@ -67,7 +67,7 @@ public final class PackOpenScreen extends Screen {
                     int glow = 0xFF000000 | colorOf(rarity);
                     g.fill(x - 2, y0 - 2, x + cardWidth + 2, y0 + cardHeight + 2, glow);
                 }
-                CardGrid.drawCard(g, font, cards.get(i).code(), x, y0, cardWidth, cardHeight);
+                CardGrid.drawCard(g, font, cards.get(i).code(), rarity, x, y0, cardWidth, cardHeight);
                 if (rarity != Rarity.COMMON) {
                     // Wrapped to the card's width, so the labels of cards side by side don't run into each other.
                     var lines = font.split(Component.literal(CardItem.rarityName(rarity)), cardWidth + 4);

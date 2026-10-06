@@ -14,7 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import org.joml.Matrix4f;
 
 /**
- * Draws a card item as the real card: its art on the front, the card back behind, in the inventory and in the world.
+ * Draws a card item as the real card: its art on the front with its foil, the card back behind, in the inventory and
+ * in the world.
  */
 public final class CardItemRenderer extends BlockEntityWithoutLevelRenderer {
     private static final float HALF_WIDTH = 0.34f;
@@ -36,6 +37,10 @@ public final class CardItemRenderer extends BlockEntityWithoutLevelRenderer {
         quad(buffers.getBuffer(RenderType.entityCutout(front)), poses, m, 0.001f, false, light, overlay);
         quad(buffers.getBuffer(RenderType.entityCutout(CardGrid.CARD_BACK)), poses, m, -0.001f, true, light,
                 overlay);
+        if (art != null) {
+            FoilEffect.drawItem(code, CardItem.rarity(stack), poses, buffers, HALF_WIDTH, HALF_HEIGHT, 0.002f,
+                    overlay);
+        }
         poses.popPose();
     }
 

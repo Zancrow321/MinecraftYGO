@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Foil cards
+- Foil cards shine like the real ones, in the inventory, in your hand, in the world, in the binder and when a pack
+  is opened: a Rare has a silver name, a Super Rare holofoil artwork, an Ultra Rare holofoil artwork and a gold name,
+  a Secret Rare rainbow-lined artwork and a silver name. A glare sweeps over the foil now and then.
+- Binders keep each card's rarity. A foil put in a binder stays a foil, and the binder lists each rarity of a card
+  on its own, with its rarity (R, SR, UR, ScR) in the corner and in the tooltip. Taking a copy out gives that copy;
+  building a deck uses commons first so the foils stay in the binder.
+
 ### Duel comfort
 - Graveyards, banished cards and extra decks of both duelists can be looked through at any time: click the pile
   (right-click when a card there can be activated) and a window shows its cards, newest first. Hovering a card
