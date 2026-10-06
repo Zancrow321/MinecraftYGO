@@ -91,9 +91,10 @@ public final class DuelManager {
      *
      * @param ante the escrow id of the ante, or {@code null} for a duel without one
      * @param npc the NPC duelist playing the bot seat, or {@code null}
+     * @param match the organized duel (a tournament game) this is, or {@code null}
      */
     private record ServerDuel(DuelTable table, UUID[] seats, DuelFieldPayload field, UUID ante, DuelistNpc npc,
-                              Set<UUID> spectators, Clock clock) {
+                              Set<UUID> spectators, Clock clock, MatchSetup match) {
     }
 
     /**
@@ -352,7 +353,62 @@ public final class DuelManager {
                     : team0.isEmpty() ? turned(fieldInFrontOf(team1.get(0)))
                     : fieldBetween(team0.get(0), team1.get(0));
         }
-        start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step);
+        start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step, null);
+    }
+
+    /**
+     * Starts an organized duel, such as a tournament game, between people standing on the two podiums of a free duel
+     * arena (or one person and a bot).
+     *
+     * @return why it couldn't start, or {@code null} once it has
+     */
+    public String startMatch(MatchSetup setup) {
+        var random = server.overworld().getRandom();
+        // OCG-Core lets team 0 go first.
+        boolean swapped = setup.firstTeam() == 1 || setup.firstTeam() < 0 && random.nextBoolean();
+        List<Entrant> entrants = new ArrayList<>();
+        List<ServerPlayer> online = new ArrayList<>();
+        for (int i = 0; i < setup.seats().size(); i++) {
+            MatchSetup.Seat seat = setup.seats().get(i);
+            entrants.add(new Entrant(swapped ? 1 - i : i, seat.player(), seat.name()));
+            if (seat.player() != null) {
+                ServerPlayer player = player(seat.player());
+                if (player == null) {
+                    return seat.name() + " is offline";
+                }
+                if (inDuel(player)) {
+                    return seat.name() + " is already in a duel";
+                }
+                online.add(player);
+            }
+        }
+        int step = online.stream().mapToInt(YgoData::step).max().orElse(YgoData.step(null));
+        io.github.zancrow321.minecraftygo.engine.data.Banlist banlist = setup.rules().banlist() != null
+                ? setup.rules().banlist() : YgoData.banlist(step);
+        List<Deck> decks = new ArrayList<>();
+        for (MatchSetup.Seat seat : setup.seats()) {
+            Deck deck = seat.deck();
+            if (deck == null && seat.player() != null) {
+                ServerPlayer player = player(seat.player());
+                ItemStack box = legalDeckBox(player, banlist);
+                deck = box != null ? DeckBoxItem.toDeck(box) : starterFor(player, false);
+                if (deck == null) {
+                    return seat.name() + " has no legal deck";
+                }
+            }
+            decks.add(deck != null ? deck : Deck.bundled(BOT_DECKS.get(0)));
+        }
+        List<ServerPlayer> team0 = online.stream().filter(p -> teamOf(entrants, p) == 0).toList();
+        List<ServerPlayer> team1 = online.stream().filter(p -> teamOf(entrants, p) == 1).toList();
+        DuelFieldPayload field = DuelArena.claim(team0, team1, setup.npc());
+        if (field == null) {
+            return "the duelists aren't on the podiums of a free duel arena";
+        }
+        java.util.function.IntConsumer told = setup.onEnd();
+        MatchSetup unswapped = new MatchSetup(setup.seats(), setup.rules(), setup.firstTeam(), setup.npc(),
+                winner -> told.accept(swapped && (winner == 0 || winner == 1) ? 1 - winner : winner));
+        return start(entrants, decks, field, null, setup.npc(), false, step, unswapped) ? null
+                : "the duel engine isn't available";
     }
 
     /** The same field seen from the other end: team 0 gets the far side. */
@@ -454,9 +510,11 @@ public final class DuelManager {
     /**
      * @param anteBoxes each person's deck box to take the ante from, or {@code null} for a duel without an ante
      * @param step      the progression step whose rules the duel is played under
+     * @param match     the organized duel this is, with its own rules, or {@code null}
+     * @return whether the duel started
      */
-    private void start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes,
-                       DuelistNpc npc, boolean split, int step) {
+    private boolean start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes,
+                          DuelistNpc npc, boolean split, int step, MatchSetup match) {
         var random = server.overworld().getRandom();
         long[] seed = {random.nextLong(), random.nextLong(), random.nextLong(), random.nextLong() | 1};
         List<DuelTable.Seat> seats = new ArrayList<>();
@@ -467,8 +525,10 @@ public final class DuelManager {
             seats.add(new DuelTable.Seat(e.team(), e.name(),
                     e.player() == null ? new DuelistAi(random.nextLong(), YgoData.cards()) : null));
         }
-        Ruleset ruleset = YgoData.ruleset(step);
-        DuelSettings.Team team = new DuelSettings.Team(YgoServerConfig.STARTING_LIFE_POINTS.get(), 5, 1);
+        MatchSetup.Rules rules = match != null ? match.rules() : MatchSetup.Rules.SERVER;
+        Ruleset ruleset = rules.ruleset() != null ? rules.ruleset() : YgoData.ruleset(step);
+        DuelSettings.Team team = new DuelSettings.Team(rules.lifePoints() > 0 ? rules.lifePoints()
+                : YgoServerConfig.STARTING_LIFE_POINTS.get(), 5, 1);
         DuelTable table;
         try {
             table = new DuelTable(YgoData.text(), new BundledScripts(),
@@ -482,7 +542,7 @@ public final class DuelManager {
                 riders.add(npc.getUUID());
             }
             DuelArena.release(riders);
-            return;
+            return false;
         }
         UUID ante = anteBoxes == null ? null : takeAnte(entrants, anteBoxes, random);
         table.splitField(split);
@@ -502,7 +562,7 @@ public final class DuelManager {
             field = field.withLayout(false, List.of(sleeveOf(entrants, 0, npc), sleeveOf(entrants, 1, npc)));
         }
         ServerDuel duel = new ServerDuel(table, people, field, ante, npc, new HashSet<>(),
-                new Clock(random.nextLong()));
+                new Clock(random.nextLong()), match);
         duels.add(duel);
         if (npc != null) {
             npc.setDueling(true);
@@ -530,6 +590,7 @@ public final class DuelManager {
                     + (split ? " Each partner plays on their own half of the field." : "")));
         }
         run(duel, table::start);
+        return true;
     }
 
     /** A team's card sleeve: its first person's pick, the NPC's own, or the classic back for bots. */
@@ -664,9 +725,14 @@ public final class DuelManager {
     public void tick() {
         long now = server.getTickCount();
         invites.values().removeIf(invite -> invite.expiresAt() < now);
-        int limit = YgoServerConfig.TURN_TIME_LIMIT.get() * 20;
         for (ServerDuel duel : List.copyOf(duels)) {
             run(duel, duel.table()::pump);
+            MatchSetup.Rules rules = duel.match() != null ? duel.match().rules() : MatchSetup.Rules.SERVER;
+            int limit = (rules.turnTimeLimit() >= 0 ? rules.turnTimeLimit() : YgoServerConfig.TURN_TIME_LIMIT.get())
+                    * 20;
+            if (rules.maxTurns() > 0 && duels.contains(duel) && duel.table().turn() > rules.maxTurns()) {
+                run(duel, () -> duel.table().endOnLifePoints("Turn limit reached"));
+            }
             if (limit > 0 && duels.contains(duel) && !duel.table().finished()) {
                 clock(duel, limit, now);
             }
@@ -834,7 +900,9 @@ public final class DuelManager {
             if (won) {
                 PlayerCosmetics.wonDuel(player, againstNpc).forEach(u -> lines.add("Unlocked: " + u));
             }
-            if (decided && (vsPlayers || againstNpc || YgoServerConfig.REWARD_BOT_DUELS.get())) {
+            // Tournament games bring the tournament's prizes instead.
+            if (decided && duel.match() == null
+                    && (vsPlayers || againstNpc || YgoServerConfig.REWARD_BOT_DUELS.get())) {
                 List<String> given = DuelRewards.give(player, vsPlayers ? YgoServerConfig.PLAYER_REWARDS
                         : YgoServerConfig.NPC_REWARDS, won);
                 if (!given.isEmpty()) {
@@ -843,7 +911,12 @@ public final class DuelManager {
                 }
             }
         }
-        if (againstNpc) {
+        if (againstNpc && duel.match() != null) {
+            // An NPC standing in for a tournament duelist only came to show; it hands out nothing.
+            duel.npc().setDueling(false);
+            PacketDistributor.sendToPlayersTrackingEntity(duel.npc(),
+                    new DuelistStatePayload(duel.npc().getId(), false));
+        } else if (againstNpc) {
             DuelistNpc npc = duel.npc();
             PacketDistributor.sendToPlayersTrackingEntity(npc, new DuelistStatePayload(npc.getId(), false));
             // An NPC duel has one person; the coin toss may have put them on either team.
@@ -852,7 +925,8 @@ public final class DuelManager {
             boolean won = decided && duel.table().seats().get(seat).team() == winner;
             npc.duelEnded(person, won, person != null && gifted.contains(person.getUUID()));
         }
-        if (YgoServerConfig.ANNOUNCE_RESULTS.get()) {
+        // A tournament announces its own results.
+        if (YgoServerConfig.ANNOUNCE_RESULTS.get() && duel.match() == null) {
             server.getPlayerList().broadcastSystemMessage(Component.literal(announcement(duel, winner))
                     .withStyle(ChatFormatting.GRAY), false);
         }
@@ -891,6 +965,9 @@ public final class DuelManager {
             }
         }
         duel.table().close();
+        if (duel.match() != null) {
+            duel.match().onEnd().accept(duel.table().finished() ? winner : -1);
+        }
     }
 
     /** Whether every seat on the other team than {@code team} is a person rather than a bot. */
