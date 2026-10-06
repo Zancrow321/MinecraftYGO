@@ -9,11 +9,13 @@ import java.nio.ByteOrder;
 final class FieldInfo {
     final int[] lifePoints = new int[2];
     final int[] deckCounts = new int[2];
+    /** The duel options' low 32 bits ({@code DUEL_*} flags: which zones exist). */
+    int options;
 
     static FieldInfo parse(byte[] data) {
         ByteBuffer b = ByteBuffer.wrap(data).order(ByteOrder.LITTLE_ENDIAN);
         FieldInfo info = new FieldInfo();
-        b.getInt(); // duel options (low 32 bits)
+        info.options = b.getInt();
         for (int player = 0; player < 2; player++) {
             info.lifePoints[player] = b.getInt();
             for (int zone = 0; zone < 7 + 8; zone++) {

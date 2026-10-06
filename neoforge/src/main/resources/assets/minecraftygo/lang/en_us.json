@@ -33,6 +33,8 @@
   "screen.minecraftygo.binder.unlocked_only": "Unlocked",
   "screen.minecraftygo.binder.empty": "Empty. Open booster packs and put the cards in.",
   "screen.minecraftygo.deck_box": "Deck Box",
+  "screen.minecraftygo.deck_box.main": "Main deck: %s",
+  "screen.minecraftygo.deck_box.extra": "Extra deck: %s / 15",
   "screen.minecraftygo.deck_box.clear": "Clear",
   "screen.minecraftygo.deck_box.owned": "Search your cards",
   "screen.minecraftygo.deck_box.no_cards": "No cards in your binders or inventory",

@@ -11,7 +11,26 @@ import java.util.function.UnaryOperator;
  * A snapshot of both players' cards. The server holds the full board; {@link #viewedBy(int)} removes what a
  * player isn't allowed to see before it is sent anywhere.
  */
-public record Board(int turn, int turnPlayer, int phase, List<Side> sides) {
+public record Board(int turn, int turnPlayer, int phase, List<Side> sides, int options) {
+    public Board(int turn, int turnPlayer, int phase, List<Side> sides) {
+        this(turn, turnPlayer, phase, sides, 0);
+    }
+
+    /** Whether the rules have Extra Monster Zones (Master Rule 4 and later). */
+    public boolean extraMonsterZones() {
+        return (options & io.github.zancrow321.minecraftygo.engine.OcgConstants.DUEL_EMZONE) != 0;
+    }
+
+    /** Whether the Pendulum Zones are their own zones beside the field (Master Rule 3). */
+    public boolean separatePendulumZones() {
+        return (options & io.github.zancrow321.minecraftygo.engine.OcgConstants.DUEL_SEPARATE_PZONE) != 0;
+    }
+
+    /** Whether Pendulum Zones exist at all (Master Rule 3 and later). */
+    public boolean pendulumZones() {
+        return (options & io.github.zancrow321.minecraftygo.engine.OcgConstants.DUEL_PZONE) != 0;
+    }
+
     /**
      * One player's cards. Zone lists are fixed-size (7 monster, 8 spell/trap) with {@code null} for empty zones;
      * hidden cards keep their slot but have code 0.
@@ -48,7 +67,7 @@ public record Board(int turn, int turnPlayer, int phase, List<Side> sides) {
                     map(s.banished(), c -> own || isFaceUp(c) ? c : hidden(c)),
                     map(s.extra(), c -> own || isFaceUp(c) ? c : hidden(c))));
         }
-        return new Board(turn, turnPlayer, phase, List.copyOf(censored));
+        return new Board(turn, turnPlayer, phase, List.copyOf(censored), options);
     }
 
     private static boolean isFaceUp(CardState card) {

@@ -24,13 +24,16 @@ public final class QueryDecoder {
     public static final int QUERY_OVERLAY_CARD = 0x10000;
     public static final int QUERY_OWNER = 0x40000;
     public static final int QUERY_IS_PUBLIC = 0x100000;
+    public static final int QUERY_LSCALE = 0x200000;
+    public static final int QUERY_RSCALE = 0x400000;
+    public static final int QUERY_LINK = 0x800000;
     public static final int QUERY_IS_HIDDEN = 0x1000000;
     public static final int QUERY_END = 0x80000000;
 
     /** The fields the mod asks for. */
     public static final int STANDARD_FLAGS = QUERY_CODE | QUERY_POSITION | QUERY_ALIAS | QUERY_TYPE | QUERY_LEVEL
             | QUERY_RANK | QUERY_ATTRIBUTE | QUERY_RACE | QUERY_ATTACK | QUERY_DEFENSE | QUERY_OVERLAY_CARD
-            | QUERY_OWNER | QUERY_IS_PUBLIC | QUERY_IS_HIDDEN;
+            | QUERY_OWNER | QUERY_IS_PUBLIC | QUERY_IS_HIDDEN | QUERY_LSCALE | QUERY_RSCALE | QUERY_LINK;
 
     private QueryDecoder() {
     }
@@ -54,7 +57,7 @@ public final class QueryDecoder {
 
     private static CardState readCard(ByteReader r) {
         int code = 0, position = 0, alias = 0, type = 0, level = 0, rank = 0, attribute = 0, attack = 0;
-        int defense = 0, owner = 0;
+        int defense = 0, owner = 0, leftScale = 0, rightScale = 0, link = 0, linkMarker = 0;
         long race = 0;
         boolean isPublic = false, isHidden = false;
         List<Integer> overlay = List.of();
@@ -70,7 +73,7 @@ public final class QueryDecoder {
             switch (flag) {
                 case QUERY_END -> {
                     return new CardState(code, position, alias, type, level, rank, attribute, race, attack, defense,
-                            owner, isPublic, isHidden, overlay);
+                            owner, isPublic, isHidden, overlay, leftScale, rightScale, link, linkMarker);
                 }
                 case QUERY_CODE -> code = r.i32();
                 case QUERY_POSITION -> position = r.i32();
@@ -85,6 +88,12 @@ public final class QueryDecoder {
                 case QUERY_OWNER -> owner = r.u8();
                 case QUERY_IS_PUBLIC -> isPublic = r.bool();
                 case QUERY_IS_HIDDEN -> isHidden = r.bool();
+                case QUERY_LSCALE -> leftScale = r.i32();
+                case QUERY_RSCALE -> rightScale = r.i32();
+                case QUERY_LINK -> {
+                    link = r.i32();
+                    linkMarker = r.i32();
+                }
                 case QUERY_OVERLAY_CARD -> {
                     int count = r.i32();
                     List<Integer> codes = new ArrayList<>(count);

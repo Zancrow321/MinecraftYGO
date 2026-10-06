@@ -60,6 +60,32 @@ final class Holograms {
         };
     }
 
+    /** The colour of a card's frame for the monster kinds that have their own, or -1. */
+    static int typeColor(CardInfo info) {
+        if (info == null) {
+            return -1;
+        }
+        if (info.is(TYPE_LINK)) {
+            return 0x1E5AC8;
+        }
+        if (info.is(TYPE_XYZ)) {
+            return 0x26262E;
+        }
+        if (info.is(TYPE_PENDULUM)) {
+            return 0x30B890;
+        }
+        if (info.is(TYPE_SYNCHRO)) {
+            return 0xEEEEEE;
+        }
+        if (info.is(TYPE_FUSION)) {
+            return 0x9050C0;
+        }
+        if (info.is(TYPE_RITUAL)) {
+            return 0x5A8CE0;
+        }
+        return -1;
+    }
+
     private static int frameColor(CardState card) {
         if ((card.position() & POS_DEFENSE) != 0) {
             return DEFENSE_COLOR;
@@ -120,6 +146,15 @@ final class Holograms {
         int a = (int) (255 * alpha);
         draw.texQuad(art.location(), center, u, v, (a << 24) | tint, true);
 
+        int type = typeColor(YgoData.cards().card(code));
+        if (type != -1) {
+            // An inner band in the colour of the card's frame: Fusion, Ritual, Synchro, Xyz, Pendulum or Link.
+            VertexConsumer solid = draw.buffers().getBuffer(RenderType.debugQuads());
+            frame(draw, solid, center, u, v, rise.normalize().scale(0.07 * k),
+                    u.normalize().scale(0.07 * k), ((int) (220 * alpha) << 24) | type);
+            u = u.add(u.normalize().scale(0.07 * k));
+            v = v.add(v.normalize().scale(0.07 * k));
+        }
         VertexConsumer glow = draw.buffers().getBuffer(RenderType.lightning());
         int frame = ((int) (230 * alpha) << 24) | color;
         frame(draw, glow, center, u, v, rise.normalize().scale(0.08 * k), u.normalize().scale(0.08 * k), frame);

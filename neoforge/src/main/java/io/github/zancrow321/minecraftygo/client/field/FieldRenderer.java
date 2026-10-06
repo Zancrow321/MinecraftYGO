@@ -172,6 +172,7 @@ public final class FieldRenderer {
         MultiBufferSource.BufferSource buffers = mc.renderBuffers().bufferSource();
         Draw draw = new Draw(poses.last(), cam, buffers);
 
+        FieldLayout.use(view.board().extraMonsterZones(), view.board().separatePendulumZones());
         drawMat(draw, now, partial);
         buffers.endBatch(RenderType.debugQuads());
 
@@ -186,12 +187,16 @@ public final class FieldRenderer {
             }
             for (int seq = 0; seq < side.monsters().size(); seq++) {
                 CardState card = side.monsters().get(seq);
+                if (card != null && !card.overlayCodes().isEmpty()) {
+                    drawMaterials(draw, player, seq, card);
+                }
                 if (card != null && !faceUp(card) || card != null && model(card) == null) {
                     drawFlatOrStanding(draw, player, seq, card, now, partial);
                 }
             }
             drawPiles(draw, player, side);
         }
+        drawLinkArrows(draw, board, now, partial);
         drawEffects(draw, now, partial);
         buffers.endBatch();
 
@@ -245,7 +250,7 @@ public final class FieldRenderer {
         // A faint plate under the whole mat.
         Vec3 c = ClientField.toWorld(0, 0, MAT_Y - 0.005);
         Vec3 hu = r.scale(HALF_WIDTH + 0.3);
-        Vec3 hv = f.scale(HALF_LENGTH + 0.3);
+        Vec3 hv = f.scale(FieldLayout.halfLength() + 0.3);
         draw.colorQuad(vc, c.subtract(hu).subtract(hv), c.add(hu).subtract(hv), c.add(hu).add(hv),
                 c.subtract(hu).add(hv), 0x300A2A4A);
         for (int[] zone : ZONES) {
@@ -254,6 +259,11 @@ public final class FieldRenderer {
             boolean own = zone[0] == you;
             int fill = own ? 0x5018506E : 0x50401C40;
             int edge = own ? 0xC038E0FF : 0xC0E040A0;
+            if (zone[1] == LOCATION_MZONE && zone[2] >= 5) {
+                // The Extra Monster Zones belong to whoever summons there first: white.
+                fill = 0x50505868;
+                edge = 0xC0E8F0FF;
+            }
             if (ClientField.split() && (zone[1] == LOCATION_MZONE || zone[1] == LOCATION_SZONE) && zone[2] < 5
                     && DuelTable.zoneOwner(zone[2]) == 1) {
                 // The second partner's half: green for your team, orange for theirs.
@@ -342,6 +352,82 @@ public final class FieldRenderer {
             flatCard(draw, player, s, front(card.code()), true, 0, 0xFFFFFFFF);
         } else {
             standingCard(draw, s, player, card.code(), 0.15 + bob(seq, player, now, partial), 0xF0FFFFFF);
+        }
+    }
+
+    /**
+     * An Xyz monster's materials: their cards fanned out under it toward its owner's right, so the stack shows
+     * how many there are.
+     */
+    private static void drawMaterials(Draw draw, int player, int seq, CardState card) {
+        Slot s = slot(player, LOCATION_MZONE, seq);
+        double right = player == 0 ? 1 : -1;
+        double back = player == 0 ? -1 : 1;
+        int n = Math.min(card.overlayCodes().size(), 5);
+        for (int i = n - 1; i >= 0; i--) {
+            int code = card.overlayCodes().get(i);
+            Slot at = new Slot(s.x() + right * (0.22 + 0.14 * i), s.z() + back * (0.1 + 0.08 * i));
+            flatCard(draw, player, at, code == 0 ? ClientField.sleeve(player) : front(code), false,
+                    -0.012 - 0.002 * i, 0xD0B0C8FF);
+        }
+    }
+
+    /** Link arrows, in owner's view order (dx to their right, dz toward the opponent), and their bits. */
+    private static final int[][] LINK_ARROWS = {{-1, -1, 0001}, {0, -1, 0002}, {1, -1, 0004}, {-1, 0, 0010},
+            {1, 0, 0040}, {-1, 1, 0100}, {0, 1, 0200}, {1, 1, 0400}};
+
+    /** The arrows of face-up Link monsters: red triangles at the edges of their zones, pointing out. */
+    private static void drawLinkArrows(Draw draw, Board board, long now, float partial) {
+        // The arrows as (base left, base right, tip), drawn solid first and then with a glow on top: one buffer at
+        // a time, since asking for another ends the one before.
+        List<Vec3[]> arrows = new java.util.ArrayList<>();
+        int alpha = (int) (110 + 80 * Mth.sin((now + partial) / 5f));
+        for (int player = 0; player < 2; player++) {
+            List<CardState> monsters = board.side(player).monsters();
+            for (int seq = 0; seq < monsters.size(); seq++) {
+                CardState card = monsters.get(seq);
+                if (card == null || !faceUp(card) || (card.type() & TYPE_LINK) == 0) {
+                    continue;
+                }
+                int markers = card.linkMarker();
+                if (markers == 0) {
+                    var info = YgoData.cards().card(card.code());
+                    markers = info == null ? 0 : info.data().linkMarker();
+                }
+                Slot s = slot(player, LOCATION_MZONE, seq);
+                double right = player == 0 ? 1 : -1;
+                double ahead = player == 0 ? 1 : -1;
+                for (int[] arrow : LINK_ARROWS) {
+                    if ((markers & arrow[2]) == 0) {
+                        continue;
+                    }
+                    double dx = arrow[0] * right;
+                    double dz = arrow[1] * ahead;
+                    Vec3 dir = ClientField.right().normalize().scale(dx)
+                            .add(ClientField.forward().normalize().scale(dz)).normalize();
+                    Vec3 side = new Vec3(0, 1, 0).cross(dir).normalize();
+                    double k = ClientField.forward().length();
+                    Vec3 tip = ClientField.toWorld(s.x() + dx * (ZONE_WIDTH / 2 - 0.02),
+                            s.z() + dz * (ZONE_DEPTH / 2 - 0.02), MAT_Y + 0.012);
+                    Vec3 base = tip.subtract(dir.scale(0.5 * k));
+                    Vec3 half = side.scale(0.34 * k);
+                    arrows.add(new Vec3[]{base.subtract(half), base.add(half), tip});
+                }
+            }
+        }
+        if (arrows.isEmpty()) {
+            return;
+        }
+        VertexConsumer solid = draw.buffers().getBuffer(RenderType.debugQuads());
+        for (Vec3[] a : arrows) {
+            draw.colorQuad(solid, a[0], a[1], a[2], a[2], 0xF0E02020);
+            draw.colorQuad(solid, a[2], a[2], a[1], a[0], 0xF0E02020);
+        }
+        VertexConsumer glow = draw.buffers().getBuffer(RenderType.lightning());
+        Vec3 lift = new Vec3(0, 0.004, 0);
+        for (Vec3[] a : arrows) {
+            draw.colorQuad(glow, a[0].add(lift), a[1].add(lift), a[2].add(lift), a[2].add(lift),
+                    (alpha << 24) | 0xFF6040);
         }
     }
 
@@ -560,7 +646,8 @@ public final class FieldRenderer {
         }
         Slot from = slot(loc);
         Loc target = attack.event().to();
-        Slot to = target == null || target.isNone() ? new Slot(from.x(), (loc.controller() == 0 ? 1 : -1) * HALF_LENGTH)
+        Slot to = target == null || target.isNone()
+                ? new Slot(from.x(), (loc.controller() == 0 ? 1 : -1) * FieldLayout.halfLength())
                 : slot(target);
         double reach = Math.sin(Math.PI * attack.progress(now, partial)) * 0.7;
         return ClientField.toWorld(to.x(), to.z(), 0).subtract(ClientField.toWorld(from.x(), from.z(), 0)).scale(reach);
@@ -595,9 +682,19 @@ public final class FieldRenderer {
                 CardPool.Model model = model(card);
                 double height = model != null ? model.height() * modelScale(model) : CARD_HEIGHT + 0.15;
                 Slot s = slot(player, LOCATION_MZONE, seq);
-                String text = card.attack() + " / " + card.defense();
+                String text = (card.type() & TYPE_LINK) != 0 ? card.attack() + "  LINK-" + card.link()
+                        : card.attack() + " / " + card.defense();
                 label(draw, poses, font, ClientField.toWorld(s.x(), s.z(), height + 0.5), text,
                         defense(card) ? 0xFF80C8FF : 0xFFFFE070);
+            }
+            materialCounts(draw, poses, font, player, monsters);
+            scales(draw, poses, font, board, player);
+            Board.Side side = board.side(player);
+            long faceUpExtra = side.extra().stream().filter(c -> c != null && faceUp(c)).count();
+            if (faceUpExtra > 0) {
+                Slot s = slot(player, LOCATION_EXTRA, 0);
+                label(draw, poses, font, ClientField.toWorld(s.x(), s.z(), 0.6), faceUpExtra + " face-up",
+                        0xFF60E0B0);
             }
         }
         Loc hovered = ClientField.hovered();
@@ -608,6 +705,41 @@ public final class FieldRenderer {
                 label(draw, poses, font, ClientField.toWorld(s.x(), s.z(), 0.35), YgoData.text().cardName(card.code()),
                         0xFFFFFFFF);
             }
+        }
+    }
+
+    /** How many materials each Xyz monster has, by its zone. */
+    private static void materialCounts(Draw draw, PoseStack poses, Font font, int player, List<CardState> monsters) {
+        for (int seq = 0; seq < monsters.size(); seq++) {
+            CardState card = monsters.get(seq);
+            if (card == null || card.overlayCodes().isEmpty()) {
+                continue;
+            }
+            Slot s = slot(player, LOCATION_MZONE, seq);
+            double right = player == 0 ? 1 : -1;
+            double back = player == 0 ? -1 : 1;
+            label(draw, poses, font, ClientField.toWorld(s.x() + right * (ZONE_WIDTH / 2 - 0.25),
+                    s.z() + back * (ZONE_DEPTH / 2 - 0.3), 0.3), "◆" + card.overlayCodes().size(), 0xFFFFD040);
+        }
+    }
+
+    /** The scale over each Pendulum card in a Pendulum Zone (blue on the left, red on the right). */
+    private static void scales(Draw draw, PoseStack poses, Font font, Board board, int player) {
+        if (!board.pendulumZones()) {
+            return;
+        }
+        List<CardState> spells = board.side(player).spells();
+        int left = board.separatePendulumZones() ? 6 : 0;
+        int right = board.separatePendulumZones() ? 7 : 4;
+        for (int seq : new int[]{left, right}) {
+            CardState card = seq < spells.size() ? spells.get(seq) : null;
+            if (card == null || !faceUp(card) || (card.type() & TYPE_PENDULUM) == 0) {
+                continue;
+            }
+            Slot s = slot(player, LOCATION_SZONE, seq);
+            int scale = seq == left ? card.leftScale() : card.rightScale();
+            label(draw, poses, font, ClientField.toWorld(s.x(), s.z(), CARD_HEIGHT + 0.7), "Scale " + scale,
+                    seq == left ? 0xFF60A0FF : 0xFFFF6060);
         }
     }
 
@@ -624,7 +756,14 @@ public final class FieldRenderer {
             return null;
         }
         int index = loc.location() == LOCATION_MZONE || loc.location() == LOCATION_SZONE ? loc.sequence() : 0;
-        return index < zone.size() ? zone.get(index) : null;
+        CardState card = index < zone.size() ? zone.get(index) : null;
+        if (card == null && loc.location() == LOCATION_MZONE && index >= 5) {
+            // An Extra Monster Zone holds a card of either player.
+            List<CardState> other = board.side(1 - loc.controller()).monsters();
+            int mirrored = 11 - index;
+            return mirrored < other.size() ? other.get(mirrored) : null;
+        }
+        return card;
     }
 
     static void label(Draw draw, PoseStack poses, Font font, Vec3 at, String text, int color) {

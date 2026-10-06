@@ -57,10 +57,11 @@ In game:
 - A **Binder** (leather and paper around a string) holds your collection: "Put all cards in" moves every loose card
   into it, and clicking a card takes it back out (shift-click for every copy).
 - A **Deck Box** (eight leather) holds a deck. Click a card on the right to add it, click it on the left to put it
-  back. A legal deck has 40 to 60 main deck cards, up to 15 Fusion monsters and at most three copies of a card, fewer
-  for cards on the banlist. Your first legal deck box (hands first, then inventory) is the deck you duel with. Without
-  one you duel with Yugi's starter deck; servers can require a deck box with `starterDecksWithoutDeckBox = false` in the
-  world's `serverconfig/minecraftygo-server.toml`.
+  back; Fusion, Synchro, Xyz and Link monsters go to the extra deck below the main deck. A legal deck has 40 to 60
+  main deck cards, up to 15 extra deck cards and at most three copies of a card, fewer for cards on the banlist.
+  Your first legal deck box (hands first, then inventory) is the deck you duel with. Without one you duel with
+  Yugi's starter deck; servers can require a deck box with `starterDecksWithoutDeckBox = false` in the world's
+  `serverconfig/minecraftygo-server.toml`.
 - **Progression** (the default `[pool] mode = "progression"`): a new world starts with Legend of Blue Eyes White
   Dragon, and operators unlock the TCG products in release order. Every TCG product with new cards is a step; reprint
   packs come along with the next one. Cards from sets that are still locked show a padlock in binders and can't go in
@@ -194,6 +195,9 @@ named `deploy` and `fold` play when a duel starts and ends; the rest pose is the
 To check it in a dev client, `./gradlew :neoforge:runClient -PquickPlay=<world> -Pcamera=THIRD_PERSON_FRONT:90`
 turns the body sideways so the disk faces the camera. `-PnoCurios` runs without Curios, and `-PuseItem=80,200`
 uses the main-hand item at those ticks (to open packs, binders and deck boxes without a mouse).
+`-PduelSetup=<file.lua>` runs a Lua script at the start of every duel to put cards on the field, e.g.
+`Debug.AddCard(84013237,0,0,LOCATION_MZONE,1,POS_FACEUP_ATTACK,true)` (a second card added to the same monster zone
+becomes an Xyz material, and `LOCATION_EMZONE` and `LOCATION_PZONE` reach the Extra Monster and Pendulum Zones).
 
 ## Licenses and credits
 
