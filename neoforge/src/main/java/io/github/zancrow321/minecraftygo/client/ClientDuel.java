@@ -2,6 +2,7 @@ package io.github.zancrow321.minecraftygo.client;
 
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.YgoData;
+import io.github.zancrow321.minecraftygo.client.duel.DuelStaging;
 import io.github.zancrow321.minecraftygo.client.duel.DuelUi;
 import io.github.zancrow321.minecraftygo.client.field.ClientField;
 import io.github.zancrow321.minecraftygo.compat.figura.FiguraCompat;
@@ -12,6 +13,7 @@ import io.github.zancrow321.minecraftygo.engine.duel.ViewCodec;
 import io.github.zancrow321.minecraftygo.engine.text.PromptChoices;
 import io.github.zancrow321.minecraftygo.engine.text.PromptView;
 import io.github.zancrow321.minecraftygo.network.DuelResponsePayload;
+import io.github.zancrow321.minecraftygo.network.DuelResultPayload;
 import net.minecraft.client.Minecraft;
 import net.neoforged.neoforge.network.PacketDistributor;
 
@@ -46,6 +48,7 @@ public final class ClientDuel {
             log.clear(); // a new duel
             lastTrigger = null;
             DuelUi.reset();
+            DuelStaging.reset();
         }
         for (FieldEvent event : next.events()) {
             Trigger t = trigger(event, next); // before the field takes in the new board
@@ -97,6 +100,10 @@ public final class ClientDuel {
             case POSITION -> new Trigger(code, name + " changed its position");
             default -> null;
         };
+    }
+
+    public static void result(DuelResultPayload payload) {
+        DuelStaging.result(payload);
     }
 
     /** @return what you'd be responding to, or {@code null} if nothing has happened yet this duel */

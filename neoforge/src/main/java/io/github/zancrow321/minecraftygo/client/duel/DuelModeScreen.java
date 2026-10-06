@@ -55,6 +55,12 @@ public final class DuelModeScreen extends Screen {
     }
 
     @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        return DuelUi.scroll(mouseX, mouseY, scrollY, width, height)
+                || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
             DuelMode.look(dragX, dragY);
@@ -74,6 +80,10 @@ public final class DuelModeScreen extends Screen {
                 return true;
             }
             minecraft.setScreen(new DuelMenuScreen());
+            return true;
+        }
+        if (YgoClient.DUEL_LOG.matches(keyCode, scanCode)) {
+            DuelUi.toggleLog();
             return true;
         }
         if (YgoClient.DUEL_CAMERA.matches(keyCode, scanCode)) {

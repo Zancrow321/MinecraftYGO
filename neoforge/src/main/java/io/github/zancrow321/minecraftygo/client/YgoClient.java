@@ -50,6 +50,9 @@ public final class YgoClient {
     /** Switches between the top-down and first-person view in duel mode (read by the duel mode screen). */
     public static final KeyMapping DUEL_CAMERA = new KeyMapping("key.minecraftygo.duel_camera",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_V, "key.categories.minecraftygo");
+    /** Opens and closes the duel log in duel mode. */
+    public static final KeyMapping DUEL_LOG = new KeyMapping("key.minecraftygo.duel_log",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_L, "key.categories.minecraftygo");
     public static final KeyMapping COSMETICS = new KeyMapping("key.minecraftygo.cosmetics",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "key.categories.minecraftygo");
 
@@ -157,6 +160,7 @@ public final class YgoClient {
         @SubscribeEvent
         public static void registerKeys(RegisterKeyMappingsEvent event) {
             event.register(DUEL_CAMERA);
+            event.register(DUEL_LOG);
             event.register(COSMETICS);
         }
     }

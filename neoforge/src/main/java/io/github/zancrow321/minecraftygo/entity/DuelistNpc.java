@@ -144,22 +144,24 @@ public final class DuelistNpc extends PathfinderMob {
     }
 
     /** The duel is over: a player who won gets a booster pack. */
-    public void duelEnded(ServerPlayer player, boolean playerWon) {
+    public ItemStack duelEnded(ServerPlayer player, boolean playerWon) {
         setDueling(false);
         if (player == null) {
-            return;
+            return ItemStack.EMPTY;
         }
         if (playerWon) {
             beatenBy.put(player.getUUID(), level().getGameTime());
             ItemStack pack = BoosterPackItem.of(BoosterPackItem.randomSet(getRandom()).id());
             player.sendSystemMessage(Component.literal(duelistName() + ": \"Well played! Take this.\" ")
                     .append(pack.getHoverName()));
+            ItemStack won = pack.copy();
             if (!player.getInventory().add(pack)) {
                 player.drop(pack, false);
             }
-        } else {
-            player.sendSystemMessage(Component.literal(duelistName() + ": \"Better luck next time!\""));
+            return won;
         }
+        player.sendSystemMessage(Component.literal(duelistName() + ": \"Better luck next time!\""));
+        return ItemStack.EMPTY;
     }
 
     @Override

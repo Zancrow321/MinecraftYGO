@@ -152,15 +152,26 @@ public final class DuelMode {
     /** Toward the opponent's end of the field from yours, level. */
     private static Vec3 towardOpponent() {
         Vec3 forward = ClientField.direction();
-        return ClientDuel.view().you() == 0 ? forward : forward.reverse();
+        return ClientDuel.view() == null || ClientDuel.view().you() == 0 ? forward : forward.reverse();
     }
 
     private static boolean topDown() {
         return active && view == View.TOP_DOWN && ClientField.active();
     }
 
+    /** Where the top-down camera is: in place behind your end, or still sweeping in over the field at the start. */
     private static Vec3 topDownPosition() {
-        return ClientField.center().subtract(towardOpponent().scale(CAMERA_BACK)).add(0, CAMERA_HEIGHT, 0);
+        double sweep = DuelStaging.sweep();
+        double turn = (1 - sweep) * Math.PI;
+        Vec3 back = towardOpponent().scale(-CAMERA_BACK);
+        Vec3 turned = new Vec3(back.x * Math.cos(turn) - back.z * Math.sin(turn), 0,
+                back.x * Math.sin(turn) + back.z * Math.cos(turn));
+        return ClientField.center().add(turned).add(0, CAMERA_HEIGHT + (1 - sweep) * 5, 0);
+    }
+
+    /** What the top-down camera looks at: the middle of the field while it sweeps in, then nearer your end. */
+    private static Vec3 topDownTarget() {
+        return ClientField.center().subtract(towardOpponent().scale(CAMERA_AIM * DuelStaging.sweep()));
     }
 
     @SubscribeEvent
@@ -168,8 +179,9 @@ public final class DuelMode {
         if (!topDown()) {
             return;
         }
-        event.setYaw(ClientField.facingYaw(ClientDuel.view().you()));
-        event.setPitch((float) Math.toDegrees(Math.atan2(CAMERA_HEIGHT, CAMERA_BACK - CAMERA_AIM)));
+        Vec3 look = topDownTarget().subtract(topDownPosition());
+        event.setYaw((float) Math.toDegrees(Math.atan2(-look.x, look.z)));
+        event.setPitch((float) Math.toDegrees(Math.atan2(-look.y, look.horizontalDistance())));
         event.setRoll(0);
     }
 
