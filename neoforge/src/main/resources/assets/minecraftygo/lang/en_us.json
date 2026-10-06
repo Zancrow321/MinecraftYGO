@@ -72,5 +72,10 @@
   "screen.minecraftygo.starter.later": "Later",
   "screen.minecraftygo.starter.pick": "%s cards · click to take this deck",
   "message.minecraftygo.starter.given": "Your first deck: %s. Have fun dueling!",
-  "message.minecraftygo.starter.taken": "You already picked your first deck."
+  "message.minecraftygo.starter.taken": "You already picked your first deck.",
+  "block.minecraftygo.duel_arena": "Duel Arena",
+  "block.minecraftygo.duel_arena_floor": "Duel Arena",
+  "item.minecraftygo.duel_arena_kit": "Duel Arena Kit",
+  "item.minecraftygo.duel_arena_kit.tooltip": "Use on flat ground to set up a Duelist Kingdom arena (21 × 21) facing the way you look. Duelists on its podiums duel over it and rise up with them. Break any part to pack it up again.",
+  "message.minecraftygo.duel_arena.blocked": "Something is in the way at %s %s %s. The Duel Arena needs a clear 21 × 21 area."
 }

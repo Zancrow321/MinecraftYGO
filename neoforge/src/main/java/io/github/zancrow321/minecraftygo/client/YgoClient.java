@@ -15,6 +15,8 @@ import io.github.zancrow321.minecraftygo.client.render.DuelistNpcRenderer;
 import io.github.zancrow321.minecraftygo.compat.figura.FiguraCompat;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import io.github.zancrow321.minecraftygo.client.render.MonsterRenderer;
+import io.github.zancrow321.minecraftygo.arena.DuelArena;
+import io.github.zancrow321.minecraftygo.client.arena.ArenaRenderer;
 import io.github.zancrow321.minecraftygo.entity.YgoEntities;
 import io.github.zancrow321.minecraftygo.item.BoosterPackItem;
 import io.github.zancrow321.minecraftygo.item.YgoItems;
@@ -84,6 +86,7 @@ public final class YgoClient {
         public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(YgoEntities.MONSTER.get(), MonsterRenderer::new);
             event.registerEntityRenderer(YgoEntities.DUELIST.get(), DuelistNpcRenderer::new);
+            event.registerBlockEntityRenderer(DuelArena.ARENA_ENTITY.get(), ArenaRenderer::new);
         }
 
         @SubscribeEvent
