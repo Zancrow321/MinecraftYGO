@@ -42,10 +42,18 @@ In game:
 - Craft a **Duel Disk** (glass pane, redstone, glass pane / three iron ingots / one iron ingot below the middle) and
   wear it in its Curios slot, or in your off hand without Curios. Right-click another player who has a disk to
   challenge them; they right-click you back (or click [Accept]) and both disks unfold before the field appears.
-- **Collecting:** cards come from **Booster Packs** (9 cards, one of them rare or better). Packs and single cards
-  turn up in dungeon, temple, mineshaft and treasure chests, and players sometimes get one from a mob they kill.
-  The **Card Trader** villager sells packs, binders, deck boxes, the two starter decks and later a duel disk; any
-  villager takes the job at a **Card Shop Counter** (glass panes / plank, book, plank / three planks).
+- **Collecting:** cards come from **Booster Packs**, opened like the real product: a core booster has 9 cards (one
+  rare or better until 2014, a rare and a foil after), a tournament pack 3, mini boosters and battle packs 5, and
+  all-foil sets such as Dragons of Legend 5 foils. **Structure Decks** put their 40 cards into your binder, and a
+  **Tin** gives its promo card and three packs. Packs and single cards turn up in dungeon, temple, mineshaft and
+  treasure chests, and players sometimes get one from a mob they kill.
+- The **Card Trader** villager sells binders, deck boxes, the two starter decks and later a duel disk, and keeps a
+  shop of packs, structure decks and tins: the newest products always, plus a few older ones that change every week
+  (`[shop] newestAlways`, `rotatingOlder`, `rotationDays`). Any villager takes the job at a **Card Shop Counter**
+  (glass panes / plank, book, plank / three planks).
+- **First deck:** on their first join a player picks a deck: Yugi's or Kaiba's starter deck, or any starter or
+  structure deck that is already out. It comes in a deck box, ready to duel with. "Later" puts it off; `/ygo starter`
+  opens the choice again until one is taken.
 - A **Binder** (leather and paper around a string) holds your collection: "Put all cards in" moves every loose card
   into it, and clicking a card takes it back out (shift-click for every copy).
 - A **Deck Box** (eight leather) holds a deck. Click a card on the right to add it, click it on the left to put it

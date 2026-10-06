@@ -111,6 +111,84 @@ DECK_BOX_P = {"k": (25, 20, 20, 255), "r": (190, 50, 45, 255), "R": (140, 30, 30
               "b": (120, 30, 30, 255), "d": (85, 20, 20, 255), "g": (200, 150, 40, 255),
               "y": (250, 215, 90, 255)}
 
+# Structure deck: layer0 is the box the item color tints per product, layer1 the window with the top card.
+STRUCTURE_BODY = [
+    "................",
+    "................",
+    "...hhhhhhhhhh...",
+    "...hmmmmmmmmd...",
+    "...hm......md...",
+    "...hm......md...",
+    "...hm......md...",
+    "...hm......md...",
+    "...hm......md...",
+    "...hm......md...",
+    "...hm......md...",
+    "...hmmmmmmmmd...",
+    "...hmmmmmmmmd...",
+    "...dddddddddd...",
+    "................",
+    "................",
+]
+STRUCTURE_TRIM = [
+    "................",
+    "................",
+    "................",
+    "................",
+    ".....bbbbbb.....",
+    ".....bBBBBb.....",
+    ".....bBgyBb.....",
+    ".....bByYBb.....",
+    ".....bBgyBb.....",
+    ".....bBBBBb.....",
+    ".....bbbbbb.....",
+    "................",
+    "....SSSSSSSS....",
+    "................",
+    "................",
+    "................",
+]
+STRUCTURE_P = {"b": (60, 40, 30, 255), "B": (120, 80, 50, 255), "g": (190, 140, 30, 255),
+               "y": (240, 200, 60, 255), "Y": (255, 245, 180, 255), "S": (205, 210, 220, 255)}
+
+# Collector's tin: layer0 the tinted metal, layer1 the rim and the gold emblem.
+TIN_BODY = [
+    "................",
+    "................",
+    "................",
+    "...hhhhhhhhhh...",
+    "..hmmmmmmmmmmd..",
+    "..hmmmmmmmmmmd..",
+    "..hmmmmmmmmmmd..",
+    "..hmmmmmmmmmmd..",
+    "..hmmmmmmmmmmd..",
+    "..hmmmmmmmmmmd..",
+    "..hmmmmmmmmmmd..",
+    "..hmmmmmmmmmmd..",
+    "...dddddddddd...",
+    "................",
+    "................",
+    "................",
+]
+TIN_TRIM = [
+    "................",
+    "................",
+    "................",
+    "...ssssssssss...",
+    "..sS........Ss..",
+    "..s....g.....s..",
+    "..s...gyg....s..",
+    "..s..gyYyg...s..",
+    "..s...gyg....s..",
+    "..s....g.....s..",
+    "..sS........Ss..",
+    "..s..........s..",
+    "...SSSSSSSSSS...",
+    "................",
+    "................",
+    "................",
+]
+
 
 def planks(base):
     img = Image.new("RGBA", (16, 16))
@@ -293,6 +371,10 @@ def main():
     save(from_rows(PACK_TRIM, TRIM), "item/booster_pack_trim.png")
     save(from_rows(BINDER, BINDER_P), "item/binder.png")
     save(from_rows(DECK_BOX, DECK_BOX_P), "item/deck_box.png")
+    save(from_rows(STRUCTURE_BODY, GREYS), "item/structure_deck.png")
+    save(from_rows(STRUCTURE_TRIM, STRUCTURE_P), "item/structure_deck_trim.png")
+    save(from_rows(TIN_BODY, GREYS), "item/tin.png")
+    save(from_rows(TIN_TRIM, TRIM), "item/tin_trim.png")
     save(card_shop_top(), "block/card_shop_top.png")
     save(card_shop_side(), "block/card_shop_side.png")
     save(planks((120, 85, 50)), "block/card_shop_bottom.png")

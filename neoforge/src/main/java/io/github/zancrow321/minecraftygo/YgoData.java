@@ -174,6 +174,22 @@ public final class YgoData {
         return ALL_SETS.get();
     }
 
+    /**
+     * What card traders can sell, oldest first: the booster sets (not tins' own packs), structure decks and tins
+     * that are out.
+     */
+    public static java.util.List<Products.Product> shopProducts() {
+        java.util.List<Products.Product> candidates = switch (poolMode()) {
+            case MODELED -> MODELED_SETS.get().sets().keySet().stream().map(id -> products().get(id))
+                    .filter(java.util.Objects::nonNull).toList();
+            case ALL -> products().products();
+            case PROGRESSION -> products().products().subList(0, step(null) + 1);
+        };
+        return candidates.stream().filter(p -> p.kind() != Products.Kind.TIN && set(p.id()) != null
+                || poolMode() != PoolMode.MODELED && io.github.zancrow321.minecraftygo.item.SealedProductItem.sealed(p))
+                .toList();
+    }
+
     /** Every TCG product in release order. */
     public static Products products() {
         return PRODUCTS.get();

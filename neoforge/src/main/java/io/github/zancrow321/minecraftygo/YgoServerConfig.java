@@ -73,6 +73,18 @@ public final class YgoServerConfig {
                     + "count in the binder, with a lock).")
             .define("lockedInDeck", true);
 
+    public static final ModConfigSpec.IntValue SHOP_NEWEST = BUILDER.pop().push("shop")
+            .comment("Card traders always sell the newest this many products (packs, structure decks, tins) out.")
+            .defineInRange("newestAlways", 3, 0, 50);
+
+    public static final ModConfigSpec.IntValue SHOP_ROTATING = BUILDER
+            .comment("...and this many older ones, a different pick for each trader.")
+            .defineInRange("rotatingOlder", 4, 0, 50);
+
+    public static final ModConfigSpec.IntValue SHOP_ROTATION_DAYS = BUILDER
+            .comment("Every this many days the older products change.")
+            .defineInRange("rotationDays", 7, 1, 1000);
+
     static {
         BUILDER.pop();
     }

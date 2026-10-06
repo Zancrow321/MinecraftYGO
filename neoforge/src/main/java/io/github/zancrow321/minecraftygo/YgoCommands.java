@@ -68,6 +68,8 @@ final class YgoCommands {
                         .then(Commands.argument("page", IntegerArgumentType.integer(1))
                                 .executes(ctx -> Gallery.show(ctx.getSource(),
                                         IntegerArgumentType.getInteger(ctx, "page")))))
+                .then(Commands.literal("starter").executes(ctx -> io.github.zancrow321.minecraftygo.progression
+                        .StarterDecks.command(ctx.getSource().getPlayerOrException())))
                 .then(Commands.literal("cosmetics").executes(ctx -> {
                     PlayerCosmetics.open(ctx.getSource().getPlayerOrException());
                     return 1;

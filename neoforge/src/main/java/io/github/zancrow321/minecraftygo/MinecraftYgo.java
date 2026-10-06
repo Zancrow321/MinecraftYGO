@@ -58,10 +58,14 @@ public final class MinecraftYgo {
             DuelManager.shutdown();
             Progress.stopped();
         });
-        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> DuelManager.get(event.getServer()).tick());
+        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> {
+            DuelManager.get(event.getServer()).tick();
+            io.github.zancrow321.minecraftygo.village.CardShop.tick(event.getServer());
+        });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
                 Progress.sync(player);
+                io.github.zancrow321.minecraftygo.progression.StarterDecks.offer(player);
                 DuelManager.get(player.server).onLogin(player);
             }
         });

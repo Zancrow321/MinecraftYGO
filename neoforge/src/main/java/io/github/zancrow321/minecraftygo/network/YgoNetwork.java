@@ -41,6 +41,14 @@ public final class YgoNetwork {
                         PlayerCosmetics.select(player, payload.skin(), payload.id());
                     }
                 }));
+        registrar.playToClient(StarterChoicesPayload.TYPE, StarterChoicesPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.starterChoices(payload)));
+        registrar.playToServer(StarterPickPayload.TYPE, StarterPickPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        io.github.zancrow321.minecraftygo.progression.StarterDecks.pick(player, payload.id());
+                    }
+                }));
         registrar.playToServer(CollectionActionPayload.TYPE, CollectionActionPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer player) {

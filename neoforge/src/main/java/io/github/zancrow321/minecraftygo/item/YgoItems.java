@@ -27,6 +27,10 @@ public final class YgoItems {
             new Item.Properties().stacksTo(64));
     public static final DeferredItem<BoosterPackItem> BOOSTER_PACK = ITEMS.registerItem("booster_pack",
             BoosterPackItem::new, new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<SealedProductItem> STRUCTURE_DECK = ITEMS.registerItem("structure_deck",
+            SealedProductItem::new, new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON));
+    public static final DeferredItem<SealedProductItem> TIN = ITEMS.registerItem("tin",
+            SealedProductItem::new, new Item.Properties().stacksTo(16).rarity(Rarity.RARE));
     public static final DeferredItem<BinderItem> BINDER = ITEMS.registerItem("binder", BinderItem::new,
             new Item.Properties().stacksTo(1));
     public static final DeferredItem<DeckBoxItem> DECK_BOX = ITEMS.registerItem("deck_box", DeckBoxItem::new,
@@ -51,6 +55,8 @@ public final class YgoItems {
                         output.accept(DUELIST_SPAWN_EGG.get());
                         output.accept(BOOSTER_PACK.get());
                         YgoData.allSets().sets().keySet().forEach(id -> output.accept(BoosterPackItem.of(id)));
+                        YgoData.products().products().stream().filter(SealedProductItem::sealed)
+                                .forEach(p -> output.accept(SealedProductItem.of(p)));
                     })
                     .build());
 

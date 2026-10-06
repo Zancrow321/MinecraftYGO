@@ -10,7 +10,7 @@
   "item.minecraftygo.booster_pack": "Booster Pack",
   "item.minecraftygo.booster_pack.of": "%s Booster Pack",
   "item.minecraftygo.booster_pack.random": "Right-click to open a pack from a random set.",
-  "item.minecraftygo.booster_pack.tooltip": "%s · 9 cards, one of them rare or better. Right-click to open.",
+  "item.minecraftygo.booster_pack.tooltip": "%s · %s cards per pack. Right-click to open.",
   "item.minecraftygo.binder": "Card Binder",
   "item.minecraftygo.binder.tooltip": "%s cards, %s different. Right-click to browse.",
   "item.minecraftygo.deck_box": "Deck Box",
@@ -57,5 +57,18 @@
   "screen.minecraftygo.duel_menu.surrender": "Surrender",
   "screen.minecraftygo.duel_menu.surrender.confirm": "Really surrender? Click again",
   "screen.minecraftygo.duel_menu.stop_watching": "Stop watching",
-  "screen.minecraftygo.duel_menu.game_menu": "Game menu"
+  "screen.minecraftygo.duel_menu.game_menu": "Game menu",
+  "item.minecraftygo.structure_deck": "Structure Deck",
+  "item.minecraftygo.structure_deck.tooltip": "%s cards. Right-click to put them in your binder.",
+  "item.minecraftygo.tin": "Collector's Tin",
+  "item.minecraftygo.tin.tooltip": "A promo card and %2$s packs. Right-click to open.",
+  "message.minecraftygo.tin.opened": "%s: %s and %s booster packs.",
+  "message.minecraftygo.structure_deck.binder": "The %s cards of %s are in your binder now.",
+  "message.minecraftygo.structure_deck.loose": "The %s cards of %s are in your inventory (carry a binder to file them away).",
+  "screen.minecraftygo.starter": "Pick your first deck",
+  "screen.minecraftygo.starter.hint": "It comes in a deck box, ready to duel with. You get to pick once.",
+  "screen.minecraftygo.starter.later": "Later",
+  "screen.minecraftygo.starter.pick": "%s cards · click to take this deck",
+  "message.minecraftygo.starter.given": "Your first deck: %s. Have fun dueling!",
+  "message.minecraftygo.starter.taken": "You already picked your first deck."
 }

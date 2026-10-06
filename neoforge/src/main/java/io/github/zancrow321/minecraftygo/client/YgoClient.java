@@ -127,6 +127,8 @@ public final class YgoClient {
         @SubscribeEvent
         public static void registerItemColors(RegisterColorHandlersEvent.Item event) {
             event.register((stack, layer) -> layer == 0 ? packColor(stack) : -1, YgoItems.BOOSTER_PACK.get());
+            event.register((stack, layer) -> layer == 0 ? productColor(stack) : -1, YgoItems.STRUCTURE_DECK.get(),
+                    YgoItems.TIN.get());
         }
 
         /** Each set's pack has its own wrapper color; a random pack is grey-green. */
@@ -138,6 +140,13 @@ public final class YgoClient {
                 case "MRL" -> 0xC8463C;
                 default -> 0x40A0A0 ^ (set.code().hashCode() & 0x3F3F3F);
             };
+            return 0xFF000000 | rgb;
+        }
+
+        /** Decks and tins get a color of their own per product. */
+        private static int productColor(ItemStack stack) {
+            var product = io.github.zancrow321.minecraftygo.item.SealedProductItem.product(stack);
+            int rgb = product == null ? 0x8090A0 : 0x808080 ^ (product.id().hashCode() & 0x7F7F7F);
             return 0xFF000000 | rgb;
         }
 
