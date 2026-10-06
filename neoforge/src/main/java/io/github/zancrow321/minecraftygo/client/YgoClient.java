@@ -55,6 +55,9 @@ public final class YgoClient {
     /** Opens and closes the duel log in duel mode. */
     public static final KeyMapping DUEL_LOG = new KeyMapping("key.minecraftygo.duel_log",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_L, "key.categories.minecraftygo");
+    /** Switches between being asked to respond and passing every response in duel mode. */
+    public static final KeyMapping DUEL_RESPONSES = new KeyMapping("key.minecraftygo.duel_responses",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_C, "key.categories.minecraftygo");
     public static final KeyMapping COSMETICS = new KeyMapping("key.minecraftygo.cosmetics",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "key.categories.minecraftygo");
 
@@ -175,6 +178,7 @@ public final class YgoClient {
         public static void registerKeys(RegisterKeyMappingsEvent event) {
             event.register(DUEL_CAMERA);
             event.register(DUEL_LOG);
+            event.register(DUEL_RESPONSES);
             event.register(COSMETICS);
         }
     }

@@ -93,6 +93,13 @@ public final class DuelModeScreen extends Screen {
             }
             return true;
         }
+        if (YgoClient.DUEL_RESPONSES.matches(keyCode, scanCode)) {
+            DuelUi.toggleResponses();
+            return true;
+        }
+        if (DuelUi.hotkey(keyCode)) {
+            return true;
+        }
         if (YgoClient.DUEL_LOG.matches(keyCode, scanCode)) {
             DuelUi.toggleLog();
             return true;

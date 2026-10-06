@@ -38,6 +38,11 @@ public final class DuelMenuScreen extends Screen {
             DuelMode.toggleView();
             b.setMessage(cameraLabel());
         }).bounds(x, y + SPACING, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        addRenderableWidget(Button.builder(responsesLabel(), b -> {
+            DuelUi.toggleResponses();
+            b.setMessage(responsesLabel());
+        }).bounds(x, y + 2 * SPACING, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        y += SPACING;
         if (ClientField.watching()) {
             addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.duel_menu.stop_watching"),
                     b -> {
@@ -58,6 +63,12 @@ public final class DuelMenuScreen extends Screen {
         addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.duel_menu.game_menu"),
                 b -> minecraft.setScreen(new PauseScreen(true))).bounds(x, y + 3 * SPACING + 8, BUTTON_WIDTH,
                 BUTTON_HEIGHT).build());
+    }
+
+    private static Component responsesLabel() {
+        return Component.translatable("screen.minecraftygo.duel_menu.responses", Component.translatable(
+                DuelUi.skippingResponses() ? "screen.minecraftygo.duel_menu.responses.skip"
+                        : "screen.minecraftygo.duel_menu.responses.ask"));
     }
 
     private static Component cameraLabel() {
