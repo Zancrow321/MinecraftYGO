@@ -1,11 +1,12 @@
-"""Draws the mod's logo in a simple Minecraft pixel style: a red and a blue card facing off, with a spark between
-them. It is drawn on a 32x32 grid and scaled up without smoothing, so every pixel stays a crisp block.
+"""Draws the mod's logo in a simple Minecraft pixel style: two cards with the classic brown card back and its swirl,
+facing off with a spark between them. It is drawn on a 32x32 grid and scaled up without smoothing, so every pixel stays a crisp block.
 
 Writes the icon (shown in the mod list and used as the Modrinth/CurseForge icon), the same icon without its
 background, and a 1280x400 banner with the mod's name for the top of the store descriptions.
 
 Run from the repository root: python3 tools/textures/make_logo.py
 """
+import math
 import random
 from pathlib import Path
 
@@ -16,23 +17,7 @@ RELEASE = Path("docs/release")
 N = 32
 OUTLINE = 0x14101C
 
-RED = dict(frame_hi=0xFFD27A, frame=0xE8A23A, frame_lo=0xA86418, panel_hi=0xE0483C, panel=0xB82A2A,
-           panel_lo=0x7C1820, gem_hi=0xFFFBE6, gem_mid=0xFFE066, gem=0xFFC21F, gem_lo=0xC07A0C)
-BLUE = dict(frame_hi=0xF4F8FF, frame=0xC8D4E4, frame_lo=0x8090A8, panel_hi=0x3C78E0, panel=0x2A50B8,
-            panel_lo=0x1A2C78, gem_hi=0xEAFFFC, gem_mid=0x8AF7E8, gem=0x3FD8C8, gem_lo=0x158F86)
 STONE = [0x2B2F45, 0x262A3E, 0x30354D, 0x23263A, 0x2E3249]
-
-# A cut gem in the middle of each card: o outline, W shine, h light, m mid, l shadow.
-GEM = [
-    "..ooooo..",
-    ".oWhhmmo.",
-    "oWhhhmmlo",
-    "ohhhmmllo",
-    ".ohhmmlo.",
-    "..ohmlo..",
-    "...olo...",
-    "....o....",
-]
 
 # A small blocky font for the banner, 7 rows high.
 FONT = {
@@ -59,28 +44,37 @@ def rgba(c):
     return (c >> 16) & 255, (c >> 8) & 255, c & 255, 255
 
 
-def card(x0, y0, pal, w=15, h=21):
-    """An upright card back with its top-left corner at (x0, y0), as a {pixel: color} layer."""
-    gem = {"o": OUTLINE, "W": pal["gem_hi"], "h": pal["gem_mid"], "m": pal["gem"], "l": pal["gem_lo"]}
-    gx, gy = x0 + (w - 9) // 2, y0 + (h - 8) // 2
+def card(x0, y0, w=15, h=21):
+    """A card lying face down with its top-left corner at (x0, y0), as a {pixel: color} layer: a brown back with a
+    black oval in the middle and a fiery swirl inside it."""
+    cx, cy = x0 + w // 2, y0 + h // 2
+    ax, ay = 4.6, 6.6  # half axes of the oval
     layer = {}
     for y in range(y0, y0 + h):
         for x in range(x0, x0 + w):
             u, v = x - x0, y - y0
             ring = min(u, v, w - 1 - u, h - 1 - v)
+            dx, dy = (x - cx) / ax, (y - cy) / ay
+            e = dx * dx + dy * dy
+            turn = math.atan2(dy, dx)
             if ring == 0:  # outer edge, lit from the top left
-                c = pal["frame_hi"] if (u == 0 or v == 0) and u != w - 1 and v != h - 1 else pal["frame_lo"]
+                c = 0xC07A3A if (u == 0 or v == 0) and u != w - 1 and v != h - 1 else 0x6A3412
             elif ring == 1:
-                c = pal["frame"]
-            elif ring == 2:  # inner bevel of the panel
-                c = pal["panel_hi"] if (u == 2 or v == 2) and u != w - 3 and v != h - 3 else pal["panel_lo"]
-            else:
-                c = pal["panel"]
-            if 0 <= x - gx < 9 and 0 <= y - gy < 8 and GEM[y - gy][x - gx] != ".":
-                c = gem[GEM[y - gy][x - gx]]
+                c = 0x8E4E1E
+            elif e <= 1.0:
+                if e > 0.62:
+                    c = 0x120806  # the oval's black rim
+                else:
+                    arm = math.sin(2 * turn - math.sqrt(e) * 7.0)  # two arms winding into the middle
+                    c = 0xFFB040 if arm > 0.5 else 0xE0501C if arm > -0.2 else 0x7A1408
+                    if e < 0.05:
+                        c = 0xFFD070
+            else:  # dark brown with lighter streaks swirling around the oval
+                c = 0x7A4219 if math.sin(2 * turn - math.sqrt(e) * 3.2) > 0.35 else 0x4E250D
+                if ring == 2 and (u == 2 or v == 2):
+                    c = 0x7E4620
             layer[(x, y)] = c
     return layer
-
 
 def spark(cx, cy):
     layer = {}
@@ -120,7 +114,7 @@ def icon(background=True):
             img.putpixel((N - 1, i), rgba(0x171927))
     else:
         img = Image.new("RGBA", (N, N), (0, 0, 0, 0))
-    for layer in (card(3, 3, RED), card(14, 8, BLUE), spark(25, 4)):
+    for layer in (card(3, 3), card(14, 8), spark(25, 4)):
         for p, c in with_outline(layer).items():
             img.putpixel(p, rgba(c))
     return img
