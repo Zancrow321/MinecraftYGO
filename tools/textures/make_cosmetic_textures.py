@@ -11,7 +11,7 @@ from pathlib import Path
 
 from PIL import Image
 
-ASSETS = Path("neoforge/src/main/resources/assets/minecraftygo/textures")
+ASSETS = Path("neoforge/src/main/resources/assets/jadm/textures")
 
 # id: (plastic colour, glow hue in degrees or None to keep, glow saturation factor)
 SKINS = {

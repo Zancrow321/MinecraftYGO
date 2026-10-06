@@ -1,7 +1,7 @@
 """Builds the Figura starter kit's model: a Millennium Puzzle and a Battle City long coat over the player's own skin.
 
 The model is written as a Blockbench file, so it can be opened and reshaped there; the script that animates it is
-figura/ygo-duelist/script.lua. Coordinates follow Figura's player template: pixels, feet at the origin, facing north.
+figura/jadm-duelist/script.lua. Coordinates follow Figura's player template: pixels, feet at the origin, facing north.
 
 Run from the repository root: python3 tools/figura/make_starter_kit.py
 """
@@ -14,7 +14,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
-OUT = Path("figura/ygo-duelist/model.bbmodel")
+OUT = Path("figura/jadm-duelist/model.bbmodel")
 UV = 64  # UV units across the texture
 TEXELS = 4  # texture pixels per UV unit, so small faces like the Eye can carry detail
 SIZE = UV * TEXELS
@@ -43,7 +43,7 @@ rng = random.Random(7)
 
 def stable_uuid(name):
     """Blockbench wants uuids; deriving them from names keeps the generated file stable between runs."""
-    return str(uuid.uuid5(uuid.NAMESPACE_URL, "minecraftygo/figura/" + name))
+    return str(uuid.uuid5(uuid.NAMESPACE_URL, "jadm/figura/" + name))
 
 
 def box(region):

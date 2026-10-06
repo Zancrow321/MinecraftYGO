@@ -14,10 +14,10 @@ Only release jars built by CI: a local build contains the native library for you
 
 | Field | Value |
 |---|---|
-| Name | MinecraftYGO |
-| Summary | Yu-Gi-Oh! duels in Minecraft, powered by the EDOPro engine. Duel disks, holographic monsters, booster packs and NPC duelists. |
+| Name | Just Another Dueling Mod |
+| Summary | Trading card duels in Minecraft, powered by the EDOPro engine. Duel disks, holographic monsters, booster packs and NPC duelists. |
 | Description | [description.md](description.md) |
-| Icon | `neoforge/src/main/resources/minecraftygo_logo.png` |
+| Icon | `neoforge/src/main/resources/jadm_logo.png` |
 | Categories | Adventure, Game Mechanics, Minigame (CurseForge: Adventure and RPG, Mobs, Miscellaneous) |
 | Environment | Client and server: required on both |
 | Loader / version | NeoForge, Minecraft 1.21.1 |
@@ -29,7 +29,7 @@ Only release jars built by CI: a local build contains the native library for you
 
 Dependencies: GeckoLib (required), Curios (optional), Figura (optional).
 
-Files: `minecraftygo-<version>.jar` is the primary file. `ygo-duelist-figura-<version>.zip` is the Figura starter
+Files: `jadm-<version>.jar` is the primary file. `jadm-duelist-figura-<version>.zip` is the Figura starter
 avatar: on Modrinth it can be an additional file of the same version, on CurseForge an additional file. It is a
 resource for Figura, not a mod, so players unzip it into `figura/avatars/`.
 

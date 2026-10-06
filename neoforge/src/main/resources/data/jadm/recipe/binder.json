@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["LPL", "LSL", "LPL"],
+  "key": {
+    "L": {"item": "minecraft:leather"},
+    "P": {"item": "minecraft:paper"},
+    "S": {"item": "minecraft:string"}
+  },
+  "result": {"id": "jadm:binder", "count": 1}
+}

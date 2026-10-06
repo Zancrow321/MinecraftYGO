@@ -2,11 +2,51 @@
 
 ## Unreleased
 
+### New name
+- The mod is now called **Just Another Dueling Mod**, mod id `jadm`. The command is `/jadm`, Figura avatar scripts
+  use the `jadm` global and `jadm.<event>` events, and the starter avatar is `jadm-duelist`.
+- Renamed from MinecraftYGO (mod id `minecraftygo`, command `/ygo`, config folder `config/minecraftygo`).
+- Worlds from 0.1.0 lose the mod's items, blocks and saved data (decks, binders, progress); the config starts fresh.
+
+### Handbook
+- New **Duelist's Handbook**: an open book with a title page, clickable contents and 13 chapters on dueling and duel
+  records, the duel controls, collecting and foils, decks, shops and Duel Points, progression and rules, arenas and tournaments, NPC
+  duelists, cosmetics, every command and every setting. Keys show your current bindings, settings show the world's current values, crafting grids come
+  from the real recipes, and commands can be clicked to type them in chat. English and German.
+- Every player gets it once on their first join (also players of existing worlds, on their next join); `/jadm guide`
+  opens it any time, and a book and paper craft a new one. Both can be turned off: `[guide] giveOnFirstJoin` and
+  `[guide] craftable`.
+
+### Tournaments
+- Tournaments in four formats: single elimination, double elimination with a losers' bracket and a grand final
+  reset, Swiss rounds with an optional top cut, and round robin. Operators open one with `/jadm tournament create`,
+  or a schedule in the config opens them by themselves; players join from a chat link or `/jadm tournament join`.
+- Matches are played on the Duel Arenas added with `/jadm tournament arena add`: duelists are brought onto the podiums
+  when an arena is free and sent back afterwards. NPC duelists fill empty seats, stand on the podium against
+  players and play each other unseen.
+- The tournament window (`/jadm tournament`) shows the bracket, the Swiss or round robin table, the matches and the
+  rules and prizes, and follows the tournament live.
+- A new `[tournament]` config section holds every setting, and each tournament can change them while it is open
+  with `/jadm tournament set`: format, best of, number of duelists, registration time, NPC fillers, Swiss rounds and
+  top cut, rules, banlist, life points, time and turn limits, locked decks, entry fee and pot, prizes per place,
+  no-show time and announcements. A tournament survives a server restart.
+- Entry fees are paid in the shop currency (Duel Points by default, or an item), and prizes can include Duel
+  Points (`points 500`). Tournament games don't give the `[results]` duel rewards; the tournament's prizes
+  replace them.
+
+### Foil cards
+- Foil cards shine like the real ones, in the inventory, in your hand, in the world, in the binder and when a pack
+  is opened: a Rare has a silver name, a Super Rare holofoil artwork, an Ultra Rare holofoil artwork and a gold name,
+  a Secret Rare rainbow-lined artwork and a silver name. A glare sweeps over the foil now and then.
+- Binders keep each card's rarity. A foil put in a binder stays a foil, and the binder lists each rarity of a card
+  on its own, with its rarity (R, SR, UR, ScR) in the corner and in the tooltip. Taking a copy out gives that copy;
+  building a deck uses commons first so the foils stay in the binder.
+
 ### Duel wins and losses
 - Every player's duel record is kept: wins, losses and draws, against players and against NPCs and bots, and how
-  many wins in a row. The result screen shows it after each duel; `/ygo stats` shows yours, `/ygo stats <player>`
-  someone else's (also when they are offline), `/ygo stats top` the ten players with the most wins, and
-  `/ygo stats reset <player>` (operators) clears one. A duelist who logs off mid-duel still has the loss counted.
+  many wins in a row. The result screen shows it after each duel; `/jadm stats` shows yours, `/jadm stats <player>`
+  someone else's (also when they are offline), `/jadm stats top` the ten players with the most wins, and
+  `/jadm stats reset <player>` (operators) clears one. A duelist who logs off mid-duel still has the loss counted.
 - What a won or lost duel brings is set in the server config, separately for duels against players
   (`[results.players]`) and against NPC duelists (`[results.npcs]`): booster packs, emeralds and experience for each
   winner (`winPacks`, `winEmeralds`, `winXp`) and as a consolation for each loser (`lossPacks`, `lossEmeralds`,
@@ -51,7 +91,7 @@
   - `products`: `"rotation"` (the newest and a few older products, the same on every machine), `"all"` or `"none"`.
   - `supplies`: random packs, binders, deck boxes, the starter decks and duel disks too.
   - `limitPerPlayer`: each player can buy the `[shop.stock]` amounts a day; off, machines never run out.
-  - `command`: `/ygo shop` opens the machine's shop anywhere (operators can always use it).
+  - `command`: `/jadm shop` opens the machine's shop anywhere (operators can always use it).
   - `operatorsOnly`: only operators place and break machines, for server-run shops.
   - `enabled` and `name` (the title of its window).
 - New **Shop Stand** (red wool, white wool, red wool / plank, chest, plank / three planks): a shop run by a player.
@@ -61,7 +101,7 @@
   - `maxPerPlayer`: how many stands each player can set up (3; 0 for any number).
   - `currencyOnly`: prices must be in the `[shop] currency`.
   - `taxPercent`: this share of every price is kept back from the owner.
-  - `onlyYgoItems`: stands only sell this mod's items.
+  - `onlyModItems`: stands only sell this mod's items.
   - `operatorsManage`: operators can open, stock and break anyone's stand.
   - `notifyOwner`: the owner gets a chat message on every sale.
   - `enabled`: off, stands are closed (owners can still empty them).
@@ -74,8 +114,8 @@
   - Earning: `startBalance` (500), `dailyBonus` (50 a day), paper sold to card traders, loose cards sold to Card
     Vending Machines by rarity (`sellCommon` 5, `sellRare` 15, `sellSuper` 30, `sellUltra` 60, `sellSecret` 120) and
     `emeraldExchange` (10 DP per emerald at the machines). 0 turns each off.
-  - `transfers`: `/ygo dp pay <player> <amount>`.
-  - `/ygo dp` shows your balance; operators use `/ygo dp <player>` and `/ygo dp give|take|set <players> <amount>`.
+  - `transfers`: `/jadm dp pay <player> <amount>`.
+  - `/jadm dp` shows your balance; operators use `/jadm dp <player>` and `/jadm dp give|take|set <players> <amount>`.
 
 ### Deck editor
 - The deck box filters the cards you own by type (monsters, spells, traps, extra deck), attribute and level and sorts
@@ -133,7 +173,7 @@
   plus older ones that rotate every week. New server settings `[shop] newestAlways`, `rotatingOlder` and
   `rotationDays`.
 - New players pick their first deck: Yugi's or Kaiba's starter deck, or any starter or structure deck that is out,
-  in a deck box. `/ygo starter` opens the choice again for someone who chose "Later". Forbidden cards stay out of it.
+  in a deck box. `/jadm starter` opens the choice again for someone who chose "Later". Forbidden cards stay out of it.
 - Packs from loot and duel rewards favor newer sets.
 
 ### Duel disk
@@ -143,7 +183,7 @@
 
 ### Progression
 - New worlds start with Legend of Blue Eyes White Dragon, and operators unlock the TCG sets in release order:
-  `/ygo progression status`, `next [count]`, `until <set code or date>`, `set <set code or date>` and `list`. Chat
+  `/jadm progression status`, `next [count]`, `until <set code or date>`, `set <set code or date>` and `list`. Chat
   says what is new. Reprint products come along with the next set that brings new cards.
 - This is the new default (`[pool] mode = "progression"`), also for worlds that already have a config file: they
   switch from the modeled pool, which held almost only LOB, MRD and MRL cards anyway. `mode = "modeled"` brings the
@@ -151,15 +191,15 @@
 - Rules and banlist follow the unlocked cards (`ruleset = "auto"` and `banlist = "auto"`, the new defaults): Master
   Rule 1 to 5 as Xyz, Pendulum and Link sets arrive, and the TCG Forbidden & Limited List of the time (all 73 lists
   since 1999 are bundled). New rule sets `mr2`, `mr3` and `mr4`; a fixed `banlist` names a file in
-  `config/minecraftygo/banlists/`.
+  `config/jadm/banlists/`.
 - `[progression] scope = "player"` gives each player their own progress. When two players at different steps duel,
   the one further along sets the rules; an NPC builds its deck from the cards of the player it duels.
 - Cards from locked sets show a padlock in the binder (which can show only unlocked cards) and the deck box, and
   can't be added to decks unless `[cards] lockedInDeck = false`.
 - Card traders sell the newest unlocked sets.
 - Old config files are updated once: `mode` becomes `progression` and `ruleset` becomes `auto`. A server's own
-  `config/minecraftygo/banlist.json` now only counts for the modeled pool; elsewhere put it in
-  `config/minecraftygo/banlists/` and name it in `banlist`.
+  `config/jadm/banlist.json` now only counts for the modeled pool; elsewhere put it in
+  `config/jadm/banlists/` and name it in `banlist`.
 
 ### All cards (first step)
 - Every official card is bundled now: about 14,700 cards with their scripts (the jar grows to about 20 MB).
@@ -193,9 +233,9 @@
 - The duel log: L or the Log button under the phase buttons; scroll it with the mouse wheel.
 - A result screen at the end: victory or defeat, how it ended, and what it brought (booster pack, ante cards,
   unlocked cosmetics). Continue or Escape takes you back to the game.
-- Watch a duel: right-click someone who is dueling (or a dueling NPC), or `/ygo watch <player>`. Spectators see
+- Watch a duel: right-click someone who is dueling (or a dueling NPC), or `/jadm watch <player>`. Spectators see
   the field from above with life points, the card panel and the log, but no hidden cards or hands. Escape, Stop
-  watching (or `/ygo unwatch`) leaves.
+  watching (or `/jadm unwatch`) leaves.
 - In tag duels both partners see the team's hand, not only the one whose turn it is.
 - Turn time limit as a server setting (`turnTimeLimit`, seconds per person per turn, off by default). The time left
   shows under the phase buttons; once it runs out, the bot makes your choices until the turn ends.
@@ -242,6 +282,6 @@ Minecraft 1.21.1, NeoForge 21.1. Requires GeckoLib 4.9 or newer; Curios and Figu
 
 ### Cosmetics
 - Seven disk skins and six card sleeve designs, unlocked by winning duels, beating NPCs and opening packs.
-- Figura support: avatar scripts get a `ygo` API and duel events and can replace the disk with their own.
+- Figura support: avatar scripts get a `jadm` API and duel events and can replace the disk with their own.
 - A separate Figura starter avatar download with the Millennium Puzzle, a Battle City coat, life points over the
   head, duel reactions and emotes.
