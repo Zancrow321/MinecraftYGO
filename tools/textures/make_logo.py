@@ -9,8 +9,8 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter
 
 SIZE = 512
-BACK = Path("neoforge/src/main/resources/assets/minecraftygo/textures/field/card_back.png")
-OUT = Path("neoforge/src/main/resources/minecraftygo_logo.png")
+BACK = Path("neoforge/src/main/resources/assets/jadm/textures/field/card_back.png")
+OUT = Path("neoforge/src/main/resources/jadm_logo.png")
 
 
 def main():

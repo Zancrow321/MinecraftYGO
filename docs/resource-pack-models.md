@@ -27,7 +27,7 @@ pack.mcmeta
 assets/<namespace>/geo/monster/<name>.geo.json
 assets/<namespace>/animations/monster/<name>.animation.json
 assets/<namespace>/textures/monster/<name>.png
-assets/<namespace>/minecraftygo/models.json
+assets/<namespace>/jadm/models.json
 ```
 
 `models.json` lists the cards the pack gives a model:

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "jadm:item/tin",
+    "layer1": "jadm:item/tin_trim"
+  }
+}

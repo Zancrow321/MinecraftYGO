@@ -3,11 +3,11 @@
 
 For every model folder it finds the card with that name, then writes:
 
-  neoforge/src/main/resources/assets/minecraftygo/geo/monster/<slug>.geo.json        GeckoLib geometry
-  neoforge/src/main/resources/assets/minecraftygo/animations/monster/<slug>.animation.json
-  neoforge/src/main/resources/assets/minecraftygo/textures/monster/<slug>.png
-  engine/src/main/resources/minecraftygo/models.json   which card uses which model
-  engine/src/main/resources/minecraftygo/pool.json     the playable pool: modeled monsters, plus every
+  neoforge/src/main/resources/assets/jadm/geo/monster/<slug>.geo.json        GeckoLib geometry
+  neoforge/src/main/resources/assets/jadm/animations/monster/<slug>.animation.json
+  neoforge/src/main/resources/assets/jadm/textures/monster/<slug>.png
+  engine/src/main/resources/jadm/models.json   which card uses which model
+  engine/src/main/resources/jadm/pool.json     the playable pool: modeled monsters, plus every
                                                        spell and trap released up to the era cutoff
 
 The era cutoff is the newest OCG release date shared by at least ERA_MIN_MODELS modeled monsters, so a
@@ -30,8 +30,8 @@ from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-ASSETS = ROOT / "neoforge/src/main/resources/assets/minecraftygo"
-ENGINE_RESOURCES = ROOT / "engine/src/main/resources/minecraftygo"
+ASSETS = ROOT / "neoforge/src/main/resources/assets/jadm"
+ENGINE_RESOURCES = ROOT / "engine/src/main/resources/jadm"
 OVERRIDES = Path(__file__).resolve().parent / "overrides.json"
 
 ERA_MIN_MODELS = 3
