@@ -132,8 +132,13 @@ ygoprodeck.json`. A set is included when at least 60% of its cards are in the po
 
 ## Updating the duel disk model
 
-Save the model from Blockbench with textures embedded as `tools/disk/duel_disk.bbmodel`, then run
-`python3 tools/disk/convert_disk.py`. Only the `LeftArm` group is exported, in Figura's coordinates: the pivot on
+The disk is the blocky Battle City duel disk by burning-icecream (see Licenses and credits), kept as the original
+glTF in `tools/disk/source/`. `python3 tools/disk/import_gltf.py` puts it on the arm, packs its textures and writes
+the standby pose and the `deploy`/`fold` animations into `tools/disk/duel_disk.bbmodel`; after that, run
+`python3 tools/disk/convert_disk.py` and `python3 tools/textures/make_cosmetic_textures.py` (disk skins).
+
+To edit it by hand instead, save the model from Blockbench with textures embedded as `tools/disk/duel_disk.bbmodel`,
+then run `python3 tools/disk/convert_disk.py`. Only the `LeftArm` group is exported, in Figura's coordinates: the pivot on
 the left-arm pivot (5, 22, 0), the arm on +X and the player facing north (-Z). A texture named `<name>_e` is the glowing layer of `<name>`. The animations
 named `deploy` and `fold` play when a duel starts and ends; the rest pose is the disk when not dueling.
 
@@ -145,6 +150,12 @@ uses the main-hand item at those ticks (to open packs, binders and deck boxes wi
 
 - This mod: GPL-3.0.
 - OCG-Core: AGPL-3.0-or-later, © Project Ignis contributors. Because the mod bundles it, the mod's source must stay public.
+- Duel disk model: "duel disk from Yu-Gi-Oh Duel Monsters (blocky)" by
+  [burning-icecream](https://sketchfab.com/burning-icecream), from
+  [Sketchfab](https://sketchfab.com/3d-models/duel-disk-from-yu-gi-oh-duel-monsters-blocky-14d4cc46e53a46ad903a9aa5f64e681c),
+  [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). Placed on the arm, given straps, a glowing layer,
+  recolored skins and a standby pose with deploy/fold animations. Not for commercial use; the rest of the mod stays
+  GPL-3.0. The notice ships as `assets/minecraftygo/DuelDisk-LICENSE.md`.
 - Monster models: MIT, © iconmaster ([YGOMCModels](https://github.com/iconmaster5326/YGOMCModels)); the license ships as `assets/minecraftygo/YGOMCModels-LICENSE.md`.
 - Card data and scripts: BabelCDB and CardScripts by Project Ignis (AGPL-3.0).
 - Rendering: [GeckoLib](https://github.com/bernie-g/geckolib) (required dependency, MIT).

@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Duel disk
+- New disk model: the blocky Battle City disk by burning-icecream (CC BY-NC 4.0). Standby is the hub with one wing
+  in front and one behind; when a duel starts the short wing swings under the hub and joins the long one into the
+  bent five-zone blade. The disk skins are recolors of the new model.
+
 ### Duel mode
 - Your hand is big along the bottom. Click a card for its actions (Normal Summon, Set, Activate...), or drag it
   onto a zone to play it right there. Cards played from the menu go to the middle-most free zone, unless

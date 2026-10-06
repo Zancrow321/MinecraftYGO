@@ -34,7 +34,8 @@ The mod draws the duel disk on the left arm. An avatar can hide it and draw its 
 
 1. In Blockbench (Figura model format), add a group named `LeftArm` with the pivot at `5, 22, 0` and model the disk
    in it. The disk the mod draws is in this repository as `tools/disk/duel_disk.bbmodel` and is a good start: copy
-   its `LeftArm` group into your model.
+   its `LeftArm` group into your model. That disk is by burning-icecream under CC BY-NC 4.0, so an avatar built on
+   it credits them and isn't sold.
 2. Paint the texture. A second texture with the same name plus `_e` (`disk.png` and `disk_e.png`) glows in the dark,
    like the mod's own zones.
 3. In `script.lua`, hide the mod's disk and show yours only while a disk is worn:
