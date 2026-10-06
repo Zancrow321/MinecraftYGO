@@ -144,6 +144,8 @@ public final class YgoClient {
         @SubscribeEvent
         public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
             event.registerReloadListener((ResourceManagerReloadListener) manager -> DiskModel.reload());
+            event.registerReloadListener((ResourceManagerReloadListener)
+                    io.github.zancrow321.minecraftygo.client.render.PackModels::reload);
         }
 
         @SubscribeEvent

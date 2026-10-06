@@ -40,7 +40,8 @@ public record CardPool(String cutoff, List<Integer> monsters, List<Integer> spel
 
     /**
      * @param id         the model's resource name under {@code geo/monster/}, {@code animations/monster/} and
-     *                   {@code textures/monster/}
+     *                   {@code textures/monster/}, with a namespace ({@code mypack:dragon}) when it comes from a
+     *                   resource pack
      * @param width      the larger horizontal extent of the model, in blocks
      * @param height     the model's height above its origin, in blocks
      * @param animations the animations the model has; there is always an {@code idle} when there are any
@@ -61,19 +62,31 @@ public record CardPool(String cutoff, List<Integer> monsters, List<Integer> spel
         return mode == PoolMode.ALL ? everything(cards, modeled.models()) : modeled;
     }
 
+    /**
+     * Reads one entry of a {@code models.json}: {@code code}, {@code model}, {@code width}, {@code height} and
+     * optionally {@code animations} (defaults to just {@code idle}).
+     */
+    public static Model parseModel(JsonObject o) {
+        List<String> animations = new ArrayList<>();
+        if (o.has("animations")) {
+            for (JsonElement a : o.getAsJsonArray("animations")) {
+                animations.add(a.getAsString());
+            }
+        } else {
+            animations.add("idle");
+        }
+        int code = o.get("code").getAsInt();
+        return new Model(code, o.get("model").getAsString(), o.get("width").getAsDouble(),
+                o.get("height").getAsDouble(), List.copyOf(animations));
+    }
+
     /** The modeled pool: monsters with a model and the spells and traps of their era. */
     public static CardPool loadBundled() {
         JsonObject pool = read(POOL_RESOURCE).getAsJsonObject();
         Map<Integer, Model> models = new LinkedHashMap<>();
         for (JsonElement element : read(MODELS_RESOURCE).getAsJsonArray()) {
-            JsonObject o = element.getAsJsonObject();
-            List<String> animations = new ArrayList<>();
-            for (JsonElement a : o.getAsJsonArray("animations")) {
-                animations.add(a.getAsString());
-            }
-            int code = o.get("code").getAsInt();
-            models.put(code, new Model(code, o.get("model").getAsString(), o.get("width").getAsDouble(),
-                    o.get("height").getAsDouble(), List.copyOf(animations)));
+            Model model = parseModel(element.getAsJsonObject());
+            models.put(model.code(), model);
         }
         List<Integer> monsters = ints(pool.getAsJsonArray("monsters"));
         List<Integer> spellsTraps = ints(pool.getAsJsonArray("spellsTraps"));

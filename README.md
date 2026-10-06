@@ -18,6 +18,7 @@ the engine behind EDOPro, running on the server. Monster models come from
 | `tools/carddata/build_collection.py` | Picks the booster sets of the modeled pool, lists every TCG product in release order (`products.json`) and writes the era banlist. |
 | `tools/textures/make_collection_textures.py` | Draws the pack, binder, deck box, Card Shop and Card Trader textures. |
 | `tools/textures/make_logo.py` | Draws the mod logo (`minecraftygo_logo.png`) from the card back. |
+| `tools/models/make_pack.py` | Builds a resource pack that gives monsters a 3D model from Blockbench files ([guide](docs/resource-pack-models.md)). |
 | `tools/disk/convert_disk.py` | Converts the duel disk `.bbmodel` (Figura format, meshes allowed) into the mod's disk model. |
 
 ## Building
@@ -102,8 +103,12 @@ In game:
   top-down and first-person camera, and Escape opens the duel menu (camera, surrender).
 - `/ygo gallery [page]` puts a page of modeled monsters in front of you (operators only); `/ygo gallery clear` removes them.
 
-Card artwork is downloaded on first view and cached in `minecraftygo/card_art/`. The source URL can be changed,
-or downloads turned off, in `config/minecraftygo-client.toml`.
+Card artwork is downloaded on first view and cached in `minecraftygo/card_art/` (the cropped art for holograms in
+`minecraftygo/card_art_cropped/`). The source URLs can be changed, or downloads turned off, in
+`config/minecraftygo-client.toml`.
+
+Monsters without a model stand on the field as an artwork hologram. A resource pack can give any monster a 3D model
+instead; see [docs/resource-pack-models.md](docs/resource-pack-models.md).
 
 ## Releasing
 
@@ -126,7 +131,7 @@ python3 tools/carddata/build_carddata.py --cdb BabelCDB/cards.cdb --scripts Card
 Every official OCG and TCG card is bundled, with its script. Which of them a world plays with is the server
 config's `[pool] mode`: `modeled` (the default) plays with the monsters that have a model and the spells and traps
 of their era; `all` plays with every card, and packs come from every TCG booster. Monsters without a model stand
-on the field as their card. The engine test `ScriptLoadTest` loads every card once; a card whose script fails goes
+on the field as an artwork hologram. The engine test `ScriptLoadTest` loads every card once; a card whose script fails goes
 in `engine/src/main/resources/minecraftygo/broken.json`, which keeps it out of the pool.
 
 New models in YGOMCModels join the modeled pool on the next run. A folder whose name doesn't match a card goes in

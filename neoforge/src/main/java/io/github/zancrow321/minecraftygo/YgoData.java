@@ -102,6 +102,20 @@ public final class YgoData {
         return p;
     }
 
+    /** Models from resource packs, which win over the bundled ones; only ever filled on a client. */
+    private static volatile java.util.Map<Integer, CardPool.Model> packModels = java.util.Map.of();
+
+    /** @return the model a monster is drawn with: a resource pack's, else the bundled one, else {@code null} */
+    public static CardPool.Model model(int code) {
+        CardPool.Model model = packModels.get(code);
+        return model != null ? model : modeled().model(code);
+    }
+
+    /** Called on a client after resource packs (re)load, with every model they add or replace. */
+    public static void packModels(java.util.Map<Integer, CardPool.Model> models) {
+        packModels = java.util.Map.copyOf(models);
+    }
+
     /** Every TCG product in release order. */
     public static Products products() {
         Products p = products;

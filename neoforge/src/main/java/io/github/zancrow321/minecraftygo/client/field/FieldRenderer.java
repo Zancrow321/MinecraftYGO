@@ -53,7 +53,7 @@ import static io.github.zancrow321.minecraftygo.engine.OcgConstants.*;
 public final class FieldRenderer {
     private static final ResourceLocation CARD_BLANK = texture("card_blank");
     private static final int FULL_BRIGHT = LightTexture.FULL_BRIGHT;
-    private static final double MAT_Y = 0.02;
+    static final double MAT_Y = 0.02;
     private static final double CARD_Y = 0.04;
     /** Largest footprint and height a monster model is scaled down to fit. */
     private static final double MODEL_MAX_WIDTH = 2.6;
@@ -197,7 +197,7 @@ public final class FieldRenderer {
 
         drawMonsters(draw, poses, board, now, partial);
         buffers.endBatch();
-        drawLabels(draw, poses, board);
+        drawLabels(draw, poses, board, now, partial);
         buffers.endBatch();
     }
 
@@ -303,7 +303,7 @@ public final class FieldRenderer {
     }
 
     private static CardPool.Model model(CardState card) {
-        return card.code() == 0 ? null : YgoData.modeled().model(card.code());
+        return card.code() == 0 ? null : YgoData.model(card.code());
     }
 
     private static ResourceLocation front(int code) {
@@ -329,21 +329,23 @@ public final class FieldRenderer {
         standingCard(draw, s, player, card.code(), 0.15 + rise, 0xE8FFFFFF);
     }
 
-    /** Monsters without a model, and face-down monsters. */
+    /** Monsters without a model (as holograms, or as their card until the artwork is there), and face-down ones. */
     private static void drawFlatOrStanding(Draw draw, int player, int seq, CardState card, long now, float partial) {
         Slot s = slot(player, LOCATION_MZONE, seq);
         if (!faceUp(card)) {
             flatCard(draw, player, s, ClientField.sleeve(player, seq), defense(card), 0, 0xFFFFFFFF);
             return;
         }
-        if (defense(card)) {
+        if (Holograms.shows(card)) {
+            Holograms.draw(draw, player, seq, card, now, partial);
+        } else if (defense(card)) {
             flatCard(draw, player, s, front(card.code()), true, 0, 0xFFFFFFFF);
         } else {
             standingCard(draw, s, player, card.code(), 0.15 + bob(seq, player, now, partial), 0xF0FFFFFF);
         }
     }
 
-    private static double bob(int seq, int player, long now, float partial) {
+    static double bob(int seq, int player, long now, float partial) {
         return 0.08 + 0.06 * Math.sin((now + partial + seq * 7 + player * 13) / 12.0);
     }
 
@@ -485,11 +487,14 @@ public final class FieldRenderer {
                         || (e.from().location() & LOCATION_MZONE) == 0) {
                     continue;
                 }
-                CardPool.Model model = YgoData.modeled().model(e.code());
+                CardPool.Model model = YgoData.model(e.code());
+                float p = a.progress(now, partial);
                 if (model == null) {
+                    if (e.from().isFaceUp()) {
+                        Holograms.drawGhost(draw, e, p, now);
+                    }
                     continue;
                 }
-                float p = a.progress(now, partial);
                 MonsterEntity ghost = proxy(1000 + e.from().controller() * 16 + e.from().sequence(), e.code());
                 ghost.alpha = 1 - p;
                 ghost.tint = 0xA0E8FF;
@@ -548,7 +553,7 @@ public final class FieldRenderer {
     }
 
     /** Where an attacking monster is pushed toward its target: out and back over the attack. */
-    private static Vec3 lunge(Loc loc, long now, float partial) {
+    static Vec3 lunge(Loc loc, long now, float partial) {
         FieldAnimation attack = ClientField.pending(FieldEvent.Kind.ATTACK, loc);
         if (attack == null || !attack.started(now)) {
             return Vec3.ZERO;
@@ -562,7 +567,7 @@ public final class FieldRenderer {
     }
 
     /** Whether the monster at {@code loc} is being hit right now. */
-    private static boolean flash(Loc loc, long now, float partial) {
+    static boolean flash(Loc loc, long now, float partial) {
         for (FieldAnimation a : ClientField.animations()) {
             if (a.event().kind() == FieldEvent.Kind.ATTACK && a.started(now)
                     && FieldLayout.sameZone(a.event().to(), loc)) {
@@ -574,13 +579,17 @@ public final class FieldRenderer {
     }
 
     /** ATK/DEF over each face-up monster, and the hovered card's name. */
-    private static void drawLabels(Draw draw, PoseStack poses, Board board) {
+    private static void drawLabels(Draw draw, PoseStack poses, Board board, long now, float partial) {
         Font font = Minecraft.getInstance().font;
         for (int player = 0; player < 2; player++) {
             List<CardState> monsters = board.side(player).monsters();
             for (int seq = 0; seq < monsters.size(); seq++) {
                 CardState card = monsters.get(seq);
                 if (card == null || !faceUp(card)) {
+                    continue;
+                }
+                if (Holograms.shows(card)) {
+                    Holograms.labels(draw, poses, font, player, seq, card, now, partial);
                     continue;
                 }
                 CardPool.Model model = model(card);
@@ -618,7 +627,7 @@ public final class FieldRenderer {
         return index < zone.size() ? zone.get(index) : null;
     }
 
-    private static void label(Draw draw, PoseStack poses, Font font, Vec3 at, String text, int color) {
+    static void label(Draw draw, PoseStack poses, Font font, Vec3 at, String text, int color) {
         poses.pushPose();
         poses.translate(at.x - draw.cam().x, at.y - draw.cam().y, at.z - draw.cam().z);
         poses.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());

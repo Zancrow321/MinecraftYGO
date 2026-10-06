@@ -498,7 +498,7 @@ final class SignatureEffects {
     /** Where an attacker's breath or spell comes from: near the top of its model, a little toward the target. */
     static Vec3 mouth(FieldAnimation a) {
         Loc from = a.event().from();
-        CardPool.Model model = a.actor() == 0 ? null : YgoData.modeled().model(a.actor());
+        CardPool.Model model = a.actor() == 0 ? null : YgoData.model(a.actor());
         double height = model != null ? model.height() * FieldRenderer.modelScale(model) * 0.8 : 1.2;
         Vec3 at = zone(from, height);
         if (at == null) {
