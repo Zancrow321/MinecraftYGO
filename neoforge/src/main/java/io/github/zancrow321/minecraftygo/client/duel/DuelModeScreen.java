@@ -40,6 +40,10 @@ public final class DuelModeScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT && ClientField.active()
+                && DuelUi.rightClicked(mouseX, mouseY, width, height)) {
+            return true;
+        }
         if (button != GLFW.GLFW_MOUSE_BUTTON_LEFT || !ClientField.active()) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
