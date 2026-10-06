@@ -63,16 +63,20 @@ public final class DuelArenaKitItem extends Item {
 
     /** The first block in the way, or {@code null} if there's room. */
     private static BlockPos obstruction(Level level, BlockPos center, Direction facing) {
-        if (center.getY() + PODIUM_HEADROOM >= level.getMaxBuildHeight()) {
+        if (center.getY() + DuelArena.HEIGHT + PODIUM_HEADROOM >= level.getMaxBuildHeight()) {
             return center.atY(level.getMaxBuildHeight() - 1);
         }
         Direction side = facing.getClockWise();
-        for (int along = -DuelArena.HALF; along <= DuelArena.HALF; along++) {
-            for (int across = -DuelArena.HALF; across <= DuelArena.HALF; across++) {
+        for (int along = -DuelArena.HALF_ALONG - 2; along <= DuelArena.HALF_ALONG + 2; along++) {
+            for (int across = -DuelArena.HALF_ACROSS; across <= DuelArena.HALF_ACROSS; across++) {
+                int height = DuelArena.height(along, across);
+                if (height == 0) {
+                    continue;
+                }
                 boolean podium = Math.abs(Math.abs(along) - DuelArena.PODIUM_ALONG) <= 1 && Math.abs(across) <= 1;
-                BlockPos floor = center.relative(facing, along).relative(side, across);
-                for (int up = 0; up <= (podium ? PODIUM_HEADROOM : HEADROOM); up++) {
-                    BlockPos pos = floor.above(up);
+                BlockPos column = center.relative(facing, along).relative(side, across);
+                for (int up = 0; up < height + (podium ? PODIUM_HEADROOM : HEADROOM); up++) {
+                    BlockPos pos = column.above(up);
                     if (!level.getBlockState(pos).canBeReplaced()) {
                         return pos;
                     }
@@ -84,24 +88,32 @@ public final class DuelArenaKitItem extends Item {
 
     private static void build(Level level, BlockPos center, Direction facing) {
         BlockState solid = DuelArena.SOLID.get().defaultBlockState();
-        for (int dx = -DuelArena.HALF; dx <= DuelArena.HALF; dx++) {
-            for (int dz = -DuelArena.HALF; dz <= DuelArena.HALF; dz++) {
-                if (dx != 0 || dz != 0) {
-                    level.setBlock(center.offset(dx, 0, dz), solid, Block.UPDATE_ALL);
-                }
-                // Grass and flowers would poke through the platform.
-                for (int up = 1; up <= HEADROOM; up++) {
-                    level.setBlock(center.offset(dx, up, dz), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
-                }
+        for (BlockPos pos : DuelArena.footprint(center, facing)) {
+            if (!pos.equals(center)) {
+                level.setBlock(pos, solid, Block.UPDATE_ALL);
             }
         }
         level.setBlock(center, DuelArena.ARENA.get().defaultBlockState().setValue(ArenaBlock.FACING, facing),
                 Block.UPDATE_ALL);
-        // Whoever stood there is now on top of it rather than stuck inside.
-        AABB layer = new AABB(center).inflate(DuelArena.HALF, 0, DuelArena.HALF);
-        for (Entity entity : level.getEntities((Entity) null, layer, e -> !e.isPassenger())) {
-            if (entity.getY() < center.getY() + 1) {
-                entity.teleportTo(entity.getX(), center.getY() + 1, entity.getZ());
+        Direction side = facing.getClockWise();
+        for (int along = -DuelArena.HALF_ALONG - 2; along <= DuelArena.HALF_ALONG + 2; along++) {
+            for (int across = -DuelArena.HALF_ACROSS; across <= DuelArena.HALF_ACROSS; across++) {
+                int height = DuelArena.height(along, across);
+                if (height == 0) {
+                    continue;
+                }
+                BlockPos column = center.relative(facing, along).relative(side, across);
+                // Grass and flowers would poke through the platform.
+                for (int up = height; up < height + HEADROOM; up++) {
+                    if (!level.getBlockState(column.above(up)).isAir()) {
+                        level.setBlock(column.above(up), Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+                    }
+                }
+                // Whoever stood here is now on top rather than stuck inside.
+                AABB inside = new AABB(column).expandTowards(0, height - 1, 0);
+                for (Entity entity : level.getEntities((Entity) null, inside, e -> !e.isPassenger())) {
+                    entity.teleportTo(entity.getX(), column.getY() + height, entity.getZ());
+                }
             }
         }
     }
