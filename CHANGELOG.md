@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### Tournaments
+- Tournaments in four formats: single elimination, double elimination with a losers' bracket and a grand final
+  reset, Swiss rounds with an optional top cut, and round robin. Operators open one with `/ygo tournament create`,
+  or a schedule in the config opens them by themselves; players join from a chat link or `/ygo tournament join`.
+- Matches are played on the Duel Arenas added with `/ygo tournament arena add`: duelists are brought onto the podiums
+  when an arena is free and sent back afterwards. NPC duelists fill empty seats, stand on the podium against
+  players and play each other unseen.
+- The tournament window (`/ygo tournament`) shows the bracket, the Swiss or round robin table, the matches and the
+  rules and prizes, and follows the tournament live.
+- A new `[tournament]` config section holds every setting, and each tournament can change them while it is open
+  with `/ygo tournament set`: format, best of, number of duelists, registration time, NPC fillers, Swiss rounds and
+  top cut, rules, banlist, life points, time and turn limits, locked decks, entry fee and pot, prizes per place,
+  no-show time and announcements. A tournament survives a server restart.
+
 ### Duel comfort
 - Graveyards, banished cards and extra decks of both duelists can be looked through at any time: click the pile
   (right-click when a card there can be activated) and a window shows its cards, newest first. Hovering a card

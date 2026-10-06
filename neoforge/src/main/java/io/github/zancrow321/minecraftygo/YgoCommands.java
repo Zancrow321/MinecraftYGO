@@ -32,6 +32,7 @@ final class YgoCommands {
         event.getDispatcher().register(Commands.literal("ygo")
                 .then(Commands.literal("version").executes(YgoCommands::version))
                 .then(io.github.zancrow321.minecraftygo.progression.ProgressionCommands.build())
+                .then(io.github.zancrow321.minecraftygo.tournament.TournamentCommands.build())
                 .then(Commands.literal("duel")
                         .then(Commands.literal("bot").executes(ctx -> {
                             ServerPlayer player = ctx.getSource().getPlayerOrException();

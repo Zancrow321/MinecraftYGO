@@ -237,6 +237,27 @@ public final class DuelArena {
         }
     }
 
+    /** The middle block of the arena someone standing at {@code pos} is on (or under), or {@code null}. */
+    public static BlockPos arenaUnder(Level level, BlockPos pos) {
+        return arenaAt(level, pos);
+    }
+
+    /** Whether an arena stands at {@code arena} and no duel is using it. */
+    public static boolean available(Level level, BlockPos arena) {
+        return level.isLoaded(arena) && level.getBlockState(arena).is(ARENA.get()) && !inUse(level, arena)
+                && !(level.getBlockEntity(arena) instanceof ArenaBlockEntity entity && entity.raised());
+    }
+
+    /** Where a duelist stands on the podium at {@code end} (+1 or -1) of an arena, looking at the middle. */
+    public record Spot(Vec3 pos, float yaw) {
+    }
+
+    public static Spot podium(Level level, BlockPos arena, int end) {
+        Direction facing = facing(level.getBlockState(arena));
+        Vec3 pos = Vec3.atBottomCenterOf(arena.relative(facing, end * PODIUM_ALONG).above(HEIGHT));
+        return new Spot(pos, (end > 0 ? facing.getOpposite() : facing).toYRot());
+    }
+
     /** Whether a duel is using this arena. */
     static boolean inUse(Level level, BlockPos arena) {
         return RIDERS.values().stream().anyMatch(r -> r.level == level && r.arena.equals(arena));

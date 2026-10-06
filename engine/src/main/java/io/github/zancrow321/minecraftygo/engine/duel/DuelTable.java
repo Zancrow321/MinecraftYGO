@@ -234,6 +234,32 @@ public final class DuelTable implements AutoCloseable {
         return views(null);
     }
 
+    /** A team's life points right now. */
+    public int lifePoints(int team) {
+        return duel.board().side(team).lifePoints();
+    }
+
+    /**
+     * Ends the duel on a time or turn limit: the team with more life points wins, a draw if they are level.
+     *
+     * @param reason what everyone reads in the log, e.g. "Turn limit reached"
+     */
+    public Map<Integer, DuelView> endOnLifePoints(String reason) {
+        if (finished()) {
+            return Map.of();
+        }
+        int lp0 = lifePoints(0);
+        int lp1 = lifePoints(1);
+        for (List<String> log : pendingLog) {
+            log.add(reason + ": " + names.get(0) + " " + lp0 + " LP, " + names.get(1) + " " + lp1 + " LP");
+        }
+        spectatorLog.add(reason + ": " + names.get(0) + " " + lp0 + " LP, " + names.get(1) + " " + lp1 + " LP");
+        forfeitWinner = lp0 == lp1 ? 2 : lp0 > lp1 ? 0 : 1;
+        forfeitResult = forfeitWinner == 2 ? "The duel is a draw" : names.get(forfeitWinner) + " win"
+                + (teams.get(forfeitWinner).size() == 1 ? "s" : "") + " the duel on life points";
+        return views(null);
+    }
+
     private Map<Integer, DuelView> run(DuelController.Step step) {
         for (int botSteps = 0; ; botSteps++) {
             if (step != null) {

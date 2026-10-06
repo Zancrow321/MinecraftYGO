@@ -86,6 +86,9 @@ public final class YgoServerConfig {
             .defineInRange("rotationDays", 7, 1, 1000);
 
     static {
+        // The defaults every new tournament starts from; its host can change them for that tournament.
+        BUILDER.pop().push("tournament");
+        io.github.zancrow321.minecraftygo.tournament.TournamentOptions.define(BUILDER);
         BUILDER.pop();
     }
 

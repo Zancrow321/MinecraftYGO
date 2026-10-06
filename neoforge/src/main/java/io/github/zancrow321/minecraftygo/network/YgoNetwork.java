@@ -41,6 +41,8 @@ public final class YgoNetwork {
                         PlayerCosmetics.select(player, payload.skin(), payload.id());
                     }
                 }));
+        registrar.playToClient(TournamentPayload.TYPE, TournamentPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.tournament(payload)));
         registrar.playToClient(StarterChoicesPayload.TYPE, StarterChoicesPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.starterChoices(payload)));
         registrar.playToServer(StarterPickPayload.TYPE, StarterPickPayload.STREAM_CODEC,
