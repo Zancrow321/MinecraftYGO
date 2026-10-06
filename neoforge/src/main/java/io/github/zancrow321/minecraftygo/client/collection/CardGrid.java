@@ -3,6 +3,7 @@ package io.github.zancrow321.minecraftygo.client.collection;
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.client.CardArt;
+import io.github.zancrow321.minecraftygo.engine.data.BoosterSets.Rarity;
 import io.github.zancrow321.minecraftygo.engine.data.CardInfo;
 import io.github.zancrow321.minecraftygo.item.CardItem;
 import net.minecraft.ChatFormatting;
@@ -26,7 +27,11 @@ final class CardGrid {
     static final ResourceLocation CARD_BLANK =
             ResourceLocation.fromNamespaceAndPath(MinecraftYgo.MOD_ID, "textures/field/card_blank.png");
 
-    record Entry(int code, int count) {
+    /** Copies of a card; the binder lists each rarity on its own, the deck box only cares about the card. */
+    record Entry(int code, Rarity rarity, int count) {
+        Entry(int code, int count) {
+            this(code, Rarity.COMMON, count);
+        }
     }
 
     final int x;
@@ -70,6 +75,21 @@ final class CardGrid {
         page = Math.max(0, Math.min(page, pages() - 1));
     }
 
+    /** Keeps the copies whose name contains {@code filter}, by name and then rarity. */
+    void setCopies(List<Entry> copies, String filter) {
+        String f = filter.toLowerCase(Locale.ROOT);
+        List<Entry> list = new ArrayList<>();
+        for (Entry e : copies) {
+            if (e.count() > 0 && (f.isEmpty() || name(e.code()).toLowerCase(Locale.ROOT).contains(f))) {
+                list.add(e);
+            }
+        }
+        list.sort(java.util.Comparator.<Entry, String>comparing(e -> name(e.code()), String.CASE_INSENSITIVE_ORDER)
+                .thenComparing(Entry::rarity));
+        entries = list;
+        page = Math.max(0, Math.min(page, pages() - 1));
+    }
+
     int pages() {
         return Math.max(1, (entries.size() + columns * rows - 1) / (columns * rows));
     }
@@ -100,7 +120,7 @@ final class CardGrid {
             Entry e = entries.get(start + i);
             int cx = x + (i % columns) * (cardWidth + 4);
             int cy = y + (i / columns) * (cardHeight + 4);
-            drawCard(g, font, e.code(), cx, cy, cardWidth, cardHeight);
+            drawCard(g, font, e.code(), e.rarity(), cx, cy, cardWidth, cardHeight);
             if (locked.test(e.code())) {
                 drawLock(g, cx, cy, cardWidth, cardHeight);
             }
@@ -126,9 +146,16 @@ final class CardGrid {
     }
 
     static void drawCard(GuiGraphics g, Font font, int code, int x, int y, int w, int h) {
+        drawCard(g, font, code, Rarity.COMMON, x, y, w, h);
+    }
+
+    /** Draws a card with its foil, and a foil card's rarity in the bottom left corner. */
+    static void drawCard(GuiGraphics g, Font font, int code, Rarity rarity, int x, int y, int w, int h) {
         CardArt.Texture art = CardArt.get(code);
         if (art != null) {
             g.blit(art.location(), x, y, w, h, 0, 0, art.width(), art.height(), art.width(), art.height());
+            FoilEffect.drawGui(g, code, rarity, x, y, w, h);
+            drawRarityTag(g, font, rarity, x, y, w, h);
             return;
         }
         g.blit(CARD_BLANK, x, y, w, h, 0, 0, 68, 100, 68, 100);
@@ -141,6 +168,42 @@ final class CardGrid {
             g.drawString(font, lines.get(i), 0, i * 9, 0xFF202020, false);
         }
         g.pose().popPose();
+        drawRarityTag(g, font, rarity, x, y, w, h);
+    }
+
+    /**
+     * The short rarity of a foil card (R, SR, UR, ScR) in its bottom left corner, over the passcode, where it hides
+     * nothing that matters. At half size on small cards.
+     */
+    static void drawRarityTag(GuiGraphics g, Font font, Rarity rarity, int x, int y, int w, int h) {
+        if (rarity == Rarity.COMMON) {
+            return;
+        }
+        String tag = switch (rarity) {
+            case RARE -> "R";
+            case SUPER -> "SR";
+            case ULTRA -> "UR";
+            default -> "ScR";
+        };
+        Integer color = CardItem.color(rarity).getColor();
+        float scale = w < 60 ? 0.5f : 1f;
+        int tw = Math.round(font.width(tag) * scale);
+        int th = Math.round(8 * scale);
+        int left = x + 1;
+        int bottom = y + h - 1;
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 10);
+        g.fill(left, bottom - th - 2, left + tw + 2, bottom, 0xD0000000);
+        g.pose().translate(left + 1, bottom - th - 1, 0);
+        g.pose().scale(scale, scale, 1);
+        g.drawString(font, tag, 0, 0, 0xFF000000 | (color == null ? 0xFFFFFF : color), false);
+        g.pose().popPose();
+    }
+
+    /** The rarity of a foil copy, for its tooltip; {@code null} for a common. */
+    static Component rarityLine(Rarity rarity) {
+        return rarity == Rarity.COMMON ? null
+                : Component.literal(CardItem.rarityName(rarity)).withStyle(CardItem.color(rarity));
     }
 
     /** Dims a card and puts a padlock on it. */

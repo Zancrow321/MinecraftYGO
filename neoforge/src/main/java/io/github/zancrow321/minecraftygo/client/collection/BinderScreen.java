@@ -73,12 +73,13 @@ public final class BinderScreen extends Screen {
             return;
         }
         var collection = BinderItem.collection(binder());
-        java.util.Map<Integer, Integer> shown = collection.counts();
-        if (unlockedOnly) {
-            shown = new java.util.HashMap<>(shown);
-            shown.keySet().removeIf(code -> grid.locked.test(code));
+        List<CardGrid.Entry> shown = new java.util.ArrayList<>();
+        for (BinderItem.Copies c : BinderItem.copies(binder())) {
+            if (!unlockedOnly || !grid.locked.test(c.code())) {
+                shown.add(new CardGrid.Entry(c.code(), c.rarity(), c.count()));
+            }
         }
-        grid.set(shown, search.getValue());
+        grid.setCopies(shown, search.getValue());
         super.render(g, mouseX, mouseY, partialTick);
         g.drawString(font, title.copy().append(" · " + collection.total() + " cards, "
                 + collection.counts().size() + " different"), left + 10, top + 4, 0xFFFFFFFF, false);
@@ -92,6 +93,10 @@ public final class BinderScreen extends Screen {
             List<Component> tooltip = CardGrid.tooltip(hovered.code(), "Click: take one out · Shift-click: take all");
             if (grid.locked.test(hovered.code())) {
                 tooltip.add(Math.min(1, tooltip.size()), CardGrid.lockedLine(hovered.code()));
+            }
+            Component rarity = CardGrid.rarityLine(hovered.rarity());
+            if (rarity != null) {
+                tooltip.add(Math.min(1, tooltip.size()), rarity);
             }
             g.renderComponentTooltip(font, tooltip, mouseX, mouseY);
         }
@@ -113,7 +118,8 @@ public final class BinderScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         CardGrid.Entry e = grid.at(mouseX, mouseY);
         if (e != null) {
-            send(Action.WITHDRAW, e.code(), hasShiftDown());
+            PacketDistributor.sendToServer(new CollectionActionPayload(Action.WITHDRAW,
+                    hand == InteractionHand.OFF_HAND, e.code(), hasShiftDown(), e.rarity()));
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);

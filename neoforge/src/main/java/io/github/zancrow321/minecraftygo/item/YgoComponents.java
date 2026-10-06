@@ -70,6 +70,29 @@ public final class YgoComponents {
         }
     }
 
+    /**
+     * The foil copies in a binder, keyed {@code "<passcode>:<rarity>"}. They are counted in its {@link CardCollection}
+     * too; the copies of a card that aren't listed here are commons. See {@link BinderItem#copies}.
+     */
+    public record CardFoils(Map<String, Integer> copies) {
+        public static final CardFoils EMPTY = new CardFoils(Map.of());
+        public static final Codec<CardFoils> CODEC = Codec.unboundedMap(Codec.STRING, Codec.INT)
+                .xmap(CardFoils::new, CardFoils::copies);
+        public static final StreamCodec<ByteBuf, CardFoils> STREAM_CODEC = ByteBufCodecs.<ByteBuf, String, Integer,
+                        Map<String, Integer>>map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_INT)
+                .map(CardFoils::new, CardFoils::copies);
+
+        public CardFoils {
+            Map<String, Integer> sorted = new TreeMap<>();
+            copies.forEach((key, n) -> {
+                if (n > 0) {
+                    sorted.put(key, n);
+                }
+            });
+            copies = Collections.unmodifiableMap(sorted);
+        }
+    }
+
     /** A deck in a deck box. */
     public record DeckList(List<Integer> main, List<Integer> extra) {
         public static final DeckList EMPTY = new DeckList(List.of(), List.of());
@@ -102,6 +125,9 @@ public final class YgoComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<CardCollection>> COLLECTION =
             COMPONENTS.registerComponentType("collection", b -> b.persistent(CardCollection.CODEC)
                     .networkSynchronized(CardCollection.STREAM_CODEC));
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<CardFoils>> FOILS =
+            COMPONENTS.registerComponentType("foils", b -> b.persistent(CardFoils.CODEC)
+                    .networkSynchronized(CardFoils.STREAM_CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<DeckList>> DECK =
             COMPONENTS.registerComponentType("deck", b -> b.persistent(DeckList.CODEC)
                     .networkSynchronized(DeckList.STREAM_CODEC));

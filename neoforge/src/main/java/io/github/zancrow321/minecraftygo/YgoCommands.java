@@ -32,6 +32,7 @@ final class YgoCommands {
         event.getDispatcher().register(Commands.literal(MinecraftYgo.COMMAND)
                 .then(Commands.literal("version").executes(YgoCommands::version))
                 .then(io.github.zancrow321.minecraftygo.progression.ProgressionCommands.build())
+                .then(io.github.zancrow321.minecraftygo.duel.StatsCommands.build())
                 .then(Commands.literal("duel")
                         .then(Commands.literal("bot").executes(ctx -> {
                             ServerPlayer player = ctx.getSource().getPlayerOrException();
@@ -72,6 +73,17 @@ final class YgoCommands {
                         .StarterDecks.command(ctx.getSource().getPlayerOrException())))
                 .then(Commands.literal("guide").executes(ctx -> io.github.zancrow321.minecraftygo.guide.GuideBook
                         .open(ctx.getSource().getPlayerOrException())))
+                .then(Commands.literal("shop").executes(ctx -> {
+                    var player = ctx.getSource().getPlayerOrException();
+                    if (!YgoServerConfig.MACHINE.command.get() && !ctx.getSource().hasPermission(2)) {
+                        ctx.getSource().sendFailure(
+                                Component.translatable("message.minecraftygo.card_machine.no_command"));
+                        return 0;
+                    }
+                    io.github.zancrow321.minecraftygo.village.MachineShop.open(player, null);
+                    return 1;
+                }))
+                .then(io.github.zancrow321.minecraftygo.points.PointsCommands.build())
                 .then(Commands.literal("cosmetics").executes(ctx -> {
                     PlayerCosmetics.open(ctx.getSource().getPlayerOrException());
                     return 1;

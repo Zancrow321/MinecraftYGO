@@ -38,6 +38,10 @@
         "You stand still and safe at your end of the field: nothing hurts you and mobs leave you alone. Surrender from the duel menu (Escape) or with `{cmd} forfeit`.",
         "# Watching",
         "Right-click someone who is dueling (NPCs too) or use `{cmd} watch <player>`. Spectators see the field, the life points and the log, but no hidden cards. Leave with Escape and \"Stop watching\" or `{cmd} unwatch`.",
+        "# Wins and losses",
+        "Every duel counts in your record: wins, losses and draws against players and against NPCs and bots, and your wins in a row. The result screen shows it, `{cmd} stats` in chat, `{cmd} stats <player>` someone else's and `{cmd} stats top` the ten best.",
+        "- Beating a player brings {server:results.players.winPacks} packs, {server:results.players.winEmeralds} emeralds and {server:results.players.winXp} XP; losing {server:results.players.lossPacks} packs, {server:results.players.lossEmeralds} emeralds, {server:results.players.lossXp} XP.",
+        "- Beating an NPC brings {server:results.npcs.winPacks} packs, {server:results.npcs.winEmeralds} emeralds and {server:results.npcs.winXp} XP; losing {server:results.npcs.lossPacks} packs, {server:results.npcs.lossEmeralds} emeralds, {server:results.npcs.lossXp} XP.",
         "# Which deck you play",
         "Your first legal deck box, looking in your hands first, then your inventory. Without one you duel with Yugi's starter deck, unless the server turned that off."
       ]
@@ -72,8 +76,10 @@
         "- **Structure Decks** put their cards straight into your binder.",
         "- A **Collector's Tin** gives its promo card and three packs.",
         "Packs and single cards turn up in dungeon, temple, mineshaft and treasure chests, mobs sometimes drop one, NPC duelists give one when you beat them, and the Card Trader sells them.",
+        "# Foils",
+        "Rarer cards shine like the real ones: a Rare has a silver name, a Super Rare holofoil art, an Ultra Rare holofoil art and a gold name, a Secret Rare rainbow-lined art and a silver name.",
         "# Card Binder",
-        "Holds your collection. \"Put all cards in\" moves every loose card into it; clicking a card takes it out again (shift-click for every copy). Cards from sets that are still locked show a padlock.",
+        "Holds your collection. \"Put all cards in\" moves every loose card into it; clicking a card takes it out again (shift-click for every copy). It keeps each card's rarity, shown in the corner (R, SR, UR, ScR), and decks use commons first so your foils stay in the binder. Cards from sets that are still locked show a padlock.",
         "[recipe {modid}:binder]"
       ]
     },
@@ -94,13 +100,24 @@
       ]
     },
     {
-      "title": "Card Trader",
+      "title": "Shops and Duel Points",
       "icon": "{modid}:card_shop",
       "text": [
-        "The **Card Trader** is a villager who sells binders, deck boxes, the two starter decks and later a duel disk. The trader also keeps a shop of packs, structure decks and tins: the newest {server:shop.newestAlways} products always, plus {server:shop.rotatingOlder} older ones that change every {server:shop.rotationDays} days.",
-        "",
-        "Any villager without a job takes it at a **Card Shop Counter**:",
-        "[recipe {modid}:card_shop]"
+        "# Duel Points",
+        "Shops take **{server:shop.currency}** here (\"points\" means Duel Points, DP). DP are a balance, not an item: you see them above your inventory and in every shop, and `{cmd} dp` tells them.",
+        "- You start with {server:shop.points.startBalance} DP and get {server:shop.points.dailyBonus} DP once a day.",
+        "- Card Vending Machines buy loose cards ({server:shop.points.sellCommon} DP for a common up to {server:shop.points.sellSecret} for a Secret Rare) and emeralds ({server:shop.points.emeraldExchange} DP each).",
+        "- `{cmd} dp pay <player> <amount>` gives DP to someone else.",
+        "In a DP shop, click to buy once and shift-click to buy as many as you can.",
+        "# Card Trader",
+        "A villager who sells binders, deck boxes, the starter decks and later a duel disk, plus packs, structure decks and tins: the newest {server:shop.newestAlways} products always and {server:shop.rotatingOlder} older ones that change every {server:shop.rotationDays} days. Any villager without a job takes it at a **Card Shop Counter**:",
+        "[recipe {modid}:card_shop]",
+        "# Card Vending Machine",
+        "The same shop without a villager: right-click it to buy. It also buys loose cards and emeralds for DP.",
+        "[recipe {modid}:card_machine]",
+        "# Shop Stand",
+        "A shop any player runs. As the owner, right-click it: put a ware in the top row and its price below it, then the wares themselves in the stock rows. Other players right-click it to buy, and what they pay goes to you, even while you're offline. Only you and operators can break it.",
+        "[recipe {modid}:shop_stand]"
       ]
     },
     {
@@ -142,7 +159,7 @@
       "text": [
         "Duelists wander the overworld now and then, each with a title, a duel disk and their own deck: a famous tournament deck whose era has come, a starter or structure deck that is out, or a random deck from the card pool. They say which deck they play.",
         "",
-        "Right-click one to duel it. Beat it and it gives you a booster pack, then won't duel you again for a Minecraft day. NPCs can't be hurt while dueling.",
+        "Right-click one to duel it. Beat it and it won't duel you again for {server:results.npcs.rematchMinutes} minutes. NPCs can't be hurt while dueling.",
         "",
         "They play with a computer opponent that summons its strongest monsters, brings out Synchro, Xyz and Link monsters, only attacks when it wins the fight and saves its traps for your turn. A **Duelist Spawn Egg** is in the creative tab."
       ]
@@ -172,11 +189,16 @@
         "- `{cmd} tag <partner> <opponent1> <opponent2>`: tag duel, any seat can be `bot`.",
         "- `{cmd} battlecity <partner> <opponent1> <opponent2>`: tag duel on split halves.",
         "- `{cmd} watch <player>` and `{cmd} unwatch`: watch a duel and stop.",
+        "- `{cmd} stats [player]` and `{cmd} stats top`: duel records.",
+        "- `{cmd} dp` and `{cmd} dp pay <player> <amount>`: your Duel Points, and giving some away.",
+        "- `{cmd} shop`: the vending machine's shop from anywhere, if the server allows it.",
         "- `{cmd} starter`: pick your first deck if you haven't yet.",
         "- `{cmd} cosmetics`: disk skins and card sleeves.",
         "- `{cmd} version`: the version of the rules engine.",
         "# For operators",
         "- `{cmd} progression status`, `next [count]`, `until <set>`, `set <set>` and `list [page]`: see Progression and rules.",
+        "- `{cmd} dp <player>` and `{cmd} dp give|take|set <players> <amount>`: look at and change Duel Points.",
+        "- `{cmd} stats reset <player>`: clear a duel record.",
         "- `{cmd} gallery [page]`: lays out a page of monster models to look at; `{cmd} gallery clear` removes them."
       ]
     },
@@ -197,7 +219,14 @@
         "- `[progression] startProduct` = {server:progression.startProduct}: where new worlds or players start.",
         "- `[progression] announce` = {server:progression.announce}: say unlocks in chat.",
         "- `[cards] lockedInDeck` = {server:cards.lockedInDeck}: locked cards stay out of decks.",
+        "- `[results] trackRecord` = {server:results.trackRecord}, `announce` = {server:results.announce}, `rewardBotDuels` = {server:results.rewardBotDuels}: duel records, results in chat, rewards for bot duels.",
+        "- `[results.players]` and `[results.npcs]`: `winPacks`, `winEmeralds`, `winXp`, `lossPacks`, `lossEmeralds`, `lossXp` (see Dueling); `[results.npcs] rematchMinutes` = {server:results.npcs.rematchMinutes}.",
+        "- `[shop] currency` = {server:shop.currency}: \"points\" or an item such as minecraft:emerald. `priceMultiplier` = {server:shop.priceMultiplier}, `dynamicPrices` = {server:shop.dynamicPrices}, `wanderingTrader` = {server:shop.wanderingTrader}.",
         "- `[shop] newestAlways` = {server:shop.newestAlways}, `rotatingOlder` = {server:shop.rotatingOlder}, `rotationDays` = {server:shop.rotationDays}: the Card Trader's stock.",
+        "- `[shop.prices]` and `[shop.stock]`: what everything costs (0 stops a trade) and how many a trader has.",
+        "- `[shop.machine]`: `enabled` = {server:shop.machine.enabled}, `products` = {server:shop.machine.products}, `limitPerPlayer` = {server:shop.machine.limitPerPlayer}, `command` = {server:shop.machine.command}, `operatorsOnly` = {server:shop.machine.operatorsOnly}.",
+        "- `[shop.players]`: `enabled` = {server:shop.players.enabled}, `maxPerPlayer` = {server:shop.players.maxPerPlayer}, `taxPercent` = {server:shop.players.taxPercent}, `currencyOnly` = {server:shop.players.currencyOnly}.",
+        "- `[shop.points]`: `startBalance` = {server:shop.points.startBalance}, `dailyBonus` = {server:shop.points.dailyBonus}, `pricePoints` = {server:shop.points.pricePoints} (DP per 1 of a price), `transfers` = {server:shop.points.transfers}, `emeraldExchange` = {server:shop.points.emeraldExchange}, `sellCommon` to `sellSecret`.",
         "- `[guide] giveOnFirstJoin` = {server:guide.giveOnFirstJoin} and `craftable` = {server:guide.craftable}: this book.",
         "# Your own settings",
         "In `config/{modid}-client.toml`:",

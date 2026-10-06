@@ -3,13 +3,34 @@
 ## Unreleased
 
 ### Handbook
-- New **Duelist's Handbook**: an open book with a title page, clickable contents and 13 chapters on dueling, the duel
-  controls, collecting, decks, the Card Trader, progression and rules, arenas, NPC duelists, cosmetics, every command
-  and every setting. Keys show your current bindings, settings show the world's current values, crafting grids come
+- New **Duelist's Handbook**: an open book with a title page, clickable contents and 13 chapters on dueling and duel
+  records, the duel controls, collecting and foils, decks, shops and Duel Points, progression and rules, arenas, NPC
+  duelists, cosmetics, every command and every setting. Keys show your current bindings, settings show the world's current values, crafting grids come
   from the real recipes, and commands can be clicked to type them in chat. English and German.
 - Every player gets it once on their first join (also players of existing worlds, on their next join); `/ygo guide`
   opens it any time, and a book and paper craft a new one. Both can be turned off: `[guide] giveOnFirstJoin` and
   `[guide] craftable`.
+
+### Foil cards
+- Foil cards shine like the real ones, in the inventory, in your hand, in the world, in the binder and when a pack
+  is opened: a Rare has a silver name, a Super Rare holofoil artwork, an Ultra Rare holofoil artwork and a gold name,
+  a Secret Rare rainbow-lined artwork and a silver name. A glare sweeps over the foil now and then.
+- Binders keep each card's rarity. A foil put in a binder stays a foil, and the binder lists each rarity of a card
+  on its own, with its rarity (R, SR, UR, ScR) in the corner and in the tooltip. Taking a copy out gives that copy;
+  building a deck uses commons first so the foils stay in the binder.
+
+### Duel wins and losses
+- Every player's duel record is kept: wins, losses and draws, against players and against NPCs and bots, and how
+  many wins in a row. The result screen shows it after each duel; `/ygo stats` shows yours, `/ygo stats <player>`
+  someone else's (also when they are offline), `/ygo stats top` the ten players with the most wins, and
+  `/ygo stats reset <player>` (operators) clears one. A duelist who logs off mid-duel still has the loss counted.
+- What a won or lost duel brings is set in the server config, separately for duels against players
+  (`[results.players]`) and against NPC duelists (`[results.npcs]`): booster packs, emeralds and experience for each
+  winner (`winPacks`, `winEmeralds`, `winXp`) and as a consolation for each loser (`lossPacks`, `lossEmeralds`,
+  `lossXp`). By default it stays as before: one booster pack for beating an NPC, nothing else.
+- `[results] rewardBotDuels` gives duels against the bot the NPC rewards too (off by default), `announce` tells the
+  whole server who won each duel, `trackRecord` turns the record off, and `[results.npcs] rematchMinutes` sets how
+  long a beaten NPC won't duel you again (20 minutes, one Minecraft day, as before).
 
 ### Duel comfort
 - Graveyards, banished cards and extra decks of both duelists can be looked through at any time: click the pile
@@ -24,6 +45,52 @@
   effects, not ahead of them.
 - Life points count down or up when they change, in step with the damage effect, and their panel flashes red or
   green; the floating change beside them is twice as big.
+
+### Card shop
+- The card shop is set in `[shop]` of the server config, and card traders follow a change within a few seconds,
+  keeping what they have sold since their last restock:
+  - `currency`: `"points"` for Duel Points (the default, see below) or the item traders take and pay for paper, any
+    item id such as `"minecraft:emerald"` or `"minecraft:diamond"`.
+  - `priceMultiplier`: every price times this, e.g. 0.5 for half price.
+  - `dynamicPrices = false` keeps prices fixed; by default they rise when a trade sells out often and drop for
+    players the village likes, as with other villagers.
+  - `[shop.prices]`: the price of core, all-foil and small packs (tournament, mini and battle packs), structure
+    decks, tins, the random packs of novice, journeyman and master traders, binders, deck boxes, starter decks and
+    duel disks, how much paper a trader buys for one currency item, and the wandering trader's pack and duel disk. 0 means
+    traders don't sell it (and stop if they did).
+  - `[shop.stock]`: how many of each a trader can sell before it restocks.
+  - `wanderingTrader = false` stops wandering traders from selling packs and duel disks.
+- New **Card Vending Machine** (three iron ingots / glass pane, emerald, glass pane / iron ingot, redstone, iron
+  ingot): a shop without a villager. Right-clicking it opens the trade window with the `[shop]` prices and currency;
+  prices don't rise with demand. Set in `[shop.machine]`:
+  - `products`: `"rotation"` (the newest and a few older products, the same on every machine), `"all"` or `"none"`.
+  - `supplies`: random packs, binders, deck boxes, the starter decks and duel disks too.
+  - `limitPerPlayer`: each player can buy the `[shop.stock]` amounts a day; off, machines never run out.
+  - `command`: `/ygo shop` opens the machine's shop anywhere (operators can always use it).
+  - `operatorsOnly`: only operators place and break machines, for server-run shops.
+  - `enabled` and `name` (the title of its window).
+- New **Shop Stand** (red wool, white wool, red wool / plank, chest, plank / three planks): a shop run by a player.
+  Its owner sets up to nine wares with a price each (any item, a diamond or a rare card too), fills the stock and
+  takes the takings out of the till; everyone else gets a trade window with what is in stock. Set in
+  `[shop.players]`:
+  - `maxPerPlayer`: how many stands each player can set up (3; 0 for any number).
+  - `currencyOnly`: prices must be in the `[shop] currency`.
+  - `taxPercent`: this share of every price is kept back from the owner.
+  - `onlyYgoItems`: stands only sell this mod's items.
+  - `operatorsManage`: operators can open, stock and break anyone's stand.
+  - `notifyOwner`: the owner gets a chat message on every sale.
+  - `enabled`: off, stands are closed (owners can still empty them).
+- New currency **Duel Points (DP)**, the default `[shop] currency = "points"`: a balance per player instead of an item,
+  shown above the inventory and in the shops. Card traders, Card Vending Machines and Shop Stands open a DP shop
+  (click buys once, shift-click as many as you can); stand owners type their prices in DP and are paid straight into
+  their balance. `currency` set to an item id brings back the villager trade window paid in that item. Set in
+  `[shop.points]`:
+  - `symbol` ("DP"), `pricePoints` (each 1 of a `[shop.prices]` price is 25 DP).
+  - Earning: `startBalance` (500), `dailyBonus` (50 a day), paper sold to card traders, loose cards sold to Card
+    Vending Machines by rarity (`sellCommon` 5, `sellRare` 15, `sellSuper` 30, `sellUltra` 60, `sellSecret` 120) and
+    `emeraldExchange` (10 DP per emerald at the machines). 0 turns each off.
+  - `transfers`: `/ygo dp pay <player> <amount>`.
+  - `/ygo dp` shows your balance; operators use `/ygo dp <player>` and `/ygo dp give|take|set <players> <amount>`.
 
 ### Deck editor
 - The deck box filters the cards you own by type (monsters, spells, traps, extra deck), attribute and level and sorts

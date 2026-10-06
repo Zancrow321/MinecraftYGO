@@ -49,6 +49,8 @@ public final class MinecraftYgo {
         YgoComponents.register(modBus);
         PlayerCosmetics.register(modBus);
         YgoVillagers.register(modBus);
+        io.github.zancrow321.minecraftygo.village.PlayerShops.register(modBus);
+        io.github.zancrow321.minecraftygo.points.Points.register(modBus);
         RandomCardFunction.register(modBus);
         DuelDome.register(modBus);
         DuelArena.register(modBus);
@@ -65,6 +67,7 @@ public final class MinecraftYgo {
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> {
             DuelManager.get(event.getServer()).tick();
             io.github.zancrow321.minecraftygo.village.CardShop.tick(event.getServer());
+            io.github.zancrow321.minecraftygo.points.Points.tick(event.getServer());
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
@@ -72,6 +75,7 @@ public final class MinecraftYgo {
                 io.github.zancrow321.minecraftygo.progression.StarterDecks.offer(player);
                 io.github.zancrow321.minecraftygo.guide.GuideBook.onLogin(player);
                 DuelManager.get(player.server).onLogin(player);
+                io.github.zancrow321.minecraftygo.points.Points.login(player);
             }
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {
@@ -85,6 +89,15 @@ public final class MinecraftYgo {
             }
         });
         NeoForge.EVENT_BUS.addListener(this::onInteractPlayer);
+        // With points as the currency, card traders open a points shop instead of the trade window.
+        NeoForge.EVENT_BUS.addListener((PlayerInteractEvent.EntityInteract event) -> {
+            if (event.getTarget() instanceof net.minecraft.world.entity.npc.Villager villager
+                    && io.github.zancrow321.minecraftygo.village.TraderShop.interact(event.getEntity(), villager,
+                    event.getHand())) {
+                event.setCancellationResult(InteractionResult.sidedSuccess(event.getLevel().isClientSide()));
+                event.setCanceled(true);
+            }
+        });
         // People at a duel stand still at their end of the field: nothing hurts them and mobs leave them be.
         NeoForge.EVENT_BUS.addListener((LivingIncomingDamageEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player && DuelManager.get(player.server).protects(player)

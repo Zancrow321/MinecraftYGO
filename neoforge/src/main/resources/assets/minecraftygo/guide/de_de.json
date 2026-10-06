@@ -38,6 +38,10 @@
         "Du stehst still und sicher an deinem Ende des Felds: Nichts verletzt dich, und Monster lassen dich in Ruhe. Aufgeben geht im Duellmenü (Escape) oder mit `{cmd} forfeit`.",
         "# Zuschauen",
         "Jemanden rechtsklicken, der sich gerade duelliert (auch NPCs), oder `{cmd} watch <player>`. Zuschauer sehen Feld, Lebenspunkte und Protokoll, aber keine verdeckten Karten. Mit Escape und \"Zuschauen beenden\" oder `{cmd} unwatch` gehst du wieder.",
+        "# Siege und Niederlagen",
+        "Jedes Duell zählt in deiner Bilanz: Siege, Niederlagen und Unentschieden gegen Spieler und gegen NPCs und Bots, dazu deine Siegesserie. Der Ergebnisbildschirm zeigt sie, `{cmd} stats` im Chat, `{cmd} stats <player>` die eines anderen und `{cmd} stats top` die zehn besten.",
+        "- Ein Sieg gegen einen Spieler bringt {server:results.players.winPacks} Packs, {server:results.players.winEmeralds} Smaragde und {server:results.players.winXp} XP; eine Niederlage {server:results.players.lossPacks} Packs, {server:results.players.lossEmeralds} Smaragde, {server:results.players.lossXp} XP.",
+        "- Ein Sieg gegen einen NPC bringt {server:results.npcs.winPacks} Packs, {server:results.npcs.winEmeralds} Smaragde und {server:results.npcs.winXp} XP; eine Niederlage {server:results.npcs.lossPacks} Packs, {server:results.npcs.lossEmeralds} Smaragde, {server:results.npcs.lossXp} XP.",
         "# Mit welchem Deck du spielst",
         "Mit deiner ersten legalen Deckbox, zuerst in den Händen gesucht, dann im Inventar. Ohne eine spielst du mit Yugis Starter-Deck, außer der Server hat das abgeschaltet."
       ]
@@ -72,8 +76,10 @@
         "- **Struktur-Decks** legen ihre Karten direkt in deinen Kartenordner.",
         "- Ein **Sammler-Tin** gibt seine Promokarte und drei Packs.",
         "Packs und einzelne Karten liegen in Verliesen, Tempeln, Minen und Schatztruhen, Monster lassen manchmal eins fallen, NPC-Duellanten geben eins, wenn du sie besiegst, und der Kartenhändler verkauft sie.",
+        "# Foils",
+        "Seltene Karten glänzen wie die echten: eine Rare hat einen silbernen Namen, eine Super Rare ein Holo-Bild, eine Ultra Rare ein Holo-Bild und einen goldenen Namen, eine Secret Rare ein Bild mit Regenbogenrand und einen silbernen Namen.",
         "# Kartenordner",
-        "Hält deine Sammlung. \"Alle Karten einlegen\" legt jede lose Karte hinein; ein Klick auf eine Karte nimmt sie wieder heraus (Shift-Klick alle Kopien). Karten aus noch gesperrten Sets zeigen ein Schloss.",
+        "Hält deine Sammlung. \"Alle Karten einlegen\" legt jede lose Karte hinein; ein Klick auf eine Karte nimmt sie wieder heraus (Shift-Klick alle Kopien). Er behält die Seltenheit jeder Karte, in der Ecke angezeigt (R, SR, UR, ScR), und Decks nehmen zuerst Commons, damit deine Foils im Ordner bleiben. Karten aus noch gesperrten Sets zeigen ein Schloss.",
         "[recipe {modid}:binder]"
       ]
     },
@@ -94,13 +100,24 @@
       ]
     },
     {
-      "title": "Kartenhändler",
+      "title": "Shops und Duel Points",
       "icon": "{modid}:card_shop",
       "text": [
-        "Der **Kartenhändler** ist ein Dorfbewohner, der Kartenordner, Deckboxen, die beiden Starter-Decks und später eine Duel Disk verkauft. Dazu führt er Packs, Struktur-Decks und Tins: immer die {server:shop.newestAlways} neuesten Produkte und {server:shop.rotatingOlder} ältere, die alle {server:shop.rotationDays} Tage wechseln.",
-        "",
-        "Jeder Dorfbewohner ohne Beruf übernimmt ihn an einer **Kartenladen-Theke**:",
-        "[recipe {modid}:card_shop]"
+        "# Duel Points",
+        "Shops nehmen hier **{server:shop.currency}** (\"points\" heißt Duel Points, DP). DP sind ein Guthaben, kein Item: Du siehst sie über deinem Inventar und in jedem Shop, und `{cmd} dp` sagt sie dir.",
+        "- Du startest mit {server:shop.points.startBalance} DP und bekommst einmal am Tag {server:shop.points.dailyBonus} DP.",
+        "- Kartenautomaten kaufen lose Karten ({server:shop.points.sellCommon} DP für eine Common bis {server:shop.points.sellSecret} für eine Secret Rare) und Smaragde ({server:shop.points.emeraldExchange} DP pro Stück).",
+        "- `{cmd} dp pay <player> <amount>` gibt einem anderen DP.",
+        "In einem DP-Shop kaufst du mit einem Klick einmal und mit Shift-Klick so viele, wie du dir leisten kannst.",
+        "# Kartenhändler",
+        "Ein Dorfbewohner, der Kartenordner, Deckboxen, die Starter-Decks und später eine Duel Disk verkauft, dazu Packs, Struktur-Decks und Tins: immer die {server:shop.newestAlways} neuesten Produkte und {server:shop.rotatingOlder} ältere, die alle {server:shop.rotationDays} Tage wechseln. Jeder Dorfbewohner ohne Beruf übernimmt ihn an einer **Kartenladen-Theke**:",
+        "[recipe {modid}:card_shop]",
+        "# Kartenautomat",
+        "Derselbe Shop ohne Dorfbewohner: Rechtsklick zum Kaufen. Er kauft auch lose Karten und Smaragde für DP an.",
+        "[recipe {modid}:card_machine]",
+        "# Verkaufsstand",
+        "Ein Shop, den jeder Spieler führen kann. Als Besitzer rechtsklickst du ihn: oben eine Ware und darunter ihren Preis, dann die Waren selbst in die Lagerreihen. Andere Spieler kaufen per Rechtsklick, und was sie zahlen, geht an dich, auch wenn du offline bist. Abbauen können ihn nur du und Operatoren.",
+        "[recipe {modid}:shop_stand]"
       ]
     },
     {
@@ -142,7 +159,7 @@
       "text": [
         "Ab und zu wandern Duellanten durch die Oberwelt, jeder mit Titel, Duel Disk und eigenem Deck: einem berühmten Turnierdeck, dessen Zeit gekommen ist, einem erschienenen Starter- oder Struktur-Deck oder einem zufälligen Deck aus dem Kartenpool. Sie sagen an, welches Deck sie spielen.",
         "",
-        "Rechtsklick auf einen startet ein Duell. Besiegst du ihn, gibt er dir ein Booster-Pack und duelliert dich einen Minecraft-Tag lang nicht mehr. Während eines Duells sind NPCs unverwundbar.",
+        "Rechtsklick auf einen startet ein Duell. Besiegst du ihn, duelliert er dich {server:results.npcs.rematchMinutes} Minuten lang nicht mehr. Während eines Duells sind NPCs unverwundbar.",
         "",
         "Sie spielen mit einem Computer-Gegner, der seine stärksten Monster beschwört, Synchro-, Xyz- und Link-Monster holt, nur angreift, wenn er den Kampf gewinnt, und seine Fallen für deinen Zug aufhebt. Ein **Duellant-Spawn-Ei** liegt im Kreativ-Tab."
       ]
@@ -172,11 +189,16 @@
         "- `{cmd} tag <partner> <opponent1> <opponent2>`: Tag-Duell, jeder Platz kann `bot` sein.",
         "- `{cmd} battlecity <partner> <opponent1> <opponent2>`: Tag-Duell auf geteilten Hälften.",
         "- `{cmd} watch <player>` und `{cmd} unwatch`: einem Duell zuschauen und aufhören.",
+        "- `{cmd} stats [player]` und `{cmd} stats top`: Duell-Bilanzen.",
+        "- `{cmd} dp` und `{cmd} dp pay <player> <amount>`: deine Duel Points, und welche verschenken.",
+        "- `{cmd} shop`: der Shop des Kartenautomaten von überall, wenn der Server es erlaubt.",
         "- `{cmd} starter`: dein erstes Deck wählen, falls noch nicht geschehen.",
         "- `{cmd} cosmetics`: Disk-Skins und Kartenhüllen.",
         "- `{cmd} version`: die Version der Regel-Engine.",
         "# Für Operatoren",
         "- `{cmd} progression status`, `next [count]`, `until <set>`, `set <set>` und `list [page]`: siehe Fortschritt und Regeln.",
+        "- `{cmd} dp <player>` und `{cmd} dp give|take|set <players> <amount>`: Duel Points ansehen und ändern.",
+        "- `{cmd} stats reset <player>`: eine Duell-Bilanz löschen.",
         "- `{cmd} gallery [page]`: stellt eine Seite Monster-Modelle zum Ansehen auf; `{cmd} gallery clear` räumt sie weg."
       ]
     },
@@ -197,7 +219,14 @@
         "- `[progression] startProduct` = {server:progression.startProduct}: wo neue Welten oder Spieler beginnen.",
         "- `[progression] announce` = {server:progression.announce}: Freischaltungen im Chat ansagen.",
         "- `[cards] lockedInDeck` = {server:cards.lockedInDeck}: gesperrte Karten bleiben aus Decks draußen.",
+        "- `[results] trackRecord` = {server:results.trackRecord}, `announce` = {server:results.announce}, `rewardBotDuels` = {server:results.rewardBotDuels}: Duell-Bilanzen, Ergebnisse im Chat, Belohnungen für Bot-Duelle.",
+        "- `[results.players]` und `[results.npcs]`: `winPacks`, `winEmeralds`, `winXp`, `lossPacks`, `lossEmeralds`, `lossXp` (siehe Duelle); `[results.npcs] rematchMinutes` = {server:results.npcs.rematchMinutes}.",
+        "- `[shop] currency` = {server:shop.currency}: \"points\" oder ein Item wie minecraft:emerald. `priceMultiplier` = {server:shop.priceMultiplier}, `dynamicPrices` = {server:shop.dynamicPrices}, `wanderingTrader` = {server:shop.wanderingTrader}.",
         "- `[shop] newestAlways` = {server:shop.newestAlways}, `rotatingOlder` = {server:shop.rotatingOlder}, `rotationDays` = {server:shop.rotationDays}: das Sortiment des Kartenhändlers.",
+        "- `[shop.prices]` und `[shop.stock]`: was alles kostet (0 schaltet einen Handel ab) und wie viel ein Händler vorrätig hat.",
+        "- `[shop.machine]`: `enabled` = {server:shop.machine.enabled}, `products` = {server:shop.machine.products}, `limitPerPlayer` = {server:shop.machine.limitPerPlayer}, `command` = {server:shop.machine.command}, `operatorsOnly` = {server:shop.machine.operatorsOnly}.",
+        "- `[shop.players]`: `enabled` = {server:shop.players.enabled}, `maxPerPlayer` = {server:shop.players.maxPerPlayer}, `taxPercent` = {server:shop.players.taxPercent}, `currencyOnly` = {server:shop.players.currencyOnly}.",
+        "- `[shop.points]`: `startBalance` = {server:shop.points.startBalance}, `dailyBonus` = {server:shop.points.dailyBonus}, `pricePoints` = {server:shop.points.pricePoints} (DP pro 1 eines Preises), `transfers` = {server:shop.points.transfers}, `emeraldExchange` = {server:shop.points.emeraldExchange}, `sellCommon` bis `sellSecret`.",
         "- `[guide] giveOnFirstJoin` = {server:guide.giveOnFirstJoin} und `craftable` = {server:guide.craftable}: dieses Buch.",
         "# Deine eigenen Einstellungen",
         "In `config/{modid}-client.toml`:",

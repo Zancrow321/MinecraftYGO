@@ -195,11 +195,13 @@ public final class DuelStaging {
         };
         int color = result == null ? TEXT : outcome == DuelResultPayload.WON ? GOLD
                 : outcome == DuelResultPayload.LOST ? RED : DIM;
-        int width = Math.min(240, w - 40);
+        int width = Math.min(280, w - 40);
         List<FormattedCharSequence> reason = font.split(Component.literal(view.result()), width - 12);
         List<String> rewards = result == null ? List.of() : result.rewards();
         boolean watched = result == null;
-        int height = 44 + reason.size() * 10 + (watched ? 0 : 14 + Math.max(1, rewards.size()) * 10) + 24;
+        String record = watched ? "" : result.record();
+        int height = 44 + reason.size() * 10 + (watched ? 0 : 14 + Math.max(1, rewards.size()) * 10)
+                + (record.isEmpty() ? 0 : 24) + 24;
         int x = w / 2 - width / 2;
         int y = Math.max(4, h / 2 - height / 2);
         DuelUi.panel(g, x, y, width, height);
@@ -220,6 +222,13 @@ public final class DuelStaging {
         }
         for (String reward : rewards) {
             g.drawString(font, font.plainSubstrByWidth(reward, width - 16), x + 8, ty, TEXT);
+            ty += 10;
+        }
+        if (!record.isEmpty()) {
+            ty += 4;
+            g.drawString(font, "Your record", x + 8, ty, GOLD);
+            ty += 10;
+            g.drawString(font, font.plainSubstrByWidth(record, width - 16), x + 8, ty, DIM);
             ty += 10;
         }
         DuelUi.button(g, font, w / 2 - 40, ty + 6, 80, "Continue", true, mx, my, DuelStaging::closeResult);
