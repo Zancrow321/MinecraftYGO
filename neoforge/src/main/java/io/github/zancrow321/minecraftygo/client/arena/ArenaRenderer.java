@@ -3,6 +3,7 @@ package io.github.zancrow321.minecraftygo.client.arena;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.arena.ArenaBlockEntity;
+import io.github.zancrow321.minecraftygo.arena.DuelArena;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -24,13 +25,13 @@ public final class ArenaRenderer extends GeoBlockRenderer<ArenaBlockEntity> {
                        int packedLight, int packedOverlay) {
         // The middle block sits inside the platform; light it as the platform's top is lit.
         int light = arena.getLevel() == null ? packedLight
-                : LevelRenderer.getLightColor(arena.getLevel(), arena.getBlockPos().above());
+                : LevelRenderer.getLightColor(arena.getLevel(), arena.getBlockPos().above(DuelArena.HEIGHT));
         super.render(arena, partialTick, poseStack, buffers, light, packedOverlay);
     }
 
     @Override
     public AABB getRenderBoundingBox(ArenaBlockEntity arena) {
-        return new AABB(arena.getBlockPos()).inflate(11, 0, 11).expandTowards(0, 9, 0);
+        return new AABB(arena.getBlockPos()).inflate(16, 0, 16).expandTowards(0, 12, 0);
     }
 
     @Override

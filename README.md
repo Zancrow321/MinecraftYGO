@@ -109,8 +109,9 @@ In game:
   players. Cores and platforms can also be placed by hand: platforms 4 to 14 blocks from the core, up to 2 off the
   center line.
 - **Duel Arena:** craft a **Duel Arena Kit** (a Duel Dome Kit, two white concrete, red and blue concrete, two
-  lanterns and two pistons) and use it on flat ground to set up the Duelist Kingdom arena: one 21 by 21 model with a
-  tiled platform, lantern pylons on the corners and a podium at each end, facing the way you look. When every person
+  lanterns and two pistons) and use it on flat ground to set up the Duelist Kingdom arena: one model, a box 3 blocks tall
+  and 21 by 27 blocks with steps up at each end, glass tiles on top, white sides, a ribbed red and a ribbed blue end,
+  a red console podium and a blue pillar podium, sign posts and stained-glass lamp posts, facing the way you look. When every person
   in a duel stands on a podium, one team at each end, the field appears over the arena and the podiums carry the
   duelists 3 blocks up; they come back down when the duel ends. An NPC opponent walks over to the free podium. Break
   any part of the arena (not during a duel) to pack it back into its kit. The model, its texture and animations are

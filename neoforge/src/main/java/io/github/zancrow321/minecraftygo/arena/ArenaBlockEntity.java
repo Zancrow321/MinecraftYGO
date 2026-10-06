@@ -77,7 +77,7 @@ public final class ArenaBlockEntity extends BlockEntity implements GeoBlockEntit
         if (arena.raised && !arena.floors && level.getGameTime() - arena.changedAt >= DuelArena.LIFT_TICKS) {
             Direction facing = DuelArena.facing(state);
             for (int end : new int[]{1, -1}) {
-                for (BlockPos floor : DuelArena.podiumFloor(pos, facing, end, DuelArena.LIFT)) {
+                for (BlockPos floor : DuelArena.podiumFloor(pos, facing, end)) {
                     if (level.getBlockState(floor).canBeReplaced()) {
                         level.setBlock(floor, DuelArena.SOLID.get().defaultBlockState(), Block.UPDATE_ALL);
                     }
@@ -95,7 +95,7 @@ public final class ArenaBlockEntity extends BlockEntity implements GeoBlockEntit
         if (floors) {
             Direction facing = DuelArena.facing(state);
             for (int end : new int[]{1, -1}) {
-                DuelArena.podiumFloor(pos, facing, end, DuelArena.LIFT).forEach(p -> DuelArena.clearSolid(level, p));
+                DuelArena.podiumFloor(pos, facing, end).forEach(p -> DuelArena.clearSolid(level, p));
             }
             floors = false;
         }

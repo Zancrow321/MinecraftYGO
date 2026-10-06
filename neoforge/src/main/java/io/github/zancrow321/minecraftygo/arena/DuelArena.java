@@ -61,10 +61,16 @@ public final class DuelArena {
     public static final DeferredItem<DuelArenaKitItem> KIT = ITEMS.registerItem("duel_arena_kit",
             DuelArenaKitItem::new, new Item.Properties().stacksTo(1));
 
-    /** Blocks from the middle to the edge of the platform, along and across. */
-    static final int HALF = 10;
+    /** Blocks from the middle to the end of the platform, along its long axis. */
+    static final int HALF_ALONG = 13;
+    /** Blocks from the middle to the long sides. */
+    static final int HALF_ACROSS = 10;
+    /** How tall the platform is, in blocks; duelists stand on top. */
+    public static final int HEIGHT = 3;
     /** Where a duelist stands, in blocks from the middle. */
-    static final int PODIUM_ALONG = 9;
+    static final int PODIUM_ALONG = 12;
+    /** How far {@link #arenaAt} looks for the middle block: the steps reach two blocks past the ends. */
+    private static final int REACH = HALF_ALONG + 2;
     /** How far the podiums go up, in blocks. */
     static final int LIFT = 3;
     /** How long they take to get there, as in the model's animation. */
@@ -92,9 +98,9 @@ public final class DuelArena {
 
     /** The arena block whose platform covers this position, or {@code null}. */
     static BlockPos arenaAt(Level level, BlockPos pos) {
-        for (int dy = 0; dy >= -(LIFT + 1); dy--) {
-            for (int dx = -HALF; dx <= HALF; dx++) {
-                for (int dz = -HALF; dz <= HALF; dz++) {
+        for (int dy = 0; dy >= -(HEIGHT + LIFT); dy--) {
+            for (int dx = -REACH; dx <= REACH; dx++) {
+                for (int dz = -REACH; dz <= REACH; dz++) {
                     BlockPos at = pos.offset(dx, dy, dz);
                     if (level.getBlockState(at).is(ARENA.get())) {
                         return at;
@@ -106,12 +112,42 @@ public final class DuelArena {
     }
 
     /** The 3 by 3 blocks a raised podium stands on, at the {@code end} (+1 or -1) of the arena. */
-    static List<BlockPos> podiumFloor(BlockPos arena, Direction facing, int end, int height) {
+    static List<BlockPos> podiumFloor(BlockPos arena, Direction facing, int end) {
         List<BlockPos> out = new ArrayList<>();
         Direction side = facing.getClockWise();
         for (int along = PODIUM_ALONG - 1; along <= PODIUM_ALONG + 1; along++) {
             for (int across = -1; across <= 1; across++) {
-                out.add(arena.relative(facing, end * along).relative(side, across).above(height));
+                out.add(arena.relative(facing, end * along).relative(side, across).above(HEIGHT + LIFT - 1));
+            }
+        }
+        return out;
+    }
+
+    /**
+     * How tall the arena stands at this spot, in blocks, or 0 off it: the platform, and two steps up at each end
+     * behind the podium.
+     */
+    static int height(int along, int across) {
+        int a = Math.abs(along);
+        if (a <= HALF_ALONG && Math.abs(across) <= HALF_ACROSS) {
+            return HEIGHT;
+        }
+        if (Math.abs(across) <= 1 && a <= HALF_ALONG + 2) {
+            return HALF_ALONG + 3 - a;
+        }
+        return 0;
+    }
+
+    /** Every block the arena fills (its invisible floor and the middle block), for a middle block at {@code arena}. */
+    static List<BlockPos> footprint(BlockPos arena, Direction facing) {
+        List<BlockPos> out = new ArrayList<>();
+        Direction side = facing.getClockWise();
+        for (int along = -REACH; along <= REACH; along++) {
+            for (int across = -HALF_ACROSS; across <= HALF_ACROSS; across++) {
+                BlockPos column = arena.relative(facing, along).relative(side, across);
+                for (int up = 0; up < height(along, across); up++) {
+                    out.add(column.above(up));
+                }
             }
         }
         return out;
@@ -145,7 +181,7 @@ public final class DuelArena {
         }
         if (npc != null && npc.level() == level) {
             int npcEnd = team0.isEmpty() ? end0 : -end0;
-            Vec3 spot = Vec3.atBottomCenterOf(arena.relative(facing, npcEnd * PODIUM_ALONG).above());
+            Vec3 spot = Vec3.atBottomCenterOf(arena.relative(facing, npcEnd * PODIUM_ALONG).above(HEIGHT));
             float yaw = (npcEnd > 0 ? facing.getOpposite() : facing).toYRot();
             npc.moveTo(spot.x, spot.y, spot.z, yaw, 0);
             npc.setYHeadRot(yaw);
@@ -156,7 +192,7 @@ public final class DuelArena {
         }
         // Team 0 looks from its end toward the middle.
         float yaw = (end0 > 0 ? facing.getOpposite() : facing).toYRot();
-        return new DuelFieldPayload(true, arena.getX() + 0.5, arena.getY() + 1, arena.getZ() + 0.5, yaw);
+        return new DuelFieldPayload(true, arena.getX() + 0.5, arena.getY() + HEIGHT, arena.getZ() + 0.5, yaw);
     }
 
     /** The end (+1 or -1) of the arena all these players stand on a podium at, or 0. */
@@ -169,7 +205,7 @@ public final class DuelArena {
             double across = d.x * side.getStepX() + d.z * side.getStepZ();
             int at = (int) Math.signum(along);
             if (player.level() != level || Math.abs(Math.abs(along) - PODIUM_ALONG) > 1.5 || Math.abs(across) > 1.5
-                    || d.y < 0.5 || d.y > 2 || end != 0 && at != end) {
+                    || d.y < HEIGHT - 0.5 || d.y > HEIGHT + 1 || end != 0 && at != end) {
                 return 0;
             }
             end = at;
@@ -239,17 +275,13 @@ public final class DuelArena {
             return;
         }
         Direction facing = facing(state);
-        for (int dx = -HALF; dx <= HALF; dx++) {
-            for (int dz = -HALF; dz <= HALF; dz++) {
-                clearSolid(level, arena.offset(dx, 0, dz));
-            }
-        }
+        footprint(arena, facing).forEach(pos -> clearSolid(level, pos));
         for (int end : new int[]{1, -1}) {
-            podiumFloor(arena, facing, end, LIFT).forEach(pos -> clearSolid(level, pos));
+            podiumFloor(arena, facing, end).forEach(pos -> clearSolid(level, pos));
         }
         level.removeBlock(arena, false);
         if (dropKit) {
-            Block.popResource(level, arena.above(), new ItemStack(KIT.get()));
+            Block.popResource(level, arena.above(HEIGHT), new ItemStack(KIT.get()));
         }
     }
 
