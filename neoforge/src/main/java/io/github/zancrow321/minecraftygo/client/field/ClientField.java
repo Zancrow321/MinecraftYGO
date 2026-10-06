@@ -4,12 +4,12 @@ import io.github.zancrow321.minecraftygo.cosmetics.Cosmetics;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelTable;
 import net.minecraft.resources.ResourceLocation;
 import io.github.zancrow321.minecraftygo.client.ClientDuel;
-import io.github.zancrow321.minecraftygo.client.DuelScreen;
 import io.github.zancrow321.minecraftygo.client.disk.DiskClient;
 import io.github.zancrow321.minecraftygo.client.duel.DuelMode;
 import io.github.zancrow321.minecraftygo.engine.duel.Board;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
 import io.github.zancrow321.minecraftygo.engine.duel.FieldEvent;
+import io.github.zancrow321.minecraftygo.client.duel.DuelUi;
 import io.github.zancrow321.minecraftygo.engine.protocol.CardState;
 import io.github.zancrow321.minecraftygo.engine.protocol.Loc;
 import io.github.zancrow321.minecraftygo.engine.text.PromptView;
@@ -165,7 +165,7 @@ public final class ClientField {
      * The card behind an event. Attacks carry no code, so the attacker is looked up on the board from before the
      * view (it may not survive the battle), then on the new one.
      */
-    private static int actor(FieldEvent event, DuelView view) {
+    public static int actor(FieldEvent event, DuelView view) {
         if (event.kind() != FieldEvent.Kind.ATTACK) {
             return event.code();
         }
@@ -251,7 +251,7 @@ public final class ClientField {
 
     /**
      * A right-click on the field: answers the prompt if exactly one choice is about the hovered zone, toggles it in
-     * a multi-select, or opens the duel screen narrowed to that zone.
+     * a multi-select, or offers the choices about it in a menu.
      *
      * @return whether the click was used (and the vanilla interaction should be cancelled)
      */
@@ -265,7 +265,7 @@ public final class ClientField {
 
     /**
      * Picks {@code zone} for the current prompt: answers if exactly one choice is about it, toggles it in a
-     * multi-select, or opens the duel screen narrowed to that zone.
+     * multi-select, or offers the choices about it in a menu.
      */
     public static void clickAt(Loc zone) {
         PromptView prompt = ClientDuel.prompt();
@@ -290,7 +290,7 @@ public final class ClientField {
         if (matching.size() == 1) {
             ClientDuel.answer(matching.getFirst().response());
         } else if (!matching.isEmpty()) {
-            Minecraft.getInstance().setScreen(new DuelScreen(zone));
+            DuelUi.offer(matching);
         }
     }
 

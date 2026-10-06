@@ -602,7 +602,7 @@ public final class FieldRenderer {
         }
     }
 
-    static CardState cardAt(Board board, Loc loc) {
+    public static CardState cardAt(Board board, Loc loc) {
         Board.Side side = board.side(loc.controller());
         List<CardState> zone = switch (loc.location()) {
             case LOCATION_MZONE -> side.monsters();

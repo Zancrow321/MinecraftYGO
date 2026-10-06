@@ -2,12 +2,11 @@ package io.github.zancrow321.minecraftygo.client;
 
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.YgoData;
-import io.github.zancrow321.minecraftygo.client.duel.DuelMode;
+import io.github.zancrow321.minecraftygo.client.duel.DuelUi;
 import io.github.zancrow321.minecraftygo.client.field.ClientField;
 import io.github.zancrow321.minecraftygo.compat.figura.FiguraCompat;
-import io.github.zancrow321.minecraftygo.client.field.FieldLayout;
-import io.github.zancrow321.minecraftygo.engine.OcgConstants;
 import io.github.zancrow321.minecraftygo.engine.duel.DuelView;
+import io.github.zancrow321.minecraftygo.engine.duel.FieldEvent;
 import io.github.zancrow321.minecraftygo.engine.protocol.Loc;
 import io.github.zancrow321.minecraftygo.engine.duel.ViewCodec;
 import io.github.zancrow321.minecraftygo.engine.text.PromptChoices;
@@ -28,8 +27,9 @@ public final class ClientDuel {
     private static DuelView view;
     private static PromptView prompt;
     private static final List<String> log = new ArrayList<>();
-    /** Ticked options of the current multi-select prompt, shared by the duel screen and field clicks. */
+    /** Ticked options of the current multi-select prompt, shared by the card window and field clicks. */
     private static final List<Integer> selected = new ArrayList<>();
+    private static Trigger lastTrigger;
 
     private ClientDuel() {
     }
@@ -44,6 +44,19 @@ public final class ClientDuel {
         }
         if (view == null || view.result() != null) {
             log.clear(); // a new duel
+            lastTrigger = null;
+            DuelUi.reset();
+        }
+        for (FieldEvent event : next.events()) {
+            Trigger t = trigger(event, next); // before the field takes in the new board
+            if (t != null) {
+                lastTrigger = t;
+            }
+        }
+        if (view != null && next.events().isEmpty() && (view.board().phase() != next.board().phase()
+                || view.board().turn() != next.board().turn())) {
+            String whose = next.board().turnPlayer() == next.you() ? "Your " : "Your opponent's ";
+            lastTrigger = new Trigger(0, whose + YgoData.text().phase(next.board().phase()));
         }
         DuelView previous = view;
         view = next;
@@ -59,28 +72,36 @@ public final class ClientDuel {
                 : new PromptChoices(YgoData.text()).build(next.prompt(), next.hint());
         selected.clear();
         ClientField.onView(next);
-
-        Minecraft mc = Minecraft.getInstance();
-        if (mc.screen instanceof DuelScreen screen) {
-            screen.refresh();
-        } else if (prompt != null && DuelMode.showsHud(mc.screen) && !AUTOPLAY
-                && !(ClientField.active() && onField(prompt))) {
-            // Prompts with nothing to click on the mat (yes/no, positions, options) open the screen straight away.
-            mc.setScreen(new DuelScreen());
-        }
     }
 
-    /** Whether some of the prompt's options are zones on the mat or cards in your hand, to click on. */
-    private static boolean onField(PromptView prompt) {
-        if (prompt.multi() != null) {
-            return prompt.multi().locs().stream().anyMatch(ClientDuel::clickable);
-        }
-        return prompt.choices().stream().anyMatch(c -> clickable(c.at()));
+    /**
+     * What the duel last did that you might respond to: a card activated, a summon or an attack.
+     *
+     * @param code the card behind it, or 0 if you can't know
+     * @param what a line saying what happened
+     */
+    public record Trigger(int code, String what) {
     }
 
-    private static boolean clickable(Loc loc) {
-        return loc != null && (FieldLayout.slot(loc) != null
-                || loc.location() == OcgConstants.LOCATION_HAND && loc.controller() == view.you());
+    private static Trigger trigger(FieldEvent event, DuelView view) {
+        int code = ClientField.actor(event, view);
+        String name = code == 0 ? "A card" : YgoData.text().cardName(code);
+        String who = event.player() == view.you() ? "You" : "Your opponent";
+        return switch (event.kind()) {
+            case ACTIVATE -> new Trigger(code, who + (code == 0 ? " activated a card" : " activated " + name));
+            case SUMMON -> new Trigger(code, who + (code == 0 ? " summoned a monster" : " summoned " + name));
+            case SET -> new Trigger(code, who + " set a card");
+            case ATTACK -> new Trigger(code, name + (event.to().location() == 0
+                    ? " attacks directly" : " declares an attack"));
+            case LEAVE -> new Trigger(code, name + " left the field");
+            case POSITION -> new Trigger(code, name + " changed its position");
+            default -> null;
+        };
+    }
+
+    /** @return what you'd be responding to, or {@code null} if nothing has happened yet this duel */
+    public static Trigger lastTrigger() {
+        return lastTrigger;
     }
 
     /** For headless testing: {@code -Dminecraftygo.autoplay=true} answers prompts at random after a pause. */

@@ -1,6 +1,5 @@
 package io.github.zancrow321.minecraftygo.client.duel;
 
-import io.github.zancrow321.minecraftygo.client.DuelScreen;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.PauseScreen;
@@ -34,13 +33,10 @@ public final class DuelMenuScreen extends Screen {
         int y = height / 2 - 3 * SPACING;
         addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.duel_menu.continue"),
                 b -> onClose()).bounds(x, y, BUTTON_WIDTH, BUTTON_HEIGHT).build());
-        addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.duel_menu.all_choices"),
-                b -> minecraft.setScreen(new DuelScreen())).bounds(x, y + SPACING, BUTTON_WIDTH, BUTTON_HEIGHT)
-                .build());
         addRenderableWidget(Button.builder(cameraLabel(), b -> {
             DuelMode.toggleView();
             b.setMessage(cameraLabel());
-        }).bounds(x, y + 2 * SPACING, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        }).bounds(x, y + SPACING, BUTTON_WIDTH, BUTTON_HEIGHT).build());
         addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.duel_menu.surrender"), b -> {
             if (!confirmSurrender) {
                 confirmSurrender = true;
@@ -49,9 +45,9 @@ public final class DuelMenuScreen extends Screen {
             }
             minecraft.player.connection.sendCommand("ygo forfeit");
             onClose();
-        }).bounds(x, y + 3 * SPACING, BUTTON_WIDTH, BUTTON_HEIGHT).build());
+        }).bounds(x, y + 2 * SPACING, BUTTON_WIDTH, BUTTON_HEIGHT).build());
         addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.duel_menu.game_menu"),
-                b -> minecraft.setScreen(new PauseScreen(true))).bounds(x, y + 4 * SPACING + 8, BUTTON_WIDTH,
+                b -> minecraft.setScreen(new PauseScreen(true))).bounds(x, y + 3 * SPACING + 8, BUTTON_WIDTH,
                 BUTTON_HEIGHT).build());
     }
 

@@ -2,7 +2,6 @@ package io.github.zancrow321.minecraftygo.client.duel;
 
 import io.github.zancrow321.minecraftygo.MinecraftYgo;
 import io.github.zancrow321.minecraftygo.client.ClientDuel;
-import io.github.zancrow321.minecraftygo.client.DuelScreen;
 import io.github.zancrow321.minecraftygo.client.field.ClientField;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
@@ -39,7 +38,7 @@ public final class DuelMode {
     private static final double CAMERA_BACK = 6.5;
     private static final double CAMERA_HEIGHT = 11;
     /** The camera looks at a point this far from the centre toward you, so your half gets more of the screen. */
-    private static final double CAMERA_AIM = -1.0;
+    private static final double CAMERA_AIM = -2.0;
     /** The duelist's own view starts looking this far down at the field. */
     private static final float FIRST_PERSON_PITCH = 35;
     /** Vanilla HUD parts that have no place in a duel. */
@@ -121,8 +120,7 @@ public final class DuelMode {
             mc.options.setCameraType(previousCamera);
             previousCamera = null;
         }
-        if (mc.screen instanceof DuelModeScreen || mc.screen instanceof DuelMenuScreen
-                || mc.screen instanceof DuelScreen) {
+        if (mc.screen instanceof DuelModeScreen || mc.screen instanceof DuelMenuScreen) {
             mc.setScreen(null);
         }
     }
