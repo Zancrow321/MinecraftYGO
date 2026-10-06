@@ -6,6 +6,10 @@
 - Graveyards, banished cards and extra decks of both duelists can be looked through at any time: click the pile
   (right-click when a card there can be activated) and a window shows its cards, newest first. Hovering a card
   shows it in the card panel; the opponent's face-down cards show their back. Escape or x closes it.
+- Hotkeys in duel mode: Space passes a response, confirms a pick or goes to the next phase; Enter confirms a pick;
+  1 to 9 pick a plain answer (the dialog numbers its buttons).
+- Responses can be switched to "Pass all" with C, the Ask/Skip button under Log or the duel menu: every chance to
+  respond that you don't have to take is passed without asking. The choice is kept in the client config.
 
 ### Deck editor
 - The deck box filters the cards you own by type (monsters, spells, traps, extra deck), attribute and level and sorts

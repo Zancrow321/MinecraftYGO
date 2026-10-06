@@ -9,6 +9,7 @@ public final class YgoClientConfig {
     public static final ModConfigSpec.ConfigValue<String> CARD_ART_CROPPED_URL;
     public static final ModConfigSpec.BooleanValue DOWNLOAD_CARD_ART;
     public static final ModConfigSpec.BooleanValue CHOOSE_ZONE;
+    public static final ModConfigSpec.BooleanValue SKIP_RESPONSES;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -26,6 +27,10 @@ public final class YgoClientConfig {
                 .comment("When you play a card from its menu, pick its zone yourself instead of taking the middle-most"
                         + " free one. Dragging a card onto a zone always puts it there.")
                 .define("chooseZone", false);
+        SKIP_RESPONSES = builder
+                .comment("In a duel, pass every chance to respond that you don't have to take, instead of asking. "
+                        + "Switch it in the duel with the response button, the duel menu or C.")
+                .define("skipResponses", false);
         SPEC = builder.build();
     }
 

@@ -122,6 +122,78 @@ public final class DuelUi {
         pile = null;
     }
 
+    /** A tooltip for a control in the phase column, drawn last. */
+    private static String phaseTip;
+
+    // ---- Settings and hotkeys ----
+
+    public static boolean skippingResponses() {
+        return YgoClientConfig.SKIP_RESPONSES.get();
+    }
+
+    /** Switches between being asked to respond and passing every response; passes the one open now, if any. */
+    public static void toggleResponses() {
+        YgoClientConfig.SKIP_RESPONSES.set(!skippingResponses());
+        YgoClientConfig.SKIP_RESPONSES.save();
+        PromptView p = ClientDuel.prompt();
+        if (skippingResponses() && p != null && chain(p)) {
+            shown = null; // handled again as new, which passes it
+        }
+    }
+
+    /**
+     * Keys for the usual answers: Space passes a response, confirms a pick or goes to the next phase; Enter confirms
+     * a pick; 1 to 9 pick a plain answer (yes or no, a position, an option).
+     *
+     * @return whether the key did something
+     */
+    public static boolean hotkey(int key) {
+        PromptView p = ClientDuel.prompt();
+        if (p == null || ClientDuel.view() == null || DuelStaging.introRunning() || DuelStaging.resultShowing()
+                || ClientDuel.view().result() != null) {
+            return false;
+        }
+        boolean space = key == org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
+        boolean enter = key == org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER || key == org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ENTER;
+        if ((space || enter) && p.multi() != null) {
+            List<Integer> picked = ClientDuel.selected();
+            if (p.multi().canConfirm(picked)) {
+                ClientDuel.answer(p.multi().encode(List.copyOf(picked)));
+                return true;
+            }
+            return false;
+        }
+        if (space && chain(p)) {
+            Choice pass = p.choices().stream().filter(c -> c.kind() == Kind.PASS).findFirst().orElse(null);
+            if (pass != null) {
+                choose(pass, null);
+                return true;
+            }
+            return false;
+        }
+        if (space && commands(p)) {
+            // The next phase there is to go to: Battle, then Main 2, then End.
+            for (Kind next : List.of(Kind.TO_BATTLE, Kind.TO_MAIN2, Kind.TO_END)) {
+                Choice go = p.choices().stream().filter(c -> c.kind() == next).findFirst().orElse(null);
+                if (go != null) {
+                    choose(go, null);
+                    return true;
+                }
+            }
+            return false;
+        }
+        if (key >= org.lwjgl.glfw.GLFW.GLFW_KEY_1 && key <= org.lwjgl.glfw.GLFW.GLFW_KEY_9 && p.multi() == null
+                && !commands(p) && !chain(p) && !place(p) && !pickInPlace(p)
+                && p.choices().stream().noneMatch(c -> c.code() != 0) && !searchable(p)) {
+            int index = key - org.lwjgl.glfw.GLFW.GLFW_KEY_1;
+            if (index < p.choices().size()) {
+                choose(p.choices().get(index), null);
+                return true;
+            }
+        }
+        return false;
+    }
+
     // ---- What the current prompt is ----
 
     private static boolean commands(PromptView p) {
@@ -165,6 +237,13 @@ public final class DuelUi {
         search = "";
         if (p == null) {
             return;
+        }
+        if (chain(p) && skippingResponses()) {
+            Choice pass = p.choices().stream().filter(c -> c.kind() == Kind.PASS).findFirst().orElse(null);
+            if (pass != null) {
+                ClientDuel.answer(pass.response());
+                return;
+            }
         }
         if (commands(p)) {
             // Back at the main or battle phase: whatever was being played has landed.
@@ -247,6 +326,7 @@ public final class DuelUi {
             }
         }
 
+        phaseTip = null;
         hand(g, view, prompt, mx, my, w, h);
         phases(g, font, view, prompt, mx, my, w, h);
         if (prompt != null && view.result() == null) {
@@ -279,6 +359,9 @@ public final class DuelUi {
         }
         cardPanel(g, font, w, h);
         DuelStaging.renderBanners(g, font, w, h);
+        if (phaseTip != null) {
+            g.renderTooltip(font, Component.literal(phaseTip), mx, my);
+        }
         if (dragging && pressedHand >= 0) {
             List<CardState> cards = view.board().side(view.you()).hand();
             if (pressedHand < cards.size()) {
@@ -440,6 +523,14 @@ public final class DuelUi {
         if (logOpen) {
             outline(g, x, y + 4, PHASE_WIDTH, BUTTON_HEIGHT, GOLD);
         }
+        y += BUTTON_HEIGHT + 2;
+        boolean skip = skippingResponses();
+        if (button(g, font, x, y + 4, PHASE_WIDTH, skip ? "Skip" : "Ask", true, mx, my, DuelUi::toggleResponses)) {
+            phaseTip = skip ? "Responses: passing all (C)" : "Responses: asking (C)";
+        }
+        if (skip) {
+            outline(g, x, y + 4, PHASE_WIDTH, BUTTON_HEIGHT, 0xFFFF6060);
+        }
         int clock = ClientDuel.clockLeft();
         if (clock >= 0) {
             // The turn time limit: what's left of yours, red for the last ten seconds.
@@ -565,7 +656,9 @@ public final class DuelUi {
         }
         for (int i = page * perPage; i < page * perPage + shownCount; i++) {
             Choice c = choices.get(i);
-            button(g, font, x + 4, by, width - 8, c.label(), true, mx, my, () -> choose(c, null));
+            // The number key that picks it (see hotkey), where there is one.
+            String label = !searchable && i < 9 ? (i + 1) + "  " + c.label() : c.label();
+            button(g, font, x + 4, by, width - 8, label, true, mx, my, () -> choose(c, null));
             by += BUTTON_HEIGHT + 2;
         }
         pager(g, font, pages, x + 4, by, mx, my);
