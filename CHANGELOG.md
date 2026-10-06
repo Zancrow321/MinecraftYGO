@@ -30,6 +30,15 @@
     traders don't sell it (and stop if they did).
   - `[shop.stock]`: how many of each a trader can sell before it restocks.
   - `wanderingTrader = false` stops wandering traders from selling packs and duel disks.
+- New **Card Vending Machine** (three iron ingots / glass pane, emerald, glass pane / iron ingot, redstone, iron
+  ingot): a shop without a villager. Right-clicking it opens the trade window with the `[shop]` prices and currency;
+  prices don't rise with demand. Set in `[shop.machine]`:
+  - `products`: `"rotation"` (the newest and a few older products, the same on every machine), `"all"` or `"none"`.
+  - `supplies`: random packs, binders, deck boxes, the starter decks and duel disks too.
+  - `limitPerPlayer`: each player can buy the `[shop.stock]` amounts a day; off, machines never run out.
+  - `command`: `/ygo shop` opens the machine's shop anywhere (operators can always use it).
+  - `operatorsOnly`: only operators place and break machines, for server-run shops.
+  - `enabled` and `name` (the title of its window).
 
 ### Deck editor
 - The deck box filters the cards you own by type (monsters, spells, traps, extra deck), attribute and level and sorts

@@ -57,6 +57,13 @@ In game:
   `[shop.prices]` (core, all-foil and small packs, structure decks, tins, random packs per trader level, binders, deck
   boxes, starter decks, duel disks, paper bought, the wandering trader's two; 0 stops a trade) and how many a trader
   has before it restocks in `[shop.stock]`.
+- The **Card Vending Machine** (three iron ingots / glass pane, emerald, glass pane / iron ingot, redstone, iron
+  ingot) is the same shop without a villager: right-click it for the villager's trade window with the
+  `[shop.prices]` and `currency`. Its prices don't rise with demand. `[shop.machine]` sets what it sells
+  (`products = "rotation"`, the same pick as card traders, `"all"` or `"none"`, and `supplies` for random packs,
+  binders, deck boxes, starter decks and duel disks), whether each player can only buy the `[shop.stock]` amounts a
+  day (`limitPerPlayer`), `command` to open it anywhere with `/ygo shop` (operators always can), `operatorsOnly` so
+  only operators place and break machines, `enabled` and the shop's `name`.
 - **First deck:** on their first join a player picks a deck: Yugi's or Kaiba's starter deck, or any starter or
   structure deck that is already out. It comes in a deck box, ready to duel with. "Later" puts it off; `/ygo starter`
   opens the choice again until one is taken.

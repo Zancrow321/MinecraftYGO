@@ -148,7 +148,7 @@ public final class CardShop {
     }
 
     /** @return the stock offer of a product, or {@code null} if it isn't sold */
-    private static MerchantOffer offer(Products.Product product) {
+    static MerchantOffer offer(Products.Product product) {
         boolean tin = product.kind() == Products.Kind.TIN;
         if (tin || product.kind() == Products.Kind.DECK) {
             return sell(price(product), SealedProductItem.of(product),

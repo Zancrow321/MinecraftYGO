@@ -31,7 +31,7 @@ import java.util.List;
 
 /**
  * The Card Shop: a counter block that turns a villager into a card trader, who sells booster packs, starter decks,
- * binders, deck boxes and duel disks for emeralds.
+ * binders, deck boxes and duel disks for emeralds. Also the Card Vending Machine, the same shop without a villager.
  */
 public final class YgoVillagers {
     private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MinecraftYgo.MOD_ID);
@@ -44,6 +44,11 @@ public final class YgoVillagers {
     public static final DeferredBlock<Block> CARD_SHOP = BLOCKS.registerSimpleBlock("card_shop",
             BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5f).sound(SoundType.WOOD));
     public static final DeferredItem<BlockItem> CARD_SHOP_ITEM = ITEMS.registerSimpleBlockItem(CARD_SHOP);
+
+    public static final DeferredBlock<CardMachine> CARD_MACHINE = BLOCKS.registerBlock("card_machine",
+            CardMachine::new, BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED).strength(3.5f, 6f)
+                    .requiresCorrectToolForDrops().sound(SoundType.METAL));
+    public static final DeferredItem<BlockItem> CARD_MACHINE_ITEM = ITEMS.registerSimpleBlockItem(CARD_MACHINE);
 
     public static final ResourceKey<PoiType> CARD_SHOP_POI = ResourceKey.create(Registries.POINT_OF_INTEREST_TYPE,
             net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(MinecraftYgo.MOD_ID, "card_shop"));

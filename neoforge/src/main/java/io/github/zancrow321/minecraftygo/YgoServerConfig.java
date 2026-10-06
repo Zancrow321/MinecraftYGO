@@ -111,6 +111,11 @@ public final class YgoServerConfig {
             .comment("How many of each a card trader can sell before it runs out; like other villagers it restocks "
                     + "at its counter up to twice a day.").push("stock"));
 
+    /** The card vending machine, in {@code [shop.machine]}. */
+    public static final Machine MACHINE = new Machine(BUILDER.pop()
+            .comment("The Card Vending Machine: a block that sells at the [shop] prices and currency, without a "
+                    + "villager.").push("machine"));
+
     static {
         BUILDER.pop();
     }
@@ -189,6 +194,36 @@ public final class YgoServerConfig {
                     .defineInRange("wanderingPack", 5, 0, 64);
             wanderingDuelDisk = builder.comment("A duel disk from a wandering trader.")
                     .defineInRange("wanderingDuelDisk", 20, 0, 64);
+        }
+    }
+
+    /** The settings of the card vending machine. */
+    public static final class Machine {
+        public final ModConfigSpec.BooleanValue enabled;
+        public final ModConfigSpec.ConfigValue<String> products;
+        public final ModConfigSpec.BooleanValue supplies;
+        public final ModConfigSpec.BooleanValue limitPerPlayer;
+        public final ModConfigSpec.BooleanValue command;
+        public final ModConfigSpec.BooleanValue operatorsOnly;
+        public final ModConfigSpec.ConfigValue<String> name;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private Machine(ModConfigSpec.Builder builder) {
+            enabled = builder.comment("Machines sell. Off, they say the shop is closed.").define("enabled", true);
+            products = builder.comment("The packs, structure decks and tins they sell: \"rotation\" (the newest "
+                            + "and a few older ones, like card traders, the same pick on every machine), \"all\" "
+                            + "(every product that is out) or \"none\".")
+                    .define("products", "rotation", v -> "rotation".equals(v) || "all".equals(v) || "none".equals(v));
+            supplies = builder.comment("They also sell random packs, binders, deck boxes, the starter decks and duel "
+                    + "disks.").define("supplies", true);
+            limitPerPlayer = builder.comment("Each player can buy the [shop.stock] amounts a day from machines (a "
+                    + "Minecraft day). Off, machines never run out.").define("limitPerPlayer", true);
+            command = builder.comment("/ygo shop opens the machine's shop anywhere, without a machine.")
+                    .define("command", false);
+            operatorsOnly = builder.comment("Only operators can place and break machines, for server-run shops.")
+                    .define("operatorsOnly", false);
+            name = builder.comment("The shop's name at the top of its window; empty for \"Card Vending Machine\".")
+                    .define("name", "");
         }
     }
 

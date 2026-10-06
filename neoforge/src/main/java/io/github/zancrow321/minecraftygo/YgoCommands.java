@@ -70,6 +70,16 @@ final class YgoCommands {
                                         IntegerArgumentType.getInteger(ctx, "page")))))
                 .then(Commands.literal("starter").executes(ctx -> io.github.zancrow321.minecraftygo.progression
                         .StarterDecks.command(ctx.getSource().getPlayerOrException())))
+                .then(Commands.literal("shop").executes(ctx -> {
+                    var player = ctx.getSource().getPlayerOrException();
+                    if (!YgoServerConfig.MACHINE.command.get() && !ctx.getSource().hasPermission(2)) {
+                        ctx.getSource().sendFailure(
+                                Component.translatable("message.minecraftygo.card_machine.no_command"));
+                        return 0;
+                    }
+                    io.github.zancrow321.minecraftygo.village.MachineShop.open(player, null);
+                    return 1;
+                }))
                 .then(Commands.literal("cosmetics").executes(ctx -> {
                     PlayerCosmetics.open(ctx.getSource().getPlayerOrException());
                     return 1;

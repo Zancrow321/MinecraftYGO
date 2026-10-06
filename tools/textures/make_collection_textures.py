@@ -1,5 +1,5 @@
 """Draws the 16x16 item and block textures for the card collection items, the Card Trader's clothes and the Duel
-Dome blocks.
+Dome blocks and the Card Vending Machine.
 
 Run from the repository root: python3 tools/textures/make_collection_textures.py
 """
@@ -366,6 +366,77 @@ KIT_P = {"k": (40, 45, 60, 255), "q": (225, 225, 220, 255), "b": (90, 180, 230, 
          "c": (40, 200, 210, 255), "p": (40, 70, 200, 255)}
 
 
+# Card Vending Machine: a red machine with packs behind its glass, a coin slot and a drawer at the bottom.
+MACHINE_P = {
+    "o": (60, 15, 15, 255), "R": (185, 40, 40, 255), "r": (130, 25, 25, 255), "g": (40, 55, 75, 255),
+    "G": (95, 125, 155, 255), "a": (225, 180, 60, 255), "b": (70, 110, 205, 255), "c": (160, 70, 190, 255),
+    "d": (60, 170, 90, 255), "s": (20, 20, 20, 255), "w": (230, 235, 240, 255), "y": (245, 205, 60, 255),
+    "m": (150, 152, 162, 255), "M": (115, 117, 128, 255),
+}
+MACHINE_FRONT = [
+    "oooooooooooooooo",
+    "oRRRRRRRRRRRRRRo",
+    "oRgggggggggRRRRo",
+    "oRgaagbbgccRwwRo",
+    "oRgaagbbgccRwwRo",
+    "oRgaagbbgccRRRRo",
+    "oRGggGggGggRyRRo",
+    "oRgddgaagbbRRRRo",
+    "oRgddgaagbbRRsRo",
+    "oRgddgaagbbRRsRo",
+    "oRGggGggGggRRRRo",
+    "oRRRRRRRRRRRRRRo",
+    "oRrrrrrrrrrrrrRo",
+    "oRrssssssssssrRo",
+    "oRrrrrrrrrrrrrRo",
+    "oooooooooooooooo",
+]
+MACHINE_SIDE = [
+    "oooooooooooooooo",
+    "oRRRRRRRRRRRRRRo",
+    "oRrrrrrrrrrrrrRo",
+    "oRrRRRRRRRRRRrRo",
+    "oRrRRRRRRRRRRrRo",
+    "oRrRRRRRRRRRRrRo",
+    "oRrRRwwwwwwRRrRo",
+    "oRrRRwyyyywRRrRo",
+    "oRrRRwwwwwwRRrRo",
+    "oRrRRRRRRRRRRrRo",
+    "oRrRRRRRRRRRRrRo",
+    "oRrRRRRRRRRRRrRo",
+    "oRrrrrrrrrrrrrRo",
+    "oRRRRRRRRRRRRRRo",
+    "oRsRsRsRsRsRsRRo",
+    "oooooooooooooooo",
+]
+MACHINE_TOP = [
+    "oooooooooooooooo",
+    "ommmmmmmmmmmmmmo",
+    "omMMMMMMMMMMMMmo",
+    "omMmmmmmmmmmmMmo",
+    "omMmmmmmmmmmmMmo",
+    "omMmmmmmmmmmmMmo",
+    "omMmmmmmmmmmmMmo",
+    "omMmmmmmmmmmmMmo",
+    "omMmmmmmmmmmmMmo",
+    "omMmmmmmmmmmmMmo",
+    "omMmmmmmmmmmmMmo",
+    "omMmmmmmmmmmmMmo",
+    "omMmmmmmmmmmmMmo",
+    "omMMMMMMMMMMMMmo",
+    "ommmmmmmmmmmmmmo",
+    "oooooooooooooooo",
+]
+
+
+def card_machine():
+    for rows in (MACHINE_FRONT, MACHINE_SIDE, MACHINE_TOP):
+        assert len(rows) == 16 and all(len(r) == 16 for r in rows), rows
+    save(from_rows(MACHINE_FRONT, MACHINE_P), "block/card_machine_front.png")
+    save(from_rows(MACHINE_SIDE, MACHINE_P), "block/card_machine_side.png")
+    save(from_rows(MACHINE_TOP, MACHINE_P), "block/card_machine_top.png")
+
+
 def main():
     save(from_rows(PACK_BODY, GREYS), "item/booster_pack.png")
     save(from_rows(PACK_TRIM, TRIM), "item/booster_pack_trim.png")
@@ -384,6 +455,7 @@ def main():
     save(metal_tile((45, 60, 110), (90, 160, 255), PLATFORM_TOP), "block/duelist_platform_top.png")
     save(metal_tile((45, 60, 110), (90, 160, 255), PLATFORM_SIDE), "block/duelist_platform_side.png")
     save(from_rows([r.ljust(16, ".")[:16] for r in KIT], KIT_P), "item/duel_dome_kit.png")
+    card_machine()
 
 
 if __name__ == "__main__":
