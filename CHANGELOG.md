@@ -20,6 +20,12 @@
 - The duel log: L or the Log button under the phase buttons; scroll it with the mouse wheel.
 - A result screen at the end: victory or defeat, how it ended, and what it brought (booster pack, ante cards,
   unlocked cosmetics). Continue or Escape takes you back to the game.
+- Watch a duel: right-click someone who is dueling (or a dueling NPC), or `/ygo watch <player>`. Spectators see
+  the field from above with life points, the card panel and the log, but no hidden cards or hands. Escape, Stop
+  watching (or `/ygo unwatch`) leaves.
+- In tag duels both partners see the team's hand, not only the one whose turn it is.
+- Turn time limit as a server setting (`turnTimeLimit`, seconds per person per turn, off by default). The time left
+  shows under the phase buttons; once it runs out, the bot makes your choices until the turn ends.
 
 ## 0.1.0 (first public beta)
 

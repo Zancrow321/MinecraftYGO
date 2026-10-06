@@ -72,8 +72,9 @@ public final class DuelHud {
             }
             g.drawCenteredString(font, help, w / 2, top + 15, DIM);
         } else {
-            g.drawCenteredString(font, font.plainSubstrByWidth("Waiting for " + view.names().get(opp) + "...",
-                    2 * half), w / 2, top + 4, DIM);
+            String waiting = ClientField.watching() ? "Watching " + view.names().get(0) + " vs " + view.names().get(1)
+                    : "Waiting for " + view.names().get(opp) + "...";
+            g.drawCenteredString(font, font.plainSubstrByWidth(waiting, 2 * half), w / 2, top + 4, DIM);
         }
     }
 

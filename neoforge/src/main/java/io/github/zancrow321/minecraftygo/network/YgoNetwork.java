@@ -26,6 +26,8 @@ public final class YgoNetwork {
                 (payload, context) -> context.enqueueWork(() -> DiskClient.receive(payload)));
         registrar.playToClient(DuelResultPayload.TYPE, DuelResultPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientDuel.result(payload)));
+        registrar.playToClient(DuelClockPayload.TYPE, DuelClockPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientDuel.clock(payload.ticksLeft())));
         registrar.playToClient(PackOpenedPayload.TYPE, PackOpenedPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.packOpened(payload)));
         registrar.playToClient(CosmeticsPayload.TYPE, CosmeticsPayload.STREAM_CODEC,

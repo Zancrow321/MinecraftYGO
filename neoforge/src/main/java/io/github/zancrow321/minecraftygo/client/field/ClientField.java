@@ -50,6 +50,7 @@ public final class ClientField {
     /** Card backs per team, or per duelist (team * 2 + partner) on a split field. */
     private static final List<ResourceLocation> sleeves = new ArrayList<>();
     private static boolean split;
+    private static boolean watching;
 
     private ClientField() {
     }
@@ -60,7 +61,9 @@ public final class ClientField {
             return;
         }
         center = new Vec3(payload.x(), payload.y(), payload.z());
+        ClientDuel.forget(); // a new duel: its first view is on its way
         split = payload.layout().split();
+        watching = payload.layout().watching();
         sleeves.clear();
         payload.layout().sleeves().forEach(s -> sleeves.add(Cosmetics.sleeveTexture(s)));
         forward = Vec3.directionFromRotation(0, payload.yaw());
@@ -70,7 +73,8 @@ public final class ClientField {
         lastBoard = null;
         // Wait for the duel disk to unfold, then grow the field; queued effects start once it is full size.
         revealAt = tick + DiskClient.deployTicks();
-        queueFree = revealAt + Math.max(GROW_TICKS, DuelStaging.INTRO_TICKS);
+        // Spectators join a running duel: no start show for them.
+        queueFree = revealAt + (watching ? GROW_TICKS : Math.max(GROW_TICKS, DuelStaging.INTRO_TICKS));
         scale = 0;
         FieldRenderer.reset();
     }
@@ -118,6 +122,11 @@ public final class ClientField {
     public static void updateScale(float partialTick) {
         double t = Mth.clamp((tick - revealAt + partialTick) / GROW_TICKS, 0, 1);
         scale = t * t * (3 - 2 * t);
+    }
+
+    /** Whether this client is only watching the duel. */
+    public static boolean watching() {
+        return watching;
     }
 
     /** When the field starts growing (and the duel's start plays), as a {@link #tick()}. */

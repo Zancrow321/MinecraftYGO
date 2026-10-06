@@ -430,6 +430,14 @@ public final class DuelUi {
         if (logOpen) {
             outline(g, x, y + 4, PHASE_WIDTH, BUTTON_HEIGHT, GOLD);
         }
+        int clock = ClientDuel.clockLeft();
+        if (clock >= 0) {
+            // The turn time limit: what's left of yours, red for the last ten seconds.
+            int seconds = (clock + 19) / 20;
+            String time = seconds / 60 + ":" + String.format("%02d", seconds % 60);
+            g.drawCenteredString(font, time, x + PHASE_WIDTH / 2, y + BUTTON_HEIGHT + 8, seconds <= 10 ? 0xFFFF5050
+                    : TEXT);
+        }
     }
 
     // ---- The menu on a card ----
@@ -523,7 +531,7 @@ public final class DuelUi {
 
     /** Buttons for a pick made on the field go under the phase buttons, clear of the zones. */
     private static int sideButtonsTop(int h) {
-        return h / 2 + PHASES.size() * (BUTTON_HEIGHT + 2) / 2 + BUTTON_HEIGHT + 14;
+        return h / 2 + PHASES.size() * (BUTTON_HEIGHT + 2) / 2 + BUTTON_HEIGHT + 24;
     }
 
     /** Confirm and cancel for a pick made on the field or in the hand. */

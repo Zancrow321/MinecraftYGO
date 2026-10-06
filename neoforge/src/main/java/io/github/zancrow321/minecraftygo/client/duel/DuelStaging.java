@@ -77,7 +77,7 @@ public final class DuelStaging {
 
     /** Whether the start is still playing; nothing can be clicked until it's over. */
     public static boolean introRunning() {
-        return ClientField.active() && introTime() < INTRO_TICKS;
+        return ClientField.active() && !ClientField.watching() && introTime() < INTRO_TICKS;
     }
 
     /** How far the camera has swept in, 0 (high over the far end) to 1 (in place behind you), eased. */
@@ -198,7 +198,8 @@ public final class DuelStaging {
         int width = Math.min(240, w - 40);
         List<FormattedCharSequence> reason = font.split(Component.literal(view.result()), width - 12);
         List<String> rewards = result == null ? List.of() : result.rewards();
-        int height = 44 + reason.size() * 10 + 14 + Math.max(1, rewards.size()) * 10 + 24;
+        boolean watched = result == null;
+        int height = 44 + reason.size() * 10 + (watched ? 0 : 14 + Math.max(1, rewards.size()) * 10) + 24;
         int x = w / 2 - width / 2;
         int y = Math.max(4, h / 2 - height / 2);
         DuelUi.panel(g, x, y, width, height);
@@ -209,9 +210,11 @@ public final class DuelStaging {
             ty += 10;
         }
         ty += 4;
-        g.drawString(font, "Rewards", x + 8, ty, GOLD);
-        ty += 10;
-        if (rewards.isEmpty()) {
+        if (!watched) {
+            g.drawString(font, "Rewards", x + 8, ty, GOLD);
+            ty += 10;
+        }
+        if (rewards.isEmpty() && !watched) {
             g.drawString(font, "Nothing this time", x + 8, ty, DIM);
             ty += 10;
         }

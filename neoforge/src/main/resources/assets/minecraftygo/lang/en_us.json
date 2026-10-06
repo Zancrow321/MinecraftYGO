@@ -53,5 +53,6 @@
   "screen.minecraftygo.duel_menu.camera.first_person": "First person",
   "screen.minecraftygo.duel_menu.surrender": "Surrender",
   "screen.minecraftygo.duel_menu.surrender.confirm": "Really surrender? Click again",
+  "screen.minecraftygo.duel_menu.stop_watching": "Stop watching",
   "screen.minecraftygo.duel_menu.game_menu": "Game menu"
 }

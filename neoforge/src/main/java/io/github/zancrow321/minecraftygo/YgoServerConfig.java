@@ -26,6 +26,11 @@ public final class YgoServerConfig {
                     + "winner takes both.")
             .define("allowAnte", true);
 
+    public static final ModConfigSpec.IntValue TURN_TIME_LIMIT = BUILDER
+            .comment("Seconds each person has for their choices in each turn; 0 means no limit. Once it runs out, "
+                    + "the bot makes their choices until the turn ends.")
+            .defineInRange("turnTimeLimit", 0, 0, 3600);
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private YgoServerConfig() {

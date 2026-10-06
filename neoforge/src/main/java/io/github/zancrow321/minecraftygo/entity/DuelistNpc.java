@@ -170,7 +170,11 @@ public final class DuelistNpc extends PathfinderMob {
             return InteractionResult.PASS;
         }
         if (player instanceof ServerPlayer serverPlayer) {
-            DuelManager.get(serverPlayer.server).duelNpc(serverPlayer, this);
+            if (isDueling()) {
+                DuelManager.get(serverPlayer.server).watchNpc(serverPlayer, this);
+            } else {
+                DuelManager.get(serverPlayer.server).duelNpc(serverPlayer, this);
+            }
         }
         return InteractionResult.sidedSuccess(level().isClientSide());
     }

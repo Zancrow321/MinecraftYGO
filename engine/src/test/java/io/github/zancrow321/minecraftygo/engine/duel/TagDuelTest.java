@@ -21,12 +21,13 @@ import java.util.Map;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * A 2v2 tag duel: two people against two bots, under each ruleset. Only the partner whose turn it is to duel for the
- * team answers prompts and sees the team's hand; the other watches.
+ * team answers prompts; both partners see the team's hand. Spectators see neither team's hand.
  */
 class TagDuelTest {
     @BeforeAll
@@ -51,6 +52,7 @@ class TagDuelTest {
         List<String> steveLog = new ArrayList<>();
         int[] prompts = new int[2];
         int benchedViews = 0;
+        int spectatorLines = 0;
 
         try (DuelTable table = new DuelTable(text, new BundledScripts(),
                 DuelSettings.standard(new long[]{9, 8, 7, 6 + ruleset.ordinal()}, ruleset.flags()), seats, decks,
@@ -61,6 +63,14 @@ class TagDuelTest {
                     fail("tag duel did not finish");
                 }
                 assertTrue(java.util.Set.of(0, 1).containsAll(views.keySet()), "only people get views");
+                DuelView watched = ViewCodec.decode(ViewCodec.encode(table.spectatorView()));
+                assertNull(watched.prompt());
+                spectatorLines += watched.log().size();
+                for (int side = 0; side < 2; side++) {
+                    for (CardState card : watched.board().side(side).hand()) {
+                        assertTrue(card.code() == 0 || card.isPublic(), "spectators can't see hands");
+                    }
+                }
                 int waiting = table.waitingFor();
                 DuelView answerFrom = null;
                 for (Map.Entry<Integer, DuelView> entry : views.entrySet()) {
@@ -78,7 +88,7 @@ class TagDuelTest {
                     } else if (table.activeSeat(0) != seat && !table.finished()) {
                         benchedViews++;
                         for (CardState card : view.board().side(0).hand()) {
-                            assertTrue(card.code() == 0 || card.isPublic(), "the benched partner can't see the hand");
+                            assertTrue(card.code() != 0, "the benched partner sees the team's hand");
                         }
                     }
                 }
@@ -92,6 +102,7 @@ class TagDuelTest {
         }
         assertTrue(prompts[0] > 0 && prompts[1] > 0, "both partners duel: " + prompts[0] + "/" + prompts[1]);
         assertTrue(benchedViews > 0, "the benched partner keeps watching");
+        assertTrue(spectatorLines > 0, "spectators get the log");
         assertTrue(steveLog.contains("Alex takes over"), steveLog.toString());
         assertTrue(steveLog.contains("Your turn to duel for your team"));
         assertTrue(steveLog.stream().anyMatch(l -> l.equals("Weevil takes over") || l.equals("Rex takes over")));
