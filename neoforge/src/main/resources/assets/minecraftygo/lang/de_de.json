@@ -149,5 +149,11 @@
   "block.minecraftygo.duel_arena_floor": "Duellarena",
   "item.minecraftygo.duel_arena_kit": "Duellarena-Bausatz",
   "item.minecraftygo.duel_arena_kit.tooltip": "Auf ebenem Boden benutzen, um eine Duellarena wie im Königreich der Duellanten (21 × 31) in Blickrichtung aufzustellen. Duellanten auf ihren Pulten duellieren sich über ihr und fahren mit den Pulten nach oben. Ein beliebiges Teil abbauen, um sie wieder einzupacken.",
-  "message.minecraftygo.duel_arena.blocked": "Bei %s %s %s ist etwas im Weg. Die Duellarena braucht eine freie Fläche von 21 × 31."
+  "message.minecraftygo.duel_arena.blocked": "Bei %s %s %s ist etwas im Weg. Die Duellarena braucht eine freie Fläche von 21 × 31.",
+  "item.minecraftygo.guide_book": "Handbuch für Duellanten",
+  "item.minecraftygo.guide_book.tooltip": "Duelle, Sammeln, Befehle und Einstellungen. Rechtsklick zum Lesen.",
+  "message.minecraftygo.guide.given": "Du hast das Handbuch für Duellanten bekommen: Rechtsklick zum Lesen über Duelle, Befehle und Einstellungen, oder tippe %s.",
+  "screen.minecraftygo.guide.contents": "Inhalt",
+  "screen.minecraftygo.guide.back_to_contents": "Zurück zum Inhalt",
+  "screen.minecraftygo.guide.type_command": "Klicken, um ihn in den Chat zu schreiben"
 }

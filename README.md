@@ -18,6 +18,7 @@ the engine behind EDOPro, running on the server. Monster models come from
 | `tools/carddata/build_banlists.py` | Writes every TCG Forbidden & Limited List since 1999 with its date (`banlists.json`). |
 | `tools/carddata/build_collection.py` | Picks the booster sets of the modeled pool, lists every TCG product in release order (`products.json`) and writes the era banlist. |
 | `tools/textures/make_collection_textures.py` | Draws the pack, binder, deck box, Card Shop and Card Trader textures. |
+| `tools/textures/make_guide_book.py` | Draws the handbook's item texture and the open book its screen is drawn on. |
 | `tools/textures/make_logo.py` | Draws the mod logo (`minecraftygo_logo.png`) from the card back. |
 | `tools/models/make_pack.py` | Builds a resource pack that gives monsters a 3D model from Blockbench files ([guide](docs/resource-pack-models.md)). |
 | `tools/disk/convert_disk.py` | Converts the duel disk `.bbmodel` (Figura format, meshes allowed) into the mod's disk model. |
@@ -83,6 +84,14 @@ In game:
   (`emeraldExchange`, 10 each), all in `[shop.points]`. `/ygo dp pay <player> <amount>` gives DP to another player
   (`transfers`), and operators use `/ygo dp give|take|set <players> <amount>` and `/ygo dp <player>`. Wandering
   traders keep taking emeralds.
+- **Handbook:** every player gets the **Duelist's Handbook** once on their first join (`[guide] giveOnFirstJoin`);
+  `/ygo guide` opens it any time and a new one is crafted from a book and paper (`[guide] craftable`). It explains
+  dueling, the duel controls with your current key bindings, collecting, decks, the shops and Duel Points, progression, arenas and tournaments,
+  NPCs, cosmetics, every command and every setting with the world's current value, with crafting grids drawn from the
+  real recipes. Its pages are `assets/minecraftygo/guide/<language>.json`, a list of chapters whose paragraphs take a
+  little markup (`# heading`, `- bullet`, `**bold**`, `` `command` ``, `[recipe id]`, `---` for a new page, and
+  `{server:pool.mode}`, `{client:chooseZone}`, `{key:duel_log}`, `{cmd}`, `{modid}` placeholders; see `GuideText`),
+  so a resource pack can rewrite or translate it.
 - **First deck:** on their first join a player picks a deck: Yugi's or Kaiba's starter deck, or any starter or
   structure deck that is already out. It comes in a deck box, ready to duel with. "Later" puts it off; `/ygo starter`
   opens the choice again until one is taken.
