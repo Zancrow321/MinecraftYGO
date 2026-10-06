@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 (duel mode)
+
+Minecraft 1.21.1, NeoForge 21.1.
 
 ### Duel mode
 - Your hand is big along the bottom. Click a card for its actions (Normal Summon, Set, Activate...), or drag it
