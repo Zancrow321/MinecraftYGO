@@ -19,7 +19,7 @@ the engine behind EDOPro, running on the server. Monster models come from
 | `tools/carddata/build_collection.py` | Picks the booster sets of the modeled pool, lists every TCG product in release order (`products.json`) and writes the era banlist. |
 | `tools/textures/make_collection_textures.py` | Draws the pack, binder, deck box, Card Shop and Card Trader textures. |
 | `tools/textures/make_guide_book.py` | Draws the handbook's item texture and the open book its screen is drawn on. |
-| `tools/textures/make_logo.py` | Draws the mod logo (`jadm_logo.png`) from the card back. |
+| `tools/textures/make_logo.py` | Draws the pixel-art mod logo (`jadm_logo.png`) and the store banner (`docs/release/banner.png`). |
 | `tools/models/make_pack.py` | Builds a resource pack that gives monsters a 3D model from Blockbench files ([guide](docs/resource-pack-models.md)). |
 | `tools/disk/convert_disk.py` | Converts the duel disk `.bbmodel` (Figura format, meshes allowed) into the mod's disk model. |
 

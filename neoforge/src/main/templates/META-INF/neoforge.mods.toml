@@ -12,6 +12,7 @@ displayURL = "https://github.com/Zancrow321/MinecraftYGO"
 authors = "${mod_authors}"
 credits = "Duel engine: OCG-Core by the Project Ignis team (AGPL-3.0). Monster models: iconmaster (MIT). Duel disk model: burning-icecream (CC BY-NC 4.0)."
 description = '''${mod_description}'''
+logoBlur = false
 
 [[dependencies.${mod_id}]]
 modId = "neoforge"
