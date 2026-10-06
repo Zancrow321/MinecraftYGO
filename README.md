@@ -50,7 +50,13 @@ In game:
 - The **Card Trader** villager sells binders, deck boxes, the two starter decks and later a duel disk, and keeps a
   shop of packs, structure decks and tins: the newest products always, plus a few older ones that change every week
   (`[shop] newestAlways`, `rotatingOlder`, `rotationDays`). Any villager takes the job at a **Card Shop Counter**
-  (glass panes / plank, book, plank / three planks).
+  (glass panes / plank, book, plank / three planks). The rest of the shop is set in `[shop]` of the server config
+  too, and traders follow a change within a few seconds: `currency` (emeralds, or any item such as
+  `"minecraft:diamond"`), `priceMultiplier`, `dynamicPrices` (prices that rise when a trade sells out often, as with
+  other villagers), `wanderingTrader` (packs and a rare duel disk from wandering traders), the price of everything in
+  `[shop.prices]` (core, all-foil and small packs, structure decks, tins, random packs per trader level, binders, deck
+  boxes, starter decks, duel disks, paper bought, the wandering trader's two; 0 stops a trade) and how many a trader
+  has before it restocks in `[shop.stock]`.
 - **First deck:** on their first join a player picks a deck: Yugi's or Kaiba's starter deck, or any starter or
   structure deck that is already out. It comes in a deck box, ready to duel with. "Later" puts it off; `/ygo starter`
   opens the choice again until one is taken.

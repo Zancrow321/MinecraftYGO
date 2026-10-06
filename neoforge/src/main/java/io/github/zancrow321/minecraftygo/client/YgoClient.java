@@ -218,7 +218,11 @@ public final class YgoClient {
             mc.player.yBodyRotO = body;
         }
         if (mc.player != null && mc.gameMode != null && TEST_USE_ITEM.contains(mc.player.tickCount)) {
-            mc.setScreen(null);
+            if (mc.screen instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>) {
+                mc.player.closeContainer(); // tells the server too, so a villager stops trading
+            } else {
+                mc.setScreen(null);
+            }
             if (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult hit
                     && hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) {
                 mc.gameMode.useItemOn(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND, hit);

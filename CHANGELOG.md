@@ -16,6 +16,21 @@
 - Life points count down or up when they change, in step with the damage effect, and their panel flashes red or
   green; the floating change beside them is twice as big.
 
+### Card shop
+- The card shop is set in `[shop]` of the server config, and card traders follow a change within a few seconds,
+  keeping what they have sold since their last restock:
+  - `currency`: the item traders take and pay for paper, emeralds by default; any item id works, e.g.
+    `"minecraft:diamond"`.
+  - `priceMultiplier`: every price times this, e.g. 0.5 for half price.
+  - `dynamicPrices = false` keeps prices fixed; by default they rise when a trade sells out often and drop for
+    players the village likes, as with other villagers.
+  - `[shop.prices]`: the price of core, all-foil and small packs (tournament, mini and battle packs), structure
+    decks, tins, the random packs of novice, journeyman and master traders, binders, deck boxes, starter decks and
+    duel disks, how much paper a trader buys for one currency item, and the wandering trader's pack and duel disk. 0 means
+    traders don't sell it (and stop if they did).
+  - `[shop.stock]`: how many of each a trader can sell before it restocks.
+  - `wanderingTrader = false` stops wandering traders from selling packs and duel disks.
+
 ### Deck editor
 - The deck box filters the cards you own by type (monsters, spells, traps, extra deck), attribute and level and sorts
   them by name, ATK, DEF or level. Click a filter to step through it, shift-click to step back.

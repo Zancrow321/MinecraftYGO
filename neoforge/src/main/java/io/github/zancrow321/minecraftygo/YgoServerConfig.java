@@ -73,13 +73,47 @@ public final class YgoServerConfig {
                     + "count in the binder, with a lock).")
             .define("lockedInDeck", true);
 
-    public static final ModConfigSpec.IntValue SHOP_NEWEST = BUILDER.pop().push("shop")
+    public static final ModConfigSpec.ConfigValue<String> SHOP_CURRENCY = BUILDER.pop().push("shop")
+            .comment("The item card traders take for their goods and pay for paper, as an item id, e.g. "
+                    + "\"minecraft:diamond\" or \"minecraft:gold_ingot\". Changes apply to traders right away.")
+            .define("currency", "minecraft:emerald", v -> v instanceof String s
+                    && net.minecraft.resources.ResourceLocation.tryParse(s) != null);
+
+    public static final ModConfigSpec.DoubleValue SHOP_PRICE_MULTIPLIER = BUILDER
+            .comment("Every price in [shop.prices] is multiplied by this and rounded, e.g. 0.5 for half price or 2 "
+                    + "for double; a price is at least 1 and at most a stack of the currency.")
+            .defineInRange("priceMultiplier", 1.0, 0.01, 100.0);
+
+    public static final ModConfigSpec.BooleanValue SHOP_DYNAMIC_PRICES = BUILDER
+            .comment("Prices go up for a while when a trade sells out often and down for players the village likes, "
+                    + "as with other villagers. Off, card traders always ask exactly the [shop.prices].")
+            .define("dynamicPrices", true);
+
+    public static final ModConfigSpec.BooleanValue SHOP_WANDERING_TRADER = BUILDER
+            .comment("Wandering traders sometimes sell a booster pack and, rarely, a duel disk.")
+            .define("wanderingTrader", true);
+
+    public static final ModConfigSpec.IntValue SHOP_NEWEST = BUILDER
             .comment("Card traders always sell the newest this many products (packs, structure decks, tins) out.")
             .defineInRange("newestAlways", 3, 0, 50);
 
     public static final ModConfigSpec.IntValue SHOP_ROTATING = BUILDER
             .comment("...and this many older ones, a different pick for each trader.")
             .defineInRange("rotatingOlder", 4, 0, 50);
+
+    /** What card traders ask, in {@code [shop.prices]}. */
+    public static final Prices PRICES = new Prices(BUILDER
+            .comment("What card traders ask, in the [shop] currency (emeralds unless changed). 0 means traders "
+                    + "don't sell it (and stop selling it if they did).").push("prices"));
+
+    /** How many of each a card trader has, in {@code [shop.stock]}. */
+    public static final Stock STOCK = new Stock(BUILDER.pop()
+            .comment("How many of each a card trader can sell before it runs out; like other villagers it restocks "
+                    + "at its counter up to twice a day.").push("stock"));
+
+    static {
+        BUILDER.pop();
+    }
 
     public static final ModConfigSpec.IntValue SHOP_ROTATION_DAYS = BUILDER
             .comment("Every this many days the older products change.")
@@ -106,5 +140,81 @@ public final class YgoServerConfig {
         RULESET.set("auto");
         CONFIG_VERSION.set(VERSION);
         SPEC.save();
+    }
+
+    /** The prices of the card shop. */
+    public static final class Prices {
+        public final ModConfigSpec.IntValue corePack;
+        public final ModConfigSpec.IntValue premiumPack;
+        public final ModConfigSpec.IntValue smallPack;
+        public final ModConfigSpec.IntValue structureDeck;
+        public final ModConfigSpec.IntValue tin;
+        public final ModConfigSpec.IntValue randomPackNovice;
+        public final ModConfigSpec.IntValue randomPackJourneyman;
+        public final ModConfigSpec.IntValue randomPackMaster;
+        public final ModConfigSpec.IntValue binder;
+        public final ModConfigSpec.IntValue deckBox;
+        public final ModConfigSpec.IntValue starterDeck;
+        public final ModConfigSpec.IntValue duelDisk;
+        public final ModConfigSpec.IntValue paper;
+        public final ModConfigSpec.IntValue wanderingPack;
+        public final ModConfigSpec.IntValue wanderingDuelDisk;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private Prices(ModConfigSpec.Builder builder) {
+            corePack = builder.comment("A 9-card core booster pack of a set.")
+                    .defineInRange("corePack", 4, 0, 64);
+            premiumPack = builder.comment("A pack of an all-foil set (Dragons of Legend, Premium Gold...).")
+                    .defineInRange("premiumPack", 6, 0, 64);
+            smallPack = builder.comment("A smaller pack: tournament packs (3 cards), mini boosters such as Duelist "
+                    + "Packs and battle packs (5 cards).").defineInRange("smallPack", 3, 0, 64);
+            structureDeck = builder.comment("A structure or starter deck of a set.")
+                    .defineInRange("structureDeck", 10, 0, 64);
+            tin = builder.comment("A collector's tin (its promo card and three packs).")
+                    .defineInRange("tin", 14, 0, 64);
+            randomPackNovice = builder.comment("A pack of a random set that is out, from novice traders.")
+                    .defineInRange("randomPackNovice", 3, 0, 64);
+            randomPackJourneyman = builder.comment("...from journeyman traders.")
+                    .defineInRange("randomPackJourneyman", 4, 0, 64);
+            randomPackMaster = builder.comment("...from master traders, a cheap deal for a trader you levelled up.")
+                    .defineInRange("randomPackMaster", 2, 0, 64);
+            binder = builder.comment("A binder.").defineInRange("binder", 4, 0, 64);
+            deckBox = builder.comment("An empty deck box.").defineInRange("deckBox", 2, 0, 64);
+            starterDeck = builder.comment("Yugi's or Kaiba's starter deck in a deck box, from apprentice traders.")
+                    .defineInRange("starterDeck", 10, 0, 64);
+            duelDisk = builder.comment("A duel disk, from expert traders.").defineInRange("duelDisk", 16, 0, 64);
+            paper = builder.comment("Paper a trader buys for one currency item; 0 means it buys none. Not changed "
+                    + "by priceMultiplier.").defineInRange("paper", 24, 0, 64);
+            wanderingPack = builder.comment("A random pack from a wandering trader.")
+                    .defineInRange("wanderingPack", 5, 0, 64);
+            wanderingDuelDisk = builder.comment("A duel disk from a wandering trader.")
+                    .defineInRange("wanderingDuelDisk", 20, 0, 64);
+        }
+    }
+
+    /** The stock of the card shop. */
+    public static final class Stock {
+        public final ModConfigSpec.IntValue packs;
+        public final ModConfigSpec.IntValue masterPacks;
+        public final ModConfigSpec.IntValue structureDecks;
+        public final ModConfigSpec.IntValue tins;
+        public final ModConfigSpec.IntValue binders;
+        public final ModConfigSpec.IntValue deckBoxes;
+        public final ModConfigSpec.IntValue starterDecks;
+        public final ModConfigSpec.IntValue duelDisks;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private Stock(ModConfigSpec.Builder builder) {
+            packs = builder.comment("Packs of each set, and the novice's and journeyman's random packs.")
+                    .defineInRange("packs", 16, 1, 999);
+            masterPacks = builder.comment("The master's cheap random packs.")
+                    .defineInRange("masterPacks", 32, 1, 999);
+            structureDecks = builder.comment("Each structure deck.").defineInRange("structureDecks", 4, 1, 999);
+            tins = builder.comment("Each tin.").defineInRange("tins", 3, 1, 999);
+            binders = builder.comment("Binders.").defineInRange("binders", 4, 1, 999);
+            deckBoxes = builder.comment("Empty deck boxes.").defineInRange("deckBoxes", 8, 1, 999);
+            starterDecks = builder.comment("Each starter deck.").defineInRange("starterDecks", 2, 1, 999);
+            duelDisks = builder.comment("Duel disks.").defineInRange("duelDisks", 3, 1, 999);
+        }
     }
 }
