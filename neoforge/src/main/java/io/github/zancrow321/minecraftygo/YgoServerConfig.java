@@ -167,12 +167,14 @@ public final class YgoServerConfig {
         BUILDER.pop(2);
     }
 
-    /** Booster packs, emeralds and experience points for the winners and the losers of a duel. */
+    /** Booster packs, Duel Points, emeralds and experience points for the winners and the losers of a duel. */
     public static final class Rewards {
         public final ModConfigSpec.IntValue winPacks;
+        public final ModConfigSpec.IntValue winPoints;
         public final ModConfigSpec.IntValue winEmeralds;
         public final ModConfigSpec.IntValue winXp;
         public final ModConfigSpec.IntValue lossPacks;
+        public final ModConfigSpec.IntValue lossPoints;
         public final ModConfigSpec.IntValue lossEmeralds;
         public final ModConfigSpec.IntValue lossXp;
 
@@ -180,12 +182,16 @@ public final class YgoServerConfig {
         private Rewards(ModConfigSpec.Builder builder, int defaultWinPacks) {
             winPacks = builder.comment("Booster packs each winner gets (a random set that is out).")
                     .defineInRange("winPacks", defaultWinPacks, 0, 64);
+            winPoints = builder.comment("Duel Points each winner gets, when the [shop] currency is points.")
+                    .defineInRange("winPoints", 100, 0, 1_000_000);
             winEmeralds = builder.comment("Emeralds each winner gets.")
                     .defineInRange("winEmeralds", 0, 0, 640);
             winXp = builder.comment("Experience points each winner gets.")
                     .defineInRange("winXp", 0, 0, 100_000);
             lossPacks = builder.comment("Booster packs each loser gets as a consolation.")
                     .defineInRange("lossPacks", 0, 0, 64);
+            lossPoints = builder.comment("Duel Points each loser gets as a consolation, when the [shop] currency is "
+                    + "points.").defineInRange("lossPoints", 20, 0, 1_000_000);
             lossEmeralds = builder.comment("Emeralds each loser gets as a consolation.")
                     .defineInRange("lossEmeralds", 0, 0, 640);
             lossXp = builder.comment("Experience points each loser gets as a consolation.")

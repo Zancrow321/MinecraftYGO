@@ -11,6 +11,8 @@
   (`[results.players]`) and against NPC duelists (`[results.npcs]`): booster packs, emeralds and experience for each
   winner (`winPacks`, `winEmeralds`, `winXp`) and as a consolation for each loser (`lossPacks`, `lossEmeralds`,
   `lossXp`). By default it stays as before: one booster pack for beating an NPC, nothing else.
+- With Duel Points as the currency, every duel brings DP too: `winPoints` (100) for each winner and `lossPoints` (20)
+  for each loser, in `[results.players]` and `[results.npcs]`.
 - `[results] rewardBotDuels` gives duels against the bot the NPC rewards too (off by default), `announce` tells the
   whole server who won each duel, `trackRecord` turns the record off, and `[results.npcs] rematchMinutes` sets how
   long a beaten NPC won't duel you again (20 minutes, one Minecraft day, as before).
