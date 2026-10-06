@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### All cards (first step)
+- Every official card is bundled now: about 14,700 cards with their scripts (the jar grows to about 20 MB).
+- New server setting `[pool] mode`: `modeled` (as before, the default) or `all`, which plays with every card. With
+  `all`, packs, loot and NPC decks draw from every card and booster packs exist for every TCG booster, from Legend
+  of Blue Eyes to today. Monsters without a model show up as their card for now; the artwork hologram comes next.
+- Decks may only hold cards the server plays with; a deck box with other cards says which one isn't allowed.
+- Synchro, Xyz and Link monsters count as extra deck cards.
+- "Declare a card name" lists only the names the card allows, and long lists can be searched by typing.
+
 ### Duel mode
 - Your hand is big along the bottom. Click a card for its actions (Normal Summon, Set, Activate...), or drag it
   onto a zone to play it right there. Cards played from the menu go to the middle-most free zone, unless

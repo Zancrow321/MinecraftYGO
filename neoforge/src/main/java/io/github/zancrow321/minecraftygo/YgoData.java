@@ -4,13 +4,20 @@ import io.github.zancrow321.minecraftygo.engine.data.Banlist;
 import io.github.zancrow321.minecraftygo.engine.data.BoosterSets;
 import io.github.zancrow321.minecraftygo.engine.data.CardDatabase;
 import io.github.zancrow321.minecraftygo.engine.data.CardPool;
+import io.github.zancrow321.minecraftygo.engine.data.PoolMode;
+import io.github.zancrow321.minecraftygo.engine.data.Products;
 import io.github.zancrow321.minecraftygo.engine.text.DuelText;
 
 /**
- * The bundled card pool and text, loaded once on first use (client and server alike).
+ * The bundled card data, loaded once on first use (client and server alike), and the pool the server's
+ * {@code pool.mode} picks from it. A client on another server learns the mode when it joins.
  */
 public final class YgoData {
     private static volatile DuelText text;
+    private static volatile CardPool modeled;
+    private static volatile Products products;
+    /** The pool and booster sets of {@link #mode}; both are rebuilt when the mode changes (another world). */
+    private static volatile PoolMode mode;
     private static volatile CardPool pool;
     private static volatile BoosterSets sets;
     private static volatile Banlist banlist;
@@ -34,30 +41,79 @@ public final class YgoData {
         return t;
     }
 
+    /** The pool mode a client was told by the server it joined, see {@link #serverPoolMode}. */
+    private static volatile PoolMode joinedMode;
+
+    /** The pool mode in the server config, or on a client on another server the one that server sent. */
+    public static PoolMode poolMode() {
+        if (!YgoServerConfig.SPEC.isLoaded()) {
+            return joinedMode == null ? PoolMode.MODELED : joinedMode;
+        }
+        PoolMode configured = PoolMode.parse(YgoServerConfig.POOL_MODE.get());
+        return configured == null ? PoolMode.MODELED : configured;
+    }
+
+    /** Called on a client when the server it joined says which pool it plays with. */
+    public static void serverPoolMode(PoolMode mode) {
+        joinedMode = mode;
+    }
+
+    /** The cards this server plays with, and the monster models. */
     public static CardPool pool() {
-        CardPool p = pool;
+        refresh();
+        return pool;
+    }
+
+    /** The booster sets packs, loot and shops draw from. */
+    public static BoosterSets sets() {
+        refresh();
+        return sets;
+    }
+
+    private static void refresh() {
+        PoolMode wanted = poolMode();
+        if (mode == wanted && pool != null) {
+            return;
+        }
+        synchronized (YgoData.class) {
+            if (mode == wanted && pool != null) {
+                return;
+            }
+            CardPool p = wanted == PoolMode.ALL ? CardPool.everything(cards(), modeled().models()) : modeled();
+            sets = wanted == PoolMode.ALL ? BoosterSets.fromProducts(products(), p) : BoosterSets.loadBundled();
+            pool = p;
+            mode = wanted;
+            MinecraftYgo.LOGGER.info("Card pool {}: {} monsters, {} spells and traps, {} booster sets", wanted.id(),
+                    p.monsters().size(), p.spellsTraps().size(), sets.sets().size());
+        }
+    }
+
+    /** The modeled pool, whatever the mode: the monsters with a model. */
+    public static CardPool modeled() {
+        CardPool p = modeled;
         if (p == null) {
             synchronized (YgoData.class) {
-                p = pool;
+                p = modeled;
                 if (p == null) {
-                    p = pool = CardPool.loadBundled();
+                    p = modeled = CardPool.loadBundled();
                 }
             }
         }
         return p;
     }
 
-    public static BoosterSets sets() {
-        BoosterSets s = sets;
-        if (s == null) {
+    /** Every TCG product in release order. */
+    public static Products products() {
+        Products p = products;
+        if (p == null) {
             synchronized (YgoData.class) {
-                s = sets;
-                if (s == null) {
-                    s = sets = BoosterSets.loadBundled();
+                p = products;
+                if (p == null) {
+                    p = products = Products.loadBundled();
                 }
             }
         }
-        return s;
+        return p;
     }
 
     public static Banlist banlist() {

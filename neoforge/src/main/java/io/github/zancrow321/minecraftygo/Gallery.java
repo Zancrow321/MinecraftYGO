@@ -24,7 +24,7 @@ final class Gallery {
     }
 
     static int show(CommandSourceStack source, int page) {
-        List<Integer> codes = YgoData.pool().monsters();
+        List<Integer> codes = YgoData.modeled().monsters();
         int perPage = COLUMNS * ROWS;
         int pages = (codes.size() + perPage - 1) / perPage;
         if (page > pages) {

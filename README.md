@@ -14,8 +14,8 @@ the engine behind EDOPro, running on the server. Monster models come from
 | `native/ocgcore` | OCG-Core source (git submodule). |
 | `native/build.sh`, `native/build.ps1` | Build OCG-Core for the host into `engine/src/main/resources/natives/<platform>/`. |
 | `tools/models/import_models.py` | Converts YGOMCModels to GeckoLib assets, maps each model to its card and writes the era pool (`pool.json`). |
-| `tools/carddata/build_carddata.py` | Bundles card data, Lua scripts and system strings for the pool. Run it after `import_models.py`. |
-| `tools/carddata/build_collection.py` | Picks the booster sets for the pool (with each card's rarity) and writes the era banlist. |
+| `tools/carddata/build_carddata.py` | Bundles card data, Lua scripts and system strings for every official card. Run it after `import_models.py`. |
+| `tools/carddata/build_collection.py` | Picks the booster sets of the modeled pool, lists every TCG product in release order (`products.json`) and writes the era banlist. |
 | `tools/textures/make_collection_textures.py` | Draws the pack, binder, deck box, Card Shop and Card Trader textures. |
 | `tools/textures/make_logo.py` | Draws the mod logo (`minecraftygo_logo.png`) from the card back. |
 | `tools/disk/convert_disk.py` | Converts the duel disk `.bbmodel` (Figura format, meshes allowed) into the mod's disk model. |
@@ -120,15 +120,27 @@ git clone --depth 1 https://github.com/ProjectIgnis/Distribution
 curl -o ygoprodeck.json "https://db.ygoprodeck.com/api/v7/cardinfo.php?misc=yes"
 python3 tools/models/import_models.py --models YGOMCModels --cdb BabelCDB/cards.cdb --ygoprodeck ygoprodeck.json
 python3 tools/carddata/build_carddata.py --cdb BabelCDB/cards.cdb --scripts CardScripts \
-    --strings Distribution/config/strings.conf
+    --strings Distribution/config/strings.conf --all
 ```
 
-New models in YGOMCModels join the pool on the next run. A folder whose name doesn't match a card goes in
+Every official OCG and TCG card is bundled, with its script. Which of them a world plays with is the server
+config's `[pool] mode`: `modeled` (the default) plays with the monsters that have a model and the spells and traps
+of their era; `all` plays with every card, and packs come from every TCG booster. Monsters without a model stand
+on the field as their card. The engine test `ScriptLoadTest` loads every card once; a card whose script fails goes
+in `engine/src/main/resources/minecraftygo/broken.json`, which keeps it out of the pool.
+
+New models in YGOMCModels join the modeled pool on the next run. A folder whose name doesn't match a card goes in
 `tools/models/overrides.json`. The era cutoff is the newest release date shared by at least three modeled
 monsters, and every spell and trap released up to it is playable.
 
-The booster sets are rebuilt from the same YGOPRODeck dump: `python3 tools/carddata/build_collection.py --ygoprodeck
-ygoprodeck.json`. A set is included when at least 60% of its cards are in the pool.
+The booster sets and the product list are rebuilt from the same YGOPRODeck dump and its set list:
+
+```sh
+curl -o cardsets.json https://db.ygoprodeck.com/api/v7/cardsets.php
+python3 tools/carddata/build_collection.py --ygoprodeck ygoprodeck.json --cardsets cardsets.json
+```
+
+A set joins the modeled pool's boosters when at least 60% of its cards are in that pool.
 
 ## Updating the duel disk model
 

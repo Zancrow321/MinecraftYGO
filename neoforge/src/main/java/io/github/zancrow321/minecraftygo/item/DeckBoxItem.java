@@ -44,7 +44,7 @@ public final class DeckBoxItem extends Item {
     }
 
     public static List<String> problems(ItemStack stack) {
-        return DeckRules.problems(toDeck(stack), YgoData.cards(), YgoData.banlist());
+        return DeckRules.problems(toDeck(stack), YgoData.cards(), YgoData.banlist(), YgoData.pool()::contains);
     }
 
     @Override

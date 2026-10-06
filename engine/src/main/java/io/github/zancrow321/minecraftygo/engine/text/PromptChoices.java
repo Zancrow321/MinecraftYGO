@@ -1,5 +1,7 @@
 package io.github.zancrow321.minecraftygo.engine.text;
 
+import io.github.zancrow321.minecraftygo.engine.data.Declarable;
+
 import io.github.zancrow321.minecraftygo.engine.protocol.CardRef;
 import io.github.zancrow321.minecraftygo.engine.protocol.Loc;
 import io.github.zancrow321.minecraftygo.engine.protocol.DuelMessage.*;
@@ -94,7 +96,8 @@ public final class PromptChoices {
                     false);
             case AnnounceCard p -> {
                 List<Choice> choices = new ArrayList<>();
-                text.cards().all().stream().sorted((a, b) -> a.name().compareTo(b.name()))
+                text.cards().all().stream().filter(c -> Declarable.test(c.data(), p.opcodes()))
+                        .sorted((a, b) -> a.name().compareTo(b.name()))
                         .forEach(c -> choices.add(new Choice(c.name(), Responses.cardCode(c.code()))));
                 yield PromptView.choices("Declare a card name", choices);
             }

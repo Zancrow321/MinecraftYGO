@@ -303,7 +303,7 @@ public final class FieldRenderer {
     }
 
     private static CardPool.Model model(CardState card) {
-        return card.code() == 0 ? null : YgoData.pool().model(card.code());
+        return card.code() == 0 ? null : YgoData.modeled().model(card.code());
     }
 
     private static ResourceLocation front(int code) {
@@ -485,7 +485,7 @@ public final class FieldRenderer {
                         || (e.from().location() & LOCATION_MZONE) == 0) {
                     continue;
                 }
-                CardPool.Model model = YgoData.pool().model(e.code());
+                CardPool.Model model = YgoData.modeled().model(e.code());
                 if (model == null) {
                     continue;
                 }

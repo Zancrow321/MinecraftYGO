@@ -3,6 +3,7 @@ package io.github.zancrow321.minecraftygo.engine.ai;
 import io.github.zancrow321.minecraftygo.engine.data.CardDatabase;
 import io.github.zancrow321.minecraftygo.engine.duel.Board;
 import io.github.zancrow321.minecraftygo.engine.data.CardInfo;
+import io.github.zancrow321.minecraftygo.engine.data.Declarable;
 import io.github.zancrow321.minecraftygo.engine.protocol.DuelMessage.*;
 import io.github.zancrow321.minecraftygo.engine.protocol.Responses;
 
@@ -18,9 +19,11 @@ import java.util.Random;
 public final class RandomResponder implements Responder {
     private final Random random;
     private final List<Integer> announceCandidates;
+    private final CardDatabase cards;
 
     public RandomResponder(long seed, CardDatabase cards) {
         this.random = new Random(seed);
+        this.cards = cards;
         List<Integer> codes = new ArrayList<>();
         for (CardInfo card : cards.all()) {
             codes.add(card.code());
@@ -56,10 +59,19 @@ public final class RandomResponder implements Responder {
             case RockPaperScissors p -> Responses.hand(1 + random.nextInt(3));
             case AnnounceRace p -> Responses.race(randomBits(p.available(), p.count()));
             case AnnounceAttribute p -> Responses.attribute((int) randomBits(p.available(), p.count()));
-            // The filter is an RPN program; rather than evaluate it, walk the pool until the core accepts one.
-            case AnnounceCard p -> Responses.cardCode(announceCandidates.get(attempt % announceCandidates.size()));
+            case AnnounceCard p -> announce(p, attempt);
             case AnnounceNumber p -> Responses.index(random.nextInt(p.values().size()));
         };
+    }
+
+    /** A random name the core will accept, or, should none fit, walk all cards until it accepts one. */
+    private byte[] announce(AnnounceCard p, int attempt) {
+        List<Integer> fitting = announceCandidates.stream()
+                .filter(code -> Declarable.test(cards.get(code), p.opcodes())).toList();
+        if (fitting.isEmpty() || attempt > 0) {
+            return Responses.cardCode(announceCandidates.get(attempt % announceCandidates.size()));
+        }
+        return Responses.cardCode(fitting.get(random.nextInt(fitting.size())));
     }
 
     private byte[] idle(SelectIdleCmd p) {

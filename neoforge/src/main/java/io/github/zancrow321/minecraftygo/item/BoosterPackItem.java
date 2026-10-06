@@ -2,6 +2,7 @@ package io.github.zancrow321.minecraftygo.item;
 
 import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.engine.data.BoosterSets;
+import io.github.zancrow321.minecraftygo.engine.data.Products;
 import io.github.zancrow321.minecraftygo.network.PackOpenedPayload;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -43,18 +44,25 @@ public final class BoosterPackItem extends Item {
         return id == null ? null : YgoData.sets().get(id);
     }
 
+    /** The product a pack is from, whether or not its set is in this server's pool; {@code null} if random. */
+    private static Products.Product product(ItemStack stack) {
+        String id = stack.get(YgoComponents.PACK_SET.get());
+        return id == null ? null : YgoData.products().get(id);
+    }
+
     @Override
     public Component getName(ItemStack stack) {
-        BoosterSets.BoosterSet set = set(stack);
-        return set == null ? super.getName(stack)
-                : Component.translatable("item.minecraftygo.booster_pack.of", set.name());
+        Products.Product product = product(stack);
+        return product == null ? super.getName(stack)
+                : Component.translatable("item.minecraftygo.booster_pack.of", product.name());
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-        BoosterSets.BoosterSet set = set(stack);
-        tooltip.add(Component.translatable(set == null ? "item.minecraftygo.booster_pack.random"
-                : "item.minecraftygo.booster_pack.tooltip", set == null ? "" : set.code()).withStyle(ChatFormatting.GRAY));
+        Products.Product product = product(stack);
+        tooltip.add(Component.translatable(product == null ? "item.minecraftygo.booster_pack.random"
+                : "item.minecraftygo.booster_pack.tooltip", product == null ? "" : product.code())
+                .withStyle(ChatFormatting.GRAY));
     }
 
     @Override
