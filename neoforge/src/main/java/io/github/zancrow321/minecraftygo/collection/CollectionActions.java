@@ -99,7 +99,11 @@ public final class CollectionActions {
         boolean extra = DeckRules.isExtra(card);
         int copies = (int) (deck.main().stream().filter(c -> c == code).count()
                 + deck.extra().stream().filter(c -> c == code).count());
-        int limit = YgoData.banlist().limit(code);
+        if (!YgoData.playable(player).test(code)) {
+            player.displayClientMessage(Component.translatable("message.minecraftygo.deck.locked", card.name()), true);
+            return;
+        }
+        int limit = YgoData.banlist(player).limit(code);
         if (copies >= limit) {
             player.displayClientMessage(Component.translatable(limit == 0 ? "message.minecraftygo.deck.forbidden"
                     : "message.minecraftygo.deck.limit", card.name(), limit), true);

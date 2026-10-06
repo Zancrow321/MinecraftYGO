@@ -1,5 +1,7 @@
 package io.github.zancrow321.minecraftygo.client.collection;
 
+import io.github.zancrow321.minecraftygo.YgoData;
+import io.github.zancrow321.minecraftygo.engine.data.PoolMode;
 import io.github.zancrow321.minecraftygo.item.BinderItem;
 import io.github.zancrow321.minecraftygo.item.YgoItems;
 import io.github.zancrow321.minecraftygo.network.CollectionActionPayload;
@@ -13,6 +15,8 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.util.List;
+
 /**
  * Browses a binder: click a card to take one out (shift-click for every copy), or put all loose cards in.
  */
@@ -23,6 +27,7 @@ public final class BinderScreen extends Screen {
     private final InteractionHand hand;
     private CardGrid grid;
     private EditBox search;
+    private boolean unlockedOnly;
     private int left;
     private int top;
 
@@ -45,6 +50,13 @@ public final class BinderScreen extends Screen {
         search = addRenderableWidget(new EditBox(font, left + 10, top + 16, 120, 14,
                 Component.translatable("screen.minecraftygo.search")));
         search.setHint(Component.translatable("screen.minecraftygo.search"));
+        grid.locked = code -> YgoData.locked(minecraft.player, code);
+        if (YgoData.poolMode() == PoolMode.PROGRESSION) {
+            addRenderableWidget(Button.builder(unlockedLabel(), b -> {
+                unlockedOnly = !unlockedOnly;
+                b.setMessage(unlockedLabel());
+            }).bounds(left + 134, top + 15, 58, 16).build());
+        }
         addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.binder.deposit"),
                 b -> send(Action.DEPOSIT_ALL, 0, false)).bounds(left + WIDTH - 110, top + 15, 100, 16).build());
         addRenderableWidget(Button.builder(Component.literal("<"), b -> grid.page = Math.max(0, grid.page - 1))
@@ -61,7 +73,12 @@ public final class BinderScreen extends Screen {
             return;
         }
         var collection = BinderItem.collection(binder());
-        grid.set(collection.counts(), search.getValue());
+        java.util.Map<Integer, Integer> shown = collection.counts();
+        if (unlockedOnly) {
+            shown = new java.util.HashMap<>(shown);
+            shown.keySet().removeIf(code -> grid.locked.test(code));
+        }
+        grid.set(shown, search.getValue());
         super.render(g, mouseX, mouseY, partialTick);
         g.drawString(font, title.copy().append(" · " + collection.total() + " cards, "
                 + collection.counts().size() + " different"), left + 10, top + 4, 0xFFFFFFFF, false);
@@ -72,9 +89,17 @@ public final class BinderScreen extends Screen {
         }
         CardGrid.Entry hovered = grid.at(mouseX, mouseY);
         if (hovered != null) {
-            g.renderComponentTooltip(font, CardGrid.tooltip(hovered.code(),
-                    "Click: take one out · Shift-click: take all"), mouseX, mouseY);
+            List<Component> tooltip = CardGrid.tooltip(hovered.code(), "Click: take one out · Shift-click: take all");
+            if (grid.locked.test(hovered.code())) {
+                tooltip.add(Math.min(1, tooltip.size()), CardGrid.lockedLine(hovered.code()));
+            }
+            g.renderComponentTooltip(font, tooltip, mouseX, mouseY);
         }
+    }
+
+    private Component unlockedLabel() {
+        return Component.translatable(unlockedOnly ? "screen.minecraftygo.binder.unlocked_only"
+                : "screen.minecraftygo.binder.all_cards");
     }
 
     @Override

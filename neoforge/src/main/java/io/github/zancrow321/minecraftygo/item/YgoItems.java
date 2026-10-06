@@ -50,7 +50,7 @@ public final class YgoItems {
                         output.accept(DuelDome.PLATFORM_ITEM.get());
                         output.accept(DUELIST_SPAWN_EGG.get());
                         output.accept(BOOSTER_PACK.get());
-                        YgoData.sets().sets().keySet().forEach(id -> output.accept(BoosterPackItem.of(id)));
+                        YgoData.allSets().sets().keySet().forEach(id -> output.accept(BoosterPackItem.of(id)));
                     })
                     .build());
 

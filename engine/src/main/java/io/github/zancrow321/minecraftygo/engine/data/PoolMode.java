@@ -4,6 +4,8 @@ import java.util.Locale;
 
 /** Which of the bundled cards a server plays with. */
 public enum PoolMode {
+    /** Every official card, unlocked product by product in TCG release order (see {@link Progression}). */
+    PROGRESSION,
     /** Monsters with a 3D model and the spells and traps of their era: the pool before all cards were bundled. */
     MODELED,
     /** Every official card. */
