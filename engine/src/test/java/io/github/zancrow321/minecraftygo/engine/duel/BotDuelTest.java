@@ -9,6 +9,8 @@ import io.github.zancrow321.minecraftygo.engine.data.BundledScripts;
 import io.github.zancrow321.minecraftygo.engine.data.CardDatabase;
 import io.github.zancrow321.minecraftygo.engine.data.CardPool;
 import io.github.zancrow321.minecraftygo.engine.data.Deck;
+import io.github.zancrow321.minecraftygo.engine.data.DeckRules;
+import io.github.zancrow321.minecraftygo.engine.data.PoolMode;
 import io.github.zancrow321.minecraftygo.engine.protocol.DuelMessage;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -54,11 +56,20 @@ class BotDuelTest {
         play(seed, randomDeck(cards, pool, new Random(seed)), randomDeck(cards, pool, new Random(seed * 7919)));
     }
 
+    /** Random decks from every bundled card, played under the modern rules. */
+    @ParameterizedTest
+    @ValueSource(longs = {41, 43, 45, 47, 49, 51, 53, 55})
+    void botsFinishAnAllCardsDuel(long seed) {
+        CardDatabase cards = CardDatabase.loadBundled();
+        CardPool pool = CardPool.of(PoolMode.ALL, cards);
+        play(seed, randomDeck(cards, pool, new Random(seed)), randomDeck(cards, pool, new Random(seed * 7919)));
+    }
+
     static Deck randomDeck(CardDatabase cards, CardPool pool, Random random) {
         List<Integer> main = new ArrayList<>();
         List<Integer> extra = new ArrayList<>();
         for (int code : pool.monsters()) {
-            (cards.card(code).is(OcgConstants.TYPE_FUSION) ? extra : main).add(code);
+            (DeckRules.isExtra(cards.card(code)) ? extra : main).add(code);
         }
         main.addAll(pool.spellsTraps());
         Collections.shuffle(main, random);

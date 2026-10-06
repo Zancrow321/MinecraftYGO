@@ -14,8 +14,14 @@ public final class OcgConstants {
     public static final int TYPE_NORMAL = 0x10;
     public static final int TYPE_FUSION = 0x40;
     public static final int TYPE_RITUAL = 0x80;
+    public static final int TYPE_SYNCHRO = 0x2000;
     public static final int TYPE_TOKEN = 0x4000;
     public static final int TYPE_EQUIP = 0x40000;
+    public static final int TYPE_XYZ = 0x800000;
+    public static final int TYPE_PENDULUM = 0x1000000;
+    public static final int TYPE_LINK = 0x4000000;
+    /** The types that go in the extra deck. */
+    public static final int TYPES_EXTRA_DECK = TYPE_FUSION | TYPE_SYNCHRO | TYPE_XYZ | TYPE_LINK;
 
     public static final int LOCATION_DECK = 0x01;
     public static final int LOCATION_HAND = 0x02;

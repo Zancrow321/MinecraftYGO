@@ -72,6 +72,9 @@ public final class YgoVillagers {
         NeoForge.EVENT_BUS.addListener(YgoVillagers::onWandererTrades);
     }
 
+    /** How many booster sets a card trader sells by name. */
+    private static final int SOLD_SETS = 5;
+
     private static void onVillagerTrades(VillagerTradesEvent event) {
         if (event.getType() != CARD_TRADER.get()) {
             return;
@@ -85,7 +88,8 @@ public final class YgoVillagers {
         trades.get(1).add(buy(Items.PAPER, 24, 16, 2));
         trades.get(2).add(sell(10, YgoItems::starterYugi, 2, 10));
         trades.get(2).add(sell(10, YgoItems::starterKaiba, 2, 10));
-        for (int i = 1; i < sets.size(); i++) {
+        // The first few sets only: with every card in play there are hundreds (the rotating stock comes later).
+        for (int i = 1; i < Math.min(sets.size(), SOLD_SETS); i++) {
             String set = sets.get(i);
             trades.get(Math.min(5, i + 1)).add(sell(3 + i, () -> BoosterPackItem.of(set), 16, 5));
         }

@@ -57,6 +57,8 @@ public final class MinecraftYgo {
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> DuelManager.get(event.getServer()).tick());
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
+                net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player,
+                        new io.github.zancrow321.minecraftygo.network.PoolModePayload(YgoData.poolMode().id()));
                 DuelManager.get(player.server).onLogin(player);
             }
         });

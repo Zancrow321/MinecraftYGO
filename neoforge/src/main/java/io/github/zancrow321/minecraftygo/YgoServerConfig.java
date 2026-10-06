@@ -31,6 +31,17 @@ public final class YgoServerConfig {
                     + "the bot makes their choices until the turn ends.")
             .defineInRange("turnTimeLimit", 0, 0, 3600);
 
+    public static final ModConfigSpec.ConfigValue<String> POOL_MODE = BUILDER.push("pool")
+            .comment("Which cards are in play: \"modeled\" (monsters with a 3D model and the spells and traps of "
+                    + "their era) or \"all\" (every official card; packs come from every TCG booster). Takes effect "
+                    + "after a restart.")
+            .define("mode", "modeled", v -> v instanceof String s
+                    && io.github.zancrow321.minecraftygo.engine.data.PoolMode.parse(s) != null);
+
+    static {
+        BUILDER.pop();
+    }
+
     public static final ModConfigSpec SPEC = BUILDER.build();
 
     private YgoServerConfig() {

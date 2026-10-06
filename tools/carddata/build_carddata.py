@@ -2,22 +2,28 @@
 """Builds the card data and Lua scripts the mod bundles for its card pool.
 
 Reads EDOPro's card database (BabelCDB cards.cdb) and card scripts (ProjectIgnis CardScripts) and writes,
-for just the cards in the pool:
+for the cards it bundles:
 
   engine/src/main/resources/minecraftygo/cards.json    stats + text for each card
   engine/src/main/resources/minecraftygo/scripts/      base scripts and c<code>.lua for each card
   engine/src/main/resources/minecraftygo/system_strings.json   EDOPro's system strings (prompt texts)
 
-The pool is pool.json (written by tools/models/import_models.py), every card in the deck lists under
-engine/src/main/resources/minecraftygo/decks/*.ydk, and every card those cards' scripts mention by passcode
-(tokens, fusion materials), so the engine never asks for a card it doesn't know.
+With --all (what the mod ships since M11a) every official card in cards.cdb is written: all OCG and TCG cards, without
+anime, Rush Duel or Speed Duel skill cards, which live in other BabelCDB files. Which of them a server lets players
+use is decided at runtime by the pool mode. Without --all, only the modeled pool is written: pool.json (from
+tools/models/import_models.py), every card in the deck lists under engine/src/main/resources/minecraftygo/decks/*.ydk,
+and every card those cards' scripts mention by passcode (tokens, fusion materials), so the engine never asks for a
+card it doesn't know.
+
+Scripts that fail to load are found by the engine test ScriptLoadTest; such cards go in broken.json, which keeps
+them out of the pool until the script is fixed.
 
 Usage:
   git clone --depth 1 https://github.com/ProjectIgnis/BabelCDB
   git clone --depth 1 https://github.com/ProjectIgnis/CardScripts
   git clone --depth 1 https://github.com/ProjectIgnis/Distribution
   python3 tools/carddata/build_carddata.py --cdb BabelCDB/cards.cdb --scripts CardScripts \
-      --strings Distribution/config/strings.conf
+      --strings Distribution/config/strings.conf --all
 """
 import argparse
 import json
@@ -35,6 +41,7 @@ SCRIPT_DIRS = ["official", "pre-errata", "goat", "pre-release"]
 TYPE_NORMAL = 0x10
 TYPE_TOKEN = 0x4000
 TYPE_LINK = 0x4000000
+TYPE_PENDULUM = 0x1000000
 
 
 def find_script(scripts, code):
@@ -85,8 +92,11 @@ def main():
     parser.add_argument("--cdb", required=True, type=Path, help="path to BabelCDB cards.cdb")
     parser.add_argument("--scripts", required=True, type=Path, help="path to a CardScripts checkout")
     parser.add_argument("--strings", required=True, type=Path, help="path to Distribution/config/strings.conf")
+    parser.add_argument("--all", action="store_true", help="write every official card, not only the modeled pool")
     args = parser.parse_args()
 
+    db = sqlite3.connect(args.cdb)
+    known = {code for (code,) in db.execute("select id from datas")}
     pool = set()
     pool_file = RESOURCES / "pool.json"
     if pool_file.exists():
@@ -94,9 +104,10 @@ def main():
         pool.update(data["monsters"], data["spellsTraps"])
     for deck in sorted((RESOURCES / "decks").glob("*.ydk")):
         pool.update(read_ydk(deck))
+    if args.all:
+        # OCG (0x1) and TCG (0x2) cards only; the anime, Rush and skill cards are in other databases anyway.
+        pool.update(code for (code,) in db.execute("select id from datas where ot & 3 != 0"))
 
-    db = sqlite3.connect(args.cdb)
-    known = {code for (code,) in db.execute("select id from datas")}
     missing = sorted(pool - known)
     if missing:
         sys.exit(f"cards missing from the database: {missing}")
@@ -123,7 +134,10 @@ def main():
                           + " from texts where id=?", (code,)).fetchone()
         cards.append(card_row(row, text))
 
-    (RESOURCES / "cards.json").write_text(json.dumps(cards, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")
+    # One card per line keeps the file small enough to bundle and still diffable.
+    (RESOURCES / "cards.json").write_text(
+        "[\n" + ",\n".join(json.dumps(c, ensure_ascii=False, separators=(",", ":")) for c in cards) + "\n]\n",
+        encoding="utf-8")
 
     out = RESOURCES / "scripts"
     shutil.rmtree(out, ignore_errors=True)
@@ -133,9 +147,16 @@ def main():
     unscripted = []
     for card in cards:
         source = sources[card["code"]]
+        alias = card["alias"]
+        if source is None and alias and abs(alias - card["code"]) < 10:
+            # Alternate artworks run their original card's script (ocgcore interpreter::register_card).
+            if sources.get(alias) is None and not card["type"] & (TYPE_NORMAL | TYPE_TOKEN):
+                unscripted.append(f"{card['code']} {card['name']}")
+            continue
         if source is None:
-            # Normal monsters and tokens have no script; the core falls back to built-in behaviour.
-            if card["type"] & (TYPE_NORMAL | TYPE_TOKEN):
+            # Normal monsters and tokens have no script; the core falls back to built-in behaviour. Normal pendulum
+            # monsters are the exception: their scales come from a script.
+            if card["type"] & (TYPE_NORMAL | TYPE_TOKEN) and not card["type"] & TYPE_PENDULUM:
                 continue
             unscripted.append(f"{card['code']} {card['name']}")
             continue

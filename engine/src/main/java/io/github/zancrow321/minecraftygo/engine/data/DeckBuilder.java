@@ -33,8 +33,11 @@ public final class DeckBuilder {
             if (card == null || card.is(TYPE_RITUAL) || card.is(TYPE_TOKEN)) {
                 continue;
             }
-            if (card.is(TYPE_FUSION)) {
-                fusions.add(code);
+            if (DeckRules.isExtra(card)) {
+                // Only fusions so far; synchro, xyz and link summons come with the extra deck support for NPCs.
+                if (card.is(TYPE_FUSION)) {
+                    fusions.add(code);
+                }
             } else if (card.data().level() <= 4) {
                 low.add(code);
             } else if (card.data().level() <= 6) {
