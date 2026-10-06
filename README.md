@@ -109,10 +109,15 @@ In game:
   players. Cores and platforms can also be placed by hand: platforms 4 to 14 blocks from the core, up to 2 off the
   center line.
 - **NPC duelists** wander the overworld now and then, each with a title, one of the default skins, a duel disk and
-  its own random deck from the card pool. Right-click one to duel it; beat it and it gives you a booster pack, then
-  won't duel you again for a Minecraft day. They can't be hurt while dueling. A **Duelist Spawn Egg** is in the
-  creative tab. NPCs and the `bot` seats play with a heuristic AI that summons its strongest monsters, only attacks
-  when it wins the fight and saves its traps for your turn.
+  its own deck: a well-known tournament deck of an era that has come (Goat Control, Chaos Return, Tele-DAD...), a
+  starter or structure deck that is out, or a random deck from the card pool with an Extra Deck of what the pool
+  offers, favoring cards with a 3D model. The NPC says which deck it plays. Right-click one to duel it; beat it and
+  it gives you a booster pack, then won't duel you again for a Minecraft day. They can't be hurt while dueling. A
+  **Duelist Spawn Egg** is in the creative tab. NPCs and the `bot` seats play with a heuristic AI that summons its
+  strongest monsters, brings out a Synchro, Xyz or Link monster when that beats what it has, Pendulum Summons,
+  only attacks when it wins the fight and saves its traps for your turn. Tournament decks live in
+  `engine/src/main/resources/minecraftygo/tournament_decks.json`, listed by card name with the date they were
+  played.
 - **Cosmetics:** `/ygo cosmetics` (or K) picks your **disk skin** (Battle City, Slifer Red, Ra Yellow, Obelisk Blue,
   Shadow, Crimson, Gold) and your **card sleeves**, which your opponent sees on your face-down cards and piles.
   Locked ones show how to unlock them: winning duels, beating NPC duelists or opening booster packs. The skin is

@@ -14,6 +14,7 @@ public final class OcgConstants {
     public static final int TYPE_NORMAL = 0x10;
     public static final int TYPE_FUSION = 0x40;
     public static final int TYPE_RITUAL = 0x80;
+    public static final int TYPE_TUNER = 0x1000;
     public static final int TYPE_SYNCHRO = 0x2000;
     public static final int TYPE_TOKEN = 0x4000;
     public static final int TYPE_EQUIP = 0x40000;

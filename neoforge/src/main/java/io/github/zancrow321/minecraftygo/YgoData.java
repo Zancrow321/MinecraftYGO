@@ -40,6 +40,8 @@ public final class YgoData {
     private static final Lazy<Progression> PROGRESSION = new Lazy<>(() -> new Progression(products(), cards(),
             everything(), banlists()));
     private static final Lazy<Banlists> BANLISTS = new Lazy<>(Banlists::loadBundled);
+    private static final Lazy<io.github.zancrow321.minecraftygo.engine.data.TournamentDecks> TOURNAMENT_DECKS =
+            new Lazy<>(() -> io.github.zancrow321.minecraftygo.engine.data.TournamentDecks.loadBundled(cards()));
     private static final Lazy<Banlist> ERA_BANLIST = new Lazy<>(YgoData::loadEraBanlist);
     private static final Lazy<BoosterSets> MODELED_SETS = new Lazy<>(BoosterSets::loadBundled);
     private static final Lazy<BoosterSets> ALL_SETS =
@@ -188,6 +190,11 @@ public final class YgoData {
         return candidates.stream().filter(p -> p.kind() != Products.Kind.TIN && set(p.id()) != null
                 || poolMode() != PoolMode.MODELED && io.github.zancrow321.minecraftygo.item.SealedProductItem.sealed(p))
                 .toList();
+    }
+
+    /** The hand-kept tournament decks NPCs play. */
+    public static io.github.zancrow321.minecraftygo.engine.data.TournamentDecks tournamentDecks() {
+        return TOURNAMENT_DECKS.get();
     }
 
     /** Every TCG product in release order. */

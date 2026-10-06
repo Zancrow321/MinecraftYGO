@@ -35,6 +35,8 @@ public final class DuelistAi implements Responder {
     private final Map<String, Integer> activations = new HashMap<>();
     /** The ATK of the monster just declared as an attacker, while its target is chosen. */
     private int attackingWith = -1;
+    /** Set while a Pendulum Summon picks its monsters: then it takes as many as it may, strongest first. */
+    private boolean pendulumSummoning;
 
     public DuelistAi(long seed, CardDatabase cards) {
         this.cards = cards;
@@ -45,12 +47,14 @@ public final class DuelistAi implements Responder {
     public byte[] respond(Prompt prompt, Board board, int attempt) {
         if (attempt > 0) {
             attackingWith = -1;
+            pendulumSummoning = false;
             return fallback.respond(prompt, attempt - 1);
         }
         if (board.turn() != turn) {
             turn = board.turn();
             idleActions = 0;
             activations.clear();
+            pendulumSummoning = false;
         }
         int me = prompt.player();
         return switch (prompt) {
@@ -62,6 +66,7 @@ public final class DuelistAi implements Responder {
             case SelectYesNo p -> Responses.yesNo(true);
             case SelectPosition p -> position(p, board, me);
             case SelectTribute p -> tribute(p, board, me);
+            case SelectUnselectCard p -> unselect(p, board, me);
             default -> fallback.respond(prompt, 0);
         };
     }
@@ -69,6 +74,7 @@ public final class DuelistAi implements Responder {
     // --- Main phase ----------------------------------------------------------------------------------------------
 
     private byte[] idle(SelectIdleCmd p, Board board, int me) {
+        pendulumSummoning = false;
         if (++idleActions > MAX_IDLE_ACTIONS) {
             return endMain(p, board, me);
         }
@@ -79,17 +85,29 @@ public final class DuelistAi implements Responder {
                 return Responses.command(Responses.IDLE_ACTIVATE, i);
             }
         }
+        // Special Summons from the hand or the Pendulum Zones; the Extra Deck waits until the materials are out.
         for (int i = 0; i < p.specialSummonable().size(); i++) {
-            if (tryActivation(p.specialSummonable().get(i))) {
+            CardRef ref = p.specialSummonable().get(i);
+            if (ref.loc().location() != LOCATION_EXTRA && tryActivation(ref)) {
+                pendulumSummoning = ref.loc().location() == LOCATION_SZONE;
                 return Responses.command(Responses.IDLE_SPECIAL_SUMMON, i);
             }
         }
+        // Turn what is out into something stronger first; then the Normal Summon can't eat the materials as tributes.
+        int upgrade = extraDeckUpgrade(p.specialSummonable(), board, me);
+        if (upgrade >= 0) {
+            return Responses.command(Responses.IDLE_SPECIAL_SUMMON, upgrade);
+        }
         int threat = strongestAttack(board.side(1 - me).monsters());
-        int summon = best(p.summonable(), this::attackOf);
-        if (summon >= 0 && (attackOf(p.summonable().get(summon)) >= threat || p.monsterSettable().isEmpty())) {
+        int summon = best(p.summonable(), ref -> worthTributes(ref, board, me) ? attackOf(ref) : Integer.MIN_VALUE);
+        if (summon >= 0 && worthTributes(p.summonable().get(summon), board, me)
+                && (attackOf(p.summonable().get(summon)) >= threat || p.monsterSettable().isEmpty())) {
             return Responses.command(Responses.IDLE_SUMMON, summon);
         }
-        int set = best(p.monsterSettable(), this::defenseOf);
+        int set = best(p.monsterSettable(), ref -> worthTributes(ref, board, me) ? defenseOf(ref) : Integer.MIN_VALUE);
+        if (set >= 0 && !worthTributes(p.monsterSettable().get(set), board, me)) {
+            set = -1;
+        }
         if (set >= 0) {
             return Responses.command(Responses.IDLE_SET_MONSTER, set);
         }
@@ -122,9 +140,62 @@ public final class DuelistAi implements Responder {
         return true;
     }
 
+    /**
+     * The strongest Synchro, Xyz, Link or Fusion monster it can bring out, if that beats every monster it already
+     * has: its materials leave the field, so a weaker one would be a step back.
+     */
+    private int extraDeckUpgrade(List<CardRef> summonable, Board board, int me) {
+        int strongestOwn = 0;
+        for (CardState c : board.side(me).monsters()) {
+            if (c != null && faceUp(c)) {
+                strongestOwn = Math.max(strongestOwn, c.attack());
+            }
+        }
+        int best = -1;
+        int bestAttack = strongestOwn;
+        for (int i = 0; i < summonable.size(); i++) {
+            CardRef ref = summonable.get(i);
+            int atk = attackOf(ref);
+            if (ref.loc().location() == LOCATION_EXTRA && atk > bestAttack && activations.getOrDefault(key(ref), 0) == 0) {
+                best = i;
+                bestAttack = atk;
+            }
+        }
+        if (best >= 0) {
+            tryActivation(summonable.get(best));
+        }
+        return best;
+    }
+
+    /**
+     * Whether a Tribute Summon (or Set) of this monster beats what it costs: the monsters it would tribute, the
+     * weakest ones out, must all be worth less than it. A Level 4 or lower costs nothing.
+     */
+    private boolean worthTributes(CardRef ref, Board board, int me) {
+        CardInfo card = info(ref);
+        if (card == null || card.data().level() <= 4) {
+            return true;
+        }
+        int needed = card.data().level() >= 7 ? 2 : 1;
+        List<Integer> values = new ArrayList<>();
+        List<CardState> mine = board.side(me).monsters();
+        for (int i = 0; i < mine.size(); i++) {
+            CardState c = mine.get(i);
+            if (c != null) {
+                values.add(c.code() == 0 ? 1500 : Math.max(c.attack(), c.defense()));
+            }
+        }
+        values.sort(null);
+        int worth = Math.max(card.data().attack(), card.data().defense());
+        return values.size() < needed || values.get(needed - 1) < worth;
+    }
+
+    private static String key(CardRef ref) {
+        return ref.code() + "@" + ref.loc();
+    }
+
     private boolean tryActivation(CardRef ref) {
-        String key = ref.code() + "@" + ref.loc();
-        int used = activations.merge(key, 1, Integer::sum);
+        int used = activations.merge(key(ref), 1, Integer::sum);
         return used <= MAX_ACTIVATIONS;
     }
 
@@ -185,6 +256,12 @@ public final class DuelistAi implements Responder {
         List<Integer> order = new ArrayList<>();
         for (int i = 0; i < p.cards().size(); i++) {
             order.add(i);
+        }
+        if (pendulumSummoning && !opponents) {
+            // Pendulum Summon: as many monsters as allowed, strongest first.
+            pendulumSummoning = false;
+            order.sort(Comparator.comparingInt((Integer i) -> -value(p.cards().get(i), board)));
+            return Responses.cards(order.subList(0, Math.min(p.max(), order.size())));
         }
         if (attackingWith >= 0 && opponents) {
             // Choosing an attack target: the strongest monster the attacker still beats.
@@ -253,6 +330,32 @@ public final class DuelistAi implements Responder {
             total += p.cards().get(i).releaseParam();
         }
         return Responses.cards(chosen);
+    }
+
+    /**
+     * Picking cards one at a time, as Link and some Synchro materials are: the least valuable cards first, done as
+     * soon as the core lets it finish. A Pendulum Summon instead takes the strongest monsters while it may.
+     */
+    private byte[] unselect(SelectUnselectCard p, Board board, int me) {
+        if (pendulumSummoning) {
+            if (p.selectable().isEmpty() && (p.finishable() || p.cancelable())) {
+                pendulumSummoning = false;
+                return Responses.cancel();
+            }
+            if (p.selectable().isEmpty()) {
+                return fallback.respond(p, 0);
+            }
+            return Responses.toggleCard(best(p.selectable(), ref -> value(ref, board)));
+        }
+        if (p.finishable()) {
+            return Responses.cancel();
+        }
+        if (p.selectable().isEmpty()) {
+            return fallback.respond(p, 0);
+        }
+        boolean opponents = p.selectable().stream().allMatch(c -> c.loc().controller() != me);
+        int sign = opponents ? 1 : -1;
+        return Responses.toggleCard(best(p.selectable(), ref -> sign * value(ref, board)));
     }
 
     // --- Helpers -------------------------------------------------------------------------------------------------

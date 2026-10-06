@@ -3,9 +3,15 @@ package io.github.zancrow321.minecraftygo.entity;
 import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.cosmetics.Cosmetics;
 import io.github.zancrow321.minecraftygo.duel.DuelManager;
+import io.github.zancrow321.minecraftygo.engine.data.Banlist;
 import io.github.zancrow321.minecraftygo.engine.data.Deck;
 import io.github.zancrow321.minecraftygo.engine.data.DeckBuilder;
+import io.github.zancrow321.minecraftygo.engine.data.DeckRules;
+import io.github.zancrow321.minecraftygo.engine.data.PoolMode;
+import io.github.zancrow321.minecraftygo.engine.data.Products;
+import io.github.zancrow321.minecraftygo.engine.data.TournamentDecks;
 import io.github.zancrow321.minecraftygo.item.BoosterPackItem;
+import io.github.zancrow321.minecraftygo.progression.StarterDecks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -35,10 +41,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * A wandering duelist. Right-click it to duel; beat it and it hands over a booster pack, then wants a day to
@@ -53,6 +64,7 @@ public final class DuelistNpc extends PathfinderMob {
     private static final List<String> TITLES = List.of("Rare Hunter", "Card Shark", "Wandering Duelist",
             "Duel Monk", "Tournament Hopeful", "Puzzle Duelist", "Dragon Tamer", "Bug Collector", "Ghoul");
     private static final long REMATCH_TICKS = 24000;
+    private static final Pattern STRUCTURE = Pattern.compile("starter deck|structure deck");
 
     private long deckSeed;
     private String sleeve = Cosmetics.DEFAULT_SLEEVE;
@@ -114,12 +126,58 @@ public final class DuelistNpc extends PathfinderMob {
         return getName().getString();
     }
 
-    /** The NPC's deck at a progression step: the same seed always builds from the cards out by then. */
+    /**
+     * The NPC's deck at a progression step: the same seed always picks the same kind of deck from what is out by
+     * then. About a third of the duelists play a tournament deck of an era that has come, another third a starter
+     * or structure deck, the rest a deck {@link DeckBuilder} builds from the pool. With only the modeled cards in play
+     * they all build their own.
+     */
     public Deck deck(int step) {
+        PoolMode mode = YgoData.poolMode();
+        Banlist banlist = YgoData.banlist(step);
+        Random random = new Random(deckSeed);
+        int kind = random.nextInt(3);
+        if (mode != PoolMode.MODELED && kind < 2) {
+            Deck curated = kind == 0 ? tournamentDeck(step, banlist, random) : structureDeck(step, banlist, random);
+            if (curated != null) {
+                return curated;
+            }
+        }
         return DeckBuilder.random(duelistName(), deckSeed, YgoData.cards(),
-                YgoData.poolMode() == io.github.zancrow321.minecraftygo.engine.data.PoolMode.PROGRESSION
-                        ? YgoData.progression().pool(step) : YgoData.pool(),
-                YgoData.banlist(step));
+                mode == PoolMode.PROGRESSION ? YgoData.progression().pool(step) : YgoData.pool(), banlist);
+    }
+
+    private static Deck tournamentDeck(int step, Banlist banlist, Random random) {
+        LocalDate date = YgoData.poolMode() == PoolMode.PROGRESSION ? YgoData.progression().date(step) : LocalDate.MAX;
+        List<TournamentDecks.Entry> decks = YgoData.tournamentDecks().by(date);
+        if (decks.isEmpty()) {
+            return null;
+        }
+        // The newest era's deck most often: that is what the duelists of the day play.
+        TournamentDecks.Entry entry = random.nextInt(2) == 0 ? decks.get(decks.size() - 1)
+                : decks.get(random.nextInt(decks.size()));
+        return entry.legal(banlist, YgoData.cards());
+    }
+
+    private static Deck structureDeck(int step, Banlist banlist, Random random) {
+        List<Products.Product> products = YgoData.products().products();
+        int last = YgoData.poolMode() == PoolMode.PROGRESSION ? Math.min(step, products.size() - 1)
+                : products.size() - 1;
+        List<Deck> decks = new ArrayList<>();
+        for (Products.Product p : products.subList(0, last + 1)) {
+            if (p.kind() == Products.Kind.DECK && STRUCTURE.matcher(p.name().toLowerCase(Locale.ROOT)).find()) {
+                Deck deck = StarterDecks.deckOf(p, banlist);
+                if (DeckRules.problems(deck, YgoData.cards(), banlist).isEmpty()) {
+                    decks.add(new Deck(p.name(), deck.main(), deck.extra(), List.of()));
+                }
+            }
+        }
+        if (decks.isEmpty()) {
+            return null;
+        }
+        // Lean towards the newer decks, as with the tournament decks.
+        int newest = decks.size() - 1;
+        return decks.get(random.nextInt(2) == 0 ? newest : random.nextInt(decks.size()));
     }
 
     public boolean isDueling() {

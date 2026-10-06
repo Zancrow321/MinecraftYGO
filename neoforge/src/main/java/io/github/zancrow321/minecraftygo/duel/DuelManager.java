@@ -312,8 +312,14 @@ public final class DuelManager {
         int botIndex = 0;
         for (Entrant e : entrants) {
             if (e.player() == null) {
-                decks.add(invite.npc() != null ? invite.npc().deck(step)
-                        : Deck.bundled(BOT_DECKS.get(botIndex++ % BOT_DECKS.size())));
+                Deck npcDeck = invite.npc() != null ? invite.npc().deck(step)
+                        : Deck.bundled(BOT_DECKS.get(botIndex++ % BOT_DECKS.size()));
+                if (invite.npc() != null && !npcDeck.name().equals(invite.npc().duelistName())) {
+                    // A tournament or structure deck: say which, so the player knows what they are up against.
+                    broadcast(entrants, Component.literal(invite.npc().duelistName() + " plays " + npcDeck.name()
+                            + "."));
+                }
+                decks.add(npcDeck);
                 boxes.add(ItemStack.EMPTY);
                 continue;
             }
