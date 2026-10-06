@@ -1,5 +1,5 @@
 """Draws the 16x16 item and block textures for the card collection items, the Card Trader's clothes and the Duel
-Dome blocks and the Card Vending Machine.
+Dome blocks and the Card Vending Machine and the Shop Stand.
 
 Run from the repository root: python3 tools/textures/make_collection_textures.py
 """
@@ -437,6 +437,58 @@ def card_machine():
     save(from_rows(MACHINE_TOP, MACHINE_P), "block/card_machine_top.png")
 
 
+# Shop Stand: a market stall with a red and white awning on top and cards on show over a wooden counter.
+STAND_P = {
+    "o": (70, 45, 25, 255), "p": (150, 110, 70, 255), "P": (125, 90, 55, 255), "r": (200, 45, 45, 255),
+    "w": (240, 235, 225, 255), "R": (150, 30, 30, 255), "a": (225, 180, 60, 255), "b": (70, 110, 205, 255),
+    "c": (160, 70, 190, 255), "k": (40, 30, 25, 255), "W": (205, 200, 190, 255),
+    "i": (95, 65, 40, 255),
+}
+STAND_TOP = [
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "RRRRWWWWRRRRWWWW",
+]
+STAND_SIDE = [
+    "rrrrwwwwrrrrwwww",
+    "rrrrwwwwrrrrwwww",
+    "RrrRWwwWRrrRWwwW",
+    "iRRiiWWiiRRiiWWi",
+    "oiiiiiiiiiiiiiio",
+    "oikkkkikkkkikkko",
+    "oikaakikbbkikcco",
+    "oikaakikbbkikcco",
+    "oikaakikbbkikcco",
+    "oikkkkikkkkikkko",
+    "oooooooooooooooo",
+    "opppppppppppppPo",
+    "oPPPPPPPPPPPPPPo",
+    "opppppppppppppPo",
+    "oPPPPPPPPPPPPPPo",
+    "oooooooooooooooo",
+]
+
+
+def shop_stand():
+    for rows in (STAND_TOP, STAND_SIDE):
+        assert len(rows) == 16 and all(len(r) == 16 for r in rows), rows
+    save(from_rows(STAND_TOP, STAND_P), "block/shop_stand_top.png")
+    save(from_rows(STAND_SIDE, STAND_P), "block/shop_stand_side.png")
+
+
 def main():
     save(from_rows(PACK_BODY, GREYS), "item/booster_pack.png")
     save(from_rows(PACK_TRIM, TRIM), "item/booster_pack_trim.png")
@@ -456,6 +508,7 @@ def main():
     save(metal_tile((45, 60, 110), (90, 160, 255), PLATFORM_SIDE), "block/duelist_platform_side.png")
     save(from_rows([r.ljust(16, ".")[:16] for r in KIT], KIT_P), "item/duel_dome_kit.png")
     card_machine()
+    shop_stand()
 
 
 if __name__ == "__main__":

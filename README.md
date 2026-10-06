@@ -64,6 +64,15 @@ In game:
   binders, deck boxes, starter decks and duel disks), whether each player can only buy the `[shop.stock]` amounts a
   day (`limitPerPlayer`), `command` to open it anywhere with `/ygo shop` (operators always can), `operatorsOnly` so
   only operators place and break machines, `enabled` and the shop's `name`.
+- A **Shop Stand** (red wool, white wool, red wool / plank, chest, plank / three planks) is a shop any player runs.
+  The owner right-clicks it to stock it: put a ware in the top row and its price below it (both are only samples, a
+  left click with an item sets one, a right click adds one more), then the wares themselves in the stock rows. Other
+  players right-click it for a trade window with every ware that is in stock, and their payment lands in the till for
+  the owner to take out; sneak-click to see your own stand as a buyer. Renamed in an anvil, a stand takes that name. Only the
+  owner (and operators) can break it, which drops the stock and the till. `[shop.players]` sets `enabled`,
+  `maxPerPlayer` (3, 0 for any number), `currencyOnly` (prices in the `[shop] currency` only), `taxPercent` (kept back
+  from every sale), `onlyYgoItems` (stands sell only this mod's items), `operatorsManage` and `notifyOwner` (a chat
+  message to the owner on every sale).
 - **First deck:** on their first join a player picks a deck: Yugi's or Kaiba's starter deck, or any starter or
   structure deck that is already out. It comes in a deck box, ready to duel with. "Later" puts it off; `/ygo starter`
   opens the choice again until one is taken.

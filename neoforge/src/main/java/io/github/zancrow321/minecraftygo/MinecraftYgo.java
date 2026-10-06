@@ -47,6 +47,7 @@ public final class MinecraftYgo {
         YgoComponents.register(modBus);
         PlayerCosmetics.register(modBus);
         YgoVillagers.register(modBus);
+        io.github.zancrow321.minecraftygo.village.PlayerShops.register(modBus);
         RandomCardFunction.register(modBus);
         DuelDome.register(modBus);
         DuelArena.register(modBus);

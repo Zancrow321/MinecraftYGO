@@ -93,6 +93,12 @@ public final class YgoClient {
         }
 
         @SubscribeEvent
+        public static void registerScreens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
+            event.register(io.github.zancrow321.minecraftygo.village.PlayerShops.STAND_MENU.get(),
+                    io.github.zancrow321.minecraftygo.client.shop.ShopStandScreen::new);
+        }
+
+        @SubscribeEvent
         @SuppressWarnings("unchecked")
         public static void addLayers(EntityRenderersEvent.AddLayers event) {
             for (var skin : event.getSkins()) {

@@ -116,6 +116,11 @@ public final class YgoServerConfig {
             .comment("The Card Vending Machine: a block that sells at the [shop] prices and currency, without a "
                     + "villager.").push("machine"));
 
+    /** Shop Stands, the shops players run, in {@code [shop.players]}. */
+    public static final PlayerShops PLAYER_SHOPS = new PlayerShops(BUILDER.pop()
+            .comment("Shop Stands: shops that players set up to sell their own cards, packs and anything else.")
+            .push("players"));
+
     static {
         BUILDER.pop();
     }
@@ -224,6 +229,35 @@ public final class YgoServerConfig {
                     .define("operatorsOnly", false);
             name = builder.comment("The shop's name at the top of its window; empty for \"Card Vending Machine\".")
                     .define("name", "");
+        }
+    }
+
+    /** The settings of Shop Stands. */
+    public static final class PlayerShops {
+        public final ModConfigSpec.BooleanValue enabled;
+        public final ModConfigSpec.IntValue maxPerPlayer;
+        public final ModConfigSpec.BooleanValue currencyOnly;
+        public final ModConfigSpec.IntValue taxPercent;
+        public final ModConfigSpec.BooleanValue onlyYgoItems;
+        public final ModConfigSpec.BooleanValue operatorsManage;
+        public final ModConfigSpec.BooleanValue notifyOwner;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private PlayerShops(ModConfigSpec.Builder builder) {
+            enabled = builder.comment("Shop Stands sell. Off, they say the shop is closed (their owners can still "
+                    + "take their things out).").define("enabled", true);
+            maxPerPlayer = builder.comment("How many Shop Stands each player can set up; 0 means any number.")
+                    .defineInRange("maxPerPlayer", 3, 0, 1000);
+            currencyOnly = builder.comment("Prices must be in the [shop] currency. Off, owners can ask for any item "
+                    + "(diamonds, a rare card...).").define("currencyOnly", false);
+            taxPercent = builder.comment("This share of every price is kept back from the owner, in percent, "
+                    + "rounded down (so a price of 1 is never taxed).").defineInRange("taxPercent", 0, 0, 100);
+            onlyYgoItems = builder.comment("Stands only sell this mod's items: cards, packs, decks, tins, binders, "
+                    + "deck boxes, duel disks...").define("onlyYgoItems", false);
+            operatorsManage = builder.comment("Operators can open, stock and break anyone's stand. Off, only the "
+                    + "owner can.").define("operatorsManage", true);
+            notifyOwner = builder.comment("Tell the owner in chat when someone buys from their stand.")
+                    .define("notifyOwner", true);
         }
     }
 

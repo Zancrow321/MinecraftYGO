@@ -13,10 +13,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.MerchantMenu;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffer;
@@ -83,12 +80,18 @@ public final class MachineShop implements Merchant {
                 : Component.literal(name);
         shop.setTradingPlayer(player);
         OptionalInt id = player.openMenu(new SimpleMenuProvider((containerId, inventory, p) ->
-                new Menu(containerId, inventory, shop), title));
+                new ShopMerchantMenu(containerId, inventory, shop, shop::near), title));
         if (id.isPresent()) {
             player.sendMerchantOffers(id.getAsInt(), shop.offers, 0, 0, false, false);
         } else {
             shop.setTradingPlayer(null);
         }
+    }
+
+    /** Whether a player is still at the machine, which is still there. */
+    private boolean near(Player player) {
+        return pos == null || player.level().getBlockState(pos).getBlock() instanceof CardMachine
+                && player.distanceToSqr(pos.getCenter()) <= 64;
     }
 
     /** The products a machine sells, newest first. */
@@ -174,51 +177,6 @@ public final class MachineShop implements Merchant {
     @Override
     public boolean isClientSide() {
         return false;
-    }
-
-    /** The villager trade window, for a machine instead of a villager. */
-    private static final class Menu extends MerchantMenu {
-        private final MachineShop shop;
-
-        Menu(int containerId, Inventory inventory, MachineShop shop) {
-            super(containerId, inventory, shop);
-            this.shop = shop;
-        }
-
-        @Override
-        public boolean stillValid(Player player) {
-            return super.stillValid(player) && (shop.pos == null
-                    || player.level().getBlockState(shop.pos).getBlock() instanceof CardMachine
-                    && player.distanceToSqr(shop.pos.getCenter()) <= 64);
-        }
-
-        /** As the villager's, but without its trade sound, which only works for a villager. */
-        @Override
-        public ItemStack quickMoveStack(Player player, int index) {
-            if (index != RESULT_SLOT) {
-                return super.quickMoveStack(player, index);
-            }
-            Slot slot = slots.get(index);
-            if (!slot.hasItem()) {
-                return ItemStack.EMPTY;
-            }
-            ItemStack stack = slot.getItem();
-            ItemStack before = stack.copy();
-            if (!moveItemStackTo(stack, 3, 39, true)) {
-                return ItemStack.EMPTY;
-            }
-            slot.onQuickCraft(stack, before);
-            if (stack.isEmpty()) {
-                slot.setByPlayer(ItemStack.EMPTY);
-            } else {
-                slot.setChanged();
-            }
-            if (stack.getCount() == before.getCount()) {
-                return ItemStack.EMPTY;
-            }
-            slot.onTake(player, stack);
-            return before;
-        }
     }
 
     /** How much each player bought from machines today, for {@code limitPerPlayer}. */

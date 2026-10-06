@@ -39,6 +39,17 @@
   - `command`: `/ygo shop` opens the machine's shop anywhere (operators can always use it).
   - `operatorsOnly`: only operators place and break machines, for server-run shops.
   - `enabled` and `name` (the title of its window).
+- New **Shop Stand** (red wool, white wool, red wool / plank, chest, plank / three planks): a shop run by a player.
+  Its owner sets up to nine wares with a price each (any item, a diamond or a rare card too), fills the stock and
+  takes the takings out of the till; everyone else gets a trade window with what is in stock. Set in
+  `[shop.players]`:
+  - `maxPerPlayer`: how many stands each player can set up (3; 0 for any number).
+  - `currencyOnly`: prices must be in the `[shop] currency`.
+  - `taxPercent`: this share of every price is kept back from the owner.
+  - `onlyYgoItems`: stands only sell this mod's items.
+  - `operatorsManage`: operators can open, stock and break anyone's stand.
+  - `notifyOwner`: the owner gets a chat message on every sale.
+  - `enabled`: off, stands are closed (owners can still empty them).
 
 ### Deck editor
 - The deck box filters the cards you own by type (monsters, spells, traps, extra deck), attribute and level and sorts
