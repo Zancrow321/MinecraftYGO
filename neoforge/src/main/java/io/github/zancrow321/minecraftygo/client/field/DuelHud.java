@@ -2,6 +2,7 @@ package io.github.zancrow321.minecraftygo.client.field;
 
 import io.github.zancrow321.minecraftygo.YgoData;
 import io.github.zancrow321.minecraftygo.client.ClientDuel;
+import io.github.zancrow321.minecraftygo.client.duel.DuelFeedback;
 import io.github.zancrow321.minecraftygo.client.duel.DuelMode;
 import io.github.zancrow321.minecraftygo.client.duel.DuelStaging;
 import io.github.zancrow321.minecraftygo.client.duel.DuelUi;
@@ -43,10 +44,11 @@ public final class DuelHud {
         int opp = 1 - me;
         Board board = view.board();
         float partial = delta.getGameTimeDeltaPartialTick(false);
+        DuelFeedback.update(view);
 
         // Life points: opponent top-left, you bottom-left.
-        lifePanel(g, font, 6, 6, view.names().get(opp), board.side(opp), false);
-        lifePanel(g, font, 6, h - 70, view.names().get(me), board.side(me), true);
+        lifePanel(g, font, 6, 6, view.names().get(opp), board.side(opp), opp, false);
+        lifePanel(g, font, 6, h - 70, view.names().get(me), board.side(me), me, true);
         damagePopups(g, font, me, h, partial);
 
         // Turn and phase, top centre, between the life panel and the right edge.
@@ -89,16 +91,21 @@ public final class DuelHud {
     }
 
     /** A tag team's name ("Alex & Steve") goes on two lines so it fits the panel. */
-    private static void lifePanel(GuiGraphics g, Font font, int x, int y, String name, Board.Side side, boolean own) {
+    private static void lifePanel(GuiGraphics g, Font font, int x, int y, String name, Board.Side side, int player,
+                                  boolean own) {
         String[] names = name.split(" & ");
         int extra = (names.length - 1) * 11;
         g.fill(x, y - (own ? extra : 0), x + 96, y + 38 + (own ? 0 : extra), PANEL);
+        int flash = DuelFeedback.flash(player);
+        if (flash != 0) {
+            g.fill(x, y - (own ? extra : 0), x + 96, y + 38 + (own ? 0 : extra), flash);
+        }
         int top = own ? y - extra : y;
         for (int i = 0; i < names.length; i++) {
             g.drawString(font, font.plainSubstrByWidth(names[i] + (i < names.length - 1 ? " &" : ""), 88), x + 4,
                     top + 3 + i * 11, own ? 0xFF88D8FF : 0xFFFF9090);
         }
-        g.drawString(font, "LP " + side.lifePoints(), x + 4, top + 14 + extra, GOLD);
+        g.drawString(font, "LP " + DuelFeedback.lifePoints(player, side.lifePoints()), x + 4, top + 14 + extra, GOLD);
         g.drawString(font, "Hand " + side.hand().size() + "  Deck " + side.deckCount(), x + 4, top + 26 + extra, DIM);
     }
 
@@ -117,7 +124,12 @@ public final class DuelHud {
             }
             boolean damage = e.kind() == FieldEvent.Kind.DAMAGE;
             String text = (damage ? "-" : "+") + e.amount();
-            g.drawString(font, text, 62, y, (alpha << 24) | (damage ? 0xFF4040 : 0x40FF80));
+            // Twice the size of the panel's text, beside the life points.
+            g.pose().pushPose();
+            g.pose().translate(56, y - 4, 0);
+            g.pose().scale(2, 2, 1);
+            g.drawString(font, text, 0, 0, (alpha << 24) | (damage ? 0xFF4040 : 0x40FF80));
+            g.pose().popPose();
         }
     }
 }

@@ -120,6 +120,7 @@ public final class DuelUi {
         pressedHand = -1;
         dragging = false;
         pile = null;
+        DuelFeedback.reset();
     }
 
     /** A tooltip for a control in the phase column, drawn last. */
@@ -245,6 +246,9 @@ public final class DuelUi {
                 return;
             }
         }
+        if (chain(p)) {
+            DuelFeedback.responseOpened();
+        }
         if (commands(p)) {
             // Back at the main or battle phase: whatever was being played has landed.
             pendingZone = null;
@@ -358,6 +362,7 @@ public final class DuelUi {
             menu(g, font, mx, my, w, h);
         }
         cardPanel(g, font, w, h);
+        DuelFeedback.render(g, font, w, h);
         DuelStaging.renderBanners(g, font, w, h);
         if (phaseTip != null) {
             g.renderTooltip(font, Component.literal(phaseTip), mx, my);

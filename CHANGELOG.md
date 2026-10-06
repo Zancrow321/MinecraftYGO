@@ -10,6 +10,11 @@
   1 to 9 pick a plain answer (the dialog numbers its buttons).
 - Responses can be switched to "Pass all" with C, the Ask/Skip button under Log or the duel menu: every chance to
   respond that you don't have to take is passed without asking. The choice is kept in the client config.
+- A banner and a chime mark each new turn ("YOUR TURN" or the opponent's), a smaller banner the Battle Phase, Main
+  Phase 2 and End Phase, and a ping says when you get a chance to respond. They come in step with the field's
+  effects, not ahead of them.
+- Life points count down or up when they change, in step with the damage effect, and their panel flashes red or
+  green; the floating change beside them is twice as big.
 
 ### Deck editor
 - The deck box filters the cards you own by type (monsters, spells, traps, extra deck), attribute and level and sorts

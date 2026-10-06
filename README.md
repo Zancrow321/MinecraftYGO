@@ -146,7 +146,7 @@ In game:
   top-down and first-person camera, and Escape opens the duel menu (camera, responses, surrender). Space passes a
   response, confirms a pick or goes to the next phase, Enter confirms a pick, 1 to 9 pick a plain answer, and C (or
   the Ask/Skip button under Log) switches between being asked to respond and passing every response you don't have
-  to take.
+  to take. Banners and chimes mark each turn and phase, and life points count down when damage lands.
 - `/ygo gallery [page]` puts a page of modeled monsters in front of you (operators only); `/ygo gallery clear` removes them.
 
 Card artwork is downloaded on first view and cached in `minecraftygo/card_art/` (the cropped art for holograms in
