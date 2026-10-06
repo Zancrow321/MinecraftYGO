@@ -6,8 +6,13 @@
 - Every official card is bundled now: about 14,700 cards with their scripts (the jar grows to about 20 MB).
 - New server setting `[pool] mode`: `modeled` (as before, the default) or `all`, which plays with every card. With
   `all`, packs, loot and NPC decks draw from every card and booster packs exist for every TCG booster, from Legend
-  of Blue Eyes to today. Monsters without a model show up as their card for now; the artwork hologram comes next.
+  of Blue Eyes to today. Monsters without a model stand on the field as an artwork hologram (below).
 - Decks may only hold cards the server plays with; a deck box with other cards says which one isn't allowed.
+- Monsters without a model stand on the field as an artwork hologram: the art floats above the zone in a frame of
+  its attribute's color, with the name above and ATK/DEF below. It flickers in when summoned, lunges when it
+  attacks, tilts back with a blue frame in defense and fades when it leaves the field.
+- Resource packs can give any monster a 3D model (or replace a bundled one). `tools/models/make_pack.py` builds such
+  a pack from Blockbench files; see `docs/resource-pack-models.md`.
 - Synchro, Xyz and Link monsters count as extra deck cards.
 - "Declare a card name" lists only the names the card allows, and long lists can be searched by typing.
 

@@ -57,7 +57,7 @@ public final class MonsterEntity extends Entity implements GeoEntity {
 
     /** @return this card's model, or {@code null} if it has none */
     public CardPool.Model model() {
-        return YgoData.modeled().model(code());
+        return YgoData.model(code());
     }
 
     @Override
