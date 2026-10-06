@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+### Duel wins and losses
+- Every player's duel record is kept: wins, losses and draws, against players and against NPCs and bots, and how
+  many wins in a row. The result screen shows it after each duel; `/ygo stats` shows yours, `/ygo stats <player>`
+  someone else's (also when they are offline), `/ygo stats top` the ten players with the most wins, and
+  `/ygo stats reset <player>` (operators) clears one. A duelist who logs off mid-duel still has the loss counted.
+- What a won or lost duel brings is set in the server config, separately for duels against players
+  (`[results.players]`) and against NPC duelists (`[results.npcs]`): booster packs, emeralds and experience for each
+  winner (`winPacks`, `winEmeralds`, `winXp`) and as a consolation for each loser (`lossPacks`, `lossEmeralds`,
+  `lossXp`). By default it stays as before: one booster pack for beating an NPC, nothing else.
+- `[results] rewardBotDuels` gives duels against the bot the NPC rewards too (off by default), `announce` tells the
+  whole server who won each duel, `trackRecord` turns the record off, and `[results.npcs] rematchMinutes` sets how
+  long a beaten NPC won't duel you again (20 minutes, one Minecraft day, as before).
+
 ### Duel comfort
 - Graveyards, banished cards and extra decks of both duelists can be looked through at any time: click the pile
   (right-click when a card there can be activated) and a window shows its cards, newest first. Hovering a card
