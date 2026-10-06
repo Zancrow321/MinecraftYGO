@@ -3,7 +3,7 @@ facing off with a spark between them. It is drawn on a 32x32 grid and scaled up 
 stays a crisp block.
 
 Writes the icon (shown in the mod list and used as the Modrinth/CurseForge icon), the same icon without its
-background, and a 1280x400 banner with the mod's name for the top of the store descriptions.
+background, and an 840x240 banner with the mod's name for the top of the store descriptions.
 
 Run from the repository root: python3 tools/textures/make_logo.py
 """
@@ -136,11 +136,12 @@ def text(canvas, s, ox, oy, px, top, bottom, side):
 
 
 def banner():
-    w, h, px = 1280, 400, 8
+    # 840 wide: CurseForge takes description images narrower than 850 px.
+    w, h, px = 840, 240, 5
     img = stone(w // px, h // px, 3).resize((w, h), Image.NEAREST)
-    img.alpha_composite(icon(background=False).resize((N * 10, N * 10), Image.NEAREST), (40, 40))
-    text(img, "JUST ANOTHER", 400, 92, 9, 0xFFFFFF, 0xB8C2D2, 0x5A6378)
-    text(img, "DUELING MOD", 400, 198, 13, 0xFFF3B0, 0xFFC21F, 0x9A5A08)
+    img.alpha_composite(icon(background=False).resize((N * 6, N * 6), Image.NEAREST), (24, 24))
+    text(img, "JUST ANOTHER", 250, 58, 6, 0xFFFFFF, 0xB8C2D2, 0x5A6378)
+    text(img, "DUELING MOD", 250, 122, 9, 0xFFF3B0, 0xFFC21F, 0x9A5A08)
     return img
 
 
