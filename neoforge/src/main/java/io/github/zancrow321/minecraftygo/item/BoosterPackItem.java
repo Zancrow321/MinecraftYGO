@@ -23,7 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A sealed booster pack. Right-click to open it: nine cards from its set, one of them rare or better.
+ * A sealed booster pack. Right-click to open it: cards from its set as its pack format says (nine for a core
+ * booster, one of them rare or better).
  */
 public final class BoosterPackItem extends Item {
     public BoosterPackItem(Properties properties) {
@@ -60,9 +61,10 @@ public final class BoosterPackItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         Products.Product product = product(stack);
+        BoosterSets.BoosterSet set = set(stack);
         tooltip.add(Component.translatable(product == null ? "item.minecraftygo.booster_pack.random"
-                : "item.minecraftygo.booster_pack.tooltip", product == null ? "" : product.code())
-                .withStyle(ChatFormatting.GRAY));
+                : "item.minecraftygo.booster_pack.tooltip", product == null ? "" : product.code(),
+                set == null ? BoosterSets.PACK_SIZE : set.profile().size()).withStyle(ChatFormatting.GRAY));
     }
 
     @Override
@@ -97,20 +99,27 @@ public final class BoosterPackItem extends Item {
         return InteractionResultHolder.consume(stack);
     }
 
-    /** A random booster set, each as likely as its number of cards. */
+    /**
+     * A random booster set for loot and random packs: in the modeled pool each as likely as its number of cards,
+     * otherwise newer sets more often (the newest {@code n} times as likely as the oldest of {@code n}).
+     */
     public static BoosterSets.BoosterSet randomSet(RandomSource random) {
         List<BoosterSets.BoosterSet> sets = List.copyOf(YgoData.sets().sets().values());
         if (sets.isEmpty()) {
             return null;
         }
-        int total = sets.stream().mapToInt(s -> s.cards().size()).sum();
-        int pick = random.nextInt(total);
-        for (BoosterSets.BoosterSet s : sets) {
-            pick -= s.cards().size();
+        boolean byAge = YgoData.poolMode() != io.github.zancrow321.minecraftygo.engine.data.PoolMode.MODELED;
+        long total = 0;
+        for (int i = 0; i < sets.size(); i++) {
+            total += byAge ? i + 1 : sets.get(i).cards().size();
+        }
+        long pick = (long) (random.nextDouble() * total);
+        for (int i = 0; i < sets.size(); i++) {
+            pick -= byAge ? i + 1 : sets.get(i).cards().size();
             if (pick < 0) {
-                return s;
+                return sets.get(i);
             }
         }
-        return sets.get(0);
+        return sets.get(sets.size() - 1);
     }
 }

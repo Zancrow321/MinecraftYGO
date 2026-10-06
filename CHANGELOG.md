@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+### Products
+- Booster packs open like the real thing: 9 cards for core boosters (one rare or better until 2014, then a rare and
+  a foil), 3 for tournament packs, 5 for mini boosters, battle packs and speed duel packs, and 5 foils for
+  all-foil sets such as Dragons of Legend. The pack's tooltip says how many cards it holds.
+- New items: **Structure Decks** (right-click puts their 40 cards into your binder) and **Tins** (a promo card with
+  its printed rarity and three booster packs).
+- Card traders keep a shop that follows the unlocked products: the newest packs, structure decks and tins always,
+  plus older ones that rotate every week. New server settings `[shop] newestAlways`, `rotatingOlder` and
+  `rotationDays`.
+- New players pick their first deck: Yugi's or Kaiba's starter deck, or any starter or structure deck that is out,
+  in a deck box. `/ygo starter` opens the choice again for someone who chose "Later". Forbidden cards stay out of it.
+- Packs from loot and duel rewards favor newer sets.
+
 ### Progression
 - New worlds start with Legend of Blue Eyes White Dragon, and operators unlock the TCG sets in release order:
   `/ygo progression status`, `next [count]`, `until <set code or date>`, `set <set code or date>` and `list`. Chat

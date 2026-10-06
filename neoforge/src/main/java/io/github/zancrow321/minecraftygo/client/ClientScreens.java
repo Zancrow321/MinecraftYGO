@@ -28,6 +28,11 @@ public final class ClientScreens {
         Minecraft.getInstance().setScreen(new CosmeticsScreen(payload));
     }
 
+    public static void starterChoices(io.github.zancrow321.minecraftygo.network.StarterChoicesPayload payload) {
+        Minecraft.getInstance().setScreen(
+                new io.github.zancrow321.minecraftygo.client.collection.StarterScreen(payload.choices()));
+    }
+
     public static void packOpened(PackOpenedPayload payload) {
         Minecraft.getInstance().setScreen(new PackOpenScreen(payload.setName(), payload.cards()));
     }

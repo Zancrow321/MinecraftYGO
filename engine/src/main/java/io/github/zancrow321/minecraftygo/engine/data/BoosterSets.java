@@ -22,7 +22,7 @@ import java.util.random.RandomGenerator;
  */
 public record BoosterSets(Map<String, BoosterSet> sets) {
     public static final String RESOURCE = "/minecraftygo/sets.json";
-    /** Cards in a pack: eight commons and one rare-or-better, as in the original boosters. */
+    /** Cards in a classic pack: eight commons and one rare-or-better, as in the original boosters. */
     public static final int PACK_SIZE = 9;
 
     public enum Rarity {
@@ -62,9 +62,17 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
     public record Card(int code, Rarity rarity) {
     }
 
-    public record BoosterSet(String id, String code, String name, List<Card> cards) {
+    /**
+     * @param profile how its packs are made
+     */
+    public record BoosterSet(String id, String code, String name, List<Card> cards, PackProfile profile) {
         public BoosterSet {
             cards = List.copyOf(cards);
+        }
+
+        /** A set with the classic nine-card packs. */
+        public BoosterSet(String id, String code, String name, List<Card> cards) {
+            this(id, code, name, cards, PackProfile.CLASSIC_CORE);
         }
 
         public List<Card> of(Rarity rarity) {
@@ -72,27 +80,27 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
         }
 
         /**
-         * Opens a pack: eight commons and one card that is secret (1 in 24), ultra (1 in 12), super (1 in 6) or
-         * rare, falling back to the next lower rarity the set doesn't have.
+         * Opens a pack as its {@link #profile} says: commons, then each better slot rolled, falling back to the next
+         * lower rarity the set doesn't have.
          */
         public List<Card> open(RandomGenerator random) {
             Map<Rarity, List<Card>> byRarity = new EnumMap<>(Rarity.class);
             for (Rarity r : Rarity.values()) {
                 byRarity.put(r, of(r));
             }
-            List<Card> pack = new ArrayList<>(PACK_SIZE);
+            List<Card> pack = new ArrayList<>(profile.size());
             List<Card> commons = byRarity.get(Rarity.COMMON).isEmpty() ? cards : byRarity.get(Rarity.COMMON);
-            for (int i = 0; i < PACK_SIZE - 1; i++) {
+            for (int i = 0; i < profile.size() - profile.slots().size(); i++) {
                 pack.add(commons.get(random.nextInt(commons.size())));
             }
-            double roll = random.nextDouble();
-            Rarity foil = roll < 1 / 24.0 ? Rarity.SECRET : roll < 1 / 24.0 + 1 / 12.0 ? Rarity.ULTRA
-                    : roll < 1 / 24.0 + 1 / 12.0 + 1 / 6.0 ? Rarity.SUPER : Rarity.RARE;
-            while (foil.ordinal() > 0 && byRarity.get(foil).isEmpty()) {
-                foil = Rarity.values()[foil.ordinal() - 1];
+            for (PackProfile.Slot slot : profile.slots()) {
+                Rarity rarity = slot.roll(random);
+                while (rarity.ordinal() > 0 && byRarity.get(rarity).isEmpty()) {
+                    rarity = Rarity.values()[rarity.ordinal() - 1];
+                }
+                List<Card> pool = byRarity.get(rarity).isEmpty() ? cards : byRarity.get(rarity);
+                pack.add(pool.get(random.nextInt(pool.size())));
             }
-            List<Card> slot = byRarity.get(foil).isEmpty() ? cards : byRarity.get(foil);
-            pack.add(slot.get(random.nextInt(slot.size())));
             return pack;
         }
     }
@@ -121,16 +129,26 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
     public static BoosterSets fromProducts(Products products, CardPool pool) {
         Map<String, BoosterSet> sets = new LinkedHashMap<>();
         for (Products.Product product : products.products()) {
-            if (product.kind() != Products.Kind.BOOSTER) {
+            if (!isBooster(product)) {
                 continue;
             }
             List<Card> cards = product.cards().stream().filter(p -> pool.contains(p.code()))
                     .map(p -> new Card(p.code(), Rarity.ofPrinted(p.rarity()))).toList();
             if (!cards.isEmpty()) {
-                sets.put(product.id(), new BoosterSet(product.id(), product.code(), product.name(), cards));
+                sets.put(product.id(), new BoosterSet(product.id(), product.code(), product.name(), cards,
+                        PackProfile.of(product)));
             }
         }
         return new BoosterSets(sets);
+    }
+
+    /**
+     * Whether a product comes in packs: the boosters, and the special products and tins big enough to be a set of
+     * their own (Duelist Packs, Dragons of Legend, Speed Duel boxes, Mega-Tin Mega Packs...) rather than a few promos.
+     */
+    public static boolean isBooster(Products.Product product) {
+        return product.kind() == Products.Kind.BOOSTER || (product.kind() == Products.Kind.SPECIAL
+                || product.kind() == Products.Kind.TIN) && product.cards().size() >= 20;
     }
 
     /** The booster sets of the modeled pool. */

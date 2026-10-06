@@ -6,7 +6,7 @@
   "item.minecraftygo.booster_pack": "Booster-Pack",
   "item.minecraftygo.booster_pack.of": "%s Booster-Pack",
   "item.minecraftygo.booster_pack.random": "Rechtsklick öffnet ein Pack aus einem zufälligen Set.",
-  "item.minecraftygo.booster_pack.tooltip": "%s · 9 Karten, eine davon Rare oder besser. Rechtsklick zum Öffnen.",
+  "item.minecraftygo.booster_pack.tooltip": "%s · %s Karten pro Pack. Rechtsklick zum Öffnen.",
   "item.minecraftygo.binder": "Kartenordner",
   "item.minecraftygo.binder.tooltip": "%s Karten, %s verschiedene. Rechtsklick zum Durchblättern.",
   "item.minecraftygo.deck_box": "Deckbox",
@@ -53,5 +53,18 @@
   "screen.minecraftygo.duel_menu.surrender": "Aufgeben",
   "screen.minecraftygo.duel_menu.surrender.confirm": "Wirklich aufgeben? Nochmal klicken",
   "screen.minecraftygo.duel_menu.stop_watching": "Zuschauen beenden",
-  "screen.minecraftygo.duel_menu.game_menu": "Spielmenü"
+  "screen.minecraftygo.duel_menu.game_menu": "Spielmenü",
+  "item.minecraftygo.structure_deck": "Struktur-Deck",
+  "item.minecraftygo.structure_deck.tooltip": "%s Karten. Rechtsklick legt sie in deinen Binder.",
+  "item.minecraftygo.tin": "Sammler-Tin",
+  "item.minecraftygo.tin.tooltip": "Eine Promokarte und %2$s Packs. Rechtsklick zum Öffnen.",
+  "message.minecraftygo.tin.opened": "%s: %s und %s Booster-Packs.",
+  "message.minecraftygo.structure_deck.binder": "Die %s Karten aus %s liegen jetzt in deinem Binder.",
+  "message.minecraftygo.structure_deck.loose": "Die %s Karten aus %s liegen in deinem Inventar (mit einem Binder dabei kommen sie gleich hinein).",
+  "screen.minecraftygo.starter": "Wähle dein erstes Deck",
+  "screen.minecraftygo.starter.hint": "Es kommt in einer Deckbox und ist sofort spielbereit. Du wählst nur einmal.",
+  "screen.minecraftygo.starter.later": "Später",
+  "screen.minecraftygo.starter.pick": "%s Karten · Klick nimmt dieses Deck",
+  "message.minecraftygo.starter.given": "Dein erstes Deck: %s. Viel Spaß beim Duellieren!",
+  "message.minecraftygo.starter.taken": "Du hast dein erstes Deck schon gewählt."
 }

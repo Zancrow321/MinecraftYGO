@@ -69,8 +69,12 @@ public final class PackOpenScreen extends Screen {
                 }
                 CardGrid.drawCard(g, font, cards.get(i).code(), x, y0, cardWidth, cardHeight);
                 if (rarity != Rarity.COMMON) {
-                    String label = CardItem.rarityName(rarity);
-                    g.drawCenteredString(font, label, x + cardWidth / 2, y0 + cardHeight + 6, colorOf(rarity));
+                    // Wrapped to the card's width, so the labels of cards side by side don't run into each other.
+                    var lines = font.split(Component.literal(CardItem.rarityName(rarity)), cardWidth + 4);
+                    for (int l = 0; l < lines.size(); l++) {
+                        g.drawCenteredString(font, lines.get(l), x + cardWidth / 2, y0 + cardHeight + 6 + l * 10,
+                                colorOf(rarity));
+                    }
                 }
                 if (mouseX >= x && mouseX < x + cardWidth && mouseY >= y0 && mouseY < y0 + cardHeight) {
                     hovered = i;
@@ -81,7 +85,7 @@ public final class PackOpenScreen extends Screen {
         }
         if (revealed == n) {
             g.drawCenteredString(font, Component.translatable("screen.minecraftygo.pack.close"), width / 2,
-                    y0 + cardHeight + 22, 0xFFAAAAAA);
+                    y0 + cardHeight + 32, 0xFFAAAAAA);
         }
         if (hovered >= 0) {
             g.renderComponentTooltip(font, CardGrid.tooltip(cards.get(hovered).code(), null), mouseX, mouseY);

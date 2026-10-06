@@ -155,7 +155,7 @@ class CollectionDataTest {
             for (BoosterSets.Card card : set.cards()) {
                 assertTrue(all.contains(card.code()), set.id() + " card " + card.code());
             }
-            assertEquals(BoosterSets.PACK_SIZE, set.open(random).size(), set.id());
+            assertEquals(set.profile().size(), set.open(random).size(), set.id());
         }
         assertEquals(BoosterSets.Rarity.SECRET, BoosterSets.Rarity.ofPrinted("Starlight Rare"));
         assertEquals(BoosterSets.Rarity.ULTRA, BoosterSets.Rarity.ofPrinted("Ultimate Rare"));
