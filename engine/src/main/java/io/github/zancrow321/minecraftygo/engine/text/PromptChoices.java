@@ -5,6 +5,7 @@ import io.github.zancrow321.minecraftygo.engine.protocol.Loc;
 import io.github.zancrow321.minecraftygo.engine.protocol.DuelMessage.*;
 import io.github.zancrow321.minecraftygo.engine.protocol.Responses;
 import io.github.zancrow321.minecraftygo.engine.text.PromptView.Choice;
+import io.github.zancrow321.minecraftygo.engine.text.PromptView.Kind;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,7 +31,7 @@ public final class PromptChoices {
             case SelectBattleCmd p -> battle(p);
             case SelectEffectYesNo p -> PromptView.choices(
                     "Use the effect of " + text.cardName(p.card().code()) + "? " + text.description(p.description()),
-                    yesNo());
+                    yesNo(), p.card().code());
             case SelectYesNo p -> PromptView.choices(text.description(p.description()), yesNo());
             case SelectOption p -> {
                 List<Choice> choices = new ArrayList<>();
@@ -40,16 +41,19 @@ public final class PromptChoices {
                 yield PromptView.choices(or(hinted, "Select an option"), choices);
             }
             case SelectCard p -> PromptView.multi(or(hinted, "Select " + range(p.min(), p.max()) + " card(s)"),
-                    cardLabels(p.cards(), p.player()), locs(p.cards()), p.min(), p.max(), Responses::cards,
-                    p.cancelable());
-            case SelectTribute p -> PromptView.multi(or(hinted, "Select monsters to Tribute"),
-                    p.cards().stream().map(c -> cardLabel(c.card(), p.player())).toList(),
-                    locs(p.cards().stream().map(TributeCandidate::card).toList()), 0, p.max(), Responses::cards,
-                    p.cancelable());
-            case SelectSum p -> PromptView.multi(or(hinted, "Select cards totalling " + p.target()),
-                    p.selectable().stream().map(c -> cardLabel(c.card(), p.player())).toList(),
-                    locs(p.selectable().stream().map(SumCandidate::card).toList()), 0, sumMax(p),
-                    Responses::cards, false);
+                    cardLabels(p.cards(), p.player()), locs(p.cards()), codes(p.cards()), p.min(), p.max(),
+                    Responses::cards, p.cancelable());
+            case SelectTribute p -> {
+                List<CardRef> cards = p.cards().stream().map(TributeCandidate::card).toList();
+                yield PromptView.multi(or(hinted, "Select monsters to Tribute"), cardLabels(cards, p.player()),
+                        locs(cards), codes(cards), 0, p.max(), Responses::cards, p.cancelable());
+            }
+            case SelectSum p -> {
+                List<CardRef> cards = p.selectable().stream().map(SumCandidate::card).toList();
+                yield PromptView.multi(or(hinted, "Select cards totalling " + p.target()),
+                        cardLabels(cards, p.player()), locs(cards), codes(cards), 0, sumMax(p), Responses::cards,
+                        false);
+            }
             case SelectChain p -> chain(p);
             // The core's hint for a zone choice is the card being placed, not a text id.
             case SelectPlace p -> place(p, hint != 0 && text.cards().card((int) hint) != null
@@ -60,13 +64,14 @@ public final class PromptChoices {
                 addPosition(choices, p.positions(), 0x2, "Face-down Attack");
                 addPosition(choices, p.positions(), 0x4, "Face-up Defense");
                 addPosition(choices, p.positions(), 0x8, "Face-down Defense");
-                yield PromptView.choices("Choose a position for " + text.cardName(p.code()), choices);
+                yield PromptView.choices("Choose a position for " + text.cardName(p.code()), choices, p.code());
             }
             case SelectUnselectCard p -> {
                 List<Choice> choices = new ArrayList<>();
                 for (int i = 0; i < p.selectable().size(); i++) {
-                    choices.add(new Choice(cardLabel(p.selectable().get(i), p.player()), Responses.toggleCard(i),
-                            p.selectable().get(i).loc()));
+                    CardRef card = p.selectable().get(i);
+                    choices.add(new Choice(cardLabel(card, p.player()), Responses.toggleCard(i), card.loc(),
+                            Kind.OTHER, text.cardName(card.code()), card.code()));
                 }
                 for (int i = 0; i < p.unselectable().size(); i++) {
                     choices.add(new Choice("Unselect " + cardLabel(p.unselectable().get(i), p.player()),
@@ -113,21 +118,19 @@ public final class PromptChoices {
 
     private PromptView idle(SelectIdleCmd p) {
         List<Choice> c = new ArrayList<>();
-        add(c, p.summonable(), "Normal Summon ", Responses.IDLE_SUMMON);
-        add(c, p.specialSummonable(), "Special Summon ", Responses.IDLE_SPECIAL_SUMMON);
-        add(c, p.monsterSettable(), "Set ", Responses.IDLE_SET_MONSTER);
-        add(c, p.spellSettable(), "Set ", Responses.IDLE_SET_SPELL);
-        for (int i = 0; i < p.activatable().size(); i++) {
-            Activatable a = p.activatable().get(i);
-            c.add(new Choice("Activate " + text.cardName(a.card().code()) + ": " + text.description(a.description()),
-                    Responses.command(Responses.IDLE_ACTIVATE, i), a.card().loc()));
-        }
-        add(c, p.repositionable(), "Change position of ", Responses.IDLE_REPOSITION);
+        add(c, p.summonable(), "Normal Summon", Responses.IDLE_SUMMON, Kind.SUMMON);
+        add(c, p.specialSummonable(), "Special Summon", Responses.IDLE_SPECIAL_SUMMON, Kind.SPECIAL_SUMMON);
+        add(c, p.monsterSettable(), "Set", Responses.IDLE_SET_MONSTER, Kind.SET_MONSTER);
+        add(c, p.spellSettable(), "Set", Responses.IDLE_SET_SPELL, Kind.SET_SPELL);
+        activate(c, p.activatable(), "Activate", Responses.IDLE_ACTIVATE, Kind.ACTIVATE);
+        add(c, p.repositionable(), "Change position", Responses.IDLE_REPOSITION, Kind.REPOSITION);
         if (p.canBattle()) {
-            c.add(new Choice("Go to Battle Phase", Responses.command(Responses.IDLE_TO_BATTLE, 0)));
+            c.add(new Choice("Go to Battle Phase", Responses.command(Responses.IDLE_TO_BATTLE, 0), null,
+                    Kind.TO_BATTLE, "Battle Phase", 0));
         }
         if (p.canEnd()) {
-            c.add(new Choice("End turn", Responses.command(Responses.IDLE_TO_END, 0)));
+            c.add(new Choice("End turn", Responses.command(Responses.IDLE_TO_END, 0), null, Kind.TO_END, "End turn",
+                    0));
         }
         return PromptView.choices("Main Phase: choose an action", c);
     }
@@ -136,20 +139,20 @@ public final class PromptChoices {
         List<Choice> c = new ArrayList<>();
         for (int i = 0; i < p.attackers().size(); i++) {
             Attacker a = p.attackers().get(i);
+            String action = a.canAttackDirectly() ? "Attack (directly)" : "Attack";
             c.add(new Choice("Attack with " + text.cardName(a.card().code())
                     + (a.canAttackDirectly() ? " (can attack directly)" : ""),
-                    Responses.command(Responses.BATTLE_ATTACK, i), a.card().loc()));
+                    Responses.command(Responses.BATTLE_ATTACK, i), a.card().loc(), Kind.ATTACK, action,
+                    a.card().code()));
         }
-        for (int i = 0; i < p.activatable().size(); i++) {
-            Activatable a = p.activatable().get(i);
-            c.add(new Choice("Activate " + text.cardName(a.card().code()) + ": " + text.description(a.description()),
-                    Responses.command(Responses.BATTLE_ACTIVATE, i), a.card().loc()));
-        }
+        activate(c, p.activatable(), "Activate", Responses.BATTLE_ACTIVATE, Kind.ACTIVATE);
         if (p.canMain2()) {
-            c.add(new Choice("Go to Main Phase 2", Responses.command(Responses.BATTLE_TO_MAIN2, 0)));
+            c.add(new Choice("Go to Main Phase 2", Responses.command(Responses.BATTLE_TO_MAIN2, 0), null,
+                    Kind.TO_MAIN2, "Main Phase 2", 0));
         }
         if (p.canEnd()) {
-            c.add(new Choice("End turn", Responses.command(Responses.BATTLE_TO_END, 0)));
+            c.add(new Choice("End turn", Responses.command(Responses.BATTLE_TO_END, 0), null, Kind.TO_END,
+                    "End turn", 0));
         }
         return PromptView.choices("Battle Phase: choose an action", c);
     }
@@ -159,10 +162,11 @@ public final class PromptChoices {
         for (int i = 0; i < p.chains().size(); i++) {
             Activatable a = p.chains().get(i);
             c.add(new Choice("Chain " + text.cardName(a.card().code()) + ": " + text.description(a.description()),
-                    Responses.index(i), a.card().loc()));
+                    Responses.index(i), a.card().loc(), Kind.CHAIN, text.description(a.description()),
+                    a.card().code()));
         }
         if (!p.forced()) {
-            c.add(new Choice("Don't respond", Responses.index(-1)));
+            c.add(new Choice("Don't respond", Responses.index(-1), null, Kind.PASS, "Don't respond", 0));
         }
         return PromptView.choices("Respond with a card effect?", c);
     }
@@ -201,7 +205,7 @@ public final class PromptChoices {
             for (int i = 0; i < zones.size(); i++) {
                 Responses.Zone z = zones.get(i);
                 choices.add(new Choice(labels.get(i), Responses.zones(List.of(z)),
-                        new Loc(z.player(), z.location(), z.sequence(), 0)));
+                        new Loc(z.player(), z.location(), z.sequence(), 0), Kind.PLACE, labels.get(i), 0));
             }
             return PromptView.choices(title, choices);
         }
@@ -228,11 +232,26 @@ public final class PromptChoices {
         }, false);
     }
 
-    private void add(List<Choice> choices, List<CardRef> cards, String verb, int type) {
+    private void add(List<Choice> choices, List<CardRef> cards, String verb, int type, Kind kind) {
         for (int i = 0; i < cards.size(); i++) {
-            choices.add(new Choice(verb + text.cardName(cards.get(i).code()), Responses.command(type, i),
-                    cards.get(i).loc()));
+            CardRef card = cards.get(i);
+            String label = (kind == Kind.REPOSITION ? "Change position of " : verb + " ") + text.cardName(card.code());
+            choices.add(new Choice(label, Responses.command(type, i), card.loc(), kind, verb, card.code()));
         }
+    }
+
+    private void activate(List<Choice> choices, List<Activatable> cards, String verb, int type, Kind kind) {
+        for (int i = 0; i < cards.size(); i++) {
+            Activatable a = cards.get(i);
+            String effect = text.description(a.description());
+            choices.add(new Choice(verb + " " + text.cardName(a.card().code()) + ": " + effect,
+                    Responses.command(type, i), a.card().loc(), kind,
+                    effect.equals(verb) ? verb : verb + ": " + effect, a.card().code()));
+        }
+    }
+
+    private static List<Integer> codes(List<CardRef> cards) {
+        return cards.stream().map(CardRef::code).toList();
     }
 
     private static List<Loc> locs(List<CardRef> cards) {

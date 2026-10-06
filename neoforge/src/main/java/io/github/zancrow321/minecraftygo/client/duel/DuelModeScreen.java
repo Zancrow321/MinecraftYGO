@@ -1,10 +1,7 @@
 package io.github.zancrow321.minecraftygo.client.duel;
 
-import io.github.zancrow321.minecraftygo.client.ClientDuel;
 import io.github.zancrow321.minecraftygo.client.YgoClient;
 import io.github.zancrow321.minecraftygo.client.field.ClientField;
-import io.github.zancrow321.minecraftygo.client.field.DuelHud;
-import io.github.zancrow321.minecraftygo.engine.protocol.Loc;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -12,11 +9,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
 
-import static io.github.zancrow321.minecraftygo.engine.OcgConstants.LOCATION_HAND;
-
 /**
- * The see-through layer that holds the mouse cursor in duel mode. It draws nothing itself (the duel HUD and the
- * field show through), turns clicks into picks on the field or hand, and keeps the world running behind it.
+ * The see-through layer that holds the mouse cursor in duel mode. It hands drawing and clicks to {@link DuelUi} and
+ * keeps the world running behind it.
  */
 public final class DuelModeScreen extends Screen {
     public DuelModeScreen() {
@@ -40,6 +35,7 @@ public final class DuelModeScreen extends Screen {
             Vec3[] ray = DuelMode.rayThrough((double) mouseX / width, (double) mouseY / height);
             ClientField.hoverRay(ray[0], ray[1]);
         }
+        DuelUi.render(graphics, mouseX, mouseY, width, height);
     }
 
     @Override
@@ -47,17 +43,15 @@ public final class DuelModeScreen extends Screen {
         if (button != GLFW.GLFW_MOUSE_BUTTON_LEFT || !ClientField.active()) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
-        int handCard = DuelHud.handCardAt(mouseX, mouseY, width, height);
-        if (handCard >= 0) {
-            ClientField.clickAt(new Loc(ClientDuel.view().you(), LOCATION_HAND, handCard, 0));
-            return true;
+        return DuelUi.mouseClicked(mouseX, mouseY, width, height);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            DuelUi.mouseReleased(mouseX, mouseY, width, height);
         }
-        Vec3[] ray = DuelMode.rayThrough(mouseX / width, mouseY / height);
-        ClientField.hoverRay(ray[0], ray[1]);
-        if (ClientField.hovered() != null) {
-            ClientField.clickAt(ClientField.hovered());
-        }
-        return true;
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
@@ -66,12 +60,19 @@ public final class DuelModeScreen extends Screen {
             DuelMode.look(dragX, dragY);
             return true;
         }
+        if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
+            DuelUi.mouseDragged(mouseX, mouseY);
+            return true;
+        }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            if (DuelUi.closeMenu()) {
+                return true;
+            }
             minecraft.setScreen(new DuelMenuScreen());
             return true;
         }

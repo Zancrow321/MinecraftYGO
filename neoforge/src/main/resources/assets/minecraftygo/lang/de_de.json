@@ -43,7 +43,6 @@
   "screen.minecraftygo.duel_mode": "Duell",
   "screen.minecraftygo.duel_menu": "Duell",
   "screen.minecraftygo.duel_menu.continue": "Weiterspielen",
-  "screen.minecraftygo.duel_menu.all_choices": "Alle Optionen (Notfall)",
   "screen.minecraftygo.duel_menu.camera": "Kamera: %s",
   "screen.minecraftygo.duel_menu.camera.top_down": "Draufsicht",
   "screen.minecraftygo.duel_menu.camera.first_person": "Ego-Sicht",

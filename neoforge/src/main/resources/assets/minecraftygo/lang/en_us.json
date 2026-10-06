@@ -47,7 +47,6 @@
   "screen.minecraftygo.duel_mode": "Duel",
   "screen.minecraftygo.duel_menu": "Duel",
   "screen.minecraftygo.duel_menu.continue": "Back to the duel",
-  "screen.minecraftygo.duel_menu.all_choices": "Every choice (emergency list)",
   "screen.minecraftygo.duel_menu.camera": "Camera: %s",
   "screen.minecraftygo.duel_menu.camera.top_down": "Top-down",
   "screen.minecraftygo.duel_menu.camera.first_person": "First person",

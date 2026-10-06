@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Duel mode
+- Your hand is big along the bottom. Click a card for its actions (Normal Summon, Set, Activate...), or drag it
+  onto a zone to play it right there. Cards played from the menu go to the middle-most free zone, unless
+  `chooseZone` is on in the client config.
+- Phase buttons on the right (DP SP M1 BP M2 EP) show the current phase; click BP, M2 or EP to move on.
+- Responses open a window that shows what just happened (the card, what it did, its text) with every card you can
+  respond with and "Don't respond". It folds away with the "-" button to look at the field.
+- Picks from piles open a card window with the art; picks on the field are made there, with Confirm and Cancel
+  on the right. Yes/no, positions and options get a small dialog.
+- The card under the mouse is shown big on the left with its text and current ATK/DEF.
+- The "every choice as a list" screen is gone, from the duel menu too.
+
 ## 0.1.0 (first public beta)
 
 Minecraft 1.21.1, NeoForge 21.1. Requires GeckoLib 4.9 or newer; Curios and Figura are optional.
@@ -21,8 +35,7 @@ Minecraft 1.21.1, NeoForge 21.1. Requires GeckoLib 4.9 or newer; Curios and Figu
   alone), the camera looks down on the field, and you play with the mouse cursor. Click a glowing card in your hand
   or a glowing zone on the field.
 - V switches between the top-down camera and your own eyes; hold the right mouse button to look around.
-- Escape opens the duel menu: back to the duel, every choice as a list (for emergencies), camera, surrender and the
-  game menu.
+- Escape opens the duel menu: back to the duel, camera, surrender and the game menu.
 - Monster models face their opponent.
 
 ### Collecting
