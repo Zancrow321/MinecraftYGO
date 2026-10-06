@@ -129,7 +129,7 @@ public final class TournamentView {
         out.add(t.bool("lockDeck") ? "Decks are locked in at joining" : "Any legal deck box, match by match");
         int fee = t.integer("entryFee");
         if (fee > 0) {
-            out.add("Entry: " + fee + " " + TournamentManager.itemName(t.setting("entryFeeItem"), fee)
+            out.add("Entry: " + Fees.amount(t, fee)
                     + ", pot " + t.pot + " shared " + t.setting("potShare").replace(",", " / ") + " %");
         }
         out.add("Matches on " + manager.arenaCount() + (manager.arenaCount() == 1 ? " arena" : " arenas")

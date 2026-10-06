@@ -194,7 +194,7 @@ public final class TournamentManager {
                 .append(" duelists");
         int fee = t.integer("entryFee");
         if (fee > 0) {
-            out.append(", entry ").append(fee).append(" ").append(itemName(t.setting("entryFeeItem"), fee));
+            out.append(", entry ").append(Fees.amount(t, fee));
         }
         if (t.closesAt > 0) {
             long minutes = Math.max(1, (t.closesAt - now() + 59_999) / 60_000);
@@ -230,12 +230,9 @@ public final class TournamentManager {
         e.deckName = deck.name();
         int fee = t.integer("entryFee");
         if (fee > 0) {
-            Item item = item(t.setting("entryFeeItem"));
-            if (player.getInventory().countItem(item) < fee) {
-                return "Entering costs " + fee + " " + itemName(t.setting("entryFeeItem"), fee) + ".";
+            if (!Fees.take(player, t, fee)) {
+                return "Entering costs " + Fees.amount(t, fee) + ".";
             }
-            player.getInventory().clearOrCountMatchingItems(s -> s.is(item), fee,
-                    player.inventoryMenu.getCraftSlots());
             e.feePaid = fee;
             t.pot += fee;
         }
@@ -244,7 +241,7 @@ public final class TournamentManager {
         t.news(e.name + " joined");
         player.sendSystemMessage(Component.literal("You are in \"" + t.name + "\"" + (t.bool("lockDeck")
                 ? " with " + e.deckName + ". This deck is locked in for the whole tournament." : ".")
-                + (fee > 0 ? " Paid " + fee + " " + itemName(t.setting("entryFeeItem"), fee) + "." : ""))
+                + (fee > 0 ? " Paid " + Fees.amount(t, fee) + "." : ""))
                 .withStyle(ChatFormatting.GREEN));
         announce(t, Component.literal(e.name + " joined \"" + t.name + "\" (" + people + "/"
                 + t.integer("maxPlayers") + ").").withStyle(ChatFormatting.GRAY));
@@ -329,7 +326,7 @@ public final class TournamentManager {
     private void refund(Tournament t, Tournament.Entrant e) {
         if (e.feePaid > 0 && !e.npc()) {
             t.pot -= e.feePaid;
-            owe(e.player, t.setting("entryFeeItem") + " " + e.feePaid);
+            owe(e.player, Fees.payout(t, e.feePaid));
             e.feePaid = 0;
         }
     }
@@ -1053,7 +1050,7 @@ public final class TournamentManager {
             }
             int coins = t.pot * percent / 100 / size;
             if (coins > 0) {
-                got.addAll(owe(e.player, t.setting("entryFeeItem") + " " + coins));
+                got.addAll(owe(e.player, Fees.payout(t, coins)));
             }
             for (String prize : prizesFor(t, p.place())) {
                 got.addAll(owe(e.player, prize));
