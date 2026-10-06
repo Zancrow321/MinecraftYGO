@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.neoforged.bus.api.IEventBus;
 import io.github.zancrow321.minecraftygo.entity.YgoEntities;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
@@ -19,6 +20,8 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class YgoItems {
     private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MinecraftYgo.MOD_ID);
+    private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS =
+            DeferredRegister.create(Registries.RECIPE_SERIALIZER, MinecraftYgo.MOD_ID);
     private static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MinecraftYgo.MOD_ID);
 
@@ -36,6 +39,21 @@ public final class YgoItems {
             new Item.Properties().stacksTo(1));
     public static final DeferredItem<DeckBoxItem> DECK_BOX = ITEMS.registerItem("deck_box", DeckBoxItem::new,
             new Item.Properties().stacksTo(1));
+    public static final DeferredItem<GuideBookItem> GUIDE_BOOK = ITEMS.registerItem("guide_book",
+            GuideBookItem::new, new Item.Properties().stacksTo(1));
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<GuideBookRecipe>> GUIDE_BOOK_RECIPE =
+            RECIPE_SERIALIZERS.register("guide_book", () -> new RecipeSerializer<>() {
+                @Override
+                public com.mojang.serialization.MapCodec<GuideBookRecipe> codec() {
+                    return GuideBookRecipe.CODEC;
+                }
+
+                @Override
+                public net.minecraft.network.codec.StreamCodec<net.minecraft.network.RegistryFriendlyByteBuf,
+                        GuideBookRecipe> streamCodec() {
+                    return GuideBookRecipe.STREAM_CODEC;
+                }
+            });
 
     public static final DeferredItem<DeferredSpawnEggItem> DUELIST_SPAWN_EGG = ITEMS.registerItem("duelist_spawn_egg",
             props -> new DeferredSpawnEggItem(YgoEntities.DUELIST, 0x2B3A67, 0xE0C060, props));
@@ -44,6 +62,7 @@ public final class YgoItems {
                     .title(Component.translatable("itemGroup.minecraftygo"))
                     .icon(() -> DUEL_DISK.get().getDefaultInstance())
                     .displayItems((parameters, output) -> {
+                        output.accept(GUIDE_BOOK.get());
                         output.accept(DUEL_DISK.get());
                         output.accept(BINDER.get());
                         output.accept(DECK_BOX.get());
@@ -75,6 +94,7 @@ public final class YgoItems {
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
+        RECIPE_SERIALIZERS.register(modBus);
         TABS.register(modBus);
     }
 

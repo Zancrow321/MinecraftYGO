@@ -39,6 +39,8 @@ import org.slf4j.Logger;
 @Mod(MinecraftYgo.MOD_ID)
 public final class MinecraftYgo {
     public static final String MOD_ID = "minecraftygo";
+    /** The root of the mod's commands, {@code /ygo}. */
+    public static final String COMMAND = "ygo";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public MinecraftYgo(IEventBus modBus, ModContainer container) {
@@ -68,6 +70,7 @@ public final class MinecraftYgo {
             if (event.getEntity() instanceof ServerPlayer player) {
                 Progress.sync(player);
                 io.github.zancrow321.minecraftygo.progression.StarterDecks.offer(player);
+                io.github.zancrow321.minecraftygo.guide.GuideBook.onLogin(player);
                 DuelManager.get(player.server).onLogin(player);
             }
         });

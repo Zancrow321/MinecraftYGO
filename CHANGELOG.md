@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Handbook
+- New **Duelist's Handbook**: an open book with a title page, clickable contents and 13 chapters on dueling, the duel
+  controls, collecting, decks, the Card Trader, progression and rules, arenas, NPC duelists, cosmetics, every command
+  and every setting. Keys show your current bindings, settings show the world's current values, crafting grids come
+  from the real recipes, and commands can be clicked to type them in chat. English and German.
+- Every player gets it once on their first join (also players of existing worlds, on their next join); `/ygo guide`
+  opens it any time, and a book and paper craft a new one. Both can be turned off: `[guide] giveOnFirstJoin` and
+  `[guide] craftable`.
+
 ### Duel comfort
 - Graveyards, banished cards and extra decks of both duelists can be looked through at any time: click the pile
   (right-click when a card there can be activated) and a window shows its cards, newest first. Hovering a card

@@ -33,6 +33,11 @@ public final class ClientScreens {
                 new io.github.zancrow321.minecraftygo.client.collection.StarterScreen(payload.choices()));
     }
 
+    public static void guide(io.github.zancrow321.minecraftygo.network.GuidePayload payload) {
+        Minecraft.getInstance().setScreen(new io.github.zancrow321.minecraftygo.client.guide.GuideScreen(
+                payload.settings()));
+    }
+
     public static void packOpened(PackOpenedPayload payload) {
         Minecraft.getInstance().setScreen(new PackOpenScreen(payload.setName(), payload.cards()));
     }

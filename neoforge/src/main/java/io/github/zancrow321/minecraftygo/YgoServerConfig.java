@@ -85,6 +85,15 @@ public final class YgoServerConfig {
             .comment("Every this many days the older products change.")
             .defineInRange("rotationDays", 7, 1, 1000);
 
+    public static final ModConfigSpec.BooleanValue GUIDE_ON_FIRST_JOIN = BUILDER.pop().push("guide")
+            .comment("Give every player the Duelist's Handbook (all the mod's info, commands and settings) on their "
+                    + "first join. /ygo guide opens it any time.")
+            .define("giveOnFirstJoin", true);
+
+    public static final ModConfigSpec.BooleanValue GUIDE_CRAFTABLE = BUILDER
+            .comment("The handbook can be crafted from a book and a sheet of paper.")
+            .define("craftable", true);
+
     static {
         BUILDER.pop();
     }

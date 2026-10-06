@@ -11,7 +11,7 @@ import java.util.UUID;
 
 /**
  * How far a world has progressed: the id of its newest unlocked product, and with {@code scope = "player"} each
- * player's. Also who has picked their starter deck. Saved by product id so that a data update which adds products keeps everyone where they were.
+ * player's. Also who has picked their starter deck and who has been given the handbook. Saved by product id so that a data update which adds products keeps everyone where they were.
  */
 public final class ProgressionData extends SavedData {
     private static final String NAME = "minecraftygo_progression";
@@ -21,6 +21,8 @@ public final class ProgressionData extends SavedData {
     private final Map<UUID, String> players = new HashMap<>();
     /** Players who have picked their starter deck. */
     private final java.util.Set<UUID> starters = new java.util.HashSet<>();
+    /** Players who have been given the handbook on their first join. */
+    private final java.util.Set<UUID> guides = new java.util.HashSet<>();
 
     public static ProgressionData get(MinecraftServer server) {
         return server.overworld().getDataStorage().computeIfAbsent(
@@ -56,6 +58,15 @@ public final class ProgressionData extends SavedData {
         setDirty();
     }
 
+    /** Marks the player as given the handbook. @return whether they hadn't been given it before */
+    public boolean giveGuide(UUID player) {
+        if (!guides.add(player)) {
+            return false;
+        }
+        setDirty();
+        return true;
+    }
+
     private static ProgressionData load(CompoundTag tag, HolderLookup.Provider registries) {
         ProgressionData data = new ProgressionData();
         if (tag.contains("World")) {
@@ -67,6 +78,9 @@ public final class ProgressionData extends SavedData {
         }
         for (net.minecraft.nbt.Tag t : tag.getList("Starters", net.minecraft.nbt.Tag.TAG_INT_ARRAY)) {
             data.starters.add(net.minecraft.nbt.NbtUtils.loadUUID(t));
+        }
+        for (net.minecraft.nbt.Tag t : tag.getList("Guides", net.minecraft.nbt.Tag.TAG_INT_ARRAY)) {
+            data.guides.add(net.minecraft.nbt.NbtUtils.loadUUID(t));
         }
         return data;
     }
@@ -82,6 +96,9 @@ public final class ProgressionData extends SavedData {
         net.minecraft.nbt.ListTag starters = new net.minecraft.nbt.ListTag();
         this.starters.forEach(id -> starters.add(net.minecraft.nbt.NbtUtils.createUUID(id)));
         tag.put("Starters", starters);
+        net.minecraft.nbt.ListTag guides = new net.minecraft.nbt.ListTag();
+        this.guides.forEach(id -> guides.add(net.minecraft.nbt.NbtUtils.createUUID(id)));
+        tag.put("Guides", guides);
         return tag;
     }
 }

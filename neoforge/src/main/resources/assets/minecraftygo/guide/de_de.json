@@ -1,0 +1,222 @@
+{
+  "title": "Handbuch für Duellanten",
+  "subtitle": "Duelle, Sammeln, Befehle und Einstellungen",
+  "intro": [
+    "Klick ein Kapitel im Inhalt an, um dorthin zu springen. Blättern mit den Pfeilen, den Pfeiltasten oder dem Mausrad; die Zeile oben auf jeder Seite führt zurück zum Inhalt.",
+    "",
+    "Blaue Befehle lassen sich anklicken, grün sind die Werte dieser Welt."
+  ],
+  "chapters": [
+    {
+      "title": "Erste Schritte",
+      "icon": "{modid}:duel_disk",
+      "text": [
+        "Beim ersten Betreten wählst du dein **erstes Deck**: das Starter-Deck von Yugi oder Kaiba oder ein Starter- oder Struktur-Deck, das schon erschienen ist. Es kommt in einer Deckbox und ist sofort spielbereit. \"Später\" schiebt die Wahl auf; `{cmd} starter` öffnet sie wieder, bis du eins genommen hast.",
+        "",
+        "Dann baust du eine **Duel Disk** und trägst sie in ihrem Curios-Slot oder, ohne Curios, in der Nebenhand.",
+        "[recipe {modid}:duel_disk]",
+        "Dein erstes Duell: `{cmd} duel bot` startet sofort ein Duell gegen den Computer. Gegen Freunde tragt ihr beide eine Disk, und einer rechtsklickt den anderen.",
+        "",
+        "Dieses Buch gibt es einmal beim ersten Betreten. `{cmd} guide` öffnet es jederzeit, und ein neues baust du aus einem Buch und Papier.",
+        "[recipe {modid}:guide_book]"
+      ]
+    },
+    {
+      "title": "Duelle",
+      "icon": "{modid}:card",
+      "text": [
+        "# Herausfordern",
+        "- Mit Duel Disk einen anderen Duellanten rechtsklicken. Er rechtsklickt zurück oder klickt im Chat auf [Accept], dann klappen beide Disks auf und das Feld erscheint.",
+        "- `{cmd} duel <player>` fordert per Name heraus, `{cmd} accept` nimmt die letzte Herausforderung an.",
+        "- `{cmd} duel bot` startet ein Duell gegen den Computer.",
+        "# Ante-Duelle",
+        "Beim Rechtsklick schleichen, oder `{cmd} duel <player> ante`. Jeder setzt eine zufällige Karte aus seiner Deckbox, und der Sieger bekommt beide. Der Server verwahrt die Karten bis zum Ende, ein Absturz gibt sie also zurück.",
+        "# Zwei gegen zwei",
+        "- `{cmd} tag <partner> <opponent1> <opponent2>`: ein Tag-Duell. Partner teilen sich Lebenspunkte und Feld und spielen abwechselnd mit ihren eigenen Decks. Jeder Platz kann `bot` sein.",
+        "- `{cmd} battlecity <partner> <opponent1> <opponent2>`: wie ein Tag-Duell, aber jeder Partner spielt auf seiner eigenen Hälfte der Zonen.",
+        "# Während des Duells",
+        "Du stehst still und sicher an deinem Ende des Felds: Nichts verletzt dich, und Monster lassen dich in Ruhe. Aufgeben geht im Duellmenü (Escape) oder mit `{cmd} forfeit`.",
+        "# Zuschauen",
+        "Jemanden rechtsklicken, der sich gerade duelliert (auch NPCs), oder `{cmd} watch <player>`. Zuschauer sehen Feld, Lebenspunkte und Protokoll, aber keine verdeckten Karten. Mit Escape und \"Zuschauen beenden\" oder `{cmd} unwatch` gehst du wieder.",
+        "# Mit welchem Deck du spielst",
+        "Mit deiner ersten legalen Deckbox, zuerst in den Händen gesucht, dann im Inventar. Ohne eine spielst du mit Yugis Starter-Deck, außer der Server hat das abgeschaltet."
+      ]
+    },
+    {
+      "title": "Steuerung im Duell",
+      "icon": "minecraft:ender_eye",
+      "text": [
+        "Im Duell blickt die Kamera von oben auf das Feld, und du spielst mit der Maus.",
+        "- **Deine Hand** liegt unten. Klick eine Karte für ihre Aktionen (Normalbeschwörung, Setzen, Aktivieren...) oder zieh sie direkt auf eine Zone.",
+        "- **Phasen-Knöpfe** rechts zeigen die Phase: DP SP M1 BP M2 EP. BP, M2 und EP kann man anklicken.",
+        "- **Antworten** öffnen ein eigenes Fenster, das zeigt, worauf du antwortest. Wähle eine Antwort oder \"Don't respond\"; \"-\" klappt es weg.",
+        "- **Kartendetails:** Die Karte unter der Maus steht groß links, mit Text und aktuellem ATK/DEF.",
+        "- **Stapel:** Friedhof, verbannte Karten oder Extra Deck anklicken (Rechtsklick, wenn dort eine Karte aktiviert werden kann), um sie durchzusehen.",
+        "- **Auswahlen** auf dem Feld triffst du direkt dort und bestätigst mit Confirm; Auswahlen aus einem Stapel öffnen ein Kartenfenster.",
+        "# Tasten",
+        "- **{key:duel_camera}**: Draufsicht oder Ego-Sicht. Rechte Maustaste halten, um dich umzusehen.",
+        "- **{key:duel_log}**: das Duellprotokoll (mit dem Mausrad scrollen).",
+        "- **{key:duel_responses}**: nach Antworten fragen lassen oder alle auslassen, die du nicht nehmen musst.",
+        "- **Leertaste**: Antwort auslassen, Auswahl bestätigen oder zur nächsten Phase.",
+        "- **Enter**: Auswahl bestätigen. **1 bis 9**: eine einfache Antwort wählen.",
+        "- **Escape**: das Duellmenü (Kamera, Antworten, Aufgeben, Spielmenü).",
+        "Die Tasten lassen sich unter Optionen > Steuerung ändern; hier stehen immer deine aktuellen."
+      ]
+    },
+    {
+      "title": "Karten sammeln",
+      "icon": "{modid}:booster_pack",
+      "text": [
+        "Karten kommen aus versiegelten Produkten, die sich wie die echten öffnen:",
+        "- **Booster-Packs**: Ein Kern-Booster hat 9 Karten (bis 2014 eine Rare oder besser, danach eine Rare und eine Foil), ein Tournament Pack 3, Mini-Booster und Battle Packs 5.",
+        "- **Struktur-Decks** legen ihre Karten direkt in deinen Kartenordner.",
+        "- Ein **Sammler-Tin** gibt seine Promokarte und drei Packs.",
+        "Packs und einzelne Karten liegen in Verliesen, Tempeln, Minen und Schatztruhen, Monster lassen manchmal eins fallen, NPC-Duellanten geben eins, wenn du sie besiegst, und der Kartenhändler verkauft sie.",
+        "# Kartenordner",
+        "Hält deine Sammlung. \"Alle Karten einlegen\" legt jede lose Karte hinein; ein Klick auf eine Karte nimmt sie wieder heraus (Shift-Klick alle Kopien). Karten aus noch gesperrten Sets zeigen ein Schloss.",
+        "[recipe {modid}:binder]"
+      ]
+    },
+    {
+      "title": "Decks bauen",
+      "icon": "{modid}:deck_box",
+      "text": [
+        "Eine **Deckbox** hält ein Deck. Rechtsklick: Rechts sind deine Karten, ein Klick legt eine ins Deck; ein Klick auf eine Karte im Deck links legt sie zurück. Fusions-, Synchro-, Xyz- und Link-Monster kommen ins Extra Deck.",
+        "[recipe {modid}:deck_box]",
+        "# Deckregeln",
+        "- 40 bis 60 Karten im Main Deck, bis zu 15 im Extra Deck.",
+        "- Höchstens drei Kopien einer Karte, weniger bei Karten auf der Bannliste.",
+        "- Eine Deckbox mit einer unerlaubten Karte sagt, welche Karte das Problem ist.",
+        "# Karten finden",
+        "Nach Namen suchen, nach Typ (Monster, Zauber, Fallen, Extra Deck), Attribut und Stufe filtern und nach Name, ATK, DEF oder Stufe sortieren. Ein Klick auf einen Filter schaltet weiter, Shift-Klick zurück.",
+        "# Import und Export",
+        "Export kopiert das Deck als YDK-Liste, die die meisten Deck-Builder lesen. Import ersetzt das Deck durch die YDK-Liste aus der Zwischenablage, gebaut aus deinen Karten, und sagt, welche gefehlt haben."
+      ]
+    },
+    {
+      "title": "Kartenhändler",
+      "icon": "{modid}:card_shop",
+      "text": [
+        "Der **Kartenhändler** ist ein Dorfbewohner, der Kartenordner, Deckboxen, die beiden Starter-Decks und später eine Duel Disk verkauft. Dazu führt er Packs, Struktur-Decks und Tins: immer die {server:shop.newestAlways} neuesten Produkte und {server:shop.rotatingOlder} ältere, die alle {server:shop.rotationDays} Tage wechseln.",
+        "",
+        "Jeder Dorfbewohner ohne Beruf übernimmt ihn an einer **Kartenladen-Theke**:",
+        "[recipe {modid}:card_shop]"
+      ]
+    },
+    {
+      "title": "Fortschritt und Regeln",
+      "icon": "minecraft:clock",
+      "text": [
+        "Diese Welt spielt mit den Karten **{server:pool.mode}**.",
+        "- **progression**: Eine neue Welt beginnt mit {server:progression.startProduct}, und Operatoren schalten die Produkte in Erscheinungsreihenfolge frei. Gesperrte Karten zeigen ein Schloss und dürfen nicht ins Deck.",
+        "- **modeled**: die Monster mit 3D-Modell und die Zauber und Fallen ihrer Zeit.",
+        "- **all**: alle Karten, mit Packs aus jedem Booster.",
+        "# Regeln im Lauf der Zeit",
+        "Duelle folgen den neuesten freigeschalteten Karten: Master Rule 1 bis zum ersten Xyz-Set, 2 bis zum ersten Pendel-Set, 3 bis zum ersten Link-Set, 4 bis April 2020, danach 5, jeweils mit der Bannliste ihrer Zeit. Duellieren sich zwei Spieler auf verschiedenen Ständen, gelten die Regeln des weiter fortgeschrittenen.",
+        "# Für Operatoren",
+        "- `{cmd} progression status`: aktuelles Set, Regeln, Bannliste und das nächste Set.",
+        "- `{cmd} progression next [count]`: das nächste Set freischalten, oder mehrere.",
+        "- `{cmd} progression until <set or date>`: alles bis zu einem Set-Kürzel wie MRL oder einem Datum wie 2005-03-01.",
+        "- `{cmd} progression set <set or date>`: wie until, kann aber auch zurückgehen.",
+        "- `{cmd} progression list [page]`: die Sets der Reihe nach, mit dem, was frei ist.",
+        "Mit `[progression] scope` = {server:progression.scope}: \"player\" gibt jedem Spieler einen eigenen Fortschritt; dann hängst du den Spielernamen an die Befehle an."
+      ]
+    },
+    {
+      "title": "Duel Dome und Arena",
+      "icon": "{modid}:duel_arena_kit",
+      "text": [
+        "# Duel Dome",
+        "Einen **Duel-Dome-Bausatz** auf ebenem Boden benutzen, um eine Arena von 13 mal 21 in Blickrichtung zu bauen. Steht jeder Duellant auf einer Duellanten-Plattform, je ein Team an jedem Ende, erscheint das Feld über dem Duel-Dome-Kern. Kern und Plattformen lassen sich auch von Hand setzen: Plattformen 4 bis 14 Blöcke vom Kern entfernt.",
+        "[recipe {modid}:duel_dome_kit]",
+        "[recipe {modid}:duel_dome_core]",
+        "[recipe {modid}:duelist_platform]",
+        "# Duellarena",
+        "Ein **Duellarena-Bausatz** stellt auf ebenem Boden die Arena aus dem Königreich der Duellanten auf. Steht jeder auf einem Pult, erscheint das Feld über der Arena, und die Pulte heben die Duellanten 3 Blöcke hoch. Ein NPC-Gegner läuft zum freien Pult. Einen beliebigen Teil abbauen (nicht während eines Duells) packt sie wieder in ihren Bausatz.",
+        "[recipe {modid}:duel_arena_kit]"
+      ]
+    },
+    {
+      "title": "NPC-Duellanten",
+      "icon": "{modid}:duelist_spawn_egg",
+      "text": [
+        "Ab und zu wandern Duellanten durch die Oberwelt, jeder mit Titel, Duel Disk und eigenem Deck: einem berühmten Turnierdeck, dessen Zeit gekommen ist, einem erschienenen Starter- oder Struktur-Deck oder einem zufälligen Deck aus dem Kartenpool. Sie sagen an, welches Deck sie spielen.",
+        "",
+        "Rechtsklick auf einen startet ein Duell. Besiegst du ihn, gibt er dir ein Booster-Pack und duelliert dich einen Minecraft-Tag lang nicht mehr. Während eines Duells sind NPCs unverwundbar.",
+        "",
+        "Sie spielen mit einem Computer-Gegner, der seine stärksten Monster beschwört, Synchro-, Xyz- und Link-Monster holt, nur angreift, wenn er den Kampf gewinnt, und seine Fallen für deinen Zug aufhebt. Ein **Duellant-Spawn-Ei** liegt im Kreativ-Tab."
+      ]
+    },
+    {
+      "title": "Cosmetics und Figura",
+      "icon": "minecraft:painting",
+      "text": [
+        "**{key:cosmetics}** oder `{cmd} cosmetics` öffnet das Cosmetics-Menü:",
+        "- **Disk-Skins**: Battle City, Slifer Red, Ra Yellow, Obelisk Blue, Shadow, Crimson und Gold. Der Skin wird auf der Disk gespeichert und geht mit ihr mit.",
+        "- **Kartenhüllen**: Classic, Crimson, Emerald, Amethyst, Onyx und Gold. Dein Gegner sieht sie auf deinen verdeckten Karten und Stapeln.",
+        "Gesperrte zeigen, wie man sie freischaltet: Duelle gewinnen, NPC-Duellanten besiegen oder Booster-Packs öffnen.",
+        "# Figura",
+        "Mit dem Figura-Mod können Avatar-Skripte auf Duelle reagieren und eine eigene Duel Disk zeichnen. Ein fertiger Starter-Avatar ist ein eigener Download neben dem Mod."
+      ]
+    },
+    {
+      "title": "Befehle",
+      "icon": "minecraft:command_block",
+      "text": [
+        "# Für alle",
+        "- `{cmd} guide`: dieses Buch.",
+        "- `{cmd} duel bot`: gegen den Computer duellieren.",
+        "- `{cmd} duel <player>`: jemanden herausfordern, mit `ante` als Ante-Duell.",
+        "- `{cmd} accept`: eine Herausforderung annehmen.",
+        "- `{cmd} forfeit`: das Duell aufgeben.",
+        "- `{cmd} tag <partner> <opponent1> <opponent2>`: Tag-Duell, jeder Platz kann `bot` sein.",
+        "- `{cmd} battlecity <partner> <opponent1> <opponent2>`: Tag-Duell auf geteilten Hälften.",
+        "- `{cmd} watch <player>` und `{cmd} unwatch`: einem Duell zuschauen und aufhören.",
+        "- `{cmd} starter`: dein erstes Deck wählen, falls noch nicht geschehen.",
+        "- `{cmd} cosmetics`: Disk-Skins und Kartenhüllen.",
+        "- `{cmd} version`: die Version der Regel-Engine.",
+        "# Für Operatoren",
+        "- `{cmd} progression status`, `next [count]`, `until <set>`, `set <set>` und `list [page]`: siehe Fortschritt und Regeln.",
+        "- `{cmd} gallery [page]`: stellt eine Seite Monster-Modelle zum Ansehen auf; `{cmd} gallery clear` räumt sie weg."
+      ]
+    },
+    {
+      "title": "Einstellungen",
+      "icon": "minecraft:comparator",
+      "text": [
+        "# Server-Einstellungen",
+        "Im Weltordner: `serverconfig/{modid}-server.toml`. Bearbeite sie bei geschlossener Welt oder gestopptem Server. Grün sind die aktuellen Werte.",
+        "- `ruleset` = {server:ruleset}: auto (folgt den Karten, siehe Fortschritt), mr1, goat, mr2, mr3, mr4 oder modern.",
+        "- `banlist` = {server:banlist}: auto, none oder eine Datei in `config/{modid}/banlists/`.",
+        "- `startingLifePoints` = {server:startingLifePoints}: Lebenspunkte zu Beginn.",
+        "- `allowAnte` = {server:allowAnte}: Ante-Duelle erlaubt.",
+        "- `turnTimeLimit` = {server:turnTimeLimit}: Sekunden pro Person und Zug, 0 für keine Grenze. Danach spielt der Computer den Zug zu Ende.",
+        "- `starterDecksWithoutDeckBox` = {server:starterDecksWithoutDeckBox}: Spieler ohne legale Deckbox duellieren sich mit einem Starter-Deck.",
+        "- `[pool] mode` = {server:pool.mode}: progression, modeled oder all.",
+        "- `[progression] scope` = {server:progression.scope}: ein Fortschritt für den Server oder einer pro Spieler.",
+        "- `[progression] startProduct` = {server:progression.startProduct}: wo neue Welten oder Spieler beginnen.",
+        "- `[progression] announce` = {server:progression.announce}: Freischaltungen im Chat ansagen.",
+        "- `[cards] lockedInDeck` = {server:cards.lockedInDeck}: gesperrte Karten bleiben aus Decks draußen.",
+        "- `[shop] newestAlways` = {server:shop.newestAlways}, `rotatingOlder` = {server:shop.rotatingOlder}, `rotationDays` = {server:shop.rotationDays}: das Sortiment des Kartenhändlers.",
+        "- `[guide] giveOnFirstJoin` = {server:guide.giveOnFirstJoin} und `craftable` = {server:guide.craftable}: dieses Buch.",
+        "# Deine eigenen Einstellungen",
+        "In `config/{modid}-client.toml`:",
+        "- `downloadCardArt` = {client:downloadCardArt}: Kartenbilder werden beim ersten Anzeigen heruntergeladen und auf deinem Rechner behalten. `cardArtUrl` und `cardArtCroppedUrl` sagen, woher.",
+        "- `chooseZone` = {client:chooseZone}: die Zone selbst wählen, wenn du eine Karte über ihr Menü spielst.",
+        "- `skipResponses` = {client:skipResponses}: jede Antwort auslassen, die du nicht nehmen musst (im Duell mit {key:duel_responses} umschalten)."
+      ]
+    },
+    {
+      "title": "Tipps",
+      "icon": "minecraft:spyglass",
+      "text": [
+        "- Monster ohne 3D-Modell stehen als Hologramm ihres Kartenbilds auf dem Feld. Ein Ressourcenpaket kann jedem Monster ein Modell geben.",
+        "- Kartenbilder brauchen beim ersten Anzeigen eine Internetverbindung, danach kommen sie von deinem Rechner.",
+        "- Eine Karte passt nicht ins Deck? Sie stammt aus einem noch gesperrten Set, oder die Bannliste begrenzt sie. Die Deckbox sagt dir, welche.",
+        "- Die Karten eines Ante-Duells sind sicher: Ein Absturz oder Neustart gibt sie zurück, und ein Sieger, der offline ist, bekommt sie beim nächsten Einloggen.",
+        "- Im 2-gegen-2 beantwortet nur der Partner, der am Zug ist, die Abfragen; beide sehen die Hand des Teams.",
+        "- Buch verloren? `{cmd} guide` öffnet es, oder bau ein neues aus einem Buch und Papier."
+      ]
+    }
+  ]
+}
