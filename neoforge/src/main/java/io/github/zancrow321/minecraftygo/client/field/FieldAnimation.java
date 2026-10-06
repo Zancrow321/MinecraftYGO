@@ -30,6 +30,8 @@ public record FieldAnimation(FieldEvent event, long start, int duration, int act
             case ACTIVATE -> 26;
             case SET, POSITION -> 8;
             case DAMAGE, RECOVER -> 30;
+            case TURN -> 32;
+            case PHASE -> 20;
         };
     }
 
@@ -37,6 +39,9 @@ public record FieldAnimation(FieldEvent event, long start, int duration, int act
     public static int spacing(FieldEvent.Kind kind) {
         return switch (kind) {
             case DAMAGE, RECOVER -> 6;
+            // The turn banner gets a moment of its own; a phase banner doesn't hold anything up.
+            case TURN -> 16;
+            case PHASE -> 0;
             default -> duration(kind);
         };
     }

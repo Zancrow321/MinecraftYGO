@@ -16,7 +16,8 @@ import static io.github.zancrow321.minecraftygo.engine.OcgConstants.*;
  * @param amount life points for {@link Kind#DAMAGE} and {@link Kind#RECOVER}, else 0
  */
 public record FieldEvent(Kind kind, int code, Loc from, Loc to, int player, int amount) {
-    public enum Kind { SUMMON, SET, ACTIVATE, ATTACK, LEAVE, POSITION, DAMAGE, RECOVER }
+    /** {@code TURN} is a new turn of {@code player}; {@code PHASE} a new phase, its bits in {@code amount}. */
+    public enum Kind { SUMMON, SET, ACTIVATE, ATTACK, LEAVE, POSITION, DAMAGE, RECOVER, TURN, PHASE }
 
     /** @return the event {@code message} shows to {@code viewer}, or {@code null} if it isn't one to animate */
     public static FieldEvent of(DuelMessage message, int viewer) {
@@ -39,6 +40,8 @@ public record FieldEvent(Kind kind, int code, Loc from, Loc to, int player, int 
                     new FieldEvent(Kind.DAMAGE, 0, Loc.NONE, Loc.NONE, m.player(), m.amount());
             case DuelMessage.LifePoints m when m.type() == MessageType.RECOVER ->
                     new FieldEvent(Kind.RECOVER, 0, Loc.NONE, Loc.NONE, m.player(), m.amount());
+            case DuelMessage.NewTurn m -> new FieldEvent(Kind.TURN, 0, Loc.NONE, Loc.NONE, m.player(), 0);
+            case DuelMessage.NewPhase m -> new FieldEvent(Kind.PHASE, 0, Loc.NONE, Loc.NONE, 0, m.phase());
             default -> null;
         };
     }

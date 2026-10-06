@@ -56,7 +56,9 @@ public final class ClientDuel {
                 lastTrigger = t;
             }
         }
-        if (view != null && next.events().isEmpty() && (view.board().phase() != next.board().phase()
+        boolean onlyTurnOrPhase = next.events().stream()
+                .allMatch(e -> e.kind() == FieldEvent.Kind.TURN || e.kind() == FieldEvent.Kind.PHASE);
+        if (view != null && onlyTurnOrPhase && (view.board().phase() != next.board().phase()
                 || view.board().turn() != next.board().turn())) {
             String whose = next.board().turnPlayer() == next.you() ? "Your " : "Your opponent's ";
             lastTrigger = new Trigger(0, whose + YgoData.text().phase(next.board().phase()));
