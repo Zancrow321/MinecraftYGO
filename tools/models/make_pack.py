@@ -9,7 +9,7 @@ with it instead of its artwork hologram, and a pack model replaces a bundled one
   <out>/assets/<namespace>/geo/monster/<name>.geo.json
   <out>/assets/<namespace>/animations/monster/<name>.animation.json
   <out>/assets/<namespace>/textures/monster/<name>.png
-  <out>/assets/<namespace>/minecraftygo/models.json
+  <out>/assets/<namespace>/jadm/models.json
 
 The first animation in a model is also used as "idle", the loop a monster plays on the field. The texture is the
 model's own unless --model gives one. Zip the output folder's contents (or use --zip) and put it in
@@ -49,14 +49,14 @@ def main():
     parser.add_argument("--out", required=True, type=Path, help="folder to write the pack to")
     parser.add_argument("--model", required=True, action="append", nargs="+", metavar=("CODE", "BBMODEL"),
                         help="a card passcode, its .bbmodel and optionally a texture .png (repeatable)")
-    parser.add_argument("--description", default="Monster models for MinecraftYGO")
+    parser.add_argument("--description", default="Monster models for Just Another Dueling Mod")
     parser.add_argument("--zip", action="store_true", help="also write <out>.zip")
     args = parser.parse_args()
     if not re.fullmatch(r"[a-z0-9_.-]+", args.namespace):
         sys.exit("the namespace may only hold a-z, 0-9, _ . and -")
 
     assets = args.out / "assets" / args.namespace
-    for sub in ("geo/monster", "animations/monster", "textures/monster", "minecraftygo"):
+    for sub in ("geo/monster", "animations/monster", "textures/monster", "jadm"):
         (assets / sub).mkdir(parents=True, exist_ok=True)
     entries = []
     for spec in args.model:
@@ -85,7 +85,7 @@ def main():
                         "animations": sorted(animations["animations"])})
         print(f"{code}: {name} ({width} x {height} blocks, animations {sorted(animations['animations'])})")
 
-    (assets / "minecraftygo/models.json").write_text(json.dumps(entries, indent=1) + "\n", encoding="utf-8")
+    (assets / "jadm/models.json").write_text(json.dumps(entries, indent=1) + "\n", encoding="utf-8")
     (args.out / "pack.mcmeta").write_text(json.dumps(
         {"pack": {"pack_format": PACK_FORMAT, "description": args.description}}, indent=1) + "\n", encoding="utf-8")
     if args.zip:

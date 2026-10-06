@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "jadm:block/duel_dome_core_top",
+    "side": "jadm:block/duel_dome_core_side",
+    "bottom": "jadm:block/duel_dome_core_side"
+  }
+}

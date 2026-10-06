@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "GRG",
+    "III",
+    " I "
+  ],
+  "key": {
+    "G": {"item": "minecraft:glass_pane"},
+    "R": {"item": "minecraft:redstone"},
+    "I": {"item": "minecraft:iron_ingot"}
+  },
+  "result": {"id": "jadm:duel_disk", "count": 1}
+}

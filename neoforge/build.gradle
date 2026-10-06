@@ -73,20 +73,20 @@ neoForge {
             }
             // -Pautoplay answers duel prompts at random, for watching the field without a person at the keys.
             if (project.hasProperty('autoplay')) {
-                systemProperty 'minecraftygo.autoplay', 'true'
+                systemProperty 'jadm.autoplay', 'true'
             }
             // -PuseItem=80,200 uses the main-hand item at those ticks, for screenshots of the collection screens.
             if (project.hasProperty('useItem')) {
-                systemProperty 'minecraftygo.useItem', project.property('useItem').toString()
+                systemProperty 'jadm.useItem', project.property('useItem').toString()
             }
             // -PduelSetup=<file.lua> runs a Lua script (Debug.AddCard ...) at the start of every duel, to put cards
             // on the field for screenshots and tests.
             if (project.hasProperty('duelSetup')) {
-                systemProperty 'minecraftygo.duelSetup', file(project.property('duelSetup').toString()).absolutePath
+                systemProperty 'jadm.duelSetup', file(project.property('duelSetup').toString()).absolutePath
             }
             // -Pcamera=THIRD_PERSON_FRONT[:bodyYawOffset] locks the camera, for screenshots of the player's duel disk.
             if (project.hasProperty('camera')) {
-                systemProperty 'minecraftygo.camera', project.property('camera').toString()
+                systemProperty 'jadm.camera', project.property('camera').toString()
             }
         }
         server {

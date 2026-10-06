@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/orientable",
-  "textures": {
-    "front": "minecraftygo:block/card_machine_front",
-    "side": "minecraftygo:block/card_machine_side",
-    "top": "minecraftygo:block/card_machine_top"
-  }
-}

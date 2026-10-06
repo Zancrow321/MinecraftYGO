@@ -1,0 +1,6 @@
+{"variants": {
+  "facing=north": {"model": "jadm:block/duel_arena"},
+  "facing=south": {"model": "jadm:block/duel_arena"},
+  "facing=east": {"model": "jadm:block/duel_arena"},
+  "facing=west": {"model": "jadm:block/duel_arena"}
+}}

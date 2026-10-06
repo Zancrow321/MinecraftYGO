@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": ["GGG", "IRI"],
+  "key": {
+    "I": {"item": "minecraft:iron_ingot"},
+    "G": {"item": "minecraft:blue_stained_glass"},
+    "R": {"item": "minecraft:redstone"}
+  },
+  "result": {"id": "jadm:duelist_platform", "count": 2}
+}

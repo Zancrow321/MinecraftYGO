@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "jadm:block/card_shop_top",
+    "side": "jadm:block/card_shop_side",
+    "bottom": "jadm:block/card_shop_bottom"
+  }
+}

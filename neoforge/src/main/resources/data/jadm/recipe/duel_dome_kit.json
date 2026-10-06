@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {"item": "jadm:duel_dome_core"},
+    {"item": "jadm:duelist_platform"},
+    {"item": "jadm:duelist_platform"},
+    {"item": "minecraft:quartz_block"},
+    {"item": "minecraft:quartz_block"},
+    {"item": "minecraft:sea_lantern"},
+    {"item": "minecraft:light_blue_concrete"}
+  ],
+  "result": {"id": "jadm:duel_dome_kit", "count": 1}
+}
