@@ -1,6 +1,6 @@
-# MinecraftYGO
+# Just Another Dueling Mod
 
-**Yu-Gi-Oh! duels in Minecraft.** Strap on a Duel Disk, challenge a friend and watch your monsters appear on a
+**Trading card duels in Minecraft.** Strap on a Duel Disk, challenge a friend and watch your monsters appear on a
 holographic field between you, Battle City style.
 
 The rules are not a reimplementation: every duel runs on **OCG-Core**, the same engine that powers EDOPro, so card
@@ -25,7 +25,7 @@ effects, chains and timing work the way they do in the real game.
 ## Getting started
 
 Craft a Duel Disk (glass pane, redstone, glass pane / three iron ingots / one iron ingot), wear it in its Curios
-slot or your off hand, and right-click another player who has one. Or type `/ygo duel bot` to duel the AI right
+slot or your off hand, and right-click another player who has one. Or type `/jadm duel bot` to duel the AI right
 away. In a duel you play with the mouse from above the field: **V** switches the camera, **Escape** opens the duel
 menu, and **K** opens cosmetics.
 
@@ -40,15 +40,15 @@ The mod is needed on both the server and the client. It runs on Windows, Linux a
 Apple Silicon).
 
 Card artwork is not bundled. It is downloaded from YGOPRODeck the first time a card is shown and cached on your
-computer; downloads can be turned off in `config/minecraftygo-client.toml`.
+computer; downloads can be turned off in `config/jadm-client.toml`.
 
 ## Credits and license
 
-- MinecraftYGO is open source under the GPL-3.0: [github.com/Zancrow321/MinecraftYGO](https://github.com/Zancrow321/MinecraftYGO)
+- Just Another Dueling Mod is open source under the GPL-3.0: [github.com/Zancrow321/MinecraftYGO](https://github.com/Zancrow321/MinecraftYGO)
 - Duel engine: [OCG-Core](https://github.com/edo9300/ygopro-core) by Project Ignis (AGPL-3.0)
 - Card data and scripts: BabelCDB and CardScripts by Project Ignis (AGPL-3.0)
 - Monster models: [YGOMCModels](https://github.com/iconmaster5326/YGOMCModels) by iconmaster (MIT)
 - Card artwork: [YGOPRODeck](https://ygoprodeck.com)
 
-Yu-Gi-Oh! is a trademark of Konami. MinecraftYGO is an unofficial fan project and is not affiliated with or
+Yu-Gi-Oh! is a trademark of Konami. Just Another Dueling Mod is an unofficial fan project and is not affiliated with or
 endorsed by Konami.

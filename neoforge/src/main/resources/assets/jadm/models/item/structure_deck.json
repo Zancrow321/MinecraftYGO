@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "jadm:item/structure_deck",
+    "layer1": "jadm:item/structure_deck_trim"
+  }
+}

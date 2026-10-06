@@ -13,7 +13,7 @@ from pathlib import Path
 
 from PIL import Image
 
-ICON = Path("neoforge/src/main/resources/minecraftygo_logo.png")
+ICON = Path("neoforge/src/main/resources/jadm_logo.png")
 RELEASE = Path("docs/release")
 N = 32
 OUTLINE = 0x14101C

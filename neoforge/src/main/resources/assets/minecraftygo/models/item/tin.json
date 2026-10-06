@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "minecraftygo:item/tin",
-    "layer1": "minecraftygo:item/tin_trim"
-  }
-}

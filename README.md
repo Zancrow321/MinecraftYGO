@@ -1,7 +1,7 @@
-# MinecraftYGO
+# Just Another Dueling Mod
 New Take on a Old Game
 
-Yu-Gi-Oh! duels in Minecraft (NeoForge 1.21.1). Rules are handled by [OCG-Core](https://github.com/edo9300/ygopro-core),
+Trading card duels in Minecraft (NeoForge 1.21.1). Rules are handled by [OCG-Core](https://github.com/edo9300/ygopro-core),
 the engine behind EDOPro, running on the server. Monster models come from
 [iconmaster's YGOMCModels](https://github.com/iconmaster5326/YGOMCModels).
 
@@ -18,7 +18,8 @@ the engine behind EDOPro, running on the server. Monster models come from
 | `tools/carddata/build_banlists.py` | Writes every TCG Forbidden & Limited List since 1999 with its date (`banlists.json`). |
 | `tools/carddata/build_collection.py` | Picks the booster sets of the modeled pool, lists every TCG product in release order (`products.json`) and writes the era banlist. |
 | `tools/textures/make_collection_textures.py` | Draws the pack, binder, deck box, Card Shop and Card Trader textures. |
-| `tools/textures/make_logo.py` | Draws the pixel-art mod logo (`minecraftygo_logo.png`) and the store banner (`docs/release/banner.png`). |
+| `tools/textures/make_guide_book.py` | Draws the handbook's item texture and the open book its screen is drawn on. |
+| `tools/textures/make_logo.py` | Draws the pixel-art mod logo (`jadm_logo.png`) and the store banner (`docs/release/banner.png`). |
 | `tools/models/make_pack.py` | Builds a resource pack that gives monsters a 3D model from Blockbench files ([guide](docs/resource-pack-models.md)). |
 | `tools/disk/convert_disk.py` | Converts the duel disk `.bbmodel` (Figura format, meshes allowed) into the mod's disk model. |
 
@@ -62,7 +63,7 @@ In game:
   `[shop.prices]` and `currency`. Its prices don't rise with demand. `[shop.machine]` sets what it sells
   (`products = "rotation"`, the same pick as card traders, `"all"` or `"none"`, and `supplies` for random packs,
   binders, deck boxes, starter decks and duel disks), whether each player can only buy the `[shop.stock]` amounts a
-  day (`limitPerPlayer`), `command` to open it anywhere with `/ygo shop` (operators always can), `operatorsOnly` so
+  day (`limitPerPlayer`), `command` to open it anywhere with `/jadm shop` (operators always can), `operatorsOnly` so
   only operators place and break machines, `enabled` and the shop's `name`.
 - A **Shop Stand** (red wool, white wool, red wool / plank, chest, plank / three planks) is a shop any player runs.
   The owner right-clicks it to stock it: put a ware in the top row and its price below it (both are only samples, a
@@ -71,20 +72,28 @@ In game:
   the owner to take out; sneak-click to see your own stand as a buyer. Renamed in an anvil, a stand takes that name. Only the
   owner (and operators) can break it, which drops the stock and the till. `[shop.players]` sets `enabled`,
   `maxPerPlayer` (3, 0 for any number), `currencyOnly` (prices in the `[shop] currency` only), `taxPercent` (kept back
-  from every sale), `onlyYgoItems` (stands sell only this mod's items), `operatorsManage` and `notifyOwner` (a chat
+  from every sale), `onlyModItems` (stands sell only this mod's items), `operatorsManage` and `notifyOwner` (a chat
   message to the owner on every sale).
 - **Duel Points (DP)** are the shops' currency by default (`[shop] currency = "points"`): a balance each player has,
-  not an item. It shows above the inventory and in every shop, and `/ygo dp` tells it. Card traders, Card Vending
+  not an item. It shows above the inventory and in every shop, and `/jadm dp` tells it. Card traders, Card Vending
   Machines and Shop Stands then open a DP shop: click to buy once, shift-click to buy as many as you can. Each 1 of a
   `[shop.prices]` price is `pricePoints` DP (25, so a core pack is 100 DP), and a Shop Stand's owner clicks a price
   to type it in DP; what buyers pay (less `taxPercent`) goes straight to the owner, online or not. Players earn DP
   with `startBalance` (500) when they first join, `dailyBonus` (50) once a day, paper sold to card traders, loose
   cards sold to Card Vending Machines (`sellCommon` 5 to `sellSecret` 120 by rarity) and emeralds exchanged there
-  (`emeraldExchange`, 10 each), all in `[shop.points]`. `/ygo dp pay <player> <amount>` gives DP to another player
-  (`transfers`), and operators use `/ygo dp give|take|set <players> <amount>` and `/ygo dp <player>`. Wandering
+  (`emeraldExchange`, 10 each), all in `[shop.points]`. `/jadm dp pay <player> <amount>` gives DP to another player
+  (`transfers`), and operators use `/jadm dp give|take|set <players> <amount>` and `/jadm dp <player>`. Wandering
   traders keep taking emeralds.
+- **Handbook:** every player gets the **Duelist's Handbook** once on their first join (`[guide] giveOnFirstJoin`);
+  `/jadm guide` opens it any time and a new one is crafted from a book and paper (`[guide] craftable`). It explains
+  dueling, the duel controls with your current key bindings, collecting, decks, the shops and Duel Points, progression, arenas and tournaments,
+  NPCs, cosmetics, every command and every setting with the world's current value, with crafting grids drawn from the
+  real recipes. Its pages are `assets/jadm/guide/<language>.json`, a list of chapters whose paragraphs take a
+  little markup (`# heading`, `- bullet`, `**bold**`, `` `command` ``, `[recipe id]`, `---` for a new page, and
+  `{server:pool.mode}`, `{client:chooseZone}`, `{key:duel_log}`, `{cmd}`, `{modid}` placeholders; see `GuideText`),
+  so a resource pack can rewrite or translate it.
 - **First deck:** on their first join a player picks a deck: Yugi's or Kaiba's starter deck, or any starter or
-  structure deck that is already out. It comes in a deck box, ready to duel with. "Later" puts it off; `/ygo starter`
+  structure deck that is already out. It comes in a deck box, ready to duel with. "Later" puts it off; `/jadm starter`
   opens the choice again until one is taken.
 - A **Binder** (leather and paper around a string) holds your collection: "Put all cards in" moves every loose card
   into it, and clicking a card takes it back out (shift-click for every copy).
@@ -93,7 +102,7 @@ In game:
   main deck cards, up to 15 extra deck cards and at most three copies of a card, fewer for cards on the banlist.
   Your first legal deck box (hands first, then inventory) is the deck you duel with. Without one you duel with
   Yugi's starter deck; servers can require a deck box with `starterDecksWithoutDeckBox = false` in the world's
-  `serverconfig/minecraftygo-server.toml`.
+  `serverconfig/jadm-server.toml`.
   The cards you own can be searched, filtered by type (monsters, spells, traps, extra deck), attribute and level,
   and sorted by name, ATK, DEF or level; the deck is listed monsters first, then spells and traps, with their counts
   under it. Export copies the deck as a YDK list (the format of YGOPro, EDOPro and most deck builders) and Import
@@ -105,32 +114,32 @@ In game:
   until the first Pendulum set, 3 until the first Link set, 4 until April 2020, then 5, with the TCG Forbidden &
   Limited List of the time. When two players at different steps duel, the one further along sets the rules; an NPC
   follows the player it duels.
-  - `/ygo progression status` shows the current set, rules, banlist and the next set.
-  - `/ygo progression next [count]` unlocks the next set (or several), `/ygo progression until <code or date>`
-    everything up to `MRL` or `2005-03-01`, `/ygo progression set <code or date>` also goes back.
-  - `/ygo progression list [page]` lists the sets in order with what is unlocked.
-  - `[progression] scope = "player"` gives each player their own progress (`/ygo progression next <player>`),
+  - `/jadm progression status` shows the current set, rules, banlist and the next set.
+  - `/jadm progression next [count]` unlocks the next set (or several), `/jadm progression until <code or date>`
+    everything up to `MRL` or `2005-03-01`, `/jadm progression set <code or date>` also goes back.
+  - `/jadm progression list [page]` lists the sets in order with what is unlocked.
+  - `[progression] scope = "player"` gives each player their own progress (`/jadm progression next <player>`),
     `startProduct` sets where worlds or players start and `announce` the chat messages.
 - **Banlist:** `banlist = "auto"` (the default) is the TCG list of the time in a progression world, today's list with
   `mode = "all"` and the May 2000 OCG list for the modeled pool (which a server can still replace with
-  `config/minecraftygo/banlist.json`). `"none"` turns it off, and any other value names a file in
-  `config/minecraftygo/banlists/`, e.g. `banlist = "goat"` for `goat.json`, in the format of the bundled
-  `engine/src/main/resources/minecraftygo/banlist.json` (`"limits": {"<card code>": <copies allowed>}`).
-- **Ante:** `/ygo duel <player> ante`, or sneak while right-clicking with the disk. Each duelist puts up a random
+  `config/jadm/banlist.json`). `"none"` turns it off, and any other value names a file in
+  `config/jadm/banlists/`, e.g. `banlist = "goat"` for `goat.json`, in the format of the bundled
+  `engine/src/main/resources/jadm/banlist.json` (`"limits": {"<card code>": <copies allowed>}`).
+- **Ante:** `/jadm duel <player> ante`, or sneak while right-clicking with the disk. Each duelist puts up a random
   card from their deck box and the winner takes both. The cards are held by the server until the duel ends (a
   crash or restart returns them), and a winner who logged off gets them on their next login. Servers can turn
   ante off with `allowAnte = false`.
 - **Wins and losses:** each player's record (wins, losses, draws, against players and against NPCs and bots, wins in
-  a row) shows on the result screen after a duel; `/ygo stats [player]` shows it in chat, `/ygo stats top` the ten
-  players with the most wins and `/ygo stats reset <player>` (operators) clears one. What a duel brings is set in
+  a row) shows on the result screen after a duel; `/jadm stats [player]` shows it in chat, `/jadm stats top` the ten
+  players with the most wins and `/jadm stats reset <player>` (operators) clears one. What a duel brings is set in
   `[results.players]` and `[results.npcs]` of the server config: booster packs, emeralds and experience for each
   winner (`winPacks`, `winEmeralds`, `winXp`) and each loser (`lossPacks`, `lossEmeralds`, `lossXp`); by default
   only beating an NPC gives a pack. `[results] rewardBotDuels` rewards duels against the bot too, `announce` says
   in chat who won each duel and `trackRecord = false` turns the record off.
-- **Tag duels (2v2):** `/ygo tag <partner> <opponent1> <opponent2>`, where any of them can be `bot`. Partners share
+- **Tag duels (2v2):** `/jadm tag <partner> <opponent1> <opponent2>`, where any of them can be `bot`. Partners share
   life points and the field and take turns with their own decks; only the one whose turn it is answers prompts and
   sees the team's hand.
-- **Battle City duels (2v2):** `/ygo battlecity <partner> <opponent1> <opponent2>` is a tag duel where each partner
+- **Battle City duels (2v2):** `/jadm battlecity <partner> <opponent1> <opponent2>` is a tag duel where each partner
   plays on their own half of the team's zones: monster and spell/trap zones 1-2 for the first partner, 4-5 for the
   second, the middle column shared. The second partner's half is drawn in green (orange for the opponents), and each
   half shows its owner's card sleeves. Anyone can attack any opponent's monster, and each team shares life points,
@@ -144,7 +153,7 @@ In game:
   summoning circle and Obliterate, Kuriboh's Multiply and Time Wizard's roulette, and Polymerization, Change of Heart,
   Harpie's Feather Duster, Mystical Space Typhoon, Heavy Storm, Trap Hole, Fissure, Hinotama, Ookazi, Sparks, Dian
   Keto, Waboku and the counter traps. Right-click a gallery monster to see its attack.
-- **Rules:** `ruleset` in `serverconfig/minecraftygo-server.toml` is `auto` (the default, see Progression above),
+- **Rules:** `ruleset` in `serverconfig/jadm-server.toml` is `auto` (the default, see Progression above),
   `mr1` (original), `goat`, `mr2`, `mr3`, `mr4` or `modern`; `startingLifePoints` defaults to 8000.
 - **Duel Dome:** craft a **Duel Dome Kit** (a Duel Dome Core, two Duelist Platforms, two quartz blocks, a sea lantern
   and light blue concrete) and use it on flat ground to build a 13 by 21 arena facing the way you look. When every
@@ -167,18 +176,37 @@ In game:
   **Duelist Spawn Egg** is in the creative tab. NPCs and the `bot` seats play with a heuristic AI that summons its
   strongest monsters, brings out a Synchro, Xyz or Link monster when that beats what it has, Pendulum Summons,
   only attacks when it wins the fight and saves its traps for your turn. Tournament decks live in
-  `engine/src/main/resources/minecraftygo/tournament_decks.json`, listed by card name with the date they were
+  `engine/src/main/resources/jadm/tournament_decks.json`, listed by card name with the date they were
   played.
-- **Cosmetics:** `/ygo cosmetics` (or K) picks your **disk skin** (Battle City, Slifer Red, Ra Yellow, Obelisk Blue,
+- **Tournaments:** single elimination, double elimination (with a losers' bracket and a grand final reset), Swiss
+  rounds with an optional top cut, or round robin. An operator opens one with `/jadm tournament create [format]
+  [name]` (or `[tournament] schedule` opens them by themselves, e.g. `["20:00", "SAT 18:30"]`); players join with
+  the [Join] link in chat or `/jadm tournament join`, with the deck they will play the whole tournament
+  (`lockDeck`). When registration closes, NPC duelists fill empty seats (`npcFill`, `npcCount`), the field is seeded
+  at random and paired round by round. Matches are only played on the Duel Arenas an operator added with
+  `/jadm tournament arena add` (standing on one): each match waits for a free arena, its duelists are brought onto the
+  podiums, the duel starts after a short call (or as soon as both click [Ready]), and afterwards everyone is sent
+  back to where they were. An NPC opponent stands on the other podium. Matches between two NPCs are played out by
+  bots unseen. A duelist who is offline or in another duel for `noShowMinutes` loses the match.
+  `/jadm tournament` opens the tournament window: the bracket (drag to move around), the table, the matches and the
+  rules and prizes, with buttons to join, leave, get ready, start and call off. Everything is set in the
+  `[tournament]` section of `serverconfig/jadm-server.toml` and can be changed for one tournament with
+  `/jadm tournament set <setting> <value>` while it is open (`/jadm tournament settings` lists them): format, best of
+  1/3/5, minimum and maximum duelists, registration time, Swiss rounds, top cut, third place match, ruleset,
+  banlist, life points, turn time limit, a turn limit after which a game is decided on life points, entry fee and
+  how the pot is shared, and prizes per place (`pack 5`, `pack:LOB 2`, `card 89631139`, `xp 100`,
+  `minecraft:diamond 3` or `command <command>` with `{player}`). Prizes for players who are offline wait until they
+  join. Hosts can also `start`, `cancel`, `addnpc [count]`, `kick <name>`; operators can `award <name>` a match.
+- **Cosmetics:** `/jadm cosmetics` (or K) picks your **disk skin** (Battle City, Slifer Red, Ra Yellow, Obelisk Blue,
   Shadow, Crimson, Gold) and your **card sleeves**, which your opponent sees on your face-down cards and piles.
   Locked ones show how to unlock them: winning duels, beating NPC duelists or opening booster packs. The skin is
   stored on the disk, so it goes wherever the disk goes.
-- **Figura** (optional): avatar scripts get a `ygo` API and duel events, and can hide the disk to draw their own. See
+- **Figura** (optional): avatar scripts get a `jadm` API and duel events, and can hide the disk to draw their own. See
   [docs/figura.md](docs/figura.md). A ready-made starter avatar (Millennium Puzzle, Battle City coat, duel reactions,
-  emotes) lives in [figura/ygo-duelist](figura/ygo-duelist) and is built as its own download by
+  emotes) lives in [figura/jadm-duelist](figura/jadm-duelist) and is built as its own download by
   `./gradlew figuraStarterKit`.
-- `/ygo version` reports the loaded OCG-Core version.
-- `/ygo duel bot` or `/ygo duel <player>` (then `/ygo accept`) starts a duel. In a duel you stand still
+- `/jadm version` reports the loaded OCG-Core version.
+- `/jadm duel bot` or `/jadm duel <player>` (then `/jadm accept`) starts a duel. In a duel you stand still
   and play with the mouse: click a card for its actions or drag it from your hand onto a zone, use the phase
   buttons on the right, answer responses in their own window, click (or right-click) a graveyard, the banished cards
   or an extra deck to look through it, L opens the duel log, V switches between the
@@ -186,11 +214,11 @@ In game:
   response, confirms a pick or goes to the next phase, Enter confirms a pick, 1 to 9 pick a plain answer, and C (or
   the Ask/Skip button under Log) switches between being asked to respond and passing every response you don't have
   to take. Banners and chimes mark each turn and phase, and life points count down when damage lands.
-- `/ygo gallery [page]` puts a page of modeled monsters in front of you (operators only); `/ygo gallery clear` removes them.
+- `/jadm gallery [page]` puts a page of modeled monsters in front of you (operators only); `/jadm gallery clear` removes them.
 
-Card artwork is downloaded on first view and cached in `minecraftygo/card_art/` (the cropped art for holograms in
-`minecraftygo/card_art_cropped/`). The source URLs can be changed, or downloads turned off, in
-`config/minecraftygo-client.toml`.
+Card artwork is downloaded on first view and cached in `jadm/card_art/` (the cropped art for holograms in
+`jadm/card_art_cropped/`). The source URLs can be changed, or downloads turned off, in
+`config/jadm-client.toml`.
 
 Monsters without a model stand on the field as an artwork hologram. A resource pack can give any monster a 3D model
 instead; see [docs/resource-pack-models.md](docs/resource-pack-models.md).
@@ -218,7 +246,7 @@ config's `[pool] mode`: `progression` (the default) unlocks them set by set, `mo
 have a model and the spells and traps of their era, and `all` plays with every card, with packs from every TCG
 booster. Monsters without a model stand
 on the field as an artwork hologram. The engine test `ScriptLoadTest` loads every card once; a card whose script fails goes
-in `engine/src/main/resources/minecraftygo/broken.json`, which keeps it out of the pool.
+in `engine/src/main/resources/jadm/broken.json`, which keeps it out of the pool.
 
 New models in YGOMCModels join the modeled pool on the next run. A folder whose name doesn't match a card goes in
 `tools/models/overrides.json`. The era cutoff is the newest release date shared by at least three modeled
@@ -268,8 +296,8 @@ becomes an Xyz material, and `LOCATION_EMZONE` and `LOCATION_PZONE` reach the Ex
   [Sketchfab](https://sketchfab.com/3d-models/duel-disk-from-yu-gi-oh-duel-monsters-blocky-14d4cc46e53a46ad903a9aa5f64e681c),
   [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). Placed on the arm, given straps, a glowing layer,
   recolored skins and a standby pose with deploy/fold animations. Not for commercial use; the rest of the mod stays
-  GPL-3.0. The notice ships as `assets/minecraftygo/DuelDisk-LICENSE.md`.
-- Monster models: MIT, © iconmaster ([YGOMCModels](https://github.com/iconmaster5326/YGOMCModels)); the license ships as `assets/minecraftygo/YGOMCModels-LICENSE.md`.
+  GPL-3.0. The notice ships as `assets/jadm/DuelDisk-LICENSE.md`.
+- Monster models: MIT, © iconmaster ([YGOMCModels](https://github.com/iconmaster5326/YGOMCModels)); the license ships as `assets/jadm/YGOMCModels-LICENSE.md`.
 - Card data and scripts: BabelCDB and CardScripts by Project Ignis (AGPL-3.0).
 - Historical Forbidden & Limited Lists: gathered by DawnbrandBots'
   [yaml-yugi-limit-regulation](https://github.com/DawnbrandBots/yaml-yugi-limit-regulation) from Konami's published lists.

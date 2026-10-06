@@ -10,8 +10,8 @@ subprojects {
 // The Figura starter avatar ships as its own download, never inside the mod jar.
 tasks.register('figuraStarterKit', Zip) {
     group = 'distribution'
-    description = 'Packs the Figura starter avatar (figura/ygo-duelist) for players to drop into figura/avatars.'
-    from('figura/ygo-duelist') { into 'ygo-duelist' }
-    archiveFileName = "ygo-duelist-figura-${mod_version}.zip"
+    description = 'Packs the Figura starter avatar (figura/jadm-duelist) for players to drop into figura/avatars.'
+    from('figura/jadm-duelist') { into 'jadm-duelist' }
+    archiveFileName = "jadm-duelist-figura-${mod_version}.zip"
     destinationDirectory = layout.buildDirectory.dir('distributions')
 }
