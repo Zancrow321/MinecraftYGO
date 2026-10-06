@@ -1,12 +1,12 @@
 package io.github.zancrow321.minecraftygo.collection;
 
 import io.github.zancrow321.minecraftygo.YgoData;
+import io.github.zancrow321.minecraftygo.engine.data.BoosterSets.Rarity;
 import io.github.zancrow321.minecraftygo.engine.data.DeckRules;
 import io.github.zancrow321.minecraftygo.item.BinderItem;
 import io.github.zancrow321.minecraftygo.item.CardItem;
 import io.github.zancrow321.minecraftygo.item.DeckBoxItem;
 import io.github.zancrow321.minecraftygo.item.YgoComponents;
-import io.github.zancrow321.minecraftygo.item.YgoComponents.CardCollection;
 import io.github.zancrow321.minecraftygo.item.YgoComponents.DeckList;
 import io.github.zancrow321.minecraftygo.item.YgoItems;
 import io.github.zancrow321.minecraftygo.network.CollectionActionPayload;
@@ -37,7 +37,7 @@ public final class CollectionActions {
             }
             case WITHDRAW -> {
                 if (held.is(YgoItems.BINDER.get())) {
-                    withdraw(player, held, action.code(), action.all());
+                    withdraw(player, held, action.code(), action.rarity(), action.all());
                 }
             }
             case DECK_ADD -> {
@@ -64,30 +64,33 @@ public final class CollectionActions {
     }
 
     private static void depositAll(ServerPlayer player, ItemStack binder) {
-        CardCollection collection = BinderItem.collection(binder);
         Inventory inventory = player.getInventory();
         int moved = 0;
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             ItemStack stack = inventory.getItem(slot);
             int code = CardItem.code(stack);
             if (stack.is(YgoItems.CARD.get()) && code != 0) {
-                collection = collection.add(code, stack.getCount());
+                BinderItem.add(binder, code, CardItem.rarity(stack), stack.getCount());
                 moved += stack.getCount();
                 inventory.setItem(slot, ItemStack.EMPTY);
             }
         }
-        binder.set(YgoComponents.COLLECTION.get(), collection);
         player.displayClientMessage(Component.translatable("message.minecraftygo.binder.deposited", moved), true);
     }
 
-    private static void withdraw(ServerPlayer player, ItemStack binder, int code, boolean all) {
-        CardCollection collection = BinderItem.collection(binder);
-        int n = all ? collection.count(code) : Math.min(1, collection.count(code));
-        if (n == 0) {
+    /** Takes one copy (or all copies) of a card at a rarity out of the binder; {@code null} means commons first. */
+    private static void withdraw(ServerPlayer player, ItemStack binder, int code, Rarity rarity, boolean all) {
+        if (rarity == null) {
+            Rarity taken = BinderItem.removeOne(binder, code);
+            if (taken != null) {
+                give(player, CardItem.of(code, taken), 1);
+            }
             return;
         }
-        binder.set(YgoComponents.COLLECTION.get(), collection.add(code, -n));
-        give(player, CardItem.of(code), n);
+        int n = BinderItem.remove(binder, code, rarity, all ? Integer.MAX_VALUE : 1);
+        if (n > 0) {
+            give(player, CardItem.of(code, rarity), n);
+        }
     }
 
     private static void deckAdd(ServerPlayer player, ItemStack box, int code) {
@@ -144,8 +147,7 @@ public final class CollectionActions {
         Inventory inventory = player.getInventory();
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             ItemStack stack = inventory.getItem(slot);
-            if (stack.is(YgoItems.BINDER.get()) && BinderItem.collection(stack).count(code) > 0) {
-                stack.set(YgoComponents.COLLECTION.get(), BinderItem.collection(stack).add(code, -1));
+            if (stack.is(YgoItems.BINDER.get()) && BinderItem.removeOne(stack, code) != null) {
                 return true;
             }
         }
