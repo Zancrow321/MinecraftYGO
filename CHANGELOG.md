@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+### Extra deck and newer summons
+- The field follows the duel's rules. From Master Rule 4 the two Extra Monster Zones sit between the halves, which
+  move apart to make room for them, and under Master Rule 3 the Pendulum Zones are their own zones at both ends of
+  the spell/trap row. Clicking, dragging and zone choices reach these zones too.
+- Xyz monsters show their materials as cards fanned out under them, with a count. Link monsters show their arrows
+  as red triangles at the edges of their zone. Pendulum cards in a Pendulum Zone show their scale, and face-up
+  Pendulum monsters in the extra deck are counted on it.
+- Holograms get an inner band in the colour of the card's frame: Fusion, Ritual, Synchro, Xyz, Pendulum or Link.
+- The card panel and tooltips name the monster's kinds (Synchro, Tuner, Xyz, Pendulum, Link, Effect...) and show
+  Rank, LINK rating with arrows or Pendulum scale where they apply, plus an Xyz monster's materials.
+- The deck box shows the extra deck in its own row under the main deck (up to 15 cards).
+- Card texts no longer show a stray line-break symbol in the card panel.
+
 ### Products
 - Booster packs open like the real thing: 9 cards for core boosters (one rare or better until 2014, then a rare and
   a foil), 3 for tournament packs, 5 for mini boosters, battle packs and speed duel packs, and 5 foils for

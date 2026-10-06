@@ -29,6 +29,8 @@
   "screen.minecraftygo.binder.unlocked_only": "Freie",
   "screen.minecraftygo.binder.empty": "Leer. Öffne Booster-Packs und lege die Karten ein.",
   "screen.minecraftygo.deck_box": "Deckbox",
+  "screen.minecraftygo.deck_box.main": "Main Deck: %s",
+  "screen.minecraftygo.deck_box.extra": "Extra Deck: %s / 15",
   "screen.minecraftygo.deck_box.clear": "Leeren",
   "screen.minecraftygo.deck_box.owned": "Deine Karten durchsuchen",
   "screen.minecraftygo.deck_box.no_cards": "Keine Karten in Ordnern oder Inventar",

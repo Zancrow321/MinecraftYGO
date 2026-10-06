@@ -727,7 +727,8 @@ public final class DuelUi {
             }
             CardInfo info = trigger.code() == 0 ? null : YgoData.cards().card(trigger.code());
             if (info != null) {
-                List<FormattedCharSequence> lines = font.split(Component.literal(info.description()), width - 44);
+                List<FormattedCharSequence> lines = font.split(
+                        Component.literal(info.description().replace("\r", "")), width - 44);
                 for (int i = 0; i < Math.min(4 - Math.min(2, what.size()), lines.size()); i++, ty += 10) {
                     g.drawString(font, lines.get(i), x + 40, ty + 2, DIM);
                 }
@@ -792,10 +793,16 @@ public final class DuelUi {
             }
         }
         if (hoverCard != null && info.is(TYPE_MONSTER) && hoverCard.code() == hoverCode && ty + 9 <= bottom) {
-            g.drawString(font, "Now " + hoverCard.attack() + " / " + hoverCard.defense(), x + 3, ty, GOLD);
+            g.drawString(font, "Now " + hoverCard.attack() + (info.is(TYPE_LINK) ? "" : " / " + hoverCard.defense()),
+                    x + 3, ty, GOLD);
             ty += 9;
+            if (!hoverCard.overlayCodes().isEmpty() && ty + 9 <= bottom) {
+                g.drawString(font, "Materials: " + hoverCard.overlayCodes().size(), x + 3, ty, GOLD);
+                ty += 9;
+            }
         }
-        List<FormattedCharSequence> text = font.split(Component.literal(info.description()), width - 6);
+        List<FormattedCharSequence> text = font.split(Component.literal(info.description().replace("\r", "")),
+                width - 6);
         int textRoom = Math.min(text.size(), 6) * 9;
         int artHeight = Math.min(58, bottom - ty - 4 - textRoom);
         if (artHeight >= 30) {

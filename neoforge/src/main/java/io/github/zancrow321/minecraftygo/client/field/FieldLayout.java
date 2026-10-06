@@ -31,10 +31,27 @@ public final class FieldLayout {
     public static Slot slot(int controller, int location, int sequence) {
         double side = controller == 0 ? -1 : 1;  // player 0 sits at negative z
         double right = controller == 0 ? 1 : -1; // player 1 sees the field mirrored
+        if ((location & ~LOCATION_OVERLAY) == LOCATION_MZONE && sequence > 4) {
+            // Extra Monster Zones (Master Rule 4+) sit on the centre line.
+            return new Slot(right * (sequence == 5 ? -1 : 1) * ZONE_WIDTH, 0);
+        }
+        Slot slot = matSlot(controller, location, sequence, side, right);
+        // With Extra Monster Zones each half moves out to make room for them.
+        return slot == null || shift == 0 ? slot : new Slot(slot.x(), slot.z() + side * shift);
+    }
+
+    /** How far each half of the mat moves out from the centre line when the Extra Monster Zones are there. */
+    private static final double EMZ_SHIFT = 1.0;
+    private static double shift;
+
+    /** Half the field's length for the current rules. */
+    public static double halfLength() {
+        return HALF_LENGTH + shift;
+    }
+
+    private static Slot matSlot(int controller, int location, int sequence, double side, double right) {
         return switch (location & ~LOCATION_OVERLAY) {
-            case LOCATION_MZONE -> sequence <= 4 ? new Slot(right * (sequence - 2) * ZONE_WIDTH, side * MONSTER_ROW)
-                    // Extra Monster Zones (Master Rule 4+) sit on the centre line.
-                    : new Slot(right * (sequence == 5 ? -1 : 1) * ZONE_WIDTH, 0);
+            case LOCATION_MZONE -> new Slot(right * (sequence - 2) * ZONE_WIDTH, side * MONSTER_ROW);
             case LOCATION_SZONE -> switch (sequence) {
                 case 5 -> new Slot(right * -3 * ZONE_WIDTH, side * MONSTER_ROW); // Field Zone
                 case 6, 7 -> new Slot(right * (sequence == 6 ? -4 : 4) * ZONE_WIDTH, side * SPELL_ROW);
@@ -52,25 +69,57 @@ public final class FieldLayout {
         return slot(loc.controller(), loc.location(), loc.sequence());
     }
 
-    /** Every zone drawn on the mat, as (controller, location, sequence). */
-    public static final int[][] ZONES = zones();
+    /** Every zone drawn on the mat, as (controller, location, sequence), for the current duel's rules. */
+    public static int[][] ZONES = zones(false, false);
+    private static int rules = -1;
 
-    private static int[][] zones() {
-        int[][] out = new int[2 * 16][];
-        int i = 0;
+    /**
+     * Matches the zones to the duel's rules: the Extra Monster Zones (Master Rule 4 and later, shared, so listed
+     * once as player 0's) and Master Rule 3's own Pendulum Zones at the outer ends of the spell/trap row.
+     */
+    public static void use(boolean extraMonsterZones, boolean separatePendulumZones) {
+        int key = (extraMonsterZones ? 1 : 0) | (separatePendulumZones ? 2 : 0);
+        if (key != rules) {
+            rules = key;
+            ZONES = zones(extraMonsterZones, separatePendulumZones);
+            shift = extraMonsterZones ? EMZ_SHIFT : 0;
+        }
+    }
+
+    private static int[][] zones(boolean emz, boolean pendulum) {
+        java.util.List<int[]> out = new java.util.ArrayList<>();
         for (int p = 0; p < 2; p++) {
             for (int s = 0; s < 5; s++) {
-                out[i++] = new int[]{p, LOCATION_MZONE, s};
-                out[i++] = new int[]{p, LOCATION_SZONE, s};
+                out.add(new int[]{p, LOCATION_MZONE, s});
+                out.add(new int[]{p, LOCATION_SZONE, s});
             }
-            out[i++] = new int[]{p, LOCATION_SZONE, 5};
-            out[i++] = new int[]{p, LOCATION_GRAVE, 0};
-            out[i++] = new int[]{p, LOCATION_DECK, 0};
-            out[i++] = new int[]{p, LOCATION_EXTRA, 0};
-            out[i++] = new int[]{p, LOCATION_REMOVED, 0};
-            out[i++] = null;
+            out.add(new int[]{p, LOCATION_SZONE, 5});
+            if (pendulum) {
+                out.add(new int[]{p, LOCATION_SZONE, 6});
+                out.add(new int[]{p, LOCATION_SZONE, 7});
+            }
+            out.add(new int[]{p, LOCATION_GRAVE, 0});
+            out.add(new int[]{p, LOCATION_DECK, 0});
+            out.add(new int[]{p, LOCATION_EXTRA, 0});
+            out.add(new int[]{p, LOCATION_REMOVED, 0});
         }
-        return java.util.Arrays.stream(out).filter(java.util.Objects::nonNull).toArray(int[][]::new);
+        if (emz) {
+            out.add(new int[]{0, LOCATION_MZONE, 5});
+            out.add(new int[]{0, LOCATION_MZONE, 6});
+        }
+        return out.toArray(int[][]::new);
+    }
+
+    /**
+     * The same Extra Monster Zone as player 0 sees it: player 1's zone 5 is player 0's zone 6 and the other way
+     * round. Every other place is returned as it is.
+     */
+    public static Loc shared(Loc loc) {
+        if (loc != null && loc.controller() == 1 && (loc.location() & ~LOCATION_OVERLAY) == LOCATION_MZONE
+                && loc.sequence() >= 5) {
+            return new Loc(0, loc.location(), 11 - loc.sequence(), loc.position());
+        }
+        return loc;
     }
 
     /** @return the zone under a field-local point, or {@code null} */
@@ -89,7 +138,12 @@ public final class FieldLayout {
      * cards only themselves).
      */
     public static boolean sameZone(Loc a, Loc b) {
-        if (a == null || b == null || a.controller() != b.controller()) {
+        if (a == null || b == null) {
+            return false;
+        }
+        a = shared(a);
+        b = shared(b);
+        if (a.controller() != b.controller()) {
             return false;
         }
         int la = a.location() & ~LOCATION_OVERLAY;

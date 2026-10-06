@@ -60,10 +60,31 @@ public final class DuelController implements AutoCloseable {
                     addDeck(team, duelist, teams.get(team).get(duelist));
                 }
             }
+            runSetupScript();
             duel.start();
         } catch (RuntimeException e) {
             duel.close();
             throw e;
+        }
+    }
+
+    /**
+     * For development: the Lua file named by the system property {@code minecraftygo.duelSetup} runs before the
+     * duel starts, so it can put cards on the field with {@code Debug.AddCard} (a card added to an occupied monster
+     * zone becomes an Xyz material).
+     */
+    private void runSetupScript() {
+        String path = System.getProperty("minecraftygo.duelSetup");
+        if (path == null || path.isBlank()) {
+            return;
+        }
+        try {
+            byte[] script = java.nio.file.Files.readAllBytes(java.nio.file.Path.of(path));
+            if (!duel.loadScript("duel_setup.lua", script)) {
+                throw new IllegalStateException("The duel setup script " + path + " failed");
+            }
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException("Could not read the duel setup script " + path, e);
         }
     }
 
@@ -159,7 +180,7 @@ public final class DuelController implements AutoCloseable {
                     query(player, LOCATION_HAND), query(player, LOCATION_MZONE), query(player, LOCATION_SZONE),
                     query(player, LOCATION_GRAVE), query(player, LOCATION_REMOVED), query(player, LOCATION_EXTRA)));
         }
-        return new Board(turn, turnPlayer, phase, List.copyOf(sides));
+        return new Board(turn, turnPlayer, phase, List.copyOf(sides), field.options);
     }
 
     private List<CardState> query(int player, int location) {

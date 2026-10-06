@@ -115,8 +115,42 @@ public final class CardItem extends Item {
         String race = YgoData.text().system(1020 + Long.numberOfTrailingZeros(Math.max(1, data.race())));
         String atk = data.attack() < 0 ? "?" : String.valueOf(data.attack());
         String def = data.defense() < 0 ? "?" : String.valueOf(data.defense());
-        return attribute + " " + race + (card.is(OcgConstants.TYPE_FUSION) ? " / Fusion" : "")
-                + " · Level " + data.level() + " · ATK " + atk + " / DEF " + def;
+        StringBuilder line = new StringBuilder(attribute).append(' ').append(race);
+        for (int i = 0; i < SUBTYPES.length; i++) {
+            if ((data.type() & SUBTYPES[i]) != 0) {
+                line.append(" / ").append(SUBTYPE_NAMES[i]);
+            }
+        }
+        if (card.is(OcgConstants.TYPE_LINK)) {
+            return line.append(" · LINK-").append(data.level()).append(' ').append(linkArrows(data.linkMarker()))
+                    .append(" · ATK ").append(atk).toString();
+        }
+        line.append(card.is(OcgConstants.TYPE_XYZ) ? " · Rank " : " · Level ").append(data.level());
+        if (card.is(OcgConstants.TYPE_PENDULUM)) {
+            line.append(" · Scale ").append(data.lscale());
+        }
+        return line.append(" · ATK ").append(atk).append(" / DEF ").append(def).toString();
+    }
+
+    private static final int[] SUBTYPES = {OcgConstants.TYPE_FUSION, OcgConstants.TYPE_RITUAL,
+            OcgConstants.TYPE_SYNCHRO, OcgConstants.TYPE_XYZ, OcgConstants.TYPE_PENDULUM, OcgConstants.TYPE_LINK,
+            0x1000 /* Tuner */, 0x200 /* Spirit */, 0x400 /* Union */, 0x800 /* Gemini */, 0x200000 /* Flip */,
+            0x400000 /* Toon */, OcgConstants.TYPE_NORMAL};
+    private static final String[] SUBTYPE_NAMES = {"Fusion", "Ritual", "Synchro", "Xyz", "Pendulum", "Link", "Tuner",
+            "Spirit", "Union", "Gemini", "Flip", "Toon", "Normal"};
+    /** Link arrows in reading order, with the {@code LINK_MARKER_*} bit each stands for. */
+    private static final int[] ARROW_BITS = {0100, 0200, 0400, 0010, 0040, 0001, 0002, 0004};
+    private static final String[] ARROWS = {"↖", "↑", "↗", "←", "→", "↙", "↓", "↘"};
+
+    /** A Link monster's arrows, e.g. "←↓→". */
+    public static String linkArrows(int markers) {
+        StringBuilder out = new StringBuilder();
+        for (int i = 0; i < ARROW_BITS.length; i++) {
+            if ((markers & ARROW_BITS[i]) != 0) {
+                out.append(ARROWS[i]);
+            }
+        }
+        return out.toString();
     }
 
     static List<String> wrap(String text, int width) {

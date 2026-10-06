@@ -75,6 +75,11 @@ neoForge {
             if (project.hasProperty('useItem')) {
                 systemProperty 'minecraftygo.useItem', project.property('useItem').toString()
             }
+            // -PduelSetup=<file.lua> runs a Lua script (Debug.AddCard ...) at the start of every duel, to put cards
+            // on the field for screenshots and tests.
+            if (project.hasProperty('duelSetup')) {
+                systemProperty 'minecraftygo.duelSetup', file(project.property('duelSetup').toString()).absolutePath
+            }
             // -Pcamera=THIRD_PERSON_FRONT[:bodyYawOffset] locks the camera, for screenshots of the player's duel disk.
             if (project.hasProperty('camera')) {
                 systemProperty 'minecraftygo.camera', project.property('camera').toString()

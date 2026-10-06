@@ -163,10 +163,13 @@ public final class DuelMode {
     private static Vec3 topDownPosition() {
         double sweep = DuelStaging.sweep();
         double turn = (1 - sweep) * Math.PI;
-        Vec3 back = towardOpponent().scale(-CAMERA_BACK);
+        // A longer field (Extra Monster Zones in the middle) needs the camera further back and higher.
+        double longer = io.github.zancrow321.minecraftygo.client.field.FieldLayout.halfLength()
+                - io.github.zancrow321.minecraftygo.client.field.FieldLayout.HALF_LENGTH;
+        Vec3 back = towardOpponent().scale(-(CAMERA_BACK + longer));
         Vec3 turned = new Vec3(back.x * Math.cos(turn) - back.z * Math.sin(turn), 0,
                 back.x * Math.sin(turn) + back.z * Math.cos(turn));
-        return ClientField.center().add(turned).add(0, CAMERA_HEIGHT + (1 - sweep) * 5, 0);
+        return ClientField.center().add(turned).add(0, CAMERA_HEIGHT + longer * 1.6 + (1 - sweep) * 5, 0);
     }
 
     /** What the top-down camera looks at: the middle of the field while it sweeps in, then nearer your end. */

@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Builds the deck in a deck box: the deck on the left (click to put a card back), the cards you own on the right
- * (click to add), and whether the deck is legal at the top.
+ * Builds the deck in a deck box: the main deck and below it the extra deck on the left (click to put a card back),
+ * the cards you own on the right (click to add; Fusion, Synchro, Xyz and Link monsters go to the extra deck), and
+ * whether the deck is legal at the top.
  */
 public final class DeckBoxScreen extends Screen {
     private static final int WIDTH = 380;
@@ -30,6 +31,7 @@ public final class DeckBoxScreen extends Screen {
 
     private final InteractionHand hand;
     private CardGrid deckGrid;
+    private CardGrid extraGrid;
     private CardGrid ownedGrid;
     private EditBox search;
     private int left;
@@ -48,7 +50,9 @@ public final class DeckBoxScreen extends Screen {
     protected void init() {
         left = (width - WIDTH) / 2;
         top = (height - HEIGHT) / 2;
-        deckGrid = new CardGrid(left + 8, top + 40, 6, 4, 26);
+        deckGrid = new CardGrid(left + 8, top + 40, 6, 3, 26);
+        // Smaller cards, so the extra deck fits under the main deck on a 240-pixel-high GUI.
+        extraGrid = new CardGrid(left + 8, top + 186, 7, 1, 20);
         ownedGrid = new CardGrid(left + WIDTH / 2 + 10, top + 40, 6, 4, 26);
         search = addRenderableWidget(new EditBox(font, left + WIDTH / 2 + 10, top + 22, 100, 14,
                 Component.translatable("screen.minecraftygo.search")));
@@ -56,17 +60,25 @@ public final class DeckBoxScreen extends Screen {
         // Locked cards stay in view but can't be added (unless the server allows them in decks).
         ownedGrid.locked = code -> !YgoData.playable(minecraft.player).test(code);
         deckGrid.locked = ownedGrid.locked;
+        extraGrid.locked = ownedGrid.locked;
         addRenderableWidget(Button.builder(Component.translatable("screen.minecraftygo.deck_box.clear"),
                 b -> send(Action.DECK_CLEAR, 0)).bounds(left + WIDTH / 2 - 52, top + 21, 44, 16).build());
         int buttonsY = top + HEIGHT - 20;
-        addRenderableWidget(Button.builder(Component.literal("<"), b -> page(deckGrid, -1))
-                .bounds(left + 8, buttonsY, 16, 14).build());
-        addRenderableWidget(Button.builder(Component.literal(">"), b -> page(deckGrid, 1))
-                .bounds(left + WIDTH / 2 - 26, buttonsY, 16, 14).build());
+        pager(deckGrid);
+        pager(extraGrid);
         addRenderableWidget(Button.builder(Component.literal("<"), b -> page(ownedGrid, -1))
                 .bounds(left + WIDTH / 2 + 10, buttonsY, 16, 14).build());
         addRenderableWidget(Button.builder(Component.literal(">"), b -> page(ownedGrid, 1))
                 .bounds(left + WIDTH - 26, buttonsY, 16, 14).build());
+    }
+
+    /** Page buttons on both sides of a grid's page number. */
+    private void pager(CardGrid grid) {
+        int y = grid.y + grid.height() + 1;
+        addRenderableWidget(Button.builder(Component.literal("<"), b -> page(grid, -1))
+                .bounds(grid.x + grid.width() / 2 - 40, y, 16, 12).build());
+        addRenderableWidget(Button.builder(Component.literal(">"), b -> page(grid, 1))
+                .bounds(grid.x + grid.width() / 2 + 24, y, 16, 12).build());
     }
 
     private static void page(CardGrid grid, int delta) {
@@ -96,16 +108,20 @@ public final class DeckBoxScreen extends Screen {
             return;
         }
         var deck = DeckBoxItem.deck(box);
-        Map<Integer, Integer> inDeck = new HashMap<>();
-        deck.main().forEach(c -> inDeck.merge(c, 1, Integer::sum));
-        deck.extra().forEach(c -> inDeck.merge(c, 1, Integer::sum));
-        deckGrid.set(inDeck, "");
+        Map<Integer, Integer> inMain = new HashMap<>();
+        deck.main().forEach(c -> inMain.merge(c, 1, Integer::sum));
+        Map<Integer, Integer> inExtra = new HashMap<>();
+        deck.extra().forEach(c -> inExtra.merge(c, 1, Integer::sum));
+        deckGrid.set(inMain, "");
+        extraGrid.set(inExtra, "");
         ownedGrid.set(owned(), search.getValue());
         super.render(g, mouseX, mouseY, partialTick);
 
         g.drawString(font, box.getHoverName(), left + 8, top + 6, 0xFFFFFFFF, false);
-        String counts = "Main " + deck.main().size() + " · Extra " + deck.extra().size();
-        g.drawString(font, counts, left + 8, top + 26, 0xFFAAAAAA, false);
+        g.drawString(font, Component.translatable("screen.minecraftygo.deck_box.main", deck.main().size()), left + 8,
+                top + 26, 0xFFAAAAAA, false);
+        g.drawString(font, Component.translatable("screen.minecraftygo.deck_box.extra", deck.extra().size()),
+                left + 8, top + 175, 0xFFAAAAAA, false);
         List<String> problems = DeckBoxItem.problems(box, minecraft.player, YgoData.banlist(minecraft.player));
         Component status = problems.isEmpty()
                 ? Component.translatable("item.minecraftygo.deck_box.legal")
@@ -113,6 +129,7 @@ public final class DeckBoxScreen extends Screen {
         g.drawString(font, font.plainSubstrByWidth(status.getString(), WIDTH - 140), left + 130, top + 6,
                 problems.isEmpty() ? 0xFF60E060 : 0xFFFF7070, false);
         deckGrid.render(g, font, mouseX, mouseY);
+        extraGrid.render(g, font, mouseX, mouseY);
         ownedGrid.render(g, font, mouseX, mouseY);
         if (ownedGrid.entries.isEmpty()) {
             g.drawCenteredString(font, Component.translatable("screen.minecraftygo.deck_box.no_cards"),
@@ -120,6 +137,9 @@ public final class DeckBoxScreen extends Screen {
         }
 
         CardGrid.Entry hovered = deckGrid.at(mouseX, mouseY);
+        if (hovered == null) {
+            hovered = extraGrid.at(mouseX, mouseY);
+        }
         if (hovered != null) {
             g.renderComponentTooltip(font, withLock(hovered.code(), CardGrid.tooltip(hovered.code(), "Click: put back")),
                     mouseX, mouseY);
@@ -150,6 +170,9 @@ public final class DeckBoxScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         CardGrid.Entry e = deckGrid.at(mouseX, mouseY);
+        if (e == null) {
+            e = extraGrid.at(mouseX, mouseY);
+        }
         if (e != null) {
             send(Action.DECK_REMOVE, e.code());
             return true;
@@ -164,7 +187,8 @@ public final class DeckBoxScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        page(mouseX < left + WIDTH / 2.0 ? deckGrid : ownedGrid, -(int) Math.signum(scrollY));
+        CardGrid grid = mouseX >= left + WIDTH / 2.0 ? ownedGrid : mouseY >= extraGrid.y - 14 ? extraGrid : deckGrid;
+        page(grid, -(int) Math.signum(scrollY));
         return true;
     }
 
