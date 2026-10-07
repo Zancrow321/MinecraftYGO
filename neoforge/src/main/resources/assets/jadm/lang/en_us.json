@@ -159,5 +159,11 @@
   "message.jadm.guide.given": "You got the Duelist's Handbook: right-click it to read about dueling, commands and settings, or type %s.",
   "screen.jadm.guide.contents": "Contents",
   "screen.jadm.guide.back_to_contents": "Back to the contents",
-  "screen.jadm.guide.type_command": "Click to type it in chat"
+  "screen.jadm.guide.type_command": "Click to type it in chat",
+  "message.jadm.arena.waiting": "Waiting for Opponent%s",
+  "message.jadm.arena.step_up": "Step up to duel!",
+  "message.jadm.arena.get_ready": "Get ready to duel!",
+  "message.jadm.arena.countdown": "Duel against %s in %s... step off to call it off",
+  "message.jadm.arena.crowded": "Only one duelist per podium",
+  "message.jadm.arena.tournament": "This arena is kept for the tournament."
 }

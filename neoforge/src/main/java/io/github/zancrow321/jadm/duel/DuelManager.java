@@ -287,6 +287,38 @@ public final class DuelManager {
                 new Entrant(1, null, npc.duelistName())), Set.of(), false, 0, npc));
     }
 
+    /**
+     * Starts a 1v1 duel between two people standing on the two podiums of a free duel arena, no invitation needed.
+     * The coin toss decides who goes first, as for any duel.
+     */
+    public void arenaDuel(ServerPlayer first, ServerPlayer second) {
+        if (first == second || inDuel(first) || inDuel(second)) {
+            return;
+        }
+        launch(new Invite(first.getUUID(), List.of(new Entrant(0, first.getUUID(), first.getScoreboardName()),
+                new Entrant(1, second.getUUID(), second.getScoreboardName())), Set.of(), false, 0, null));
+    }
+
+    /**
+     * Why {@code player} couldn't duel for want of a deck, or {@code null} if they can (with a legal deck box, or a
+     * lent starter deck). Tells them nothing.
+     */
+    public static String deckProblem(ServerPlayer player) {
+        io.github.zancrow321.jadm.engine.data.Banlist banlist = JadmData.banlist(JadmData.step(player));
+        List<ItemStack> boxes = deckBoxes(player);
+        for (ItemStack box : boxes) {
+            if (DeckBoxItem.problems(box, player, banlist).isEmpty()) {
+                return null;
+            }
+        }
+        if (JadmServerConfig.STARTER_DECKS.get()) {
+            return null;
+        }
+        return boxes.isEmpty() ? "You need a deck box with a legal deck to duel."
+                : "Your deck box \"" + boxes.get(0).getHoverName().getString() + "\" isn't legal: "
+                + DeckBoxItem.problems(boxes.get(0), player, banlist).get(0);
+    }
+
     /** Everyone accepted: checks decks, takes the ante and starts the duel. */
     private void launch(Invite invite) {
         List<Entrant> entrants = invite.entrants();
@@ -471,6 +503,21 @@ public final class DuelManager {
      */
     private static ItemStack legalDeckBox(ServerPlayer player,
                                           io.github.zancrow321.jadm.engine.data.Banlist banlist) {
+        List<ItemStack> boxes = deckBoxes(player);
+        for (ItemStack box : boxes) {
+            if (DeckBoxItem.problems(box, player, banlist).isEmpty()) {
+                return box;
+            }
+        }
+        if (!boxes.isEmpty()) {
+            player.sendSystemMessage(Component.literal("Your deck box \"" + boxes.get(0).getHoverName().getString()
+                    + "\" isn't legal: " + DeckBoxItem.problems(boxes.get(0), player, banlist).get(0)));
+        }
+        return null;
+    }
+
+    /** The player's deck boxes, the ones in hand first. */
+    private static List<ItemStack> deckBoxes(ServerPlayer player) {
         List<ItemStack> boxes = new ArrayList<>();
         for (ItemStack stack : List.of(player.getMainHandItem(), player.getOffhandItem())) {
             if (stack.is(JadmItems.DECK_BOX.get())) {
@@ -482,16 +529,7 @@ public final class DuelManager {
                 boxes.add(stack);
             }
         }
-        for (ItemStack box : boxes) {
-            if (DeckBoxItem.problems(box, player, banlist).isEmpty()) {
-                return box;
-            }
-        }
-        if (!boxes.isEmpty()) {
-            player.sendSystemMessage(Component.literal("Your deck box \"" + boxes.get(0).getHoverName().getString()
-                    + "\" isn't legal: " + DeckBoxItem.problems(boxes.get(0), player, banlist).get(0)));
-        }
-        return null;
+        return boxes;
     }
 
     /** The starter deck lent to a player without a legal deck box, or {@code null} with the reason told to them. */

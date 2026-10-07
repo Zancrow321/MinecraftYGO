@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Arena auto duel
+- Step onto a podium of a Duel Arena and a duel starts by itself once someone steps onto the other one, no
+  invitation needed. "Waiting for Opponent..." floats over whoever waits and "Step up to duel!" over the free
+  podium; once both are taken a countdown runs over the arena, and stepping off calls it off.
+- Needs a legal deck box (or a lent starter deck where the server allows it). After a duel, or when logging in on a
+  podium, step off and back on to go again. Arenas added for tournaments wait for the tournament while one is open.
+- Server settings `[arena] autoStart` (on) and `countdownSeconds` (5).
+
 ### New name
 - The mod is now called **Just Another Dueling Mod**, mod id `jadm`. The command is `/jadm`, Figura avatar scripts
   use the `jadm` global and `jadm.<event>` events, and the starter avatar is `jadm-duelist`.

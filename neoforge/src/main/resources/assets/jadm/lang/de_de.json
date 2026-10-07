@@ -155,5 +155,11 @@
   "message.jadm.guide.given": "Du hast das Handbuch für Duellanten bekommen: Rechtsklick zum Lesen über Duelle, Befehle und Einstellungen, oder tippe %s.",
   "screen.jadm.guide.contents": "Inhalt",
   "screen.jadm.guide.back_to_contents": "Zurück zum Inhalt",
-  "screen.jadm.guide.type_command": "Klicken, um ihn in den Chat zu schreiben"
+  "screen.jadm.guide.type_command": "Klicken, um ihn in den Chat zu schreiben",
+  "message.jadm.arena.waiting": "Warte auf Gegner%s",
+  "message.jadm.arena.step_up": "Hier hinstellen zum Duell!",
+  "message.jadm.arena.get_ready": "Macht euch bereit!",
+  "message.jadm.arena.countdown": "Duell gegen %s in %s... runtergehen zum Abbrechen",
+  "message.jadm.arena.crowded": "Nur ein Duellant pro Podest",
+  "message.jadm.arena.tournament": "Diese Arena ist für das Turnier reserviert."
 }

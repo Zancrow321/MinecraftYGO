@@ -213,6 +213,37 @@ public final class DuelArena {
         return end;
     }
 
+    /** A podium someone stands on: the arena's middle block and its end (+1 or -1). */
+    public record Podium(BlockPos arena, int end) {
+    }
+
+    /**
+     * The podium this player stands on (or just jumped from), on a platform that is down, or {@code null}. The same
+     * spots count as for {@link #claim}.
+     */
+    public static Podium podiumOf(ServerPlayer player) {
+        Level level = player.level();
+        BlockPos below = player.blockPosition().below();
+        if (!level.getBlockState(below).is(SOLID.get())) {
+            below = below.below();
+            if (!level.getBlockState(below).is(SOLID.get())) {
+                return null;
+            }
+        }
+        BlockPos arena = arenaAt(level, below);
+        if (arena == null) {
+            return null;
+        }
+        int end = end(List.of(player), level, arena, facing(level.getBlockState(arena)));
+        return end == 0 ? null : new Podium(arena, end);
+    }
+
+    /** Where the duelist on the podium at {@code end} (+1 or -1) stands, from the corner of the middle block. */
+    public static Vec3 podiumOffset(Direction facing, int end) {
+        return new Vec3(0.5 + facing.getStepX() * end * PODIUM_ALONG, HEIGHT,
+                0.5 + facing.getStepZ() * end * PODIUM_ALONG);
+    }
+
     /** How far up a rider is right now, in blocks; 0 for anyone not on a podium. */
     public static double lift(UUID id) {
         Rider rider = RIDERS.get(id);
@@ -221,6 +252,11 @@ public final class DuelArena {
         }
         double t = Math.clamp((rider.level.getGameTime() - rider.since) / (double) LIFT_TICKS, 0, 1);
         return LIFT * (rider.up ? t : 1 - t);
+    }
+
+    /** Whether a podium is carrying this entity up or down, or holding it up for a duel. */
+    public static boolean riding(UUID id) {
+        return RIDERS.containsKey(id);
     }
 
     /** The duel is over: the podiums come down with everyone on them. */
