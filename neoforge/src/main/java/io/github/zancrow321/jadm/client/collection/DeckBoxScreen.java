@@ -2,6 +2,7 @@ package io.github.zancrow321.jadm.client.collection;
 
 import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.engine.data.DeckRules;
+import io.github.zancrow321.jadm.engine.data.BoosterSets.Rarity;
 import io.github.zancrow321.jadm.item.BinderItem;
 import io.github.zancrow321.jadm.item.CardItem;
 import io.github.zancrow321.jadm.item.DeckBoxItem;
@@ -191,14 +192,17 @@ public final class DeckBoxScreen extends Screen {
             hovered = extraGrid.at(mouseX, mouseY);
         }
         if (hovered != null) {
-            g.renderComponentTooltip(font, withLock(hovered.code(), CardGrid.tooltip(hovered.code(), "Click: put back")),
-                    mouseX, mouseY);
+            boolean preview = CardPreview.render(g, font, hovered.code(), Rarity.COMMON, left, height);
+            g.renderComponentTooltip(font, withLock(hovered.code(),
+                    CardGrid.tooltip(hovered.code(), "Click: put back", !preview)), mouseX, mouseY);
         }
         hovered = ownedGrid.at(mouseX, mouseY);
         if (hovered != null) {
             boolean locked = ownedGrid.locked.test(hovered.code());
+            boolean preview = CardPreview.render(g, font, hovered.code(), Rarity.COMMON, left, height);
             g.renderComponentTooltip(font, withLock(hovered.code(),
-                    CardGrid.tooltip(hovered.code(), locked ? null : "Click: add to deck")), mouseX, mouseY);
+                    CardGrid.tooltip(hovered.code(), locked ? null : "Click: add to deck", !preview)),
+                    mouseX, mouseY);
         }
     }
 

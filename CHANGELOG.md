@@ -8,6 +8,12 @@
 - Renamed from MinecraftYGO (mod id `minecraftygo`, command `/ygo`, config folder `config/minecraftygo`).
 - Worlds from 0.1.0 lose the mod's items, blocks and saved data (decks, binders, progress); the config starts fresh.
 
+### Card preview
+- Hovering a card in the inventory, a chest or any other container, the binder or the deck box shows it big on the
+  left, like the duel's card panel: its picture, name, rarity, type, stats and full text. The tooltip by the mouse
+  then keeps to the card's name. Drawn only where there is room left of the window (else the old tooltip stays);
+  `cardPreview = false` in the client config turns it off.
+
 ### Real products
 - Booster packs, structure and starter decks and tins look like the real products: the item shows the product's
   picture with its background cut away, in slots, in the hand, on the ground and in item frames, as a pack, a

@@ -17,6 +17,12 @@ import java.util.List;
  * passcode and rarity stack.
  */
 public final class CardItem extends Item {
+    /**
+     * The card in the slot under the mouse while a big preview of it is on screen, set by the client around drawing a
+     * screen; its tooltip then keeps to its name and rarity. Compared by identity.
+     */
+    public static ItemStack previewed = ItemStack.EMPTY;
+
     public CardItem(Properties properties) {
         super(properties);
     }
@@ -88,10 +94,16 @@ public final class CardItem extends Item {
         if (card == null) {
             return;
         }
-        tooltip.add(Component.literal(typeLine(card)).withStyle(ChatFormatting.GRAY));
+        boolean preview = stack == previewed;
+        if (!preview) {
+            tooltip.add(Component.literal(typeLine(card)).withStyle(ChatFormatting.GRAY));
+        }
         Rarity rarity = rarity(stack);
         if (rarity != Rarity.COMMON) {
             tooltip.add(Component.literal(rarityName(rarity)).withStyle(color(rarity)));
+        }
+        if (preview) {
+            return;
         }
         if (flag.hasShiftDown()) {
             for (String line : wrap(card.description(), 48)) {
