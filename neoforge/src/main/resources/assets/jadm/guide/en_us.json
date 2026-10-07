@@ -80,6 +80,7 @@
         "Rarer cards shine like the real ones: a Rare has a silver name, a Super Rare holofoil art, an Ultra Rare holofoil art and a gold name, a Secret Rare rainbow-lined art and a silver name.",
         "# Card Binder",
         "Holds your collection. \"Put all cards in\" moves every loose card into it; clicking a card takes it out again (shift-click for every copy). It keeps each card's rarity, shown in the corner (R, SR, UR, ScR), and decks use commons first so your foils stay in the binder. Cards from sets that are still locked show a padlock.",
+        "**Searching:** just start typing when the binder opens. Every word has to turn up in the card's name, text, attribute or type, so dark dragon, tuner or quick-play all work (German type names like drache too); put words in quotes to find them as one phrase, like \"destroy all\". Right-click the box to clear it. The buttons below filter by card type, attribute, level and rarity (or only foils) and sort by name, ATK, DEF or level; shift-click steps back. The deck box's search works the same way.",
         "[recipe {modid}:binder]"
       ]
     },

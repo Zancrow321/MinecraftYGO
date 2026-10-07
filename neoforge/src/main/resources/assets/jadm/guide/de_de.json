@@ -80,6 +80,7 @@
         "Seltene Karten glänzen wie die echten: eine Rare hat einen silbernen Namen, eine Super Rare ein Holo-Bild, eine Ultra Rare ein Holo-Bild und einen goldenen Namen, eine Secret Rare ein Bild mit Regenbogenrand und einen silbernen Namen.",
         "# Kartenordner",
         "Hält deine Sammlung. \"Alle Karten einlegen\" legt jede lose Karte hinein; ein Klick auf eine Karte nimmt sie wieder heraus (Shift-Klick alle Kopien). Er behält die Seltenheit jeder Karte, in der Ecke angezeigt (R, SR, UR, ScR), und Decks nehmen zuerst Commons, damit deine Foils im Ordner bleiben. Karten aus noch gesperrten Sets zeigen ein Schloss.",
+        "**Suchen:** Einfach lostippen, sobald der Ordner offen ist. Jedes Wort muss im Namen, Kartentext, Attribut oder Typ vorkommen, also findet finsternis drache, empfänger oder schnellzauber etwas (Kartennamen und -texte sind englisch); Wörter in Anführungszeichen zählen als ein Ausdruck, etwa \"destroy all\". Rechtsklick leert das Feld. Die Knöpfe darunter filtern nach Kartentyp, Attribut, Stufe und Seltenheit (oder nur Foils) und sortieren nach Name, ATK, DEF oder Stufe; Shift-Klick geht zurück. Die Suche der Deckbox funktioniert genauso.",
         "[recipe {modid}:binder]"
       ]
     },
