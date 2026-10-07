@@ -5,6 +5,7 @@ import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.client.disk.DiskClient;
 import io.github.zancrow321.jadm.client.duel.DuelMode;
 import io.github.zancrow321.jadm.client.collection.CardItemRenderer;
+import io.github.zancrow321.jadm.client.collection.CardPreview;
 import io.github.zancrow321.jadm.client.collection.ProductItemRenderer;
 import io.github.zancrow321.jadm.client.disk.DiskItemRenderer;
 import io.github.zancrow321.jadm.client.disk.DiskLayer;
@@ -45,6 +46,7 @@ import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
@@ -63,6 +65,9 @@ public final class JadmClient {
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_C, "key.categories.jadm");
     public static final KeyMapping COSMETICS = new KeyMapping("key.jadm.cosmetics",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "key.categories.jadm");
+    /** Opens the admin menu, for operators. */
+    public static final KeyMapping ADMIN = new KeyMapping("key.jadm.admin",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "key.categories.jadm");
 
     /**
      * For headless testing: {@code -Djadm.camera=THIRD_PERSON_FRONT:90} keeps the camera there and turns
@@ -207,6 +212,9 @@ public final class JadmClient {
         public static void registerHud(RegisterGuiLayersEvent event) {
             event.registerAbove(VanillaGuiLayers.HOTBAR,
                     ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID, "duel_hud"), DuelHud::render);
+            // Under the chat, so new messages show over a held card's preview.
+            event.registerBelow(VanillaGuiLayers.CHAT,
+                    ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID, "card_preview"), CardPreview::renderHud);
         }
 
         @SubscribeEvent
@@ -220,12 +228,23 @@ public final class JadmClient {
             event.register(DUEL_LOG);
             event.register(DUEL_RESPONSES);
             event.register(COSMETICS);
+            event.register(ADMIN);
         }
     }
 
     @SubscribeEvent
     public static void onRenderLevel(RenderLevelStageEvent event) {
         FieldRenderer.render(event);
+    }
+
+    @SubscribeEvent
+    public static void beforeScreen(ScreenEvent.Render.Pre event) {
+        CardPreview.beforeRender(event);
+    }
+
+    @SubscribeEvent
+    public static void afterScreen(ScreenEvent.Render.Post event) {
+        CardPreview.afterRender(event);
     }
 
     /** Right-clicking the projected field answers prompts instead of using the held item. */
@@ -276,6 +295,16 @@ public final class JadmClient {
         while (COSMETICS.consumeClick()) {
             if (mc.screen == null && mc.player != null) {
                 mc.player.connection.sendCommand("jadm cosmetics");
+            }
+        }
+        while (ADMIN.consumeClick()) {
+            if (mc.screen == null && mc.player != null) {
+                if (mc.player.hasPermissions(io.github.zancrow321.jadm.admin.AdminMenu.LEVEL)) {
+                    mc.player.connection.sendCommand(Jadm.COMMAND + " admin");
+                } else {
+                    mc.player.displayClientMessage(net.minecraft.network.chat.Component.translatable(
+                            "message.jadm.admin.not_op"), true);
+                }
             }
         }
     }

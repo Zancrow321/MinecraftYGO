@@ -54,7 +54,7 @@
         "- **Your hand** runs along the bottom. Click a card for its actions (Normal Summon, Set, Activate...) or drag it straight onto a zone.",
         "- **Phase buttons** on the right show the phase: DP SP M1 BP M2 EP. Click BP, M2 or EP to go there.",
         "- **Responses** open their own window, showing what you respond to. Pick a response or \"Don't respond\"; \"-\" folds it away.",
-        "- **Card details:** the card under the mouse is shown big on the left with its text and current ATK/DEF.",
+        "- **Card details:** the card under the mouse is shown big on the left with its text and current ATK/DEF. Long text gets a scroll bar: turn the mouse wheel (anywhere but the duel log) or drag the bar.",
         "- **Piles:** click a graveyard, the banished cards or an extra deck (right-click when a card there can be activated) to look through it.",
         "- **Picks** on the field are made right there and confirmed with Confirm; picks from a pile open a card window.",
         "# Keys",
@@ -76,10 +76,12 @@
         "- **Structure Decks** put their cards straight into your binder.",
         "- A **Collector's Tin** gives its promo card and three packs.",
         "Packs and single cards turn up in dungeon, temple, mineshaft and treasure chests, mobs sometimes drop one, NPC duelists give one when you beat them, and the Card Trader sells them.",
+        "Hover over a card in your inventory, a chest, the binder or the deck box to see it big on the left, with its full text. A card you hold in your hand shows the same way in the top left corner.",
         "# Foils",
         "Rarer cards shine like the real ones: a Rare has a silver name, a Super Rare holofoil art, an Ultra Rare holofoil art and a gold name, a Secret Rare rainbow-lined art and a silver name.",
         "# Card Binder",
         "Holds your collection. \"Put all cards in\" moves every loose card into it; clicking a card takes it out again (shift-click for every copy). It keeps each card's rarity, shown in the corner (R, SR, UR, ScR), and decks use commons first so your foils stay in the binder. Cards from sets that are still locked show a padlock.",
+        "**Searching:** just start typing when the binder opens. Every word has to turn up in the card's name, text, attribute or type, so dark dragon, tuner or quick-play all work (German type names like drache too); put words in quotes to find them as one phrase, like \"destroy all\". Right-click the box to clear it. The buttons below filter by card type, attribute, level and rarity (or only foils) and sort by name, ATK, DEF or level; shift-click steps back. The deck box's search works the same way.",
         "[recipe {modid}:binder]"
       ]
     },
@@ -150,6 +152,7 @@
         "[recipe {modid}:duelist_platform]",
         "# Duel Arena",
         "A **Duel Arena Kit** sets up the Duelist Kingdom arena on flat ground. When everyone stands on a podium, the field appears over the arena and the podiums lift the duelists 3 blocks up. An NPC opponent walks over to the free podium. Break any part (not during a duel) to pack it back into its kit.",
+        "- **Auto duel**: step onto a podium and the arena shows **Waiting for Opponent...** until someone steps onto the other one. Then a {server:arena.countdownSeconds}-second countdown runs and the duel starts by itself, no invitation needed. Step off to call it off. You need a legal deck box (or the server lends a starter deck), and after a duel you step off and back on to go again. While a tournament is open, its arenas wait for its matches.",
         "[recipe {modid}:duel_arena_kit]",
         "---",
         "# Tournaments",
@@ -213,7 +216,13 @@
         "- `{cmd} dp <player>` and `{cmd} dp give|take|set <players> <amount>`: look at and change Duel Points.",
         "- `{cmd} stats reset <player>`: clear a duel record.",
         "- `{cmd} tournament arena add`, `arena remove [number]` and `arena list`: the Duel Arenas tournaments play on (stand on one to add it); `{cmd} tournament award <name>`: decide a match.",
-        "- `{cmd} gallery [page]`: lays out a page of monster models to look at; `{cmd} gallery clear` removes them."
+        "- `{cmd} gallery [page]`: lays out a page of monster models to look at; `{cmd} gallery clear` removes them.",
+        "# Admin menu",
+        "**{key:admin}** or `{cmd} admin` opens the admin menu for operators (level 2, like `/give`). Top right picks who for: you, another player or everyone online.",
+        "- **Products**: every booster pack, structure deck and tin, searched by name or set code, or a random pack. Click gives the count you set.",
+        "- **Cards**: any card by name or passcode, in any rarity, locked ones too.",
+        "- **Duel Points**: type an amount, then give, take or set; below are the balances of everyone online.",
+        "Everything runs on the server and shows up like a command in the operators' chat and the server log."
       ]
     },
     {
@@ -244,12 +253,14 @@
         "- `[tournament]`: the defaults of every new tournament; its host can change them with `{cmd} tournament set`. `format` = {server:tournament.format}, `bestOf` = {server:tournament.bestOf}, `minPlayers` = {server:tournament.minPlayers}, `maxPlayers` = {server:tournament.maxPlayers}, `registrationMinutes` = {server:tournament.registrationMinutes}, `npcFill` = {server:tournament.npcFill}, `lockDeck` = {server:tournament.lockDeck}, `entryFee` = {server:tournament.entryFee}, `potShare` = {server:tournament.potShare}, `prizesFirst` to `prizesEveryone`, and more (`{cmd} tournament settings` lists them).",
         "- `[tournament] playersCanHost` = {server:tournament.playersCanHost}: players may host. `schedule`: times such as \"20:00\" or \"SAT 18:30\" when tournaments open by themselves.",
         "- `[guide] giveOnFirstJoin` = {server:guide.giveOnFirstJoin} and `craftable` = {server:guide.craftable}: this book.",
+        "- `[arena] autoStart` = {server:arena.autoStart}: a duel starts by itself when one player stands on each podium of a Duel Arena, after `countdownSeconds` = {server:arena.countdownSeconds}.",
         "# Your own settings",
         "In `config/{modid}-client.toml`:",
         "- `downloadCardArt` = {client:downloadCardArt}: card art is downloaded on first view and kept on your computer. `cardArtUrl` and `cardArtCroppedUrl` say where from.",
         "- `realProductImages` = {client:realProductImages}: booster packs, decks and tins show the real product, its picture downloaded the same way. `productImageUrl` says where from.",
         "- `chooseZone` = {client:chooseZone}: pick the zone yourself when playing a card from its menu.",
-        "- `skipResponses` = {client:skipResponses}: pass every response you don't have to take (switch it in a duel with {key:duel_responses})."
+        "- `skipResponses` = {client:skipResponses}: pass every response you don't have to take (switch it in a duel with {key:duel_responses}).",
+        "- `cardPreview` = {client:cardPreview}: a big picture of the card under the mouse, with its text, left of the inventory, chests, the binder and the deck box, and of a card in your hand."
       ]
     },
     {

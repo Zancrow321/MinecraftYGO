@@ -2,11 +2,36 @@
 
 ## Unreleased
 
+### Beyond the Brave
+- **Beyond the Brave** (BETB, October 8, 2026) is a full booster with all 100 cards and their scripts. The 16
+  TCG-first cards (Angelechy and others) use ProjectIgnis' pre-release scripts under their real passcodes.
+
+### Admin menu
+- Operators get an **admin menu** (key O, or `/jadm admin`; permission level 2, like `/give`): any booster pack,
+  structure deck or tin, a random pack, any card in any rarity (search by name or passcode, locked cards too), and
+  Duel Points to give, take or set, each for yourself, another player or everyone online. The server checks every
+  click, and each one shows up in the operators' chat and the server log like a command.
+
+### Arena auto duel
+- Step onto a podium of a Duel Arena and a duel starts by itself once someone steps onto the other one, no
+  invitation needed. "Waiting for Opponent..." floats over whoever waits and "Step up to duel!" over the free
+  podium; once both are taken a countdown runs over the arena, and stepping off calls it off.
+- Needs a legal deck box (or a lent starter deck where the server allows it). After a duel, or when logging in on a
+  podium, step off and back on to go again. Arenas added for tournaments wait for the tournament while one is open.
+- Server settings `[arena] autoStart` (on) and `countdownSeconds` (5).
+
 ### New name
 - The mod is now called **Just Another Dueling Mod**, mod id `jadm`. The command is `/jadm`, Figura avatar scripts
   use the `jadm` global and `jadm.<event>` events, and the starter avatar is `jadm-duelist`.
 - Renamed from MinecraftYGO (mod id `minecraftygo`, command `/ygo`, config folder `config/minecraftygo`).
 - Worlds from 0.1.0 lose the mod's items, blocks and saved data (decks, binders, progress); the config starts fresh.
+
+### Card preview
+- Hovering a card in the inventory, a chest or any other container, the binder or the deck box shows it big on the
+  left, like the duel's card panel: its picture, name, rarity, type, stats and full text. The tooltip by the mouse
+  then keeps to the card's name. A card held in the hand is shown the same way in the top left corner while
+  playing (not during a duel, which has its own card panel). Drawn only where there is room left of the window (else the old tooltip stays);
+  `cardPreview = false` in the client config turns it off.
 
 ### Real products
 - Booster packs, structure and starter decks and tins look like the real products: the item shows the product's
@@ -79,6 +104,8 @@
   green; the floating change beside them is twice as big.
 - The card panel always shows the card's artwork, big, above its name and text. Long card text is drawn smaller
   instead of pushing the picture out, and the panel keeps the last card you looked at.
+- Card text too long for the card panel even at the smaller size (Pendulum monsters, for one) gets a scroll bar
+  instead of being cut off: turn the mouse wheel anywhere but over the duel log, or drag the bar.
 - The materials under an Xyz monster can be looked at: right-click it (or click it when it has nothing to do) and a
   window shows them big. The card panel lists them as small pictures while the monster is under the mouse.
 

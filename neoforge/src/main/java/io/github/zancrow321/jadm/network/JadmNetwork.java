@@ -78,6 +78,14 @@ public final class JadmNetwork {
                         ShopStandMenu.setPrice(player, payload.column(), payload.price());
                     }
                 }));
+        registrar.playToClient(AdminPayload.TYPE, AdminPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.admin(payload)));
+        registrar.playToServer(AdminActionPayload.TYPE, AdminActionPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        io.github.zancrow321.jadm.admin.AdminMenu.handle(player, payload);
+                    }
+                }));
         registrar.playToServer(DuelResponsePayload.TYPE, DuelResponsePayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer player) {

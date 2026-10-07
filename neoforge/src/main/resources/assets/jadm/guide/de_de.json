@@ -54,7 +54,7 @@
         "- **Deine Hand** liegt unten. Klick eine Karte für ihre Aktionen (Normalbeschwörung, Setzen, Aktivieren...) oder zieh sie direkt auf eine Zone.",
         "- **Phasen-Knöpfe** rechts zeigen die Phase: DP SP M1 BP M2 EP. BP, M2 und EP kann man anklicken.",
         "- **Antworten** öffnen ein eigenes Fenster, das zeigt, worauf du antwortest. Wähle eine Antwort oder \"Don't respond\"; \"-\" klappt es weg.",
-        "- **Kartendetails:** Die Karte unter der Maus steht groß links, mit Text und aktuellem ATK/DEF.",
+        "- **Kartendetails:** Die Karte unter der Maus steht groß links, mit Text und aktuellem ATK/DEF. Langer Text bekommt einen Scrollbalken: Mausrad drehen (überall außer über dem Duellprotokoll) oder den Balken ziehen.",
         "- **Stapel:** Friedhof, verbannte Karten oder Extra Deck anklicken (Rechtsklick, wenn dort eine Karte aktiviert werden kann), um sie durchzusehen.",
         "- **Auswahlen** auf dem Feld triffst du direkt dort und bestätigst mit Confirm; Auswahlen aus einem Stapel öffnen ein Kartenfenster.",
         "# Tasten",
@@ -76,10 +76,12 @@
         "- **Struktur-Decks** legen ihre Karten direkt in deinen Kartenordner.",
         "- Ein **Sammler-Tin** gibt seine Promokarte und drei Packs.",
         "Packs und einzelne Karten liegen in Verliesen, Tempeln, Minen und Schatztruhen, Monster lassen manchmal eins fallen, NPC-Duellanten geben eins, wenn du sie besiegst, und der Kartenhändler verkauft sie.",
+        "Fährst du mit der Maus über eine Karte im Inventar, in einer Truhe, im Kartenordner oder in der Deckbox, siehst du sie links groß mit ihrem ganzen Text. Eine Karte, die du in der Hand hältst, erscheint genauso oben links.",
         "# Foils",
         "Seltene Karten glänzen wie die echten: eine Rare hat einen silbernen Namen, eine Super Rare ein Holo-Bild, eine Ultra Rare ein Holo-Bild und einen goldenen Namen, eine Secret Rare ein Bild mit Regenbogenrand und einen silbernen Namen.",
         "# Kartenordner",
         "Hält deine Sammlung. \"Alle Karten einlegen\" legt jede lose Karte hinein; ein Klick auf eine Karte nimmt sie wieder heraus (Shift-Klick alle Kopien). Er behält die Seltenheit jeder Karte, in der Ecke angezeigt (R, SR, UR, ScR), und Decks nehmen zuerst Commons, damit deine Foils im Ordner bleiben. Karten aus noch gesperrten Sets zeigen ein Schloss.",
+        "**Suchen:** Einfach lostippen, sobald der Ordner offen ist. Jedes Wort muss im Namen, Kartentext, Attribut oder Typ vorkommen, also findet finsternis drache, empfänger oder schnellzauber etwas (Kartennamen und -texte sind englisch); Wörter in Anführungszeichen zählen als ein Ausdruck, etwa \"destroy all\". Rechtsklick leert das Feld. Die Knöpfe darunter filtern nach Kartentyp, Attribut, Stufe und Seltenheit (oder nur Foils) und sortieren nach Name, ATK, DEF oder Stufe; Shift-Klick geht zurück. Die Suche der Deckbox funktioniert genauso.",
         "[recipe {modid}:binder]"
       ]
     },
@@ -150,6 +152,7 @@
         "[recipe {modid}:duelist_platform]",
         "# Duellarena",
         "Ein **Duellarena-Bausatz** stellt auf ebenem Boden die Arena aus dem Königreich der Duellanten auf. Steht jeder auf einem Pult, erscheint das Feld über der Arena, und die Pulte heben die Duellanten 3 Blöcke hoch. Ein NPC-Gegner läuft zum freien Pult. Einen beliebigen Teil abbauen (nicht während eines Duells) packt sie wieder in ihren Bausatz.",
+        "- **Auto-Duell**: Stell dich auf ein Pult, dann zeigt die Arena **Warte auf Gegner...**, bis sich jemand auf das andere stellt. Dann läuft ein Countdown von {server:arena.countdownSeconds} Sekunden, und das Duell startet von selbst, ganz ohne Einladung. Runtergehen bricht ab. Du brauchst eine legale Deckbox (oder der Server leiht ein Starter-Deck), und nach einem Duell gehst du kurz runter und wieder rauf für das nächste. Solange ein Turnier offen ist, bleiben seine Arenen für die Turnierspiele frei.",
         "[recipe {modid}:duel_arena_kit]",
         "---",
         "# Turniere",
@@ -213,7 +216,13 @@
         "- `{cmd} dp <player>` und `{cmd} dp give|take|set <players> <amount>`: Duel Points ansehen und ändern.",
         "- `{cmd} stats reset <player>`: eine Duell-Bilanz löschen.",
         "- `{cmd} tournament arena add`, `arena remove [number]` und `arena list`: die Duellarenen für Turniere (zum Hinzufügen darauf stehen); `{cmd} tournament award <name>`: ein Match entscheiden.",
-        "- `{cmd} gallery [page]`: stellt eine Seite Monster-Modelle zum Ansehen auf; `{cmd} gallery clear` räumt sie weg."
+        "- `{cmd} gallery [page]`: stellt eine Seite Monster-Modelle zum Ansehen auf; `{cmd} gallery clear` räumt sie weg.",
+        "# Admin-Menü",
+        "**{key:admin}** oder `{cmd} admin` öffnet für Operatoren (Stufe 2, wie `/give`) das Admin-Menü. Oben rechts wählst du, für wen: dich, einen anderen Spieler oder alle online.",
+        "- **Produkte**: jedes Booster-Pack, Struktur-Deck und Tin, nach Name oder Set-Code suchen, oder ein Zufallspack. Anklicken gibt die eingestellte Anzahl.",
+        "- **Karten**: jede Karte nach Name oder Passcode, in jeder Seltenheit, auch noch gesperrte.",
+        "- **Duel Points**: Menge eintippen, dann geben, abziehen oder setzen; darunter die Kontostände aller online.",
+        "Alles läuft auf dem Server und erscheint wie ein Befehl im Chat der Operatoren und im Server-Log."
       ]
     },
     {
@@ -244,12 +253,14 @@
         "- `[tournament]`: die Vorgaben jedes neuen Turniers; sein Ausrichter kann sie mit `{cmd} tournament set` ändern. `format` = {server:tournament.format}, `bestOf` = {server:tournament.bestOf}, `minPlayers` = {server:tournament.minPlayers}, `maxPlayers` = {server:tournament.maxPlayers}, `registrationMinutes` = {server:tournament.registrationMinutes}, `npcFill` = {server:tournament.npcFill}, `lockDeck` = {server:tournament.lockDeck}, `entryFee` = {server:tournament.entryFee}, `potShare` = {server:tournament.potShare}, `prizesFirst` bis `prizesEveryone` und mehr (`{cmd} tournament settings` listet sie).",
         "- `[tournament] playersCanHost` = {server:tournament.playersCanHost}: Spieler dürfen ausrichten. `schedule`: Zeiten wie \"20:00\" oder \"SAT 18:30\", zu denen Turniere von selbst öffnen.",
         "- `[guide] giveOnFirstJoin` = {server:guide.giveOnFirstJoin} und `craftable` = {server:guide.craftable}: dieses Buch.",
+        "- `[arena] autoStart` = {server:arena.autoStart}: ein Duell startet von selbst, wenn auf jedem Pult einer Duellarena ein Spieler steht, nach `countdownSeconds` = {server:arena.countdownSeconds} Sekunden Countdown.",
         "# Deine eigenen Einstellungen",
         "In `config/{modid}-client.toml`:",
         "- `downloadCardArt` = {client:downloadCardArt}: Kartenbilder werden beim ersten Anzeigen heruntergeladen und auf deinem Rechner behalten. `cardArtUrl` und `cardArtCroppedUrl` sagen, woher.",
         "- `realProductImages` = {client:realProductImages}: Booster, Decks und Tins zeigen das echte Produkt, das Bild wird genauso heruntergeladen. `productImageUrl` sagt, woher.",
         "- `chooseZone` = {client:chooseZone}: die Zone selbst wählen, wenn du eine Karte über ihr Menü spielst.",
-        "- `skipResponses` = {client:skipResponses}: jede Antwort auslassen, die du nicht nehmen musst (im Duell mit {key:duel_responses} umschalten)."
+        "- `skipResponses` = {client:skipResponses}: jede Antwort auslassen, die du nicht nehmen musst (im Duell mit {key:duel_responses} umschalten).",
+        "- `cardPreview` = {client:cardPreview}: ein großes Bild der Karte unter der Maus mit ihrem Text, links neben Inventar, Truhen, Kartenordner und Deckbox, und einer Karte in deiner Hand."
       ]
     },
     {

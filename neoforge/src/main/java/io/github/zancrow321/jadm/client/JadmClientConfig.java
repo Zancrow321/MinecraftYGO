@@ -12,6 +12,7 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.ConfigValue<String> PRODUCT_IMAGE_URL;
     public static final ModConfigSpec.BooleanValue CHOOSE_ZONE;
     public static final ModConfigSpec.BooleanValue SKIP_RESPONSES;
+    public static final ModConfigSpec.BooleanValue CARD_PREVIEW;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -41,6 +42,11 @@ public final class JadmClientConfig {
                 .comment("In a duel, pass every chance to respond that you don't have to take, instead of asking. "
                         + "Switch it in the duel with the response button, the duel menu or C.")
                 .define("skipResponses", false);
+        CARD_PREVIEW = builder
+                .comment("Show a big picture of the card under the mouse with its text left of the inventory, chests, "
+                        + "the binder and the deck box, where there is room for it, and of a card held in the hand in "
+                        + "the top left corner.")
+                .define("cardPreview", true);
         SPEC = builder.build();
     }
 

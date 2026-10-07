@@ -36,6 +36,10 @@ public final class ArenaBlockEntity extends BlockEntity implements GeoBlockEntit
     private long changedAt;
     /** Client: the podiums went up while this was loaded, so going down is worth animating. */
     private boolean seenRaised;
+    /** Who waits for a duel here: bit 0 for someone on the podium at end +1, bit 1 for end -1. Not saved. */
+    private int waiting;
+    /** The game time the duel starts at once both podiums are taken, or 0. Not saved. */
+    private long startsAt;
 
     public ArenaBlockEntity(BlockPos pos, BlockState state) {
         super(DuelArena.ARENA_ENTITY.get(), pos, state);
@@ -43,6 +47,26 @@ public final class ArenaBlockEntity extends BlockEntity implements GeoBlockEntit
 
     public boolean raised() {
         return raised;
+    }
+
+    /** Which podiums have someone waiting on them (see {@link #waiting}) and when their duel starts, or 0. */
+    public int waiting() {
+        return waiting;
+    }
+
+    public long startsAt() {
+        return startsAt;
+    }
+
+    /** Server: shows who waits here, and the countdown, to everyone who can see the arena. */
+    void lobby(int waiting, long startsAt) {
+        if (this.waiting != waiting || this.startsAt != startsAt) {
+            this.waiting = waiting;
+            this.startsAt = startsAt;
+            if (level != null) {
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_CLIENTS);
+            }
+        }
     }
 
     void raise() {
@@ -121,12 +145,16 @@ public final class ArenaBlockEntity extends BlockEntity implements GeoBlockEntit
         raised = tag.getBoolean("Raised");
         floors = tag.getBoolean("Floors");
         seenRaised |= raised;
+        waiting = tag.getInt("Waiting");
+        startsAt = tag.getLong("StartsAt");
     }
 
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         CompoundTag tag = super.getUpdateTag(registries);
         tag.putBoolean("Raised", raised);
+        tag.putInt("Waiting", waiting);
+        tag.putLong("StartsAt", startsAt);
         return tag;
     }
 
