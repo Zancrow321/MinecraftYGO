@@ -209,6 +209,9 @@ public final class JadmClient {
         public static void registerHud(RegisterGuiLayersEvent event) {
             event.registerAbove(VanillaGuiLayers.HOTBAR,
                     ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID, "duel_hud"), DuelHud::render);
+            // Under the chat, so new messages show over a held card's preview.
+            event.registerBelow(VanillaGuiLayers.CHAT,
+                    ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID, "card_preview"), CardPreview::renderHud);
         }
 
         @SubscribeEvent

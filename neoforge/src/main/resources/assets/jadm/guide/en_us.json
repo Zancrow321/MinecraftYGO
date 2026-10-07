@@ -76,7 +76,7 @@
         "- **Structure Decks** put their cards straight into your binder.",
         "- A **Collector's Tin** gives its promo card and three packs.",
         "Packs and single cards turn up in dungeon, temple, mineshaft and treasure chests, mobs sometimes drop one, NPC duelists give one when you beat them, and the Card Trader sells them.",
-        "Hover over a card in your inventory, a chest, the binder or the deck box to see it big on the left, with its full text.",
+        "Hover over a card in your inventory, a chest, the binder or the deck box to see it big on the left, with its full text. A card you hold in your hand shows the same way in the top left corner.",
         "# Foils",
         "Rarer cards shine like the real ones: a Rare has a silver name, a Super Rare holofoil art, an Ultra Rare holofoil art and a gold name, a Secret Rare rainbow-lined art and a silver name.",
         "# Card Binder",
@@ -251,7 +251,7 @@
         "- `realProductImages` = {client:realProductImages}: booster packs, decks and tins show the real product, its picture downloaded the same way. `productImageUrl` says where from.",
         "- `chooseZone` = {client:chooseZone}: pick the zone yourself when playing a card from its menu.",
         "- `skipResponses` = {client:skipResponses}: pass every response you don't have to take (switch it in a duel with {key:duel_responses}).",
-        "- `cardPreview` = {client:cardPreview}: a big picture of the card under the mouse, with its text, left of the inventory, chests, the binder and the deck box."
+        "- `cardPreview` = {client:cardPreview}: a big picture of the card under the mouse, with its text, left of the inventory, chests, the binder and the deck box, and of a card in your hand."
       ]
     },
     {

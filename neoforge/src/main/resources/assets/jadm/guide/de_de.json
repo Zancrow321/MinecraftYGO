@@ -76,7 +76,7 @@
         "- **Struktur-Decks** legen ihre Karten direkt in deinen Kartenordner.",
         "- Ein **Sammler-Tin** gibt seine Promokarte und drei Packs.",
         "Packs und einzelne Karten liegen in Verliesen, Tempeln, Minen und Schatztruhen, Monster lassen manchmal eins fallen, NPC-Duellanten geben eins, wenn du sie besiegst, und der Kartenhändler verkauft sie.",
-        "Fährst du mit der Maus über eine Karte im Inventar, in einer Truhe, im Kartenordner oder in der Deckbox, siehst du sie links groß mit ihrem ganzen Text.",
+        "Fährst du mit der Maus über eine Karte im Inventar, in einer Truhe, im Kartenordner oder in der Deckbox, siehst du sie links groß mit ihrem ganzen Text. Eine Karte, die du in der Hand hältst, erscheint genauso oben links.",
         "# Foils",
         "Seltene Karten glänzen wie die echten: eine Rare hat einen silbernen Namen, eine Super Rare ein Holo-Bild, eine Ultra Rare ein Holo-Bild und einen goldenen Namen, eine Secret Rare ein Bild mit Regenbogenrand und einen silbernen Namen.",
         "# Kartenordner",
@@ -251,7 +251,7 @@
         "- `realProductImages` = {client:realProductImages}: Booster, Decks und Tins zeigen das echte Produkt, das Bild wird genauso heruntergeladen. `productImageUrl` sagt, woher.",
         "- `chooseZone` = {client:chooseZone}: die Zone selbst wählen, wenn du eine Karte über ihr Menü spielst.",
         "- `skipResponses` = {client:skipResponses}: jede Antwort auslassen, die du nicht nehmen musst (im Duell mit {key:duel_responses} umschalten).",
-        "- `cardPreview` = {client:cardPreview}: ein großes Bild der Karte unter der Maus mit ihrem Text, links neben Inventar, Truhen, Kartenordner und Deckbox."
+        "- `cardPreview` = {client:cardPreview}: ein großes Bild der Karte unter der Maus mit ihrem Text, links neben Inventar, Truhen, Kartenordner und Deckbox, und einer Karte in deiner Hand."
       ]
     },
     {

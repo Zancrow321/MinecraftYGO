@@ -44,7 +44,8 @@ public final class JadmClientConfig {
                 .define("skipResponses", false);
         CARD_PREVIEW = builder
                 .comment("Show a big picture of the card under the mouse with its text left of the inventory, chests, "
-                        + "the binder and the deck box, where there is room for it.")
+                        + "the binder and the deck box, where there is room for it, and of a card held in the hand in "
+                        + "the top left corner.")
                 .define("cardPreview", true);
         SPEC = builder.build();
     }

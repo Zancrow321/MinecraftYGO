@@ -2,9 +2,12 @@ package io.github.zancrow321.jadm.client.collection;
 
 import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.client.JadmClientConfig;
+import io.github.zancrow321.jadm.client.field.ClientField;
 import io.github.zancrow321.jadm.engine.data.BoosterSets.Rarity;
 import io.github.zancrow321.jadm.engine.data.CardInfo;
 import io.github.zancrow321.jadm.item.CardItem;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -22,6 +25,7 @@ import java.util.List;
  * A big picture of the card under the mouse, with its name, rarity, stats and text, in the free space left of a
  * screen's window: the inventory, chests and every other container, the binder and the deck box. It looks like the
  * duel's card panel. Drawn only where there is room for it; the tooltip by the mouse then keeps to the card's name.
+ * A card held in the hand gets one too, in the top left corner while playing.
  */
 public final class CardPreview {
     private static final int MIN_WIDTH = 72;
@@ -37,6 +41,10 @@ public final class CardPreview {
     private static final int RECIPE_BOOK_WIDTH = 147;
     private static final int RECIPE_BOOK_SHIFT = 86;
     private static final int RECIPE_BOOK_TABS = 32;
+    private static final int HUD_MAX_WIDTH = 120;
+    private static final int HOTBAR_WIDTH = 182;
+    /** Room kept free at the bottom of the screen in play: the chat's input line and recent messages. */
+    private static final int HUD_BOTTOM = 70;
 
     private CardPreview() {
     }
@@ -95,15 +103,53 @@ public final class CardPreview {
      * @return whether it fitted and was drawn
      */
     public static boolean render(GuiGraphics g, Font font, int code, Rarity rarity, int room, int screenHeight) {
-        CardInfo info = JadmData.cards().card(code);
-        if (info == null || !fits(room)) {
+        if (!fits(room)) {
             return false;
         }
         int width = Math.min(MAX_WIDTH, room - 2 * GAP);
-        int maxHeight = screenHeight - 2 * GAP;
-        int artHeight = Math.min(Math.round((width - 6) * 391f / 268f), maxHeight * 3 / 5);
-        int artWidth = Math.round(artHeight * 268f / 391f);
+        return draw(g, font, code, rarity, room - GAP - width, width, GAP, screenHeight - GAP, true);
+    }
 
+    /**
+     * While playing with no screen open: the card held in the main hand (or else the off hand) in the top left
+     * corner, clear of the hotbar and the chat. Not during a duel, which has its own card panel, nor with the HUD
+     * hidden.
+     */
+    public static void renderHud(GuiGraphics g, DeltaTracker delta) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.screen != null || mc.options.hideGui || ClientField.active()
+                || !JadmClientConfig.CARD_PREVIEW.get()) {
+            return;
+        }
+        ItemStack card = mc.player.getMainHandItem();
+        if (!(card.getItem() instanceof CardItem)) {
+            card = mc.player.getOffhandItem();
+        }
+        if (!(card.getItem() instanceof CardItem) || CardItem.code(card) == 0) {
+            return;
+        }
+        // Left of the hotbar, and smaller than beside a window so it hides less of the world.
+        int width = Math.min(HUD_MAX_WIDTH, (g.guiWidth() - HOTBAR_WIDTH) / 2 - 2 * GAP);
+        if (width >= MIN_WIDTH) {
+            draw(g, mc.font, CardItem.code(card), CardItem.rarity(card), GAP, width, GAP,
+                    g.guiHeight() - HUD_BOTTOM, false);
+        }
+    }
+
+    /**
+     * Draws a card's preview {@code width} wide at {@code x}, between {@code top} and {@code bottom}: centred
+     * between them, or at the top.
+     */
+    private static boolean draw(GuiGraphics g, Font font, int code, Rarity rarity, int x, int width, int top,
+                                int bottom, boolean centred) {
+        CardInfo info = JadmData.cards().card(code);
+        if (info == null) {
+            return false;
+        }
+        int maxHeight = bottom - top;
+        if (maxHeight < 60) {
+            return false;
+        }
         List<Line> lines = new ArrayList<>();
         lines.add(new Line(info.name(), GOLD));
         if (rarity != Rarity.COMMON) {
@@ -120,20 +166,30 @@ public final class CardPreview {
         }
         lines.add(new Line(info.description().replace("\r", ""), TEXT));
 
-        // The biggest text size at which everything fits; the smallest one is cut off at the bottom.
-        int textRoom = maxHeight - artHeight - 9;
-        float scale = 0.5f;
-        for (float s : new float[] {1f, 0.75f, 0.5f}) {
-            if (height(font, lines, (int) ((width - 6) / s)) * s <= textRoom) {
-                scale = s;
-                break;
+        // The biggest text size at which everything fits beside the biggest picture; long text makes the picture
+        // smaller (down to two fifths of the height) before it is cut off at the bottom at the smallest size.
+        int fullArt = Math.round((width - 6) * 391f / 268f);
+        int artHeight = 0;
+        int textRoom = 0;
+        float scale = 0;
+        for (int fifths = 3; fifths >= 2 && scale == 0; fifths--) {
+            artHeight = Math.min(fullArt, maxHeight * fifths / 5);
+            textRoom = maxHeight - artHeight - 9;
+            for (float s : new float[] {1f, 0.75f, 0.5f}) {
+                if (height(font, lines, (int) ((width - 6) / s)) * s <= textRoom) {
+                    scale = s;
+                    break;
+                }
             }
         }
+        if (scale == 0) {
+            scale = 0.5f;
+        }
+        int artWidth = Math.round(artHeight * 268f / 391f);
         int wrap = (int) ((width - 6) / scale);
         int textHeight = Math.min(textRoom, (int) Math.ceil(height(font, lines, wrap) * scale));
         int height = 3 + artHeight + 3 + textHeight + 3;
-        int x = room - GAP - width;
-        int y = Math.max(GAP, (screenHeight - height) / 2);
+        int y = centred ? Math.max(top, top + (maxHeight - height) / 2) : top;
 
         g.fill(x - 1, y - 1, x + width + 1, y + height + 1, PANEL_EDGE);
         g.fill(x, y, x + width, y + height, PANEL);
@@ -149,7 +205,7 @@ public final class CardPreview {
             if (i == lines.size() - 1) {
                 ly += 2;
             }
-            for (FormattedCharSequence part : font.split(Component.literal(line.text()), wrap)) {
+            for (FormattedCharSequence part : wrap(font, line.text(), wrap)) {
                 if (ly + 9 > max) {
                     break;
                 }
@@ -164,11 +220,24 @@ public final class CardPreview {
     private record Line(String text, int color) {
     }
 
+    /** Text wrapped to {@code wrap}; a rule of dashes (between Pendulum and monster effects) is cut to fit instead. */
+    private static List<FormattedCharSequence> wrap(Font font, String text, int wrap) {
+        List<FormattedCharSequence> out = new ArrayList<>();
+        for (String paragraph : text.split("\n", -1)) {
+            if (paragraph.length() > 2 && paragraph.chars().allMatch(c -> c == '-')) {
+                out.add(Component.literal(font.plainSubstrByWidth(paragraph, wrap)).getVisualOrderText());
+            } else {
+                out.addAll(font.split(Component.literal(paragraph), wrap));
+            }
+        }
+        return out;
+    }
+
     /** How tall lines of text are when wrapped to {@code wrap}, at full size. */
     private static int height(Font font, List<Line> lines, int wrap) {
         int height = 2;
         for (Line line : lines) {
-            height += font.split(Component.literal(line.text()), wrap).size() * 9;
+            height += wrap(font, line.text(), wrap).size() * 9;
         }
         return height;
     }

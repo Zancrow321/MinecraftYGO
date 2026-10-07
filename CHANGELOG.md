@@ -11,7 +11,8 @@
 ### Card preview
 - Hovering a card in the inventory, a chest or any other container, the binder or the deck box shows it big on the
   left, like the duel's card panel: its picture, name, rarity, type, stats and full text. The tooltip by the mouse
-  then keeps to the card's name. Drawn only where there is room left of the window (else the old tooltip stays);
+  then keeps to the card's name. A card held in the hand is shown the same way in the top left corner while
+  playing (not during a duel, which has its own card panel). Drawn only where there is room left of the window (else the old tooltip stays);
   `cardPreview = false` in the client config turns it off.
 
 ### Real products
