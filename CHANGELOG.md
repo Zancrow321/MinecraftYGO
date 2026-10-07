@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Card pictures when picking cards
+- Searching your Deck now shows the cards you can pick. Before, every card in the window showed its back without a
+  name, so you couldn't tell what you were choosing.
+- Cards an effect has just shown you (your opponent's hand you look at, the top of a Deck) stay visible when you
+  then pick from them, until the turn ends.
+- The pick window shows cards as big as fit (a few cards from a Deck search show large), and cards you picked
+  earlier in a pick-one-at-a-time choice stay in it, marked, to click again to put back.
+- Declaring a card name lists each name with its card picture; hovering one shows it in the card panel.
+- A question about a card ("use the effect of...?", a position, a zone for a card) shows that card in the card
+  panel.
+
 ### Beyond the Brave
 - **Beyond the Brave** (BETB, October 8, 2026) is a full booster with all 100 cards and their scripts. The 16
   TCG-first cards (Angelechy and others) use ProjectIgnis' pre-release scripts under their real passcodes.

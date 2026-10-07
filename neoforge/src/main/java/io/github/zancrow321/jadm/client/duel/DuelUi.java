@@ -258,6 +258,10 @@ public final class DuelUi {
         if (p == null) {
             return;
         }
+        if (p.card() != 0) {
+            // The card a question or a zone choice is about shows in the card panel until another is looked at.
+            panelCode = p.card();
+        }
         if (chain(p) && skippingResponses()) {
             Choice pass = p.choices().stream().filter(c -> c.kind() == Kind.PASS).findFirst().orElse(null);
             if (pass != null) {
@@ -369,7 +373,7 @@ public final class DuelUi {
             } else if (!commands(prompt) && !place(prompt)) {
                 if (pickInPlace(prompt)) {
                     otherButtons(g, font, prompt, mx, my, w, h);
-                } else if (prompt.choices().stream().anyMatch(c -> c.code() != 0)) {
+                } else if (!searchable(prompt) && prompt.choices().stream().anyMatch(DuelUi::isCard)) {
                     cardWindow(g, font, prompt, mx, my, w, h);
                 } else {
                     dialog(g, font, prompt, mx, my, w, h);
@@ -616,7 +620,12 @@ public final class DuelUi {
 
     private static boolean searchable(PromptView p) {
         return p != null && p.multi() == null && p.choices().size() >= SEARCH_FROM
-                && p.choices().stream().allMatch(c -> c.code() == 0 && c.at() == null && c.kind() == Kind.OTHER);
+                && p.choices().stream().allMatch(c -> c.at() == null && c.kind() == Kind.OTHER);
+    }
+
+    /** A choice that is a card (shown by its picture), not a plain answer such as "Done". */
+    private static boolean isCard(Choice c) {
+        return c.code() != 0 || c.at() != null;
     }
 
     /** Whether typed keys go to a dialog's search right now (so they don't also work as hotkeys). */
@@ -649,7 +658,10 @@ public final class DuelUi {
         int textHeight = Math.max(artHeight, title.size() * 10 + 4);
         boolean searchable = searchable(p);
         int searchHeight = searchable ? 14 : 0;
-        int perPage = Math.max(2, (windowBottom(h) - y - 6 - textHeight - searchHeight - 18) / (BUTTON_HEIGHT + 2));
+        // Card names to declare get a row each with the card's picture.
+        boolean cards = p.choices().stream().anyMatch(c -> c.code() != 0);
+        int rowHeight = cards ? CARD_ROW : BUTTON_HEIGHT + 2;
+        int perPage = Math.max(2, (windowBottom(h) - y - 6 - textHeight - searchHeight - 18) / rowHeight);
         String needle = search.toLowerCase(java.util.Locale.ROOT);
         List<Choice> choices = searchable && !needle.isEmpty() ? p.choices().stream()
                 .filter(c -> c.label().toLowerCase(java.util.Locale.ROOT).contains(needle)).toList() : p.choices();
@@ -657,7 +669,7 @@ public final class DuelUi {
         page = Math.min(page, pages - 1);
         int shownCount = Math.min(perPage, choices.size() - page * perPage);
         int height = collapsed ? 16
-                : 6 + textHeight + searchHeight + shownCount * (BUTTON_HEIGHT + 2) + (pages > 1 ? 18 : 0);
+                : 6 + textHeight + searchHeight + shownCount * rowHeight + (pages > 1 ? 18 : 0);
         panel(g, x, y, width, height);
         if (collapsed) {
             windowTop(g, font, p.title(), x, y, width, mx, my);
@@ -685,12 +697,34 @@ public final class DuelUi {
         }
         for (int i = page * perPage; i < page * perPage + shownCount; i++) {
             Choice c = choices.get(i);
+            if (c.code() != 0) {
+                cardRow(g, font, c, x + 4, by, width - 8, mx, my);
+                by += rowHeight;
+                continue;
+            }
             // The number key that picks it (see hotkey), where there is one.
             String label = !searchable && i < 9 ? (i + 1) + "  " + c.label() : c.label();
             button(g, font, x + 4, by, width - 8, label, true, mx, my, () -> choose(c, null));
             by += BUTTON_HEIGHT + 2;
         }
         pager(g, font, pages, x + 4, by, mx, my);
+    }
+
+    /** How tall a row with a card's picture is, gap included. */
+    private static final int CARD_ROW = 26;
+
+    /** A choice that is a card, as a row: its picture and name; hovering it shows it in the card panel. */
+    private static void cardRow(GuiGraphics g, Font font, Choice c, int x, int y, int w, int mx, int my) {
+        int h = CARD_ROW - 2;
+        boolean hover = mx >= x && mx < x + w && my >= y && my < y + h;
+        g.fill(x, y, x + w, y + h, hover ? BUTTON_HOVER : BUTTON);
+        card(g, c.code(), x + 2, y + 1, 15, 22);
+        g.drawString(font, font.plainSubstrByWidth(c.label(), w - 24), x + 21, y + 8, TEXT);
+        if (hover) {
+            hoverCode = c.code();
+            hoverCard = null;
+        }
+        hits.add(new Hit(x, y, w, h, () -> choose(c, null)));
     }
 
     private static void pager(GuiGraphics g, Font font, int pages, int x, int y, int mx, int my) {
@@ -741,6 +775,9 @@ public final class DuelUi {
         }
     }
 
+    /** Card widths tried for the card window, biggest first. */
+    private static final int[] CARD_SIZES = {72, 64, 56, 48, 40};
+
     /** Cards to pick from piles (graveyard, deck, banished...), shown big. */
     private static void cardWindow(GuiGraphics g, Font font, PromptView p, int mx, int my, int w, int h) {
         PromptView.MultiSelect multi = p.multi();
@@ -759,21 +796,33 @@ public final class DuelUi {
             }
         } else {
             for (Choice c : p.choices()) {
-                if (c.code() == 0) {
+                if (!isCard(c)) {
                     extra.add(c);
                     continue;
                 }
                 codes.add(c.code());
                 names.add(c.label());
-                ticked.add(false);
+                // Cards picked so far stay in the window, marked, and a click takes them back out.
+                ticked.add(c.kind() == Kind.UNSELECT);
                 picks.add(() -> choose(c, null));
             }
         }
-        int cw = 40;
-        int ch = 58;
         int width = windowWidth(w, 300);
+        int room = windowBottom(h) - DuelHud.promptBottom(w) - 16 - 22;
+        // As big as the cards can be with all of them on one page (a few cards from a deck search show large);
+        // when that doesn't work, the smallest size, over several pages.
+        int cw = CARD_SIZES[CARD_SIZES.length - 1];
+        for (int size : CARD_SIZES) {
+            int perRow = Math.max(1, (width - 8) / (size + 4));
+            int rowsFit = Math.max(1, Math.min(3, room / (size * 58 / 40 + 4)));
+            if (codes.size() <= perRow * rowsFit) {
+                cw = size;
+                break;
+            }
+        }
+        int ch = cw * 58 / 40;
         int perRow = Math.max(1, (width - 8) / (cw + 4));
-        int rows = Math.max(1, Math.min(3, (windowBottom(h) - DuelHud.promptBottom(w) - 16 - 22) / (ch + 4)));
+        int rows = Math.max(1, Math.min(Math.min(3, room / (ch + 4)), (codes.size() + perRow - 1) / perRow));
         int perPage = perRow * rows;
         int pages = Math.max(1, (codes.size() + perPage - 1) / perPage);
         page = Math.min(page, pages - 1);
@@ -786,9 +835,12 @@ public final class DuelUi {
         if (collapsed) {
             return;
         }
+        // A single short row sits in the middle.
+        int across = Math.min(perRow, codes.size());
+        int left = x + 4 + (width - 8 - (across * (cw + 4) - 4)) / 2;
         for (int i = page * perPage; i < Math.min(codes.size(), (page + 1) * perPage); i++) {
             int slot = i - page * perPage;
-            int cx = x + 4 + (slot % perRow) * (cw + 4);
+            int cx = left + (slot % perRow) * (cw + 4);
             int cy = top + (slot / perRow) * (ch + 4);
             if (ticked.get(i)) {
                 outline(g, cx, cy, cw, ch, SELECTED);
@@ -796,7 +848,10 @@ public final class DuelUi {
             }
             card(g, codes.get(i), cx, cy, cw, ch);
             if (mx >= cx && mx < cx + cw && my >= cy && my < cy + ch) {
-                hoverCode = codes.get(i);
+                if (codes.get(i) != 0) {
+                    hoverCode = codes.get(i);
+                    hoverCard = null;
+                }
                 outline(g, cx, cy, cw, ch, GOLD);
             }
             hits.add(new Hit(cx, cy, cw, ch, picks.get(i)));
