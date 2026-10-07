@@ -54,7 +54,7 @@
         "- **Deine Hand** liegt unten. Klick eine Karte für ihre Aktionen (Normalbeschwörung, Setzen, Aktivieren...) oder zieh sie direkt auf eine Zone.",
         "- **Phasen-Knöpfe** rechts zeigen die Phase: DP SP M1 BP M2 EP. BP, M2 und EP kann man anklicken.",
         "- **Antworten** öffnen ein eigenes Fenster, das zeigt, worauf du antwortest. Wähle eine Antwort oder \"Don't respond\"; \"-\" klappt es weg.",
-        "- **Kartendetails:** Die Karte unter der Maus steht groß links, mit Text und aktuellem ATK/DEF.",
+        "- **Kartendetails:** Die Karte unter der Maus steht groß links, mit Text und aktuellem ATK/DEF. Langer Text bekommt einen Scrollbalken: Mausrad drehen (überall außer über dem Duellprotokoll) oder den Balken ziehen.",
         "- **Stapel:** Friedhof, verbannte Karten oder Extra Deck anklicken (Rechtsklick, wenn dort eine Karte aktiviert werden kann), um sie durchzusehen.",
         "- **Auswahlen** auf dem Feld triffst du direkt dort und bestätigst mit Confirm; Auswahlen aus einem Stapel öffnen ein Kartenfenster.",
         "# Tasten",

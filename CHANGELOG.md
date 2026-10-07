@@ -79,6 +79,8 @@
   green; the floating change beside them is twice as big.
 - The card panel always shows the card's artwork, big, above its name and text. Long card text is drawn smaller
   instead of pushing the picture out, and the panel keeps the last card you looked at.
+- Card text too long for the card panel even at the smaller size (Pendulum monsters, for one) gets a scroll bar
+  instead of being cut off: turn the mouse wheel anywhere but over the duel log, or drag the bar.
 - The materials under an Xyz monster can be looked at: right-click it (or click it when it has nothing to do) and a
   window shows them big. The card panel lists them as small pictures while the monster is under the mouse.
 

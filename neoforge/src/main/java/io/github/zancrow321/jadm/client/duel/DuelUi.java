@@ -104,6 +104,15 @@ public final class DuelUi {
     private static int panelCode;
     /** The card under the mouse when it's on the field, for its current stats. */
     private static CardState hoverCard;
+    /** How far the card panel's text is scrolled down, in pixels; back to the top when another card shows. */
+    private static int panelScroll;
+    private static int panelScrollCode;
+    /** Where the card panel was drawn last frame (x, y, width, height), or {@code null}. */
+    private static int[] panelBox;
+    /** Its scroll bar last frame (x, top, height, how far it scrolls), or {@code null} when everything fits. */
+    private static int[] panelBar;
+    /** The scroll bar is held down: the text follows the mouse until it's let go. */
+    private static boolean panelBarHeld;
     private static int mouseX;
     private static int mouseY;
     /**
@@ -126,6 +135,10 @@ public final class DuelUi {
         dragging = false;
         pile = null;
         panelCode = 0;
+        panelScroll = 0;
+        panelBox = null;
+        panelBar = null;
+        panelBarHeld = false;
         DuelFeedback.reset();
     }
 
@@ -315,6 +328,10 @@ public final class DuelUi {
         }
         Font font = Minecraft.getInstance().font;
         hits.clear();
+        if (DuelStaging.resultShowing() || DuelStaging.introRunning()) {
+            panelBox = null;
+            panelBar = null;
+        }
         if (DuelStaging.resultShowing()) {
             DuelStaging.renderResult(g, font, mx, my, w, h);
             return;
@@ -328,7 +345,8 @@ public final class DuelUi {
         mouseX = mx;
         mouseY = my;
         Loc field = ClientField.hovered();
-        if (field != null) {
+        // The card panel covers the field there, so the zone behind it doesn't take over the panel.
+        if (field != null && !inPanel(mx, my)) {
             CardState card = FieldRenderer.cardAt(view.board(), field);
             if (card != null && card.code() != 0) {
                 hoverCode = card.code();
@@ -992,12 +1010,21 @@ public final class DuelUi {
 
     // ---- Card panel ----
 
+    /** Card text is never drawn smaller than this; what doesn't fit then scrolls. */
+    private static final float PANEL_MIN_SCALE = 0.75f;
+    private static final int PANEL_BAR_WIDTH = 3;
+    /** How far one notch of the mouse wheel scrolls the card text, in pixels. */
+    private static final int PANEL_WHEEL_STEP = 14;
+
     /**
      * The card under the mouse (or the last one looked at), on the left between the life panels: its artwork on top,
-     * always, then its name, stats and text. Text that doesn't fit is drawn smaller rather than pushing the art out.
+     * always, then its name, stats and text. Text that doesn't fit is drawn smaller rather than pushing the art out,
+     * and if it still doesn't fit it gets a scroll bar (drag it, or turn the mouse wheel anywhere but the log).
      */
     private static void cardPanel(GuiGraphics g, Font font, int w, int h) {
-        if (hoverCode != 0) {
+        panelBox = null;
+        panelBar = null;
+        if (hoverCode != 0 && !panelBarHeld) {
             panelCode = hoverCode;
         }
         if (panelCode == 0) {
@@ -1006,6 +1033,11 @@ public final class DuelUi {
         CardInfo info = JadmData.cards().card(panelCode);
         if (info == null) {
             return;
+        }
+        if (panelScrollCode != panelCode) {
+            panelScrollCode = panelCode;
+            panelScroll = 0;
+            panelBarHeld = false;
         }
         // Live stats only while the card is under the mouse on the field; a remembered card shows its printed ones.
         CardState live = hoverCard != null && hoverCard.code() == panelCode && hoverCode == panelCode ? hoverCard
@@ -1018,6 +1050,9 @@ public final class DuelUi {
         }
         int width = CARD_PANEL_WIDTH;
         panel(g, x, y, width, bottom - y);
+        panelBox = new int[]{x, y, width, bottom - y};
+        hits.add(new Hit(x, y, width, bottom - y, () -> {
+        }));
         int artHeight = Math.max(40, Math.min((width - 6) * 58 / 40, (bottom - y) * 11 / 20));
         int artWidth = artHeight * 40 / 58;
         card(g, panelCode, x + width / 2 - artWidth / 2, y + 3, artWidth, artHeight);
@@ -1042,35 +1077,57 @@ public final class DuelUi {
         }
         lines.add(new Line(info.description().replace("\r", ""), TEXT));
         int thumbs = materials.isEmpty() ? 0 : 25;
-        // The biggest text size at which everything fits; the smallest one is clipped at the bottom.
-        float[] scales = {1f, 0.75f, 0.5f};
-        float scale = 0.5f;
+        int room = bottom - ty - thumbs;
+        // The biggest text size at which everything fits; below the smallest readable one the text scrolls instead.
+        float[] scales = {1f, PANEL_MIN_SCALE};
+        float scale = 0;
         for (float s : scales) {
-            if (height(font, lines, (int) ((width - 6) / s)) * s + thumbs <= bottom - ty) {
+            if (height(font, lines, (int) ((width - 6) / s)) * s <= room) {
                 scale = s;
                 break;
             }
         }
-        int wrap = (int) ((width - 6) / scale);
+        boolean scrolls = scale == 0;
+        if (scrolls) {
+            scale = PANEL_MIN_SCALE;
+        }
+        int textWidth = width - 6 - (scrolls ? PANEL_BAR_WIDTH + 2 : 0);
+        int wrap = (int) (textWidth / scale);
+        int content = (int) Math.ceil(height(font, lines, wrap) * scale);
+        int maxScroll = scrolls ? Math.max(0, content - room) : 0;
+        panelScroll = Math.max(0, Math.min(panelScroll, maxScroll));
+
+        g.enableScissor(x + 3, ty, x + 3 + textWidth, ty + room);
         g.pose().pushPose();
-        g.pose().translate(x + 3, ty, 0);
+        g.pose().translate(x + 3, ty - panelScroll, 0);
         g.pose().scale(scale, scale, 1);
         int ly = 0;
-        int room = (int) ((bottom - ty - thumbs) / scale);
         for (int i = 0; i < lines.size(); i++) {
             Line line = lines.get(i);
             if (i == lines.size() - 1) {
                 ly += 2;
             }
             for (FormattedCharSequence part : font.split(Component.literal(line.text()), wrap)) {
-                if (ly + 9 > room) {
-                    break;
+                float screenY = ly * scale - panelScroll;
+                if (screenY + 9 * scale > 0 && screenY < room) {
+                    g.drawString(font, part, 0, ly, line.color());
                 }
-                g.drawString(font, part, 0, ly, line.color());
                 ly += 9;
             }
         }
         g.pose().popPose();
+        g.disableScissor();
+
+        if (scrolls && maxScroll > 0) {
+            int bx = x + width - 3 - PANEL_BAR_WIDTH;
+            panelBar = new int[]{bx, ty, room, maxScroll};
+            int thumb = Math.max(10, room * room / content);
+            int thumbY = ty + (room - thumb) * panelScroll / maxScroll;
+            boolean hover = panelBarHeld
+                    || (mouseX >= bx - 2 && mouseX < bx + PANEL_BAR_WIDTH + 2 && mouseY >= ty && mouseY < ty + room);
+            g.fill(bx, ty, bx + PANEL_BAR_WIDTH, ty + room, 0x40FFFFFF);
+            g.fill(bx, thumbY, bx + PANEL_BAR_WIDTH, thumbY + thumb, hover ? 0xFFFFFFFF : 0xFFA0A0A0);
+        }
         if (!materials.isEmpty()) {
             int mw = 16;
             int step = Math.min(mw + 2, (width - 6 - mw) / Math.max(1, materials.size() - 1));
@@ -1092,12 +1149,41 @@ public final class DuelUi {
         return height;
     }
 
+    private static boolean inPanel(double mx, double my) {
+        int[] box = panelBox;
+        return box != null && mx >= box[0] && mx < box[0] + box[2] && my >= box[1] && my < box[1] + box[3];
+    }
+
+    /** A press on the card panel's scroll bar: jumps there and holds on until the button is let go. */
+    private static boolean pressPanelBar(double mx, double my) {
+        int[] bar = panelBar;
+        if (bar == null || mx < bar[0] - 2 || mx >= bar[0] + PANEL_BAR_WIDTH + 2 || my < bar[1]
+                || my >= bar[1] + bar[2]) {
+            return false;
+        }
+        panelBarHeld = true;
+        dragPanelBar(my);
+        return true;
+    }
+
+    private static void dragPanelBar(double my) {
+        int[] bar = panelBar;
+        if (bar == null) {
+            return;
+        }
+        double along = Math.max(0, Math.min(1, (my - bar[1]) / bar[2]));
+        panelScroll = (int) Math.round(along * bar[3]);
+    }
+
     // ---- Input ----
 
     public static boolean mouseClicked(double mx, double my, int w, int h) {
         DuelView view = ClientDuel.view();
         if (view == null || !ClientField.active()) {
             return false;
+        }
+        if (pressPanelBar(mx, my)) {
+            return true;
         }
         for (int i = hits.size() - 1; i >= 0; i--) {
             if (hits.get(i).contains(mx, my)) {
@@ -1128,6 +1214,10 @@ public final class DuelUi {
     }
 
     public static void mouseDragged(double mx, double my) {
+        if (panelBarHeld) {
+            dragPanelBar(my);
+            return;
+        }
         if (pressedHand >= 0 && !dragging && Math.hypot(mx - pressX, my - pressY) > DRAG_START) {
             dragging = true;
             menu = null;
@@ -1135,6 +1225,7 @@ public final class DuelUi {
     }
 
     public static void mouseReleased(double mx, double my, int w, int h) {
+        panelBarHeld = false;
         if (pressedHand < 0) {
             return;
         }
@@ -1305,18 +1396,22 @@ public final class DuelUi {
         }));
     }
 
-    /** The mouse wheel over the log scrolls it. */
+    /**
+     * The mouse wheel over the log scrolls it; anywhere else it scrolls the card panel's text, so a long one can be
+     * read while the mouse stays on the card.
+     */
     public static boolean scroll(double mx, double my, double amount, int w, int h) {
-        if (!logOpen) {
-            return false;
-        }
         int[] box = logBox(w, h);
-        if (mx < box[0] || mx >= box[0] + box[2] || my < box[1] || my >= box[1] + box[3]) {
-            return false;
+        if (logOpen && mx >= box[0] && mx < box[0] + box[2] && my >= box[1] && my < box[1] + box[3]) {
+            logScroll += (int) Math.signum(amount) * 3;
+            logScroll = Math.max(0, logScroll);
+            return true;
         }
-        logScroll += (int) Math.signum(amount) * 3;
-        logScroll = Math.max(0, logScroll);
-        return true;
+        if (panelBar != null) {
+            panelScroll = Math.max(0, panelScroll - (int) Math.signum(amount) * PANEL_WHEEL_STEP);
+            return true;
+        }
+        return false;
     }
 
     /** Escape closes an open menu first, then an open pile, then the result screen. */
