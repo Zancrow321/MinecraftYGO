@@ -15,7 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -54,19 +53,21 @@ final class CardGrid {
         this.cardHeight = Math.round(cardWidth * 391f / 268f);
     }
 
-    /** Sorts the counts by card name and keeps those whose name contains {@code filter}. */
+    /** Sorts the counts by card name and keeps those that match the search {@code filter}. */
     void set(Map<Integer, Integer> counts, String filter) {
         set(counts, filter, code -> true,
                 (a, b) -> name(a).compareToIgnoreCase(name(b)));
     }
 
-    /** Keeps the counts whose name contains {@code filter} and that pass {@code keep}, in the given order. */
+    /**
+     * Keeps the counts that match the search {@code filter} (see {@link CardFilter#matches}) and pass {@code keep}, in
+     * the given order.
+     */
     void set(Map<Integer, Integer> counts, String filter, java.util.function.IntPredicate keep,
             java.util.Comparator<Integer> order) {
-        String f = filter.toLowerCase(Locale.ROOT);
         List<Entry> list = new ArrayList<>();
         counts.forEach((code, n) -> {
-            if (n > 0 && (f.isEmpty() || name(code).toLowerCase(Locale.ROOT).contains(f)) && keep.test(code)) {
+            if (n > 0 && keep.test(code) && CardFilter.matches(code, filter)) {
                 list.add(new Entry(code, n));
             }
         });
@@ -75,17 +76,16 @@ final class CardGrid {
         page = Math.max(0, Math.min(page, pages() - 1));
     }
 
-    /** Keeps the copies whose name contains {@code filter}, by name and then rarity. */
-    void setCopies(List<Entry> copies, String filter) {
-        String f = filter.toLowerCase(Locale.ROOT);
+    /** Keeps the copies that match the search {@code filter} and pass {@code keep}, in the given order, then by rarity. */
+    void setCopies(List<Entry> copies, String filter, java.util.function.Predicate<Entry> keep,
+            java.util.Comparator<Integer> order) {
         List<Entry> list = new ArrayList<>();
         for (Entry e : copies) {
-            if (e.count() > 0 && (f.isEmpty() || name(e.code()).toLowerCase(Locale.ROOT).contains(f))) {
+            if (e.count() > 0 && keep.test(e) && CardFilter.matches(e.code(), filter)) {
                 list.add(e);
             }
         }
-        list.sort(java.util.Comparator.<Entry, String>comparing(e -> name(e.code()), String.CASE_INSENSITIVE_ORDER)
-                .thenComparing(Entry::rarity));
+        list.sort(java.util.Comparator.<Entry, Integer>comparing(Entry::code, order).thenComparing(Entry::rarity));
         entries = list;
         page = Math.max(0, Math.min(page, pages() - 1));
     }

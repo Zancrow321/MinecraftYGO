@@ -4,14 +4,20 @@ import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.engine.OcgConstants;
 import io.github.zancrow321.jadm.engine.data.CardInfo;
 import io.github.zancrow321.jadm.engine.data.DeckRules;
+import io.github.zancrow321.jadm.item.CardItem;
 import net.minecraft.network.chat.Component;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.function.IntPredicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * The deck box's filters for the cards you own (card type, attribute, level) and how they are sorted. Each is a
- * button that steps through its choices.
+ * The filters of the binder and the deck box (card type, attribute, level) and how they are sorted. Each is a button
+ * that steps through its choices. The search box looks through the card text too, see {@link #matches}.
  */
 final class CardFilter implements IntPredicate {
     enum Kind { ALL, MONSTER, SPELL, TRAP, EXTRA }
@@ -119,6 +125,78 @@ final class CardFilter implements IntPredicate {
             case DEF -> card.is(OcgConstants.TYPE_LINK) ? -1 : card.data().defense();
             default -> level(card);
         };
+    }
+
+    /**
+     * Whether every word of {@code query} is somewhere in the card: its name, passcode, card text, attribute, type
+     * ("dragon", "quick-play", "tuner") or level ("level 4", "rank 4", "link-2" in quotes). Words in quotes count as
+     * one phrase ("destroy all"). Attributes and types also go by their German names ("drache", "finsternis",
+     * "schnellzauber"), since the card data is English.
+     */
+    static boolean matches(int code, String query) {
+        String q = query.strip().toLowerCase(Locale.ROOT);
+        if (q.isEmpty()) {
+            return true;
+        }
+        String text = SEARCH_TEXT.computeIfAbsent(code, CardFilter::searchText);
+        Matcher term = TERM.matcher(q);
+        while (term.find()) {
+            String word = term.group(1) != null ? term.group(1) : term.group(2);
+            if (!text.contains(word)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** A word of a search, or a phrase in quotes. */
+    private static final Pattern TERM = Pattern.compile("\"([^\"]*)\"?|(\\S+)");
+
+    /** What {@link #matches} looks through, lower case, one per card. */
+    private static final Map<Integer, String> SEARCH_TEXT = new HashMap<>();
+
+    /** German names of the attributes, by bit (EARTH, WATER, FIRE, WIND, LIGHT, DARK, DIVINE). */
+    private static final String[] ATTRIBUTES_DE = {"Erde", "Wasser", "Feuer", "Wind", "Licht", "Finsternis",
+            "Göttlich"};
+    /** German names of the monster types, by bit, as on German cards. */
+    private static final String[] RACES_DE = {"Krieger", "Hexer", "Fee", "Unterweltler", "Zombie", "Maschine", "Aqua",
+            "Pyro", "Fels", "Geflügeltes Ungeheuer", "Pflanze", "Insekt", "Donner", "Drache", "Ungeheuer",
+            "Ungeheuer-Krieger", "Dinosaurier", "Fisch", "Seeschlange", "Reptil", "Psi", "Göttliches Ungeheuer",
+            "Schöpfergott", "Wyrm", "Cyberse", "Illusion"};
+    /** German names of the card type bits (monster, spell, trap, ..., link), as on German cards. */
+    private static final String[] TYPES_DE = {"Monster", "Zauber", "Falle", "", "Normal", "Effekt", "Fusion", "Ritual",
+            "Fallenmonster", "Spirit", "Union", "Zwilling", "Empfänger", "Synchro", "Spielmarke", "", "Schnellzauber",
+            "Permanent", "Ausrüstung", "Spielfeld", "Konter", "Flipp", "Toon", "Xyz", "Pendel", "", "Link"};
+
+    private static String searchText(int code) {
+        CardInfo card = JadmData.cards().card(code);
+        if (card == null) {
+            return String.valueOf(code);
+        }
+        var data = card.data();
+        var text = JadmData.text();
+        StringBuilder s = new StringBuilder(card.name()).append('\n').append(code);
+        for (int bit = 0; bit < 32; bit++) {
+            if ((data.type() & (1L << bit)) != 0) {
+                s.append(' ').append(text.system(1050 + bit));
+                if (bit < TYPES_DE.length) {
+                    s.append(' ').append(TYPES_DE[bit]);
+                }
+            }
+        }
+        if (card.is(OcgConstants.TYPE_MONSTER)) {
+            s.append(' ').append(CardItem.typeLine(card));
+            int attribute = Integer.numberOfTrailingZeros(Math.max(1, data.attribute()));
+            if (attribute < ATTRIBUTES_DE.length) {
+                s.append(' ').append(ATTRIBUTES_DE[attribute]);
+            }
+            int race = Long.numberOfTrailingZeros(Math.max(1, data.race()));
+            if (race < RACES_DE.length) {
+                s.append(' ').append(RACES_DE[race]);
+            }
+            s.append(card.is(OcgConstants.TYPE_XYZ) ? " Rang " : " Stufe ").append(level(card));
+        }
+        return s.append('\n').append(card.description()).toString().toLowerCase(Locale.ROOT);
     }
 
     /** The level, rank or Link rating; pendulum scales share the field. */
