@@ -13,7 +13,9 @@ import io.github.zancrow321.jadm.engine.protocol.MessageDecoder;
 import io.github.zancrow321.jadm.engine.protocol.QueryDecoder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.SplittableRandom;
 
 import static io.github.zancrow321.jadm.engine.OcgConstants.*;
 
@@ -54,10 +56,11 @@ public final class DuelController implements AutoCloseable {
                     throw new IllegalStateException("Could not load " + base);
                 }
             }
+            SplittableRandom random = new SplittableRandom(mix(settings.seed()));
             for (int team = 0; team < 2; team++) {
                 duelists[team] = teams.get(team).size();
                 for (int duelist = 0; duelist < duelists[team]; duelist++) {
-                    addDeck(team, duelist, teams.get(team).get(duelist));
+                    addDeck(team, duelist, teams.get(team).get(duelist), random);
                 }
             }
             runSetupScript();
@@ -88,13 +91,28 @@ public final class DuelController implements AutoCloseable {
         }
     }
 
-    private void addDeck(int team, int duelist, Deck deck) {
-        for (int code : deck.main()) {
+    /**
+     * The core draws the opening hands straight off the top of the deck as the cards were added and never shuffles
+     * at the start itself (that is the host's job, as in EDOPro), so the main deck is shuffled here first.
+     */
+    private void addDeck(int team, int duelist, Deck deck, SplittableRandom random) {
+        List<Integer> main = new ArrayList<>(deck.main());
+        Collections.shuffle(main, random);
+        for (int code : main) {
             duel.newCard(team, duelist, code, team, LOCATION_DECK, 0, POS_FACEDOWN_DEFENSE);
         }
         for (int code : deck.extra()) {
             duel.newCard(team, duelist, code, team, LOCATION_EXTRA, 0, POS_FACEDOWN_DEFENSE);
         }
+    }
+
+    /** Folds the duel's four seed words into one, so the same seed always gives the same deck order. */
+    private static long mix(long[] seed) {
+        long mixed = 0;
+        for (long word : seed) {
+            mixed = mixed * 0x9E3779B97F4A7C15L + word;
+        }
+        return mixed;
     }
 
     /** Which of the team's duelists (in the order their decks were given) is playing now. */
