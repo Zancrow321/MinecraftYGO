@@ -235,12 +235,23 @@ final class CardGrid {
 
     /** Name, type line and card text, for a tooltip. */
     static List<Component> tooltip(int code, String action) {
+        return tooltip(code, action, true);
+    }
+
+    /** Name, and with {@code text} the type line and card text, for a tooltip; without, the preview shows those. */
+    static List<Component> tooltip(int code, String action, boolean text) {
         List<Component> lines = new ArrayList<>();
         CardInfo card = JadmData.cards().card(code);
         if (card == null) {
             return lines;
         }
         lines.add(Component.literal(card.name()).withStyle(ChatFormatting.WHITE));
+        if (!text) {
+            if (action != null) {
+                lines.add(Component.literal(action).withStyle(ChatFormatting.YELLOW));
+            }
+            return lines;
+        }
         // Narrow enough to fit beside the cursor on a small window, so the game doesn't wrap the lines again.
         String type = CardItem.typeLine(card);
         int stats = type.indexOf(" · ATK");

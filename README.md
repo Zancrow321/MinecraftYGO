@@ -225,6 +225,10 @@ Booster packs, structure and starter decks and tins look like the real products:
 same way on first view and cached in `jadm/product_art/`. Until a picture is there, or with
 `realProductImages = false` in the client config, they keep the mod's own icons.
 
+Hovering a card in the inventory, a chest, the binder or the deck box shows it big left of the window, with its
+full text, where there is room, and a card held in the hand shows the same way in the top left corner
+(`cardPreview = false` in the client config turns both off).
+
 Monsters without a model stand on the field as an artwork hologram. A resource pack can give any monster a 3D model
 instead; see [docs/resource-pack-models.md](docs/resource-pack-models.md).
 

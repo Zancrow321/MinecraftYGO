@@ -154,7 +154,9 @@ public final class BinderScreen extends Screen {
         }
         CardGrid.Entry hovered = grid.at(mouseX, mouseY);
         if (hovered != null) {
-            List<Component> tooltip = CardGrid.tooltip(hovered.code(), "Click: take one out · Shift-click: take all");
+            boolean preview = CardPreview.render(g, font, hovered.code(), hovered.rarity(), left, height);
+            List<Component> tooltip = CardGrid.tooltip(hovered.code(), "Click: take one out · Shift-click: take all",
+                    !preview);
             if (grid.locked.test(hovered.code())) {
                 tooltip.add(Math.min(1, tooltip.size()), CardGrid.lockedLine(hovered.code()));
             }
