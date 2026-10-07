@@ -54,7 +54,7 @@
         "- **Your hand** runs along the bottom. Click a card for its actions (Normal Summon, Set, Activate...) or drag it straight onto a zone.",
         "- **Phase buttons** on the right show the phase: DP SP M1 BP M2 EP. Click BP, M2 or EP to go there.",
         "- **Responses** open their own window, showing what you respond to. Pick a response or \"Don't respond\"; \"-\" folds it away.",
-        "- **Card details:** the card under the mouse is shown big on the left with its text and current ATK/DEF.",
+        "- **Card details:** the card under the mouse is shown big on the left with its text and current ATK/DEF. Long text gets a scroll bar: turn the mouse wheel (anywhere but the duel log) or drag the bar.",
         "- **Piles:** click a graveyard, the banished cards or an extra deck (right-click when a card there can be activated) to look through it.",
         "- **Picks** on the field are made right there and confirmed with Confirm; picks from a pile open a card window.",
         "# Keys",
