@@ -43,6 +43,16 @@ public final class ClientScreens {
         io.github.zancrow321.jadm.client.tournament.TournamentScreen.receive(payload.open(), payload.json());
     }
 
+    /** Opens the admin menu, or refreshes it if it is open. */
+    public static void admin(io.github.zancrow321.jadm.network.AdminPayload payload) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof io.github.zancrow321.jadm.client.collection.AdminScreen screen) {
+            screen.update(payload);
+        } else if (payload.open()) {
+            mc.setScreen(new io.github.zancrow321.jadm.client.collection.AdminScreen(payload));
+        }
+    }
+
     public static void packOpened(PackOpenedPayload payload) {
         Minecraft.getInstance().setScreen(new PackOpenScreen(payload.setName(), payload.cards()));
     }

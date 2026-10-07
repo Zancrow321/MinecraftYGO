@@ -213,7 +213,13 @@
         "- `{cmd} dp <player>` and `{cmd} dp give|take|set <players> <amount>`: look at and change Duel Points.",
         "- `{cmd} stats reset <player>`: clear a duel record.",
         "- `{cmd} tournament arena add`, `arena remove [number]` and `arena list`: the Duel Arenas tournaments play on (stand on one to add it); `{cmd} tournament award <name>`: decide a match.",
-        "- `{cmd} gallery [page]`: lays out a page of monster models to look at; `{cmd} gallery clear` removes them."
+        "- `{cmd} gallery [page]`: lays out a page of monster models to look at; `{cmd} gallery clear` removes them.",
+        "# Admin menu",
+        "**{key:admin}** or `{cmd} admin` opens the admin menu for operators (level 2, like `/give`). Top right picks who for: you, another player or everyone online.",
+        "- **Products**: every booster pack, structure deck and tin, searched by name or set code, or a random pack. Click gives the count you set.",
+        "- **Cards**: any card by name or passcode, in any rarity, locked ones too.",
+        "- **Duel Points**: type an amount, then give, take or set; below are the balances of everyone online.",
+        "Everything runs on the server and shows up like a command in the operators' chat and the server log."
       ]
     },
     {

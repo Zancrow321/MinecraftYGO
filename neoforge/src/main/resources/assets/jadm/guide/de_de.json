@@ -213,7 +213,13 @@
         "- `{cmd} dp <player>` und `{cmd} dp give|take|set <players> <amount>`: Duel Points ansehen und ändern.",
         "- `{cmd} stats reset <player>`: eine Duell-Bilanz löschen.",
         "- `{cmd} tournament arena add`, `arena remove [number]` und `arena list`: die Duellarenen für Turniere (zum Hinzufügen darauf stehen); `{cmd} tournament award <name>`: ein Match entscheiden.",
-        "- `{cmd} gallery [page]`: stellt eine Seite Monster-Modelle zum Ansehen auf; `{cmd} gallery clear` räumt sie weg."
+        "- `{cmd} gallery [page]`: stellt eine Seite Monster-Modelle zum Ansehen auf; `{cmd} gallery clear` räumt sie weg.",
+        "# Admin-Menü",
+        "**{key:admin}** oder `{cmd} admin` öffnet für Operatoren (Stufe 2, wie `/give`) das Admin-Menü. Oben rechts wählst du, für wen: dich, einen anderen Spieler oder alle online.",
+        "- **Produkte**: jedes Booster-Pack, Struktur-Deck und Tin, nach Name oder Set-Code suchen, oder ein Zufallspack. Anklicken gibt die eingestellte Anzahl.",
+        "- **Karten**: jede Karte nach Name oder Passcode, in jeder Seltenheit, auch noch gesperrte.",
+        "- **Duel Points**: Menge eintippen, dann geben, abziehen oder setzen; darunter die Kontostände aller online.",
+        "Alles läuft auf dem Server und erscheint wie ein Befehl im Chat der Operatoren und im Server-Log."
       ]
     },
     {
