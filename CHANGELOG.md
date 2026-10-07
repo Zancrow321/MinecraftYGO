@@ -3,9 +3,8 @@
 ## Unreleased
 
 ### Beyond the Brave
-- **Beyond the Brave** (BETB, October 8, 2026) is a full booster with 84 cards: its 80 new cards and their scripts were
-  added. The 11 cards that are TCG-first (Angelechy and a few others) follow once ProjectIgnis has their final
-  passcodes.
+- **Beyond the Brave** (BETB, October 8, 2026) is a full booster with all 100 cards and their scripts. The 16
+  TCG-first cards (Angelechy and others) use ProjectIgnis' pre-release scripts under their real passcodes.
 
 ### New name
 - The mod is now called **Just Another Dueling Mod**, mod id `jadm`. The command is `/jadm`, Figura avatar scripts

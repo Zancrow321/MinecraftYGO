@@ -28,6 +28,13 @@ Usage:
 A set that just came out can sit in its own BabelCDB/release-<set>.cdb until ProjectIgnis merges it into cards.cdb
 (Beyond the Brave did in October 2026); --release-cdb merges those in. Of their cards, only the ones with a script
 (or that need none) are written, so a card waiting for its script never stops the build.
+
+Cards that come out in the TCG first sit in a BabelCDB/prerelease-<set>.cdb under a temporary passcode until
+ProjectIgnis gives them their real one. With --prerelease-cdb and --ygoprodeck (the cardinfo.php dump), those that
+YGOPRODeck already lists by name are written under YGOPRODeck's passcode, their pre-release script renamed to match;
+the others are left out. Pass only the prerelease cdb of a set that is out (or about to be) in the TCG, e.g.
+--prerelease-cdb BabelCDB/prerelease-betb-en.cdb --ygoprodeck ygoprodeck.json; the others hold cards YGOPRODeck may
+list ahead of their release.
 """
 import argparse
 import json
@@ -48,7 +55,13 @@ TYPE_LINK = 0x4000000
 TYPE_PENDULUM = 0x1000000
 
 
+# Real passcode -> pre-release script of a card taken from a prerelease cdb under its temporary passcode.
+PRERELEASE_SCRIPTS = {}
+
+
 def find_script(scripts, code):
+    if code in PRERELEASE_SCRIPTS:
+        return PRERELEASE_SCRIPTS[code]
     name = f"c{code}.lua"
     return next((scripts / d / name for d in SCRIPT_DIRS if (scripts / d / name).exists()), None)
 
@@ -108,6 +121,27 @@ def merged_db(cdb, releases):
     return db
 
 
+def add_prerelease(db, scripts, prerelease, passcodes):
+    """Copies the cards of a prerelease cdb that YGOPRODeck lists by name into db, under YGOPRODeck's passcode."""
+    known = {code for (code,) in db.execute("select id from datas")}
+    db.execute("attach database ? as pre", (str(prerelease),))
+    added = []
+    for temp, name in db.execute("select d.id, t.name from pre.datas d join pre.texts t on d.id = t.id").fetchall():
+        real = passcodes.get(name)
+        source = scripts / "pre-release" / f"c{temp}.lua"
+        if real is None or real in known or not source.exists():
+            continue
+        db.execute("insert into datas select *, 1 from pre.datas where id = ?", (temp,))
+        db.execute("insert into texts select * from pre.texts where id = ?", (temp,))
+        db.execute("update datas set id = ? where id = ?", (real, temp))
+        db.execute("update texts set id = ? where id = ?", (real, temp))
+        PRERELEASE_SCRIPTS[real] = source
+        added.append(f"{name} {temp}->{real}")
+    db.commit()
+    db.execute("detach database pre")
+    print(f"{prerelease.name}: {len(added)} cards under their real passcode: {added}")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--cdb", required=True, type=Path, help="path to BabelCDB cards.cdb")
@@ -116,9 +150,20 @@ def main():
     parser.add_argument("--all", action="store_true", help="write every official card, not only the modeled pool")
     parser.add_argument("--release-cdb", action="append", default=[], type=Path,
                         help="a BabelCDB release-<set>.cdb to merge in (repeatable)")
+    parser.add_argument("--prerelease-cdb", action="append", default=[], type=Path,
+                        help="a BabelCDB prerelease-<set>.cdb whose released cards to take (repeatable)")
+    parser.add_argument("--ygoprodeck", type=Path, help="cardinfo.php dump, for the real passcodes of prerelease cards")
     args = parser.parse_args()
+    if args.prerelease_cdb and not args.ygoprodeck:
+        sys.exit("--prerelease-cdb needs --ygoprodeck")
 
     db = merged_db(args.cdb, args.release_cdb)
+    if args.prerelease_cdb:
+        cards = json.loads(args.ygoprodeck.read_text(encoding="utf-8"))["data"]
+        # Speed Duel skills share some names with real cards.
+        passcodes = {card["name"]: card["id"] for card in cards if card["type"] != "Skill Card"}
+        for prerelease in args.prerelease_cdb:
+            add_prerelease(db, args.scripts, prerelease, passcodes)
     known = {code for (code,) in db.execute("select id from datas")}
     pool = set()
     pool_file = RESOURCES / "pool.json"
@@ -187,7 +232,8 @@ def main():
                 continue
             unscripted.append(f"{card['code']} {card['name']}")
             continue
-        shutil.copy(source, out / source.name)
+        # A pre-release script is renamed to its card's real passcode; scripts read their own passcode from the name.
+        shutil.copy(source, out / f"c{card['code']}.lua")
     if unscripted:
         sys.exit(f"no script for {unscripted}")
 
