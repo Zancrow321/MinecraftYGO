@@ -6,6 +6,12 @@
 - **Beyond the Brave** (BETB, October 8, 2026) is a full booster with all 100 cards and their scripts. The 16
   TCG-first cards (Angelechy and others) use ProjectIgnis' pre-release scripts under their real passcodes.
 
+### Admin menu
+- Operators get an **admin menu** (key O, or `/jadm admin`; permission level 2, like `/give`): any booster pack,
+  structure deck or tin, a random pack, any card in any rarity (search by name or passcode, locked cards too), and
+  Duel Points to give, take or set, each for yourself, another player or everyone online. The server checks every
+  click, and each one shows up in the operators' chat and the server log like a command.
+
 ### New name
 - The mod is now called **Just Another Dueling Mod**, mod id `jadm`. The command is `/jadm`, Figura avatar scripts
   use the `jadm` global and `jadm.<event>` events, and the starter avatar is `jadm-duelist`.

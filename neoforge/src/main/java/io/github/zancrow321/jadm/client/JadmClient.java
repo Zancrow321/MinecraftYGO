@@ -65,6 +65,9 @@ public final class JadmClient {
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_C, "key.categories.jadm");
     public static final KeyMapping COSMETICS = new KeyMapping("key.jadm.cosmetics",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "key.categories.jadm");
+    /** Opens the admin menu, for operators. */
+    public static final KeyMapping ADMIN = new KeyMapping("key.jadm.admin",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "key.categories.jadm");
 
     /**
      * For headless testing: {@code -Djadm.camera=THIRD_PERSON_FRONT:90} keeps the camera there and turns
@@ -225,6 +228,7 @@ public final class JadmClient {
             event.register(DUEL_LOG);
             event.register(DUEL_RESPONSES);
             event.register(COSMETICS);
+            event.register(ADMIN);
         }
     }
 
@@ -291,6 +295,16 @@ public final class JadmClient {
         while (COSMETICS.consumeClick()) {
             if (mc.screen == null && mc.player != null) {
                 mc.player.connection.sendCommand("jadm cosmetics");
+            }
+        }
+        while (ADMIN.consumeClick()) {
+            if (mc.screen == null && mc.player != null) {
+                if (mc.player.hasPermissions(io.github.zancrow321.jadm.admin.AdminMenu.LEVEL)) {
+                    mc.player.connection.sendCommand(Jadm.COMMAND + " admin");
+                } else {
+                    mc.player.displayClientMessage(net.minecraft.network.chat.Component.translatable(
+                            "message.jadm.admin.not_op"), true);
+                }
             }
         }
     }
