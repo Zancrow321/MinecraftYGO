@@ -23,7 +23,11 @@ Usage:
   git clone --depth 1 https://github.com/ProjectIgnis/CardScripts
   git clone --depth 1 https://github.com/ProjectIgnis/Distribution
   python3 tools/carddata/build_carddata.py --cdb BabelCDB/cards.cdb --scripts CardScripts \
-      --strings Distribution/config/strings.conf --all
+      --strings Distribution/config/strings.conf --all $(for f in BabelCDB/release-*.cdb; do echo --release-cdb $f; done)
+
+A set that just came out can sit in its own BabelCDB/release-<set>.cdb until ProjectIgnis merges it into cards.cdb
+(Beyond the Brave did in October 2026); --release-cdb merges those in. Of their cards, only the ones with a script
+(or that need none) are written, so a card waiting for its script never stops the build.
 """
 import argparse
 import json
@@ -87,15 +91,34 @@ def card_row(row, text):
     }
 
 
+def merged_db(cdb, releases):
+    """cards.cdb plus the release-<set>.cdb files: ProjectIgnis keeps the cards of a just-released set in their own
+    database until it merges them into cards.cdb. Rows from those are flagged "released"; cards.cdb wins on a clash."""
+    db = sqlite3.connect(":memory:")
+    for i, path in enumerate([cdb, *releases]):
+        db.execute(f"attach database ? as src{i}", (str(path),))
+        if i == 0:
+            db.execute("create table datas as select *, 0 as released from src0.datas")
+            db.execute("create table texts as select * from src0.texts")
+            db.execute("create unique index datas_id on datas(id)")
+            db.execute("create unique index texts_id on texts(id)")
+        else:
+            db.execute(f"insert or ignore into datas select *, 1 from src{i}.datas")
+            db.execute(f"insert or ignore into texts select * from src{i}.texts")
+    return db
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--cdb", required=True, type=Path, help="path to BabelCDB cards.cdb")
     parser.add_argument("--scripts", required=True, type=Path, help="path to a CardScripts checkout")
     parser.add_argument("--strings", required=True, type=Path, help="path to Distribution/config/strings.conf")
     parser.add_argument("--all", action="store_true", help="write every official card, not only the modeled pool")
+    parser.add_argument("--release-cdb", action="append", default=[], type=Path,
+                        help="a BabelCDB release-<set>.cdb to merge in (repeatable)")
     args = parser.parse_args()
 
-    db = sqlite3.connect(args.cdb)
+    db = merged_db(args.cdb, args.release_cdb)
     known = {code for (code,) in db.execute("select id from datas")}
     pool = set()
     pool_file = RESOURCES / "pool.json"
@@ -106,7 +129,11 @@ def main():
         pool.update(read_ydk(deck))
     if args.all:
         # OCG (0x1) and TCG (0x2) cards only; the anime, Rush and skill cards are in other databases anyway.
-        pool.update(code for (code,) in db.execute("select id from datas where ot & 3 != 0"))
+        pool.update(code for (code,) in db.execute("select id from datas where ot & 3 != 0 and not released"))
+        # Cards of a fresh release whose script ProjectIgnis hasn't written yet wait for the next rebuild.
+        for code, ctype in db.execute("select id, type from datas where ot & 3 != 0 and released"):
+            if find_script(args.scripts, code) or ctype & (TYPE_NORMAL | TYPE_TOKEN) and not ctype & TYPE_PENDULUM:
+                pool.add(code)
 
     missing = sorted(pool - known)
     if missing:
