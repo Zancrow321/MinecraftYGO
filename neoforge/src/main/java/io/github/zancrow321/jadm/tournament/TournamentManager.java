@@ -1171,6 +1171,19 @@ public final class TournamentManager {
 
     // ---- Arenas -------------------------------------------------------------------------------------------------
 
+    /**
+     * Whether this arena belongs to tournaments while one is open or running: it is kept for the matches, so duels
+     * don't start there by themselves.
+     */
+    public boolean holds(Level level, BlockPos arena) {
+        Tournament t = current();
+        if (t == null || !t.active()) {
+            return false;
+        }
+        String dim = level.dimension().location().toString();
+        return data.store.arenas.stream().anyMatch(ref -> ref.dim.equals(dim) && pos(ref).equals(arena));
+    }
+
     String addArena(ServerPlayer player) {
         BlockPos arena = DuelArena.arenaUnder(player.level(), player.blockPosition());
         if (arena == null) {

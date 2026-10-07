@@ -179,6 +179,15 @@ public final class JadmServerConfig {
             .comment("The handbook can be crafted from a book and a sheet of paper.")
             .define("craftable", true);
 
+    public static final ModConfigSpec.BooleanValue ARENA_AUTO_START = BUILDER.pop().push("arena")
+            .comment("A duel starts by itself when one player stands on each podium of a Duel Arena, after a "
+                    + "countdown. Arenas added for tournaments wait for the tournament while one is open or running.")
+            .define("autoStart", true);
+
+    public static final ModConfigSpec.IntValue ARENA_COUNTDOWN = BUILDER
+            .comment("Seconds counted down before that duel starts; stepping off a podium calls it off.")
+            .defineInRange("countdownSeconds", 5, 1, 60);
+
     static {
         BUILDER.pop();
     }

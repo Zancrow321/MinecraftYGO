@@ -199,5 +199,11 @@
   "message.jadm.admin.everyone": "alle online (%s)",
   "message.jadm.admin.not_online": "%s ist nicht online.",
   "message.jadm.admin.unknown": "Dieses Produkt oder diese Karte gibt es nicht.",
-  "message.jadm.admin.not_op": "Nur Operatoren können das Admin-Menü öffnen."
+  "message.jadm.admin.not_op": "Nur Operatoren können das Admin-Menü öffnen.",
+  "message.jadm.arena.waiting": "Warte auf Gegner%s",
+  "message.jadm.arena.step_up": "Hier hinstellen zum Duell!",
+  "message.jadm.arena.get_ready": "Macht euch bereit!",
+  "message.jadm.arena.countdown": "Duell gegen %s in %s... runtergehen zum Abbrechen",
+  "message.jadm.arena.crowded": "Nur ein Duellant pro Podest",
+  "message.jadm.arena.tournament": "Diese Arena ist für das Turnier reserviert."
 }
