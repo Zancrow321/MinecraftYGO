@@ -5,6 +5,7 @@ import io.github.zancrow321.jadm.engine.DuelSettings;
 import io.github.zancrow321.jadm.engine.ScriptProvider;
 import io.github.zancrow321.jadm.engine.ai.Responder;
 import io.github.zancrow321.jadm.engine.data.Deck;
+import io.github.zancrow321.jadm.engine.protocol.CardRef;
 import io.github.zancrow321.jadm.engine.protocol.CardState;
 import io.github.zancrow321.jadm.engine.protocol.DuelMessage;
 import io.github.zancrow321.jadm.engine.protocol.Loc;
@@ -15,8 +16,10 @@ import io.github.zancrow321.jadm.engine.text.DuelText;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static io.github.zancrow321.jadm.engine.OcgConstants.*;
 
@@ -55,6 +58,11 @@ public final class DuelTable implements AutoCloseable {
     /** What spectators have not been sent yet; they see only what is public. */
     private final List<String> spectatorLog = new ArrayList<>();
     private final List<FieldEvent> spectatorEvents = new ArrayList<>();
+    /**
+     * Cards each team has been shown this turn (an opponent's hand they look at, cards excavated from a deck), so
+     * a pick among them right after shows what they are. See {@link #revealKey}.
+     */
+    private final List<Set<String>> revealed = List.of(new HashSet<>(), new HashSet<>());
     private long hint;
     private int botRetries;
     private String forfeitResult;
@@ -307,6 +315,18 @@ public final class DuelTable implements AutoCloseable {
                 latestHint = 0;
                 continue;
             }
+            if (message instanceof DuelMessage.NewTurn) {
+                revealed.forEach(Set::clear);
+            }
+            if (message instanceof DuelMessage.ConfirmCards confirm && confirm.player() >= 0 && confirm.player() < 2) {
+                // Shown cards go to the player named; the top of a deck is shown to both.
+                for (int team = 0; team < 2; team++) {
+                    if (team == confirm.player() || confirm.type() != MessageType.CONFIRM_CARDS) {
+                        Set<String> seen = revealed.get(team);
+                        confirm.cards().forEach(card -> seen.add(revealKey(card)));
+                    }
+                }
+            }
             if (message instanceof DuelMessage.TagSwap swap) {
                 List<Integer> team = teams.get(swap.player());
                 recordedActive[swap.player()] = (recordedActive[swap.player()] + 1) % team.size();
@@ -348,6 +368,17 @@ public final class DuelTable implements AutoCloseable {
         }
     }
 
+    /**
+     * Which card a reveal was about: its code and where it is. Hands and decks get shuffled, so there the place is
+     * just whose hand or deck; on the field it is the zone.
+     */
+    private static String revealKey(CardRef card) {
+        Loc loc = card.loc();
+        int location = loc.location() & 0x7F;
+        boolean zone = location == LOCATION_MZONE || location == LOCATION_SZONE;
+        return card.code() + ":" + loc.controller() + ":" + location + ":" + (zone ? loc.sequence() : -1);
+    }
+
     private boolean waitingForHuman(int seat) {
         return waitingFor() == seat;
     }
@@ -380,7 +411,9 @@ public final class DuelTable implements AutoCloseable {
             } else if (result != null) {
                 finalText = resultFor(team);
             }
-            DuelMessage.Prompt mine = seat == waiting ? PromptCensor.forChooser(prompt) : null;
+            Set<String> shown = revealed.get(team);
+            DuelMessage.Prompt mine = seat == waiting
+                    ? PromptCensor.forChooser(prompt, card -> shown.contains(revealKey(card))) : null;
             List<String> log = List.copyOf(pendingLog.get(seat));
             pendingLog.get(seat).clear();
             List<FieldEvent> events = List.copyOf(pendingEvents.get(seat));

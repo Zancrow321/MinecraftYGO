@@ -31,9 +31,7 @@ public final class PromptChoices {
         return switch (prompt) {
             case SelectIdleCmd p -> idle(p);
             case SelectBattleCmd p -> battle(p);
-            case SelectEffectYesNo p -> PromptView.choices(
-                    "Use the effect of " + text.cardName(p.card().code()) + "? " + text.description(p.description()),
-                    yesNo(), p.card().code());
+            case SelectEffectYesNo p -> PromptView.choices(effectQuestion(p), yesNo(), p.card().code());
             case SelectYesNo p -> PromptView.choices(text.description(p.description()), yesNo());
             case SelectOption p -> {
                 List<Choice> choices = new ArrayList<>();
@@ -58,8 +56,10 @@ public final class PromptChoices {
             }
             case SelectChain p -> chain(p);
             // The core's hint for a zone choice is the card being placed, not a text id.
-            case SelectPlace p -> place(p, hint != 0 && text.cards().card((int) hint) != null
-                    ? "Choose a zone for " + text.cardName((int) hint) : hinted);
+            case SelectPlace p -> {
+                int placed = hint != 0 && text.cards().card((int) hint) != null ? (int) hint : 0;
+                yield place(p, placed != 0 ? "Choose a zone for " + text.cardName(placed) : hinted, placed);
+            }
             case SelectPosition p -> {
                 List<Choice> choices = new ArrayList<>();
                 addPosition(choices, p.positions(), 0x1, "Face-up Attack");
@@ -76,8 +76,10 @@ public final class PromptChoices {
                             Kind.OTHER, text.cardName(card.code()), card.code()));
                 }
                 for (int i = 0; i < p.unselectable().size(); i++) {
-                    choices.add(new Choice("Unselect " + cardLabel(p.unselectable().get(i), p.player()),
-                            Responses.toggleCard(p.selectable().size() + i), p.unselectable().get(i).loc()));
+                    CardRef card = p.unselectable().get(i);
+                    choices.add(new Choice("Unselect " + cardLabel(card, p.player()),
+                            Responses.toggleCard(p.selectable().size() + i), card.loc(), Kind.UNSELECT,
+                            "Unselect", card.code()));
                 }
                 if (p.finishable() || p.cancelable()) {
                     choices.add(new Choice(p.finishable() ? "Done" : "Cancel", Responses.cancel()));
@@ -98,7 +100,8 @@ public final class PromptChoices {
                 List<Choice> choices = new ArrayList<>();
                 text.cards().all().stream().filter(c -> Declarable.test(c.data(), p.opcodes()))
                         .sorted((a, b) -> a.name().compareTo(b.name()))
-                        .forEach(c -> choices.add(new Choice(c.name(), Responses.cardCode(c.code()))));
+                        .forEach(c -> choices.add(new Choice(c.name(), Responses.cardCode(c.code()), null,
+                                Kind.OTHER, c.name(), c.code())));
                 yield PromptView.choices("Declare a card name", choices);
             }
             case AnnounceNumber p -> {
@@ -109,6 +112,20 @@ public final class PromptChoices {
                 yield PromptView.choices(or(hinted, "Declare a number"), choices);
             }
         };
+    }
+
+    /**
+     * "Use the effect of X?" with the effect's own text. The core's generic texts ("Activate the Trigger Effect of
+     * "%ls" from [%ls]?") name the card and where it is in place of their blanks; they then say it all themselves.
+     */
+    private String effectQuestion(SelectEffectYesNo p) {
+        String name = text.cardName(p.card().code());
+        String effect = text.description(p.description());
+        if (!effect.contains("%ls")) {
+            return "Use the effect of " + name + "? " + effect;
+        }
+        effect = effect.replaceFirst("%ls", java.util.regex.Matcher.quoteReplacement(name));
+        return effect.replace("%ls", text.location(p.card().loc().location()));
     }
 
     /**
@@ -174,7 +191,8 @@ public final class PromptChoices {
         return PromptView.choices("Respond with a card effect?", c);
     }
 
-    private PromptView place(SelectPlace p, String hinted) {
+    /** @param card the card being placed, or 0 */
+    private PromptView place(SelectPlace p, String hinted, int card) {
         List<String> labels = new ArrayList<>();
         List<Responses.Zone> zones = new ArrayList<>();
         for (int bit = 0; bit < 32; bit++) {
@@ -210,7 +228,7 @@ public final class PromptChoices {
                 choices.add(new Choice(labels.get(i), Responses.zones(List.of(z)),
                         new Loc(z.player(), z.location(), z.sequence(), 0), Kind.PLACE, labels.get(i), 0));
             }
-            return PromptView.choices(title, choices);
+            return PromptView.choices(title, choices, card);
         }
         return PromptView.multi(title, labels,
                 zones.stream().map(z -> new Loc(z.player(), z.location(), z.sequence(), 0)).toList(), p.count(),

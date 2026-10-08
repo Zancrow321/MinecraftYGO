@@ -18,7 +18,7 @@ public record PromptView(String title, List<Choice> choices, MultiSelect multi, 
     /** What a choice does, so a UI can put it on the right card, button or menu. */
     public enum Kind {
         SUMMON, SPECIAL_SUMMON, SET_MONSTER, SET_SPELL, ACTIVATE, REPOSITION, ATTACK, TO_BATTLE, TO_MAIN2, TO_END,
-        CHAIN, PASS, PLACE, OTHER
+        CHAIN, PASS, PLACE, UNSELECT, OTHER
     }
 
     /**
