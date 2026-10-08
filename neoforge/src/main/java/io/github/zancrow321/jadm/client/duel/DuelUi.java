@@ -82,9 +82,17 @@ public final class DuelUi {
     private record Menu(int x, int y, List<Choice> choices, Loc drop) {
     }
 
+    /**
+     * Actions on cards you can't see where you clicked (in an extra deck or graveyard), or on several cards at once:
+     * they're shown as cards to pick from first, since a menu could only say "Special Summon" five times.
+     */
+    private record Picker(String title, List<Choice> choices) {
+    }
+
     private static final List<Hit> hits = new ArrayList<>();
     private static PromptView shown;
     private static Menu menu;
+    private static Picker picker;
     /** The zone a card was dropped on: the next zone question is answered with it. */
     private static Loc pendingZone;
     /** A card was played from its menu: the next zone question picks a free zone for you (unless set otherwise). */
@@ -129,6 +137,7 @@ public final class DuelUi {
     public static void reset() {
         shown = null;
         menu = null;
+        picker = null;
         pendingZone = null;
         autoZone = false;
         pressedHand = -1;
@@ -252,6 +261,7 @@ public final class DuelUi {
     private static void onPrompt(PromptView p) {
         shown = p;
         menu = null;
+        picker = null;
         page = 0;
         collapsed = false;
         search = "";
@@ -310,6 +320,7 @@ public final class DuelUi {
 
     private static void choose(Choice choice, Loc drop) {
         menu = null;
+        picker = null;
         if (PLAYS.contains(choice.kind()) && choice.at() != null
                 && (choice.at().location() & ~LOCATION_OVERLAY) == LOCATION_HAND) {
             pendingZone = drop;
@@ -385,6 +396,9 @@ public final class DuelUi {
         }
         if (logOpen) {
             log(g, font, mx, my, w, h);
+        }
+        if (picker != null) {
+            pickerWindow(g, font, mx, my, w, h);
         }
         if (menu != null) {
             menu(g, font, mx, my, w, h);
@@ -577,7 +591,23 @@ public final class DuelUi {
     // ---- The menu on a card ----
 
     private static void openMenu(List<Choice> choices, double x, double y, Loc drop) {
+        boolean hidden = choices.stream().anyMatch(c -> c.at() != null && (isPile(c.at())
+                || (c.at().location() & ~LOCATION_OVERLAY) == LOCATION_DECK));
+        if (hidden || choices.stream().map(DuelUi::cardKey).distinct().count() > 1) {
+            List<String> actions = choices.stream().map(Choice::action).distinct().toList();
+            picker = new Picker((actions.size() == 1 ? actions.getFirst() : "Choose a card") + ": pick a card",
+                    List.copyOf(choices));
+            menu = null;
+            page = 0;
+            collapsed = false;
+            return;
+        }
         menu = new Menu((int) x, (int) y, List.copyOf(choices), drop);
+    }
+
+    /** Which card a choice is about: the same card for each of its actions, different copies apart. */
+    private static String cardKey(Choice c) {
+        return c.code() + "@" + (c.at() == null ? "" : c.at().place());
     }
 
     private static void menu(GuiGraphics g, Font font, int mx, int my, int w, int h) {
@@ -807,6 +837,60 @@ public final class DuelUi {
                 picks.add(() -> choose(c, null));
             }
         }
+        String title = p.title() + (multi != null ? "  (" + ClientDuel.selected().size() + ")" : "");
+        int[] footer = cardGrid(g, font, title, codes, ticked, picks, mx, my, w, h);
+        if (footer == null) {
+            return;
+        }
+        int bx = footer[0];
+        int by = footer[1];
+        if (multi != null) {
+            List<Integer> picked = ClientDuel.selected();
+            button(g, font, bx, by, 70, "Confirm", multi.canConfirm(picked), mx, my,
+                    () -> ClientDuel.answer(multi.encode(List.copyOf(picked))));
+            bx += 74;
+            if (multi.cancel() != null) {
+                button(g, font, bx, by, 60, "Cancel", true, mx, my,
+                        () -> ClientDuel.answer(multi.cancel().response()));
+            }
+        }
+        for (Choice c : extra) {
+            button(g, font, bx, by, 60, c.label(), true, mx, my, () -> choose(c, null));
+            bx += 64;
+        }
+    }
+
+    /** The cards of an action picked on a pile or on several cards, as a window of cards; Esc closes it. */
+    private static void pickerWindow(GuiGraphics g, Font font, int mx, int my, int w, int h) {
+        List<List<Choice>> cards = new ArrayList<>();
+        java.util.Map<String, List<Choice>> byCard = new java.util.LinkedHashMap<>();
+        for (Choice c : picker.choices()) {
+            byCard.computeIfAbsent(cardKey(c), k -> new ArrayList<>()).add(c);
+        }
+        cards.addAll(byCard.values());
+        List<Integer> codes = new ArrayList<>();
+        List<Boolean> ticked = new ArrayList<>();
+        List<Runnable> picks = new ArrayList<>();
+        for (List<Choice> actions : cards) {
+            codes.add(actions.getFirst().code());
+            ticked.add(false);
+            // One action is done on the click; a card with several (Special Summon or Activate) gets its menu.
+            picks.add(actions.size() == 1 ? () -> choose(actions.getFirst(), null)
+                    : () -> menu = new Menu(mouseX, mouseY, List.copyOf(actions), null));
+        }
+        int[] footer = cardGrid(g, font, picker.title(), codes, ticked, picks, mx, my, w, h);
+        if (footer != null) {
+            button(g, font, footer[0], footer[1], 60, "Cancel", true, mx, my, () -> picker = null);
+        }
+    }
+
+    /**
+     * A window of cards to click, under the prompt: title, cards as big as fit, and pages when they don't.
+     *
+     * @return where buttons go along the bottom (x, y), or {@code null} while the window is folded away
+     */
+    private static int[] cardGrid(GuiGraphics g, Font font, String title, List<Integer> codes,
+                                  List<Boolean> ticked, List<Runnable> picks, int mx, int my, int w, int h) {
         int width = windowWidth(w, 300);
         int room = windowBottom(h) - DuelHud.promptBottom(w) - 16 - 22;
         // As big as the cards can be with all of them on one page (a few cards from a deck search show large);
@@ -829,11 +913,12 @@ public final class DuelUi {
         int x = w / 2 - width / 2;
         int y = DuelHud.promptBottom(w);
         int height = collapsed ? 16 : 16 + rows * (ch + 4) + 22;
+        // Clicks inside the window do nothing unless they hit a button or card.
+        hits.add(new Hit(x, y, width, height, () -> { }));
         panel(g, x, y, width, height);
-        String title = p.title() + (multi != null ? "  (" + ClientDuel.selected().size() + ")" : "");
         int top = windowTop(g, font, title, x, y, width, mx, my);
         if (collapsed) {
-            return;
+            return null;
         }
         // A single short row sits in the middle.
         int across = Math.min(perRow, codes.size());
@@ -862,20 +947,7 @@ public final class DuelUi {
         if (pages > 1) {
             bx += 70;
         }
-        if (multi != null) {
-            List<Integer> picked = ClientDuel.selected();
-            button(g, font, bx, by, 70, "Confirm", multi.canConfirm(picked), mx, my,
-                    () -> ClientDuel.answer(multi.encode(List.copyOf(picked))));
-            bx += 74;
-            if (multi.cancel() != null) {
-                button(g, font, bx, by, 60, "Cancel", true, mx, my,
-                        () -> ClientDuel.answer(multi.cancel().response()));
-            }
-        }
-        for (Choice c : extra) {
-            button(g, font, bx, by, 60, c.label(), true, mx, my, () -> choose(c, null));
-            bx += 64;
-        }
+        return new int[]{bx, by};
     }
 
     /** A pile that can be looked through at any time: a graveyard, the banished cards or an extra deck. */
@@ -1253,6 +1325,10 @@ public final class DuelUi {
             menu = null;
             return true;
         }
+        if (picker != null) {
+            picker = null;
+            return true;
+        }
         int handCard = handCardAt(view.board().side(view.you()).hand().size(), mx, my, w, h);
         if (handCard >= 0) {
             pressedHand = handCard;
@@ -1469,10 +1545,14 @@ public final class DuelUi {
         return false;
     }
 
-    /** Escape closes an open menu first, then an open pile, then the result screen. */
+    /** Escape closes an open menu first, then cards to pick from for an action, then an open pile, then the result. */
     public static boolean closeMenu() {
         if (DuelStaging.resultShowing()) {
             DuelStaging.closeResult();
+            return true;
+        }
+        if (menu == null && picker != null) {
+            picker = null;
             return true;
         }
         if (menu == null && pile != null) {

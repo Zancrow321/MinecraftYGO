@@ -9,7 +9,10 @@
   then pick from them, until the turn ends.
 - The pick window shows cards as big as fit (a few cards from a Deck search show large), and cards you picked
   earlier in a pick-one-at-a-time choice stay in it, marked, to click again to put back.
+- Clicking your Extra Deck or Graveyard to Special Summon or activate something opens the cards you can use there,
+  with their pictures, instead of a menu that only said "Special Summon" once per card.
 - Declaring a card name lists each name with its card picture; hovering one shows it in the card panel.
+- "Use the effect of ...?" questions name the card and where it is, instead of showing "%ls".
 - A question about a card ("use the effect of...?", a position, a zone for a card) shows that card in the card
   panel.
 

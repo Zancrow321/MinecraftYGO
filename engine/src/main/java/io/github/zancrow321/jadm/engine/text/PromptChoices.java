@@ -31,9 +31,7 @@ public final class PromptChoices {
         return switch (prompt) {
             case SelectIdleCmd p -> idle(p);
             case SelectBattleCmd p -> battle(p);
-            case SelectEffectYesNo p -> PromptView.choices(
-                    "Use the effect of " + text.cardName(p.card().code()) + "? " + text.description(p.description()),
-                    yesNo(), p.card().code());
+            case SelectEffectYesNo p -> PromptView.choices(effectQuestion(p), yesNo(), p.card().code());
             case SelectYesNo p -> PromptView.choices(text.description(p.description()), yesNo());
             case SelectOption p -> {
                 List<Choice> choices = new ArrayList<>();
@@ -114,6 +112,20 @@ public final class PromptChoices {
                 yield PromptView.choices(or(hinted, "Declare a number"), choices);
             }
         };
+    }
+
+    /**
+     * "Use the effect of X?" with the effect's own text. The core's generic texts ("Activate the Trigger Effect of
+     * "%ls" from [%ls]?") name the card and where it is in place of their blanks; they then say it all themselves.
+     */
+    private String effectQuestion(SelectEffectYesNo p) {
+        String name = text.cardName(p.card().code());
+        String effect = text.description(p.description());
+        if (!effect.contains("%ls")) {
+            return "Use the effect of " + name + "? " + effect;
+        }
+        effect = effect.replaceFirst("%ls", java.util.regex.Matcher.quoteReplacement(name));
+        return effect.replace("%ls", text.location(p.card().loc().location()));
     }
 
     /**
