@@ -203,6 +203,27 @@ public final class JadmServerConfig {
     public static final Trade TRADE = new Trade(BUILDER.pop()
             .comment("Trading: two players swap cards (and Duel Points) in a trade window that both have to "
                     + "confirm. /jadm trade <player> asks someone.").push("trade"));
+    public static final ModConfigSpec.IntValue SET_POINTS_PER_CARD = BUILDER.pop().push("collection")
+            .comment("The Set Collection Book shows how much of each set a player owns (cards in binders, deck boxes "
+                    + "and loose in the inventory or ender chest). Completing a set brings the rewards below, once per "
+                    + "player and set. Duel Points per card in the set, when the [shop] currency is points.")
+            .defineInRange("pointsPerCard", 10, 0, 1_000_000);
+
+    public static final ModConfigSpec.IntValue SET_PACKS = BUILDER
+            .comment("Booster packs (a random set that is out) for each completed set.")
+            .defineInRange("packs", 3, 0, 64);
+
+    public static final ModConfigSpec.IntValue SET_EMERALDS = BUILDER
+            .comment("Emeralds for each completed set.")
+            .defineInRange("emeralds", 0, 0, 640);
+
+    public static final ModConfigSpec.IntValue SET_XP = BUILDER
+            .comment("Experience points for each completed set.")
+            .defineInRange("xp", 0, 0, 100_000);
+
+    public static final ModConfigSpec.BooleanValue SET_ANNOUNCE = BUILDER
+            .comment("Tell everyone on the server in chat when a player completes a set.")
+            .define("announce", true);
 
     static {
         BUILDER.pop();

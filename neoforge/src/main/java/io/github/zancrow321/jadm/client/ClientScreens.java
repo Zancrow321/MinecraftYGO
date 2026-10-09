@@ -62,6 +62,16 @@ public final class ClientScreens {
         }
     }
 
+    /** Opens the Set Collection Book, or refreshes it if it is open. */
+    public static void setBook(io.github.zancrow321.jadm.network.SetBookPayload payload) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof io.github.zancrow321.jadm.client.collection.SetBookScreen screen) {
+            screen.update(payload);
+        } else if (payload.open()) {
+            mc.setScreen(new io.github.zancrow321.jadm.client.collection.SetBookScreen(payload));
+        }
+    }
+
     public static void packOpened(PackOpenedPayload payload) {
         Minecraft.getInstance().setScreen(new PackOpenScreen(payload.setName(), payload.cards()));
     }

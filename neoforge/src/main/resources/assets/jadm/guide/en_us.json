@@ -90,7 +90,13 @@
         "# Card Binder",
         "Holds your collection. \"Put all cards in\" moves every loose card into it; clicking a card takes it out again (shift-click for every copy). It keeps each card's rarity, shown in the corner (R, SR, UR, ScR), and decks use commons first so your foils stay in the binder. Cards from sets that are still locked show a padlock.",
         "**Searching:** just start typing when the binder opens. Every word has to turn up in the card's name, text, attribute or type, so dark dragon, tuner or quick-play all work (German type names like drache too); put words in quotes to find them as one phrase, like \"destroy all\". Right-click the box to clear it. The buttons below filter by card type, attribute, level and rarity (or only foils) and sort by name, ATK, DEF or level; shift-click steps back. The deck box's search works the same way.",
-        "[recipe {modid}:binder]"
+        "[recipe {modid}:binder]",
+        "# Set Collection Book",
+        "Shows every set that is out (in a progression world, the sets unlocked so far) with how much of it you own: each card of the set counts once, whatever its rarity. It counts the cards in your binders, deck boxes and loose cards in your inventory and ender chest, also inside shulker boxes there. Open it with the book or `{cmd} sets`.",
+        "- The list shows each set's picture, your cards and a bar. Filter by started, complete, reward ready or not started, and sort by release, name or how complete; type a set's name or code to find it.",
+        "- Click a set to see its cards: the ones you're missing are greyed out, and a button shows only the missing ones.",
+        "- A complete set brings a reward once per player and set: {server:collection.pointsPerCard} DP per card of the set and {server:collection.packs} booster packs on this server. Click [Claim reward] (or \"Claim all\" for several). Everyone hears about it in chat.",
+        "[recipe {modid}:set_book]"
       ]
     },
     {
@@ -225,6 +231,7 @@
         "- `{cmd} trade <player>`: ask someone to trade; `{cmd} trade accept [player]` and `deny [player]`: accept or decline a request.",
         "- `{cmd} shop`: the vending machine's shop from anywhere, if the server allows it.",
         "- `{cmd} starter`: pick your first deck if you haven't yet.",
+        "- `{cmd} sets`: the Set Collection Book.",
         "- `{cmd} cosmetics`: disk skins and card sleeves.",
         "- `{cmd} version`: the version of the rules engine.",
         "# Tournaments",
@@ -280,6 +287,7 @@
         "- `[arena] autoStart` = {server:arena.autoStart}: a duel starts by itself when one player stands on each podium of a Duel Arena, after `countdownSeconds` = {server:arena.countdownSeconds}.",
         "- `[ranking] enabled` = {server:ranking.enabled}, `startRating` = {server:ranking.startRating}, `kFactor` = {server:ranking.kFactor} (the most points one duel moves), `placementGames` = {server:ranking.placementGames}, `tiers` = {server:ranking.tiers} (where Silver to Duel King start), `promotionPoints` = {server:ranking.promotionPoints}, `maxPerPairPerDay` = {server:ranking.maxPerPairPerDay}, `arenaDuels` = {server:ranking.arenaDuels} (Duel Arena auto duels are ranked), `showInTabList` = {server:ranking.showInTabList}, `announcePromotions` = {server:ranking.announcePromotions}. Tournaments are ranked with their own setting `ranked`.",
         "- `[trade]`: `enabled` = {server:trade.enabled}, `onlyModItems` = {server:trade.onlyModItems} (only this mod's items), `points` = {server:trade.points} (DP in trades, needs `transfers`), `maxDistance` = {server:trade.maxDistance} (blocks, 0 for anywhere), `requestSeconds` = {server:trade.requestSeconds}, `rightClick` = {server:trade.rightClick} (sneak-right-click asks).",
+        "- `[collection]`: what a complete set in the Set Collection Book brings, once per player: `pointsPerCard` = {server:collection.pointsPerCard} (DP per card of the set, with points as the currency), `packs` = {server:collection.packs}, `emeralds` = {server:collection.emeralds}, `xp` = {server:collection.xp}; `announce` = {server:collection.announce}: tell everyone in chat.",
         "# Your own settings",
         "In `config/{modid}-client.toml`:",
         "- `downloadCardArt` = {client:downloadCardArt}: card art is downloaded on first view and kept on your computer. `cardArtUrl` and `cardArtCroppedUrl` say where from.",

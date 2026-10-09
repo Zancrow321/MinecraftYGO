@@ -41,6 +41,8 @@ public final class JadmItems {
             new Item.Properties().stacksTo(1));
     public static final DeferredItem<GuideBookItem> GUIDE_BOOK = ITEMS.registerItem("guide_book",
             GuideBookItem::new, new Item.Properties().stacksTo(1));
+    public static final DeferredItem<SetBookItem> SET_BOOK = ITEMS.registerItem("set_book", SetBookItem::new,
+            new Item.Properties().stacksTo(1));
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<GuideBookRecipe>> GUIDE_BOOK_RECIPE =
             RECIPE_SERIALIZERS.register("guide_book", () -> new RecipeSerializer<>() {
                 @Override
@@ -65,6 +67,7 @@ public final class JadmItems {
                         output.accept(GUIDE_BOOK.get());
                         output.accept(DUEL_DISK.get());
                         output.accept(BINDER.get());
+                        output.accept(SET_BOOK.get());
                         output.accept(DECK_BOX.get());
                         output.accept(starterYugi());
                         output.accept(starterKaiba());

@@ -51,6 +51,16 @@
 - The cards are only lent for the tournament; with `keepCards` players keep their pool (into a binder they carry).
 - `/jadm tournament deck` opens the draft or deck building window again; the Duelist's Handbook explains it all.
 
+### Set Collection Book
+- A new **Set Collection Book** (craft a book with any card, or `/jadm sets`) lists every set that is out, with its
+  picture, how many of its cards you own and a progress bar. It counts each card once whatever its rarity, from your
+  binders, deck boxes and loose cards in your inventory and ender chest (also inside shulker boxes there).
+- Filter by started, complete, reward ready or not started, sort by release, name or how complete, and search by name
+  or set code. Click a set to see its cards with the missing ones greyed out, or only the missing ones.
+- A complete set brings a reward once per player and set: by default 10 Duel Points per card of the set and 3
+  booster packs, and everyone hears about it in chat. `[collection]` in the server config sets the points, packs,
+  emeralds, experience and the announcement.
+
 ### Card pictures when picking cards
 - Searching your Deck now shows the cards you can pick. Before, every card in the window showed its back without a
   name, so you couldn't tell what you were choosing.

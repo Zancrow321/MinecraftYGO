@@ -82,6 +82,8 @@ final class JadmCommands {
                         .StarterDecks.command(ctx.getSource().getPlayerOrException())))
                 .then(Commands.literal("guide").executes(ctx -> io.github.zancrow321.jadm.guide.GuideBook
                         .open(ctx.getSource().getPlayerOrException())))
+                .then(Commands.literal("sets").executes(ctx -> io.github.zancrow321.jadm.collection.SetCollection
+                        .send(ctx.getSource().getPlayerOrException(), true)))
                 .then(Commands.literal("shop").executes(ctx -> {
                     var player = ctx.getSource().getPlayerOrException();
                     if (!JadmServerConfig.MACHINE.command.get() && !ctx.getSource().hasPermission(2)) {
