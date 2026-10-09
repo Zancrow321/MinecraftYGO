@@ -188,6 +188,11 @@ public final class JadmServerConfig {
             .comment("Seconds counted down before that duel starts; stepping off a podium calls it off.")
             .defineInRange("countdownSeconds", 5, 1, 60);
 
+    public static final StarChips STAR_CHIPS = new StarChips(BUILDER.pop()
+            .comment("Star Chip events (Duelist Kingdom): everyone who joins gets Star Chips, puts them up in duels and "
+                    + "whoever collects enough goes to the finals, a tournament on the tournament arenas. An operator "
+                    + "starts one with /jadm starchips start.").push("starchips"));
+
     static {
         BUILDER.pop();
     }
@@ -357,6 +362,64 @@ public final class JadmServerConfig {
             sellSecret = builder.defineInRange("sellSecret", 120, 0, 1_000_000);
             emeraldExchange = builder.comment("Card Vending Machines take emeralds for this many points each; 0 for "
                     + "no exchange.").defineInRange("emeraldExchange", 10, 0, 1_000_000);
+        }
+    }
+
+    /** The settings of Star Chip events. */
+    public static final class StarChips {
+        public final ModConfigSpec.IntValue startChips;
+        public final ModConfigSpec.IntValue goal;
+        public final ModConfigSpec.IntValue finalists;
+        public final ModConfigSpec.IntValue defaultWager;
+        public final ModConfigSpec.IntValue maxWager;
+        public final ModConfigSpec.BooleanValue npcDuels;
+        public final ModConfigSpec.IntValue npcWager;
+        public final ModConfigSpec.IntValue durationMinutes;
+        public final ModConfigSpec.BooleanValue fillFinals;
+        public final ModConfigSpec.BooleanValue lateJoin;
+        public final ModConfigSpec.IntValue entryFee;
+        public final ModConfigSpec.BooleanValue playersCanHost;
+        public final ModConfigSpec.BooleanValue announce;
+        public final ModConfigSpec.ConfigValue<java.util.List<? extends String>> finalsSettings;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private StarChips(ModConfigSpec.Builder builder) {
+            startChips = builder.comment("Star Chips each duelist gets when they join an event.")
+                    .defineInRange("startChips", 2, 1, 100);
+            goal = builder.comment("Star Chips needed to qualify for the finals. Qualified duelists keep their "
+                    + "chips and duel no more until the finals.").defineInRange("goal", 10, 2, 1000);
+            finalists = builder.comment("The finals begin as soon as this many duelists have qualified.")
+                    .defineInRange("finalists", 4, 2, 64);
+            defaultWager = builder.comment("Star Chips each side puts up in a duel between two duelists of the event, "
+                    + "unless the challenger asks for more with /jadm starchips duel <player> <chips>. Nobody puts "
+                    + "up more than they have.").defineInRange("defaultWager", 1, 1, 1000);
+            maxWager = builder.comment("The most Star Chips one duel can be for; 0 for no limit.")
+                    .defineInRange("maxWager", 0, 0, 1000);
+            npcDuels = builder.comment("Duels against NPC duelists are for Star Chips too (the NPC puts up npcWager), "
+                    + "so players can reach the finals on their own. Off: only duels between players, as on Duelist "
+                    + "Kingdom.").define("npcDuels", false);
+            npcWager = builder.comment("Star Chips a duel against an NPC duelist is for.")
+                    .defineInRange("npcWager", 1, 1, 1000);
+            durationMinutes = builder.comment("The finals begin this many minutes after the event started, even "
+                    + "if fewer have qualified; 0 waits until enough have (or an operator runs /jadm starchips "
+                    + "finals).").defineInRange("durationMinutes", 0, 0, 100_000);
+            fillFinals = builder.comment("When the finals begin before enough have qualified, the empty seats go "
+                    + "to the duelists with the most Star Chips.").define("fillFinals", true);
+            lateJoin = builder.comment("Players can still join once the event is under way.")
+                    .define("lateJoin", true);
+            entryFee = builder.comment("Duel Points it costs to join; 0 for free.")
+                    .defineInRange("entryFee", 0, 0, 1_000_000);
+            playersCanHost = builder.comment("Players without operator rights may start and run events.")
+                    .define("playersCanHost", false);
+            announce = builder.comment("Tell the whole server who qualified, who is out and how the finals went; "
+                    + "off tells only the duelists of the event.").define("announce", true);
+            finalsSettings = builder.comment("Tournament settings for the finals, as \"setting=value\" (the same "
+                    + "settings as /jadm tournament set; the rest come from [tournament]). Who plays, the entry "
+                    + "fee and NPCs are fixed by the event.")
+                    .defineListAllowEmpty("finalsSettings", java.util.List.of("format=single", "bestOf=1",
+                            "thirdPlaceMatch=false", "prizesFirst=pack 10; points 1000",
+                            "prizesSecond=pack 5; points 300", "prizesThird=pack 2", "prizesFourth=pack 1",
+                            "prizesTop8=pack 1"), () -> "", v -> v instanceof String s && s.contains("="));
         }
     }
 

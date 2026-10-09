@@ -215,6 +215,9 @@ public final class JadmClient {
             // Under the chat, so new messages show over a held card's preview.
             event.registerBelow(VanillaGuiLayers.CHAT,
                     ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID, "card_preview"), CardPreview::renderHud);
+            event.registerAbove(VanillaGuiLayers.HOTBAR,
+                    ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID, "star_chips"),
+                    io.github.zancrow321.jadm.client.starchips.StarChipHud::render);
         }
 
         @SubscribeEvent
