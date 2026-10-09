@@ -43,6 +43,15 @@ public final class ClientScreens {
         io.github.zancrow321.jadm.client.tournament.TournamentScreen.receive(payload.open(), payload.json());
     }
 
+    public static void ranking(io.github.zancrow321.jadm.network.RankingPayload payload) {
+        io.github.zancrow321.jadm.client.ranking.RankingScreen.receive(payload.json());
+    }
+
+    /** A Sealed or Draft tournament's draft or deck building: open, refresh or close its window. */
+    public static void limited(io.github.zancrow321.jadm.network.LimitedPayload payload) {
+        io.github.zancrow321.jadm.client.collection.LimitedScreen.receive(payload.open(), payload.json());
+    }
+
     /** Opens the settings of the Arena Core at {@code pos}. */
     public static void arenaCore(net.minecraft.core.BlockPos pos) {
         Minecraft.getInstance().setScreen(new io.github.zancrow321.jadm.client.arena.ArenaCoreScreen(pos));
@@ -55,6 +64,16 @@ public final class ClientScreens {
             screen.update(payload);
         } else if (payload.open()) {
             mc.setScreen(new io.github.zancrow321.jadm.client.collection.AdminScreen(payload));
+        }
+    }
+
+    /** Opens the Set Collection Book, or refreshes it if it is open. */
+    public static void setBook(io.github.zancrow321.jadm.network.SetBookPayload payload) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof io.github.zancrow321.jadm.client.collection.SetBookScreen screen) {
+            screen.update(payload);
+        } else if (payload.open()) {
+            mc.setScreen(new io.github.zancrow321.jadm.client.collection.SetBookScreen(payload));
         }
     }
 

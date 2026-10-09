@@ -2,6 +2,8 @@ package io.github.zancrow321.jadm;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.List;
+
 /**
  * Per-world settings, in {@code serverconfig/jadm-server.toml}.
  */
@@ -34,8 +36,12 @@ public final class JadmServerConfig {
             .define("banlist", "auto");
 
     public static final ModConfigSpec.IntValue STARTING_LIFE_POINTS = BUILDER
-            .comment("Life points each duelist (or tag team) starts with.")
+            .comment("Life points each duelist starts with in a 1v1 duel; tag duels use tagStartingLifePoints.")
             .defineInRange("startingLifePoints", 8000, 100, 1_000_000);
+
+    public static final ModConfigSpec.IntValue TAG_STARTING_LIFE_POINTS = BUILDER
+            .comment("Life points each team starts with in tag and Battle City duels (2v2), where partners share them.")
+            .defineInRange("tagStartingLifePoints", 16000, 100, 1_000_000);
 
     public static final ModConfigSpec.BooleanValue ALLOW_ANTE = BUILDER
             .comment("Allow ante duels, where each duelist puts up a random card from their deck box and the "
@@ -197,6 +203,44 @@ public final class JadmServerConfig {
             .comment("A player-built arena with room for less than this field size can't be used.")
             .defineInRange("minFieldSize", 0.35, 0.2, 1.0);
 
+    /** The ranking: Elo ratings and ranks from ranked duels, in {@code [ranking]}. */
+    public static final Ranking RANKING = new Ranking(BUILDER.pop()
+            .comment("The ranking: ranked duels (/jadm duel <player> ranked) win and lose rating points, which put "
+                    + "players into ranks from Bronze to Duel King. /jadm rank and Ranking Boards show it.")
+            .push("ranking"));
+
+    /** Trading between players, in {@code [trade]}. */
+    public static final Trade TRADE = new Trade(BUILDER.pop()
+            .comment("Trading: two players swap cards (and Duel Points) in a trade window that both have to "
+                    + "confirm. /jadm trade <player> asks someone.").push("trade"));
+
+    public static final ModConfigSpec.IntValue SET_POINTS_PER_CARD = BUILDER.pop().push("collection")
+            .comment("The Set Collection Book shows how much of each set a player owns (cards in binders, deck boxes "
+                    + "and loose in the inventory or ender chest). Completing a set brings the rewards below, once per "
+                    + "player and set. Duel Points per card in the set, when the [shop] currency is points.")
+            .defineInRange("pointsPerCard", 10, 0, 1_000_000);
+
+    public static final ModConfigSpec.IntValue SET_PACKS = BUILDER
+            .comment("Booster packs (a random set that is out) for each completed set.")
+            .defineInRange("packs", 3, 0, 64);
+
+    public static final ModConfigSpec.IntValue SET_EMERALDS = BUILDER
+            .comment("Emeralds for each completed set.")
+            .defineInRange("emeralds", 0, 0, 640);
+
+    public static final ModConfigSpec.IntValue SET_XP = BUILDER
+            .comment("Experience points for each completed set.")
+            .defineInRange("xp", 0, 0, 100_000);
+
+    public static final ModConfigSpec.BooleanValue SET_ANNOUNCE = BUILDER
+            .comment("Tell everyone on the server in chat when a player completes a set.")
+            .define("announce", true);
+
+    public static final StarChips STAR_CHIPS = new StarChips(BUILDER.pop()
+            .comment("Star Chip events (Duelist Kingdom): everyone who joins gets Star Chips, puts them up in duels and "
+                    + "whoever collects enough goes to the finals, a tournament on the tournament arenas. An operator "
+                    + "starts one with /jadm starchips start.").push("starchips"));
+
     static {
         BUILDER.pop();
     }
@@ -230,6 +274,60 @@ public final class JadmServerConfig {
                     .defineInRange("lossEmeralds", 0, 0, 640);
             lossXp = builder.comment("Experience points each loser gets as a consolation.")
                     .defineInRange("lossXp", 0, 0, 100_000);
+        }
+    }
+
+    /** The ranking's settings. */
+    public static final class Ranking {
+        public final ModConfigSpec.BooleanValue enabled;
+        public final ModConfigSpec.IntValue startRating;
+        public final ModConfigSpec.IntValue kFactor;
+        public final ModConfigSpec.IntValue placementGames;
+        public final ModConfigSpec.ConfigValue<List<? extends Integer>> tiers;
+        public final ModConfigSpec.IntValue promotionPoints;
+        public final ModConfigSpec.IntValue maxPerPairPerDay;
+        public final ModConfigSpec.BooleanValue arenaDuels;
+        public final ModConfigSpec.BooleanValue showInTabList;
+        public final ModConfigSpec.BooleanValue announcePromotions;
+
+        private Ranking(ModConfigSpec.Builder builder) {
+            enabled = builder.comment("Ranked duels can be played. Off, the ranking stays as it is but nothing changes "
+                    + "it.").define("enabled", true);
+            startRating = builder.comment("The rating every player starts with (and gets back when a new season "
+                    + "starts).").defineInRange("startRating", 1000, 0, 100_000);
+            kFactor = builder.comment("How many rating points a ranked duel moves at most: an even match moves half "
+                    + "this, an upset almost all of it.").defineInRange("kFactor", 32, 1, 400);
+            placementGames = builder.comment("A player's first this many ranked duels move twice as many points, so "
+                    + "new players find their rank quickly.").defineInRange("placementGames", 5, 0, 100);
+            tiers = builder.comment("The rating each rank starts at, lowest first: Silver, Gold, Platinum, Diamond, "
+                    + "Duel King. Below the first is Bronze.")
+                    .defineListAllowEmpty("tiers", io.github.zancrow321.jadm.ranking.Tiers.DEFAULT_STARTS,
+                            () -> 0, o -> o instanceof Number);
+            promotionPoints = builder.comment("Duel Points a player gets the first time they reach each rank (per "
+                    + "season), when the [shop] currency is points; 0 for none.")
+                    .defineInRange("promotionPoints", 200, 0, 1_000_000);
+            maxPerPairPerDay = builder.comment("Ranked duels between the same two players count this many times a "
+                    + "day at most (more are played unranked), so two friends can't farm points; 0 for no limit.")
+                    .defineInRange("maxPerPairPerDay", 5, 0, 1000);
+            arenaDuels = builder.comment("Duels that start by themselves on a Duel Arena are ranked.")
+                    .define("arenaDuels", false);
+            showInTabList = builder.comment("Show each ranked player's rank in front of their name in the player "
+                    + "list (Tab).").define("showInTabList", true);
+            announcePromotions = builder.comment("Tell everyone in chat when a player reaches a new rank.")
+                    .define("announcePromotions", true);
+        }
+
+        /** Where each rank above Bronze starts, lowest first. */
+        public List<Integer> tierStarts() {
+            List<Integer> starts = new java.util.ArrayList<>();
+            for (Object o : tiers.get()) {
+                // The config file may hand back longs.
+                if (o instanceof Number n) {
+                    starts.add(n.intValue());
+                }
+            }
+            starts.sort(null);
+            return starts.isEmpty() ? io.github.zancrow321.jadm.ranking.Tiers.DEFAULT_STARTS : starts;
         }
     }
 
@@ -366,6 +464,89 @@ public final class JadmServerConfig {
             sellSecret = builder.defineInRange("sellSecret", 120, 0, 1_000_000);
             emeraldExchange = builder.comment("Card Vending Machines take emeralds for this many points each; 0 for "
                     + "no exchange.").defineInRange("emeraldExchange", 10, 0, 1_000_000);
+        }
+    }
+
+    /** The settings of trading between players. */
+    public static final class Trade {
+        public final ModConfigSpec.BooleanValue enabled;
+        public final ModConfigSpec.BooleanValue onlyModItems;
+        public final ModConfigSpec.BooleanValue points;
+        public final ModConfigSpec.IntValue maxDistance;
+        public final ModConfigSpec.IntValue requestSeconds;
+        public final ModConfigSpec.BooleanValue rightClick;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private Trade(ModConfigSpec.Builder builder) {
+            enabled = builder.comment("Players can trade with each other.").define("enabled", true);
+            onlyModItems = builder.comment("Only this mod's items can be traded: cards, packs, decks, tins, binders, "
+                    + "deck boxes, duel disks... Off, any item can.").define("onlyModItems", true);
+            points = builder.comment("Duel Points can be put into a trade, when the [shop] currency is points and "
+                    + "[shop.points] transfers is on.").define("points", true);
+            maxDistance = builder.comment("How close (in blocks) the two have to be to start and keep trading; 0 "
+                    + "means anywhere, even in another dimension.").defineInRange("maxDistance", 0, 0, 10_000);
+            requestSeconds = builder.comment("Seconds a trade request waits to be accepted.")
+                    .defineInRange("requestSeconds", 60, 5, 3600);
+            rightClick = builder.comment("Sneaking and right-clicking another player with a card, binder or deck box "
+                    + "in your hand asks them to trade.").define("rightClick", true);
+        }
+    }
+
+    /** The settings of Star Chip events. */
+    public static final class StarChips {
+        public final ModConfigSpec.IntValue startChips;
+        public final ModConfigSpec.IntValue goal;
+        public final ModConfigSpec.IntValue finalists;
+        public final ModConfigSpec.IntValue defaultWager;
+        public final ModConfigSpec.IntValue maxWager;
+        public final ModConfigSpec.BooleanValue npcDuels;
+        public final ModConfigSpec.IntValue npcWager;
+        public final ModConfigSpec.IntValue durationMinutes;
+        public final ModConfigSpec.BooleanValue fillFinals;
+        public final ModConfigSpec.BooleanValue lateJoin;
+        public final ModConfigSpec.IntValue entryFee;
+        public final ModConfigSpec.BooleanValue playersCanHost;
+        public final ModConfigSpec.BooleanValue announce;
+        public final ModConfigSpec.ConfigValue<java.util.List<? extends String>> finalsSettings;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private StarChips(ModConfigSpec.Builder builder) {
+            startChips = builder.comment("Star Chips each duelist gets when they join an event.")
+                    .defineInRange("startChips", 2, 1, 100);
+            goal = builder.comment("Star Chips needed to qualify for the finals. Qualified duelists keep their "
+                    + "chips and duel no more until the finals.").defineInRange("goal", 10, 2, 1000);
+            finalists = builder.comment("The finals begin as soon as this many duelists have qualified.")
+                    .defineInRange("finalists", 4, 2, 64);
+            defaultWager = builder.comment("Star Chips each side puts up in a duel between two duelists of the event, "
+                    + "unless the challenger asks for more with /jadm starchips duel <player> <chips>. Nobody puts "
+                    + "up more than they have.").defineInRange("defaultWager", 1, 1, 1000);
+            maxWager = builder.comment("The most Star Chips one duel can be for; 0 for no limit.")
+                    .defineInRange("maxWager", 0, 0, 1000);
+            npcDuels = builder.comment("Duels against NPC duelists are for Star Chips too (the NPC puts up npcWager), "
+                    + "so players can reach the finals on their own. Off: only duels between players, as on Duelist "
+                    + "Kingdom.").define("npcDuels", false);
+            npcWager = builder.comment("Star Chips a duel against an NPC duelist is for.")
+                    .defineInRange("npcWager", 1, 1, 1000);
+            durationMinutes = builder.comment("The finals begin this many minutes after the event started, even "
+                    + "if fewer have qualified; 0 waits until enough have (or an operator runs /jadm starchips "
+                    + "finals).").defineInRange("durationMinutes", 0, 0, 100_000);
+            fillFinals = builder.comment("When the finals begin before enough have qualified, the empty seats go "
+                    + "to the duelists with the most Star Chips.").define("fillFinals", true);
+            lateJoin = builder.comment("Players can still join once the event is under way.")
+                    .define("lateJoin", true);
+            entryFee = builder.comment("Duel Points it costs to join; 0 for free.")
+                    .defineInRange("entryFee", 0, 0, 1_000_000);
+            playersCanHost = builder.comment("Players without operator rights may start and run events.")
+                    .define("playersCanHost", false);
+            announce = builder.comment("Tell the whole server who qualified, who is out and how the finals went; "
+                    + "off tells only the duelists of the event.").define("announce", true);
+            finalsSettings = builder.comment("Tournament settings for the finals, as \"setting=value\" (the same "
+                    + "settings as /jadm tournament set; the rest come from [tournament]). Who plays, the entry "
+                    + "fee and NPCs are fixed by the event.")
+                    .defineListAllowEmpty("finalsSettings", java.util.List.of("format=single", "bestOf=1",
+                            "thirdPlaceMatch=false", "prizesFirst=pack 10; points 1000",
+                            "prizesSecond=pack 5; points 300", "prizesThird=pack 2", "prizesFourth=pack 1",
+                            "prizesTop8=pack 1"), () -> "", v -> v instanceof String s && s.contains("="));
         }
     }
 

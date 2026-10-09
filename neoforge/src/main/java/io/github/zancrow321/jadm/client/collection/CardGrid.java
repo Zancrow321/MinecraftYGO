@@ -43,6 +43,8 @@ final class CardGrid {
     List<Entry> entries = List.of();
     /** Cards from sets that are still locked: dimmed, with a padlock. */
     java.util.function.IntPredicate locked = code -> false;
+    /** Cards the player doesn't have, in the Set Collection Book: greyed out. */
+    java.util.function.IntPredicate missing = code -> false;
 
     CardGrid(int x, int y, int columns, int rows, int cardWidth) {
         this.x = x;
@@ -123,6 +125,11 @@ final class CardGrid {
             drawCard(g, font, e.code(), e.rarity(), cx, cy, cardWidth, cardHeight);
             if (locked.test(e.code())) {
                 drawLock(g, cx, cy, cardWidth, cardHeight);
+            } else if (missing.test(e.code())) {
+                g.pose().pushPose();
+                g.pose().translate(0, 0, 20);
+                g.fill(cx, cy, cx + cardWidth, cy + cardHeight, 0xC0181820);
+                g.pose().popPose();
             }
             if (e.count() > 1) {
                 String n = "×" + e.count();

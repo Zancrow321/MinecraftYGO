@@ -16,8 +16,11 @@ import java.util.List;
  * @param outcome {@link #WON}, {@link #LOST} or {@link #DRAW}
  * @param record  the receiver's win/loss record after this duel, e.g. "12 wins, 5 losses, 1 draw", or empty when the
  *                server doesn't keep records
+ * @param rank    for a ranked duel, the receiver's rank after it, e.g. "Gold, 1216 rating (+16), 3rd place", else empty
+ * @param rankColor the color of that rank, as RGB
  */
-public record DuelResultPayload(int outcome, List<String> rewards, String record) implements CustomPacketPayload {
+public record DuelResultPayload(int outcome, List<String> rewards, String record, String rank, int rankColor)
+        implements CustomPacketPayload {
     public static final int LOST = 0;
     public static final int WON = 1;
     public static final int DRAW = 2;
@@ -28,6 +31,8 @@ public record DuelResultPayload(int outcome, List<String> rewards, String record
             ByteBufCodecs.VAR_INT, DuelResultPayload::outcome,
             ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), DuelResultPayload::rewards,
             ByteBufCodecs.STRING_UTF8, DuelResultPayload::record,
+            ByteBufCodecs.STRING_UTF8, DuelResultPayload::rank,
+            ByteBufCodecs.INT, DuelResultPayload::rankColor,
             DuelResultPayload::new);
 
     @Override

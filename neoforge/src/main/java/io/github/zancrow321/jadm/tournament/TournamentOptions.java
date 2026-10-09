@@ -63,9 +63,29 @@ public final class TournamentOptions {
         integer("turnTimeLimit", -1, -1, 3600, "Seconds per duelist and turn; -1 keeps the server's, 0 for none.");
         integer("maxTurns", 0, 0, 1000, "A game ends after this many turns and whoever has more life points wins it "
                 + "(level life points are a draw); 0 for no limit.");
+        bool("ranked", false, "Games between two players count for the ranking, like ranked duels.");
         bool("lockDeck", true, "The deck a duelist joins with is the one they play the whole tournament with.");
         bool("starterDecks", false, "Players without a legal deck box may join with Yugi's starter deck (only if "
                 + "the server lends starter decks).");
+        text("deckMode", "constructed", "Where the decks come from: \"constructed\" (everyone brings their deck box), "
+                + "\"sealed\" (everyone opens limitedPacks at the start and builds a deck from them) or \"draft\" "
+                + "(everyone opens a pack, takes one card and passes the rest on, until all limitedPacks are drafted; "
+                + "then decks are built from the picks).",
+                s -> List.of("constructed", "sealed", "draft").contains(s.strip().toLowerCase(Locale.ROOT)));
+        list("limitedPacks", List.of("pack 5"), "Sealed and Draft: the packs everyone opens, in order. \"pack "
+                + "[count]\" is that many packs of one booster set that is out (picked at random when the tournament "
+                + "starts, the same for everyone), \"pack:<set> [count]\" packs of that set, by its id or code "
+                + "(e.g. \"pack:MRD 3\").",
+                Limited::validPacks);
+        integer("deckMinimum", 20, 1, 60, "Sealed and Draft: the main deck needs at least this many cards (at most 60, "
+                + "extra deck up to 15). Copies are only limited by the pool, and there is no banlist.");
+        integer("buildMinutes", 10, 1, 120, "Sealed and Draft: minutes to build the deck. Whoever isn't done by then "
+                + "gets a deck built from their pool.");
+        integer("pickSeconds", 30, 5, 600, "Draft: seconds for each pick; when they run out, a card is picked for "
+                + "you.");
+        bool("keepCards", false, "Sealed and Draft: players keep the cards they opened or drafted once the "
+                + "tournament is over (into a binder they carry, or the inventory). Off: the pool is only lent for the "
+                + "tournament.");
         integer("callSeconds", 15, 3, 600, "Seconds between being called to the arena and the duel; Ready starts it "
                 + "sooner once both are ready.");
         integer("noShowMinutes", 3, 1, 1440, "A duelist who is offline or busy for this long while their match is "
@@ -114,7 +134,11 @@ public final class TournamentOptions {
     }
 
     private static void list(String key, List<String> fallback, String comment) {
-        ALL.add(new Option(key, Kind.LIST, comment, fallback, 0, 0, Prizes::valid, true));
+        list(key, fallback, comment, Prizes::valid);
+    }
+
+    private static void list(String key, List<String> fallback, String comment, Predicate<String> valid) {
+        ALL.add(new Option(key, Kind.LIST, comment, fallback, 0, 0, valid, true));
     }
 
     private static void serverWide(Kind kind, String key, Object fallback, String comment) {

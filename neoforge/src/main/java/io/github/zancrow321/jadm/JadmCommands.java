@@ -28,12 +28,21 @@ final class JadmCommands {
     private JadmCommands() {
     }
 
+    private static int challenge(CommandContext<CommandSourceStack> ctx, boolean ante, boolean ranked)
+            throws CommandSyntaxException {
+        manager(ctx).challenge(ctx.getSource().getPlayerOrException(), EntityArgument.getPlayer(ctx, "player"), ante,
+                ranked);
+        return 1;
+    }
+
     static void register(RegisterCommandsEvent event) {
         event.getDispatcher().register(Commands.literal(Jadm.COMMAND)
                 .then(Commands.literal("version").executes(JadmCommands::version))
                 .then(io.github.zancrow321.jadm.progression.ProgressionCommands.build())
                 .then(io.github.zancrow321.jadm.tournament.TournamentCommands.build())
+                .then(io.github.zancrow321.jadm.starchips.StarChipCommands.build())
                 .then(io.github.zancrow321.jadm.duel.StatsCommands.build())
+                .then(io.github.zancrow321.jadm.ranking.RankCommands.build())
                 .then(Commands.literal("duel")
                         .then(Commands.literal("bot").executes(ctx -> {
                             ServerPlayer player = ctx.getSource().getPlayerOrException();
@@ -44,11 +53,11 @@ final class JadmCommands {
                             manager(ctx).challenge(ctx.getSource().getPlayerOrException(),
                                     EntityArgument.getPlayer(ctx, "player"), false);
                             return 1;
-                        }).then(Commands.literal("ante").executes(ctx -> {
-                            manager(ctx).challenge(ctx.getSource().getPlayerOrException(),
-                                    EntityArgument.getPlayer(ctx, "player"), true);
-                            return 1;
-                        }))))
+                        })
+                                .then(Commands.literal("ante").executes(ctx -> challenge(ctx, true, false))
+                                        .then(Commands.literal("ranked").executes(ctx -> challenge(ctx, true, true))))
+                                .then(Commands.literal("ranked").executes(ctx -> challenge(ctx, false, true))
+                                        .then(Commands.literal("ante").executes(ctx -> challenge(ctx, true, true))))))
                 .then(Commands.literal("tag")
                         .then(Commands.argument("partner", StringArgumentType.word()).suggests(JadmCommands::duelists)
                                 .then(Commands.argument("opponent1", StringArgumentType.word())
@@ -74,6 +83,8 @@ final class JadmCommands {
                         .StarterDecks.command(ctx.getSource().getPlayerOrException())))
                 .then(Commands.literal("guide").executes(ctx -> io.github.zancrow321.jadm.guide.GuideBook
                         .open(ctx.getSource().getPlayerOrException())))
+                .then(Commands.literal("sets").executes(ctx -> io.github.zancrow321.jadm.collection.SetCollection
+                        .send(ctx.getSource().getPlayerOrException(), true)))
                 .then(Commands.literal("shop").executes(ctx -> {
                     var player = ctx.getSource().getPlayerOrException();
                     if (!JadmServerConfig.MACHINE.command.get() && !ctx.getSource().hasPermission(2)) {
@@ -85,6 +96,7 @@ final class JadmCommands {
                     return 1;
                 }))
                 .then(io.github.zancrow321.jadm.points.PointsCommands.build())
+                .then(io.github.zancrow321.jadm.trade.Trades.command())
                 .then(io.github.zancrow321.jadm.admin.AdminMenu.command())
                 .then(Commands.literal("cosmetics").executes(ctx -> {
                     PlayerCosmetics.open(ctx.getSource().getPlayerOrException());

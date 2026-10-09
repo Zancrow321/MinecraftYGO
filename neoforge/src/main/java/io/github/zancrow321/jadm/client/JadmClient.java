@@ -65,6 +65,9 @@ public final class JadmClient {
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_C, "key.categories.jadm");
     public static final KeyMapping COSMETICS = new KeyMapping("key.jadm.cosmetics",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_K, "key.categories.jadm");
+    /** Opens the ranking window. */
+    public static final KeyMapping RANKING = new KeyMapping("key.jadm.ranking",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_J, "key.categories.jadm");
     /** Opens the admin menu, for operators. */
     public static final KeyMapping ADMIN = new KeyMapping("key.jadm.admin",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "key.categories.jadm");
@@ -98,6 +101,8 @@ public final class JadmClient {
             event.registerEntityRenderer(JadmEntities.MONSTER.get(), MonsterRenderer::new);
             event.registerEntityRenderer(JadmEntities.DUELIST.get(), DuelistNpcRenderer::new);
             event.registerBlockEntityRenderer(DuelArena.ARENA_ENTITY.get(), ArenaRenderer::new);
+            event.registerBlockEntityRenderer(io.github.zancrow321.jadm.ranking.RankingBoard.ENTITY.get(),
+                    io.github.zancrow321.jadm.client.ranking.RankingBoardRenderer::new);
             event.registerBlockEntityRenderer(io.github.zancrow321.jadm.arena.DuelDome.CORE_ENTITY.get(),
                     io.github.zancrow321.jadm.client.arena.ArenaCoreRenderer::new);
         }
@@ -108,6 +113,8 @@ public final class JadmClient {
                     io.github.zancrow321.jadm.client.shop.ShopStandScreen::new);
             event.register(io.github.zancrow321.jadm.points.Points.SHOP_MENU.get(),
                     io.github.zancrow321.jadm.client.shop.PointShopScreen::new);
+            event.register(io.github.zancrow321.jadm.trade.Trades.MENU.get(),
+                    io.github.zancrow321.jadm.client.trade.TradeScreen::new);
         }
 
         @SubscribeEvent
@@ -217,6 +224,9 @@ public final class JadmClient {
             // Under the chat, so new messages show over a held card's preview.
             event.registerBelow(VanillaGuiLayers.CHAT,
                     ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID, "card_preview"), CardPreview::renderHud);
+            event.registerAbove(VanillaGuiLayers.HOTBAR,
+                    ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID, "star_chips"),
+                    io.github.zancrow321.jadm.client.starchips.StarChipHud::render);
         }
 
         @SubscribeEvent
@@ -231,6 +241,7 @@ public final class JadmClient {
             event.register(DUEL_RESPONSES);
             event.register(COSMETICS);
             event.register(ADMIN);
+            event.register(RANKING);
         }
     }
 
@@ -297,6 +308,11 @@ public final class JadmClient {
         while (COSMETICS.consumeClick()) {
             if (mc.screen == null && mc.player != null) {
                 mc.player.connection.sendCommand("jadm cosmetics");
+            }
+        }
+        while (RANKING.consumeClick()) {
+            if (mc.screen == null && mc.player != null) {
+                mc.player.connection.sendCommand(Jadm.COMMAND + " rank");
             }
         }
         while (ADMIN.consumeClick()) {

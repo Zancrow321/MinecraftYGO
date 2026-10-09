@@ -2,6 +2,77 @@
 
 ## Unreleased
 
+### Tag duel life points
+- Tag and Battle City duels (2v2) have their own starting life points, `tagStartingLifePoints` in
+  `serverconfig/jadm-server.toml`, 16000 by default. 1v1 duels keep `startingLifePoints` (8000). A tournament that
+  sets its own life points still uses those.
+
+### Ranking
+- **Ranked duels:** `/jadm duel <player> ranked` (with `ante` too, if you like). Ranked 1v1 duels between two
+  players win and lose Elo rating points; everyone starts at 1000, and the first 5 ranked duels count double.
+  Other duels stay unranked.
+- **Ranks** from Bronze over Silver, Gold, Platinum and Diamond to **Duel King**. Reaching a rank for the first time
+  in a season brings 200 Duel Points and is announced in chat; the player list (Tab) shows each player's rank.
+- **Ranking window** with the key J or `/jadm rank`: your rank, rating, place and the way to the next rank, the
+  ladder of ranks and the best 100 duelists. The result screen shows your new rating after a ranked duel.
+- **Ranking Board**: a craftable plate for the wall that shows the ten best ranked duelists on a glowing board
+  three blocks wide and two high. Right-click it for the ranking window.
+- Ranked duels between the same two players count 5 times a day at most, so friends can't farm points.
+- Server settings in `[ranking]`: start rating, K-factor, placement games, where each rank starts, promotion
+  bonus, the daily limit per pair, ranked arena auto duels, the rank in the player list and the chat
+  announcement. Tournaments get a `ranked` setting.
+- Operators: `/jadm rank set <player> <rating>`, `/jadm rank reset <player>` and `/jadm rank season confirm` (a new
+  season puts everyone back to the start rating).
+
+### Trading between players
+- `/jadm trade <player>` asks someone to trade, or sneak and right-click them with a card, binder or deck box in
+  your hand. They accept by clicking **[Accept]** in chat (or `/jadm trade accept`, `/jadm trade deny`).
+- The trade window shows your offer on the left (up to 12 stacks plus Duel Points you type in) and theirs on the
+  right, with the big card preview for their cards too. The swap happens only once both of you confirm; any change
+  to either offer takes both confirmations back, and confirming waits a moment after a change, so nobody can switch a
+  card at the last second.
+- Cancelling, closing the window, logging out, a duel starting or walking too far apart ends the trade, and everyone
+  gets their own offer back. Every finished trade is written to the server log.
+- New `[trade]` server settings: `enabled`, `onlyModItems` (on by default: cards, packs, binders, deck boxes...),
+  `points`, `maxDistance` (0 = anywhere), `requestSeconds` and `rightClick`.
+
+### Draft & Sealed tournaments
+- Tournaments can now be **Sealed** or **Draft** (`/jadm tournament create sealed|draft [name]`, or the new
+  `deckMode` setting): nobody brings a deck, everyone gets fresh packs at the start and builds a deck from them on
+  the spot.
+- Sealed: everyone opens the same packs (`limitedPacks`, e.g. "pack 5" for five packs of a random set that is out, or
+  "pack:LOB 3; pack:MRD 2"), revealed one by one.
+- Draft: everyone opens a pack, takes one card and passes the rest on, all at once, left and right in turns, until
+  every pack is drafted (`pickSeconds` per pick, then a card is picked for you). NPCs draft and build too.
+- The deck building window works like the deck box: your deck on the left, the rest of your pool on the right, with
+  search, filters, **Auto** (a deck from your best cards) and **Done**. Decks need at least `deckMinimum` (20) main
+  deck cards, only as many copies as you pulled, and no banlist. After `buildMinutes` whoever isn't done gets a
+  deck built for them, and the bracket is drawn as in any tournament.
+- The cards are only lent for the tournament; with `keepCards` players keep their pool (into a binder they carry).
+- `/jadm tournament deck` opens the draft or deck building window again; the Duelist's Handbook explains it all.
+
+### Set Collection Book
+- A new **Set Collection Book** (craft a book with any card, or `/jadm sets`) lists every set that is out, with its
+  picture, how many of its cards you own and a progress bar. It counts each card once whatever its rarity, from your
+  binders, deck boxes and loose cards in your inventory and ender chest (also inside shulker boxes there).
+- Filter by started, complete, reward ready or not started, sort by release, name or how complete, and search by name
+  or set code. Click a set to see its cards with the missing ones greyed out, or only the missing ones.
+- A complete set brings a reward once per player and set: by default 10 Duel Points per card of the set and 3
+  booster packs, and everyone hears about it in chat. `[collection]` in the server config sets the points, packs,
+  emeralds, experience and the announcement.
+
+### Star Chips
+- **Star Chip events**, as on Duelist Kingdom: an operator starts one with `/jadm starchips start [name]`, and
+  everyone who joins gets 2 Star Chips. Every 1v1 duel between two duelists of the event (arena auto duels too) is
+  for Star Chips: each side puts up 1, or more with `/jadm starchips duel <player> <chips>`, and the winner takes
+  them all. Duels against NPC duelists don't count, as on Duelist Kingdom (`npcDuels` turns them on, for 1 chip).
+- Collect 10 and you qualify; lose your last chip and you are out. Once 4 have qualified the finals are held as a
+  tournament on the tournament arenas, with their own prizes (`finalsSettings`). With a time limit
+  (`durationMinutes`) or `/jadm starchips finals`, empty seats go to the duelists with the most chips.
+- A **Duelist Glove** in the top left corner shows your chips; a chip won pops in, a chip lost flashes red. The
+  duel result screen says what you won or lost, and `/jadm starchips` shows the standings.
+- Everything is in the new `[starchips]` server config section and in the handbook (Arenas and tournaments).
+
 ### Build your own duel arena
 - Players can build a duel arena from any blocks. An Arena Core anywhere in it and a Duelist Podium where each
   duelist stands (one per side, or two side by side for tag duels) are all the mod needs.

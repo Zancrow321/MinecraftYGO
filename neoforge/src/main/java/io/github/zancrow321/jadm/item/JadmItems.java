@@ -41,6 +41,8 @@ public final class JadmItems {
             new Item.Properties().stacksTo(1));
     public static final DeferredItem<GuideBookItem> GUIDE_BOOK = ITEMS.registerItem("guide_book",
             GuideBookItem::new, new Item.Properties().stacksTo(1));
+    public static final DeferredItem<SetBookItem> SET_BOOK = ITEMS.registerItem("set_book", SetBookItem::new,
+            new Item.Properties().stacksTo(1));
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<GuideBookRecipe>> GUIDE_BOOK_RECIPE =
             RECIPE_SERIALIZERS.register("guide_book", () -> new RecipeSerializer<>() {
                 @Override
@@ -65,6 +67,7 @@ public final class JadmItems {
                         output.accept(GUIDE_BOOK.get());
                         output.accept(DUEL_DISK.get());
                         output.accept(BINDER.get());
+                        output.accept(SET_BOOK.get());
                         output.accept(DECK_BOX.get());
                         output.accept(starterYugi());
                         output.accept(starterKaiba());
@@ -73,6 +76,7 @@ public final class JadmItems {
                         output.accept(io.github.zancrow321.jadm.village.PlayerShops.STAND_ITEM.get());
                         output.accept(DuelArena.KIT.get());
                         output.accept(DuelDome.KIT.get());
+                        output.accept(io.github.zancrow321.jadm.ranking.RankingBoard.ITEM.get());
                         output.accept(DuelDome.CORE_ITEM.get());
                         output.accept(DuelDome.PLATFORM_ITEM.get());
                         output.accept(DUELIST_SPAWN_EGG.get());

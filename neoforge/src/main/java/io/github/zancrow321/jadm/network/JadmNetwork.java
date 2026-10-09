@@ -48,6 +48,20 @@ public final class JadmNetwork {
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.guide(payload)));
         registrar.playToClient(TournamentPayload.TYPE, TournamentPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.tournament(payload)));
+        registrar.playToClient(RankingPayload.TYPE, RankingPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.ranking(payload)));
+        registrar.playToClient(LimitedPayload.TYPE, LimitedPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.limited(payload)));
+        registrar.playToServer(LimitedActionPayload.TYPE, LimitedActionPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        io.github.zancrow321.jadm.tournament.TournamentManager.get(player.server)
+                                .limitedAction(player, payload.action(), payload.value());
+                    }
+                }));
+        registrar.playToClient(StarChipsPayload.TYPE, StarChipsPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> io.github.zancrow321.jadm.client.starchips
+                        .StarChipHud.receive(payload)));
         registrar.playToClient(StarterChoicesPayload.TYPE, StarterChoicesPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.starterChoices(payload)));
         registrar.playToServer(StarterPickPayload.TYPE, StarterPickPayload.STREAM_CODEC,
@@ -78,12 +92,27 @@ public final class JadmNetwork {
                         ShopStandMenu.setPrice(player, payload.column(), payload.price());
                     }
                 }));
+        registrar.playToServer(TradePointsPayload.TYPE, TradePointsPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        io.github.zancrow321.jadm.trade.TradeMenu.setPoints(player, payload.containerId(),
+                                payload.points());
+                    }
+                }));
         registrar.playToClient(AdminPayload.TYPE, AdminPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.admin(payload)));
         registrar.playToServer(AdminActionPayload.TYPE, AdminActionPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer player) {
                         io.github.zancrow321.jadm.admin.AdminMenu.handle(player, payload);
+                    }
+                }));
+        registrar.playToClient(SetBookPayload.TYPE, SetBookPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.setBook(payload)));
+        registrar.playToServer(SetBookActionPayload.TYPE, SetBookActionPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        io.github.zancrow321.jadm.collection.SetCollection.handle(player, payload);
                     }
                 }));
         registrar.playToClient(ArenaCoreOpenPayload.TYPE, ArenaCoreOpenPayload.STREAM_CODEC,

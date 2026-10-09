@@ -84,6 +84,14 @@ In game:
   (`emeraldExchange`, 10 each), all in `[shop.points]`. `/jadm dp pay <player> <amount>` gives DP to another player
   (`transfers`), and operators use `/jadm dp give|take|set <players> <amount>` and `/jadm dp <player>`. Wandering
   traders keep taking emeralds.
+- **Trading:** `/jadm trade <player>` (or sneaking and right-clicking them with a card, binder or deck box in hand)
+  asks another player to trade; they click **[Accept]** in chat or use `/jadm trade accept [player]` (`deny` turns
+  it down). Both get a trade window: your offer on the left (12 slots plus the DP you type in), theirs on the right.
+  The swap happens once both confirm; any change to either offer takes both confirmations back, and confirming waits
+  a moment after a change. Closing the window, logging out, starting a duel or walking apart cancels it and gives
+  everyone their offer back. `[trade]` sets `enabled`, `onlyModItems` (true: only this mod's items), `points` (DP in
+  trades, with points as the currency and `transfers` on), `maxDistance` (0: anywhere), `requestSeconds` (60) and
+  `rightClick`.
 - **Handbook:** every player gets the **Duelist's Handbook** once on their first join (`[guide] giveOnFirstJoin`);
   `/jadm guide` opens it any time and a new one is crafted from a book and paper (`[guide] craftable`). It explains
   dueling, the duel controls with your current key bindings, collecting, decks, the shops and Duel Points, progression, arenas and tournaments,
@@ -155,7 +163,8 @@ In game:
   Harpie's Feather Duster, Mystical Space Typhoon, Heavy Storm, Trap Hole, Fissure, Hinotama, Ookazi, Sparks, Dian
   Keto, Waboku and the counter traps. Right-click a gallery monster to see its attack.
 - **Rules:** `ruleset` in `serverconfig/jadm-server.toml` is `auto` (the default, see Progression above),
-  `mr1` (original), `goat`, `mr2`, `mr3`, `mr4` or `modern`; `startingLifePoints` defaults to 8000.
+  `mr1` (original), `goat`, `mr2`, `mr3`, `mr4` or `modern`; `startingLifePoints` defaults to 8000,
+  `tagStartingLifePoints` (tag and Battle City duels) to 16000.
 - **Duel Dome:** craft a **Duel Dome Kit** (a Duel Dome Core, two Duelist Platforms, two quartz blocks, a sea lantern
   and light blue concrete) and use it on flat ground to build a 13 by 21 arena facing the way you look. When every
   duelist stands on a platform, one team at each end, the field appears over the core instead of between the

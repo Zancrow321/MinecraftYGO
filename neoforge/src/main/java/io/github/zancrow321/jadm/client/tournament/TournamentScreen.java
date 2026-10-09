@@ -99,7 +99,7 @@ public final class TournamentScreen extends Screen {
             tab = Tab.TABLE;
         }
         if (tab == null) {
-            tab = v != null && v.state.equals("open") ? Tab.INFO
+            tab = v != null && (v.state.equals("open") || v.state.equals("draft") || v.state.equals("build")) ? Tab.INFO
                     : v != null && !elimination(v) ? Tab.TABLE : Tab.BRACKET;
         }
         int x = 10;
@@ -126,10 +126,13 @@ public final class TournamentScreen extends Screen {
         int y = height - 24;
         int right = width - 10;
         right = button(right, y, "Close", this::onClose);
-        if (v != null && (v.state.equals("open") || v.state.equals("running"))) {
+        boolean limited = v != null && (v.state.equals("draft") || v.state.equals("build"));
+        if (v != null && (v.state.equals("open") || v.state.equals("running") || limited)) {
             boolean in = myIndex() >= 0;
             if (v.state.equals("open")) {
                 right = button(right, y, in ? "Leave" : "Join", () -> command(in ? "leave" : "join"));
+            } else if (limited && in) {
+                right = button(right, y, v.state.equals("draft") ? "Draft" : "Build deck", () -> command("deck"));
             } else if (in && v.places.get(myIndex()) == 0) {
                 right = button(right, y, "Ready", () -> command("ready"));
             }
@@ -170,7 +173,8 @@ public final class TournamentScreen extends Screen {
             return;
         }
         g.drawString(font, v.name, 10, 8, GOLD);
-        String sub = v.formatName + (v.bestOf > 1 ? ", best of " + v.bestOf : "") + "  ·  " + v.status
+        String sub = ("sealed".equals(v.deckMode) ? "Sealed  ·  " : "draft".equals(v.deckMode) ? "Draft  ·  " : "")
+                + v.formatName + (v.bestOf > 1 ? ", best of " + v.bestOf : "") + "  ·  " + v.status
                 + "  ·  hosted by " + v.host;
         g.drawString(font, sub, 10, 19, GRAY);
         g.enableScissor(6, TOP - 2, width - 6, height - 30);

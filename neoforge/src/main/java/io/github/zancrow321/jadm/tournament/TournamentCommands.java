@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
- * {@code /jadm tournament ...}: anyone can open the window, join, leave and say they're ready; hosts (operators, or
+ * {@code /jadm tournament ...}: anyone can open the window, join, leave, say they're ready and open their draft or
+ * deck building window ({@code deck}); hosts (operators, or
  * any player with {@code playersCanHost}) create, set up, start and call off; operators manage the arenas.
  */
 public final class TournamentCommands {
@@ -38,8 +39,9 @@ public final class TournamentCommands {
                 .then(Commands.literal("create")
                         .executes(ctx -> host(ctx, m -> m.create(player(ctx), null, null)))
                         .then(Commands.argument("format", StringArgumentType.word())
-                                .suggests((ctx, b) -> SharedSuggestionProvider.suggest(
-                                        Arrays.stream(Bracket.Format.values()).map(f -> f.id), b))
+                                .suggests((ctx, b) -> SharedSuggestionProvider.suggest(java.util.stream.Stream
+                                        .concat(Arrays.stream(Bracket.Format.values()).map(f -> f.id),
+                                                java.util.stream.Stream.of("sealed", "draft")), b))
                                 .executes(ctx -> host(ctx, m -> m.create(player(ctx),
                                         StringArgumentType.getString(ctx, "format"), null)))
                                 .then(Commands.argument("name", StringArgumentType.greedyString())
@@ -49,6 +51,7 @@ public final class TournamentCommands {
                 .then(Commands.literal("join").executes(ctx -> anyone(ctx, m -> m.join(player(ctx)))))
                 .then(Commands.literal("leave").executes(ctx -> anyone(ctx, m -> m.leave(player(ctx)))))
                 .then(Commands.literal("ready").executes(ctx -> anyone(ctx, m -> m.ready(player(ctx)))))
+                .then(Commands.literal("deck").executes(ctx -> anyone(ctx, m -> m.openLimited(player(ctx)))))
                 .then(Commands.literal("status").executes(TournamentCommands::status))
                 .then(Commands.literal("settings").executes(TournamentCommands::settings))
                 .then(Commands.literal("start").executes(ctx -> host(ctx, m -> m.start(player(ctx)))))
@@ -122,6 +125,8 @@ public final class TournamentCommands {
             case "format" -> Arrays.stream(Bracket.Format.values()).map(f -> f.id).toList();
             case "npcFill" -> List.of("none", "min", "bracket");
             case "npcMatches" -> List.of("play", "coinflip");
+            case "deckMode" -> List.of("constructed", "sealed", "draft");
+            case "limitedPacks" -> List.of("pack 5", "pack:LOB 5", "pack:LOB 3; pack:MRD 2");
             case "ruleset" -> List.of("server", "auto", "mr1", "goat", "mr2", "mr3", "mr4", "modern");
             case "banlist" -> List.of("server", "auto", "none");
             case "entryFeeCurrency" -> List.of("currency", "points", "minecraft:emerald");
