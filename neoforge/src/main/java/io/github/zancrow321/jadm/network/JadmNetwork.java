@@ -80,6 +80,13 @@ public final class JadmNetwork {
                         ShopStandMenu.setPrice(player, payload.column(), payload.price());
                     }
                 }));
+        registrar.playToServer(TradePointsPayload.TYPE, TradePointsPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        io.github.zancrow321.jadm.trade.TradeMenu.setPoints(player, payload.containerId(),
+                                payload.points());
+                    }
+                }));
         registrar.playToClient(AdminPayload.TYPE, AdminPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.admin(payload)));
         registrar.playToServer(AdminActionPayload.TYPE, AdminActionPayload.STREAM_CODEC,

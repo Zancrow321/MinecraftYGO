@@ -24,6 +24,18 @@
 - Operators: `/jadm rank set <player> <rating>`, `/jadm rank reset <player>` and `/jadm rank season confirm` (a new
   season puts everyone back to the start rating).
 
+### Trading between players
+- `/jadm trade <player>` asks someone to trade, or sneak and right-click them with a card, binder or deck box in
+  your hand. They accept by clicking **[Accept]** in chat (or `/jadm trade accept`, `/jadm trade deny`).
+- The trade window shows your offer on the left (up to 12 stacks plus Duel Points you type in) and theirs on the
+  right, with the big card preview for their cards too. The swap happens only once both of you confirm; any change
+  to either offer takes both confirmations back, and confirming waits a moment after a change, so nobody can switch a
+  card at the last second.
+- Cancelling, closing the window, logging out, a duel starting or walking too far apart ends the trade, and everyone
+  gets their own offer back. Every finished trade is written to the server log.
+- New `[trade]` server settings: `enabled`, `onlyModItems` (on by default: cards, packs, binders, deck boxes...),
+  `points`, `maxDistance` (0 = anywhere), `requestSeconds` and `rightClick`.
+
 ### Card pictures when picking cards
 - Searching your Deck now shows the cards you can pick. Before, every card in the window showed its back without a
   name, so you couldn't tell what you were choosing.

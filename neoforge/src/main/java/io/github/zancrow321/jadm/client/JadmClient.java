@@ -111,6 +111,8 @@ public final class JadmClient {
                     io.github.zancrow321.jadm.client.shop.ShopStandScreen::new);
             event.register(io.github.zancrow321.jadm.points.Points.SHOP_MENU.get(),
                     io.github.zancrow321.jadm.client.shop.PointShopScreen::new);
+            event.register(io.github.zancrow321.jadm.trade.Trades.MENU.get(),
+                    io.github.zancrow321.jadm.client.trade.TradeScreen::new);
         }
 
         @SubscribeEvent

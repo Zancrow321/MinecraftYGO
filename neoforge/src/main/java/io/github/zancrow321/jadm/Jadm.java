@@ -52,6 +52,7 @@ public final class Jadm {
         JadmVillagers.register(modBus);
         io.github.zancrow321.jadm.village.PlayerShops.register(modBus);
         io.github.zancrow321.jadm.points.Points.register(modBus);
+        io.github.zancrow321.jadm.trade.Trades.register(modBus);
         RandomCardFunction.register(modBus);
         DuelDome.register(modBus);
         DuelArena.register(modBus);
@@ -66,6 +67,7 @@ public final class Jadm {
             DuelManager.shutdown();
             TournamentManager.shutdown();
             io.github.zancrow321.jadm.arena.ArenaLobby.reset();
+            io.github.zancrow321.jadm.trade.Trades.reset();
             Progress.stopped();
         });
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> {
@@ -74,6 +76,7 @@ public final class Jadm {
             io.github.zancrow321.jadm.arena.ArenaLobby.tick(event.getServer());
             io.github.zancrow321.jadm.village.CardShop.tick(event.getServer());
             io.github.zancrow321.jadm.points.Points.tick(event.getServer());
+            io.github.zancrow321.jadm.trade.Trades.tick(event.getServer());
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
@@ -87,6 +90,7 @@ public final class Jadm {
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
+                io.github.zancrow321.jadm.trade.Trades.logout(player);
                 DuelManager.get(player.server).onLogout(player);
             }
         });
@@ -122,7 +126,10 @@ public final class Jadm {
         NeoForge.EVENT_BUS.addListener(JadmCommands::register);
     }
 
-    /** Right-clicking another player while wearing or holding a duel disk challenges them (or accepts). */
+    /**
+     * Right-clicking another player while wearing or holding a duel disk challenges them (or accepts); sneaking with a
+     * card, binder or deck box in hand asks them to trade instead.
+     */
     private void onInteractPlayer(PlayerInteractEvent.EntityInteract event) {
         Player player = event.getEntity();
         if (event.getHand() != InteractionHand.MAIN_HAND || !(event.getTarget() instanceof Player other)) {
@@ -132,6 +139,11 @@ public final class Jadm {
                 && DuelManager.get(serverPlayer.server).inDuel(serverOther)) {
             // Anyone can watch a duel, disk or not.
             DuelManager.get(serverPlayer.server).watch(serverPlayer, serverOther);
+            event.setCancellationResult(InteractionResult.SUCCESS);
+            event.setCanceled(true);
+            return;
+        }
+        if (io.github.zancrow321.jadm.trade.Trades.interact(player, other)) {
             event.setCancellationResult(InteractionResult.SUCCESS);
             event.setCanceled(true);
             return;

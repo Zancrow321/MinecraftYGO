@@ -84,6 +84,14 @@ In game:
   (`emeraldExchange`, 10 each), all in `[shop.points]`. `/jadm dp pay <player> <amount>` gives DP to another player
   (`transfers`), and operators use `/jadm dp give|take|set <players> <amount>` and `/jadm dp <player>`. Wandering
   traders keep taking emeralds.
+- **Trading:** `/jadm trade <player>` (or sneaking and right-clicking them with a card, binder or deck box in hand)
+  asks another player to trade; they click **[Accept]** in chat or use `/jadm trade accept [player]` (`deny` turns
+  it down). Both get a trade window: your offer on the left (12 slots plus the DP you type in), theirs on the right.
+  The swap happens once both confirm; any change to either offer takes both confirmations back, and confirming waits
+  a moment after a change. Closing the window, logging out, starting a duel or walking apart cancels it and gives
+  everyone their offer back. `[trade]` sets `enabled`, `onlyModItems` (true: only this mod's items), `points` (DP in
+  trades, with points as the currency and `transfers` on), `maxDistance` (0: anywhere), `requestSeconds` (60) and
+  `rightClick`.
 - **Handbook:** every player gets the **Duelist's Handbook** once on their first join (`[guide] giveOnFirstJoin`);
   `/jadm guide` opens it any time and a new one is crafted from a book and paper (`[guide] craftable`). It explains
   dueling, the duel controls with your current key bindings, collecting, decks, the shops and Duel Points, progression, arenas and tournaments,
