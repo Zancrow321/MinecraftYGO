@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Tag duel life points
+- Tag and Battle City duels (2v2) have their own starting life points, `tagStartingLifePoints` in
+  `serverconfig/jadm-server.toml`, 16000 by default. 1v1 duels keep `startingLifePoints` (8000). A tournament that
+  sets its own life points still uses those.
+
 ### Card pictures when picking cards
 - Searching your Deck now shows the cards you can pick. Before, every card in the window showed its back without a
   name, so you couldn't tell what you were choosing.

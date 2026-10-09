@@ -565,8 +565,10 @@ public final class DuelManager {
         }
         MatchSetup.Rules rules = match != null ? match.rules() : MatchSetup.Rules.SERVER;
         Ruleset ruleset = rules.ruleset() != null ? rules.ruleset() : JadmData.ruleset(step);
+        int serverLifePoints = entrants.size() > 2 ? JadmServerConfig.TAG_STARTING_LIFE_POINTS.get()
+                : JadmServerConfig.STARTING_LIFE_POINTS.get();
         DuelSettings.Team team = new DuelSettings.Team(rules.lifePoints() > 0 ? rules.lifePoints()
-                : JadmServerConfig.STARTING_LIFE_POINTS.get(), 5, 1);
+                : serverLifePoints, 5, 1);
         DuelTable table;
         try {
             table = new DuelTable(JadmData.text(), new BundledScripts(),

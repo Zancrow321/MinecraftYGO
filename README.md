@@ -155,7 +155,8 @@ In game:
   Harpie's Feather Duster, Mystical Space Typhoon, Heavy Storm, Trap Hole, Fissure, Hinotama, Ookazi, Sparks, Dian
   Keto, Waboku and the counter traps. Right-click a gallery monster to see its attack.
 - **Rules:** `ruleset` in `serverconfig/jadm-server.toml` is `auto` (the default, see Progression above),
-  `mr1` (original), `goat`, `mr2`, `mr3`, `mr4` or `modern`; `startingLifePoints` defaults to 8000.
+  `mr1` (original), `goat`, `mr2`, `mr3`, `mr4` or `modern`; `startingLifePoints` defaults to 8000,
+  `tagStartingLifePoints` (tag and Battle City duels) to 16000.
 - **Duel Dome:** craft a **Duel Dome Kit** (a Duel Dome Core, two Duelist Platforms, two quartz blocks, a sea lantern
   and light blue concrete) and use it on flat ground to build a 13 by 21 arena facing the way you look. When every
   duelist stands on a platform, one team at each end, the field appears over the core instead of between the
