@@ -12,6 +12,9 @@
   size (fit the room, or 50 to 200 %), how far the podiums rise in a duel (0 to 5 blocks), and the look (holo mat,
   or only the zone outlines so the floor you built shows). It also says what is missing, like a second podium or
   room for the field.
+- The Duel Arena Kit now builds the Duelist Kingdom arena out of ordinary blocks (glass-tiled platform, red and blue
+  ends with steps, posts and lamps, a podium at each end and an Arena Core in the middle), so it can be rebuilt and
+  decorated like any other build. Its podiums still lift the duelists 3 blocks. Duel Arenas placed before keep working.
 - Built arenas work like the Duel Arena: auto duels when both sides are taken (two pairs start a tag duel), tournaments
   (`/jadm tournament arena add` while standing in one), NPC opponents walking to the free podium, spectators.
 - The Duel Dome Core and Duelist Platform became the Arena Core and Duelist Podium; Duel Domes already built keep

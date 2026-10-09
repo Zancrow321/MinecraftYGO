@@ -159,7 +159,7 @@
         "A **Duel Dome Kit** builds a ready-made 13 by 21 arena on flat ground facing the way you look, with an Arena Core and four podiums. A good start to build on.",
         "[recipe {modid}:duel_dome_kit]",
         "# Duel Arena",
-        "A **Duel Arena Kit** sets up the Duelist Kingdom arena on flat ground. When everyone stands on a podium, the field appears over the arena and the podiums lift the duelists 3 blocks up. An NPC opponent walks over to the free podium. Break any part (not during a duel) to pack it back into its kit.",
+        "A **Duel Arena Kit** builds the Duelist Kingdom arena out of ordinary blocks on flat ground: a platform with glass tiles, a red and a blue end with steps, posts and lamps, a Duelist Podium at each end and an Arena Core in the middle. When everyone stands on a podium, the field appears over the platform and the podiums lift the duelists 3 blocks up. An NPC opponent walks over to the free podium. Since it is all ordinary blocks, you can rebuild, decorate or enlarge it, and the core fits the field to it. It no longer packs back into its kit.",
         "- **Auto duel**: step onto a podium and the arena shows **Waiting for Opponent...** until someone steps onto the other one. Then a {server:arena.countdownSeconds}-second countdown runs and the duel starts by itself, no invitation needed. Step off to call it off. You need a legal deck box (or the server lends a starter deck), and after a duel you step off and back on to go again. While a tournament is open, its arenas wait for its matches.",
         "[recipe {modid}:duel_arena_kit]",
         "---",

@@ -237,15 +237,22 @@ public final class BuiltArena {
         if (sizeSetting > 0) {
             size = Math.min(size, sizeSetting / 100.0);
         }
-        for (int i = 0; i < 4; i++) {
-            double half = halfWidth(level, pos, center, axis, across, MAT_HALF_LENGTH * size);
-            double wide = (half - 0.1) / MAT_HALF_WIDTH;
-            fits = Math.min(fits, wide);
-            if (wide >= size) {
-                break;
+        // The walls may stand closer than the gap between the sides: the largest size whose mat (as long as it is
+        // at that size) has room to both sides. Room only grows as the mat gets shorter, so halving finds it.
+        if (!roomFor(level, pos, center, axis, across, fits)) {
+            double low = 0;
+            double high = fits;
+            for (int i = 0; i < 12; i++) {
+                double mid2 = (low + high) / 2;
+                if (roomFor(level, pos, center, axis, across, mid2)) {
+                    low = mid2;
+                } else {
+                    high = mid2;
+                }
             }
-            size = wide;
+            fits = low;
         }
+        size = Math.min(size, fits);
         if (sizeSetting > 0 && sizeSetting / 100.0 > fits + 0.01) {
             notes.add("size_capped");
         }
@@ -341,7 +348,15 @@ public final class BuiltArena {
         return Integer.MIN_VALUE;
     }
 
-    /** How far the floor stays free of walls to both sides of the field's middle line, the narrower side counted. */
+    /** Whether a mat of this size has room between the walls. */
+    private static boolean roomFor(Level level, BlockPos core, Vec3 center, Vec3 axis, Vec3 across, double size) {
+        return halfWidth(level, core, center, axis, across, MAT_HALF_LENGTH * size) - 0.1 >= MAT_HALF_WIDTH * size;
+    }
+
+    /**
+     * How far the floor reaches, free of walls, to both sides of the field's middle line, the narrower side
+     * counted.
+     */
     private static double halfWidth(Level level, BlockPos core, Vec3 center, Vec3 axis, Vec3 across, double length) {
         double out = MAX_SIDE;
         int reach = (int) Math.ceil(length);
@@ -353,7 +368,10 @@ public final class BuiltArena {
                     }
                     Vec3 p = center.add(axis.scale(t)).add(across.scale(dir * d));
                     BlockPos at = BlockPos.containing(p.x, center.y + 0.5, p.z);
-                    if (solid(level, core, at) || solid(level, core, at.above())) {
+                    // A wall, or the edge of the floor (more than a step down).
+                    boolean edge = !solid(level, core, at.below()) && !at.below().equals(core)
+                            && !solid(level, core, at.below(2));
+                    if (solid(level, core, at) || solid(level, core, at.above()) || edge) {
                         out = Math.min(out, Math.max(d - 0.5, 0));
                         break;
                     }
