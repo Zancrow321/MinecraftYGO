@@ -34,8 +34,12 @@ public final class JadmServerConfig {
             .define("banlist", "auto");
 
     public static final ModConfigSpec.IntValue STARTING_LIFE_POINTS = BUILDER
-            .comment("Life points each duelist (or tag team) starts with.")
+            .comment("Life points each duelist starts with in a 1v1 duel; tag duels use tagStartingLifePoints.")
             .defineInRange("startingLifePoints", 8000, 100, 1_000_000);
+
+    public static final ModConfigSpec.IntValue TAG_STARTING_LIFE_POINTS = BUILDER
+            .comment("Life points each team starts with in tag and Battle City duels (2v2), where partners share them.")
+            .defineInRange("tagStartingLifePoints", 16000, 100, 1_000_000);
 
     public static final ModConfigSpec.BooleanValue ALLOW_ANTE = BUILDER
             .comment("Allow ante duels, where each duelist puts up a random card from their deck box and the "
