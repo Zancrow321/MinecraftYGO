@@ -82,6 +82,8 @@ public final class TournamentManager {
     private final Map<Integer, BotGame> botGames = new HashMap<>();
     /** player -> where to send them, and from when on */
     private final Map<UUID, Long> returnDue = new HashMap<>();
+    /** Sealed and Draft: the packs, the draft and the deck building before the bracket */
+    private final Limited limited;
     private long lastSecond;
 
     private record BotGame(DuelTable table, Tournament tournament) {
@@ -90,6 +92,7 @@ public final class TournamentManager {
     private TournamentManager(MinecraftServer server) {
         this.server = server;
         this.data = TournamentData.get(server);
+        this.limited = new Limited(this, server);
         Tournament t = data.store.current;
         if (t != null) {
             // Games that were being played when the server stopped are played again.
@@ -125,7 +128,7 @@ public final class TournamentManager {
         return data.store.current;
     }
 
-    private void changed() {
+    void changed() {
         data.setDirty();
         Tournament t = current();
         if (t != null) {
@@ -158,10 +161,14 @@ public final class TournamentManager {
         Tournament t = new Tournament();
         t.settings = TournamentOptions.snapshot();
         if (format != null) {
-            if (Bracket.Format.parse(format) == null) {
-                return "Unknown format \"" + format + "\": single, double, swiss or roundrobin.";
+            if (List.of("constructed", "sealed", "draft").contains(format.toLowerCase(Locale.ROOT))) {
+                t.settings.put("deckMode", format.toLowerCase(Locale.ROOT));
+            } else if (Bracket.Format.parse(format) == null) {
+                return "Unknown format \"" + format + "\": single, double, swiss or roundrobin (or sealed or draft "
+                        + "for decks built from fresh packs).";
+            } else {
+                t.settings.put("format", format);
             }
-            t.settings.put("format", format);
         }
         t.host = host == null ? null : host.getUUID();
         t.hostName = host == null ? "the server" : host.getScoreboardName();
@@ -173,7 +180,7 @@ public final class TournamentManager {
         data.store.current = t;
         t.news("Opened by " + t.hostName);
         announce(t, Component.literal("Tournament \"" + t.name + "\" is open: " + summary(t) + ". ")
-                .withStyle(ChatFormatting.GOLD).append(button("[Join]", "/jadm tournament join", "Join with your deck box"))
+                .withStyle(ChatFormatting.GOLD).append(button("[Join]", "/jadm tournament join", joinHint(t)))
                 .append(" ").append(button("[Details]", "/jadm tournament", "Open the tournament window")));
         if (data.store.arenas.isEmpty() && host != null) {
             host.sendSystemMessage(Component.literal("No duel arena belongs to tournaments yet: stand on one and run "
@@ -183,9 +190,14 @@ public final class TournamentManager {
         return null;
     }
 
+    private static String joinHint(Tournament t) {
+        return t.limited() ? "Join: your deck is built from fresh packs at the start" : "Join with your deck box";
+    }
+
     /** "Single elimination, best of 3, 4 to 16 duelists, closes in 5 minutes" */
     private static String summary(Tournament t) {
-        StringBuilder out = new StringBuilder(t.format().displayName);
+        StringBuilder out = new StringBuilder(t.limited() ? (t.deckMode().equals("sealed") ? "Sealed (" : "Draft (")
+                + Limited.describePacks(t) + "), " : "").append(t.format().displayName);
         int bestOf = t.integer("bestOf");
         if (bestOf > 1) {
             out.append(", best of ").append(bestOf);
@@ -214,20 +226,22 @@ public final class TournamentManager {
         if (t.entrants.stream().filter(e -> !e.npc()).count() >= t.integer("maxPlayers")) {
             return "\"" + t.name + "\" is full.";
         }
-        int step = Math.max(JadmData.step(player), stepOf(t));
-        Banlist banlist = banlist(t, step);
         Tournament.Entrant e = new Tournament.Entrant();
         e.player = player.getUUID();
         e.name = player.getScoreboardName();
-        Deck deck = deckFor(player, banlist, t);
-        if (deck == null) {
-            return null; // told why
+        if (!t.limited()) {
+            int step = Math.max(JadmData.step(player), stepOf(t));
+            Banlist banlist = banlist(t, step);
+            Deck deck = deckFor(player, banlist, t);
+            if (deck == null) {
+                return null; // told why
+            }
+            if (t.bool("lockDeck")) {
+                e.main = List.copyOf(deck.main());
+                e.extra = List.copyOf(deck.extra());
+            }
+            e.deckName = deck.name();
         }
-        if (t.bool("lockDeck")) {
-            e.main = List.copyOf(deck.main());
-            e.extra = List.copyOf(deck.extra());
-        }
-        e.deckName = deck.name();
         int fee = t.integer("entryFee");
         if (fee > 0) {
             if (!Fees.take(player, t, fee)) {
@@ -239,8 +253,9 @@ public final class TournamentManager {
         t.entrants.add(e);
         long people = t.entrants.stream().filter(x -> !x.npc()).count();
         t.news(e.name + " joined");
-        player.sendSystemMessage(Component.literal("You are in \"" + t.name + "\"" + (t.bool("lockDeck")
-                ? " with " + e.deckName + ". This deck is locked in for the whole tournament." : ".")
+        player.sendSystemMessage(Component.literal("You are in \"" + t.name + "\"" + (t.limited()
+                ? ". At the start you get " + Limited.describePacks(t) + " and build your deck from them."
+                : t.bool("lockDeck") ? " with " + e.deckName + ". This deck is locked in for the whole tournament." : ".")
                 + (fee > 0 ? " Paid " + Fees.amount(t, fee) + "." : ""))
                 .withStyle(ChatFormatting.GREEN));
         announce(t, Component.literal(e.name + " joined \"" + t.name + "\" (" + people + "/"
@@ -301,6 +316,8 @@ public final class TournamentManager {
         if (t.state.equals(Tournament.OPEN)) {
             t.entrants.remove(index);
             refund(t, e);
+        } else if (t.limitedPhase()) {
+            limited.leave(t, e);
         } else {
             t.bracket.drop(index);
             ServerPlayer player = e.npc() ? null : server.getPlayerList().getPlayer(e.player);
@@ -332,7 +349,7 @@ public final class TournamentManager {
     }
 
     /** Hands over a prize entry now if the player is online, otherwise when they next join. */
-    private List<String> owe(UUID player, String entry) {
+    List<String> owe(UUID player, String entry) {
         ServerPlayer online = server.getPlayerList().getPlayer(player);
         if (online != null) {
             String got = Prizes.give(online, entry);
@@ -428,6 +445,7 @@ public final class TournamentManager {
         t.state = Tournament.CANCELLED;
         t.finishedAt = now();
         t.entrants.forEach(e -> refund(t, e));
+        limited.handOut(t);
         for (Integer id : List.copyOf(t.live.keySet())) {
             close(t, id);
         }
@@ -503,6 +521,19 @@ public final class TournamentManager {
         }
         Collections.shuffle(t.entrants, random);
         t.step = stepOf(t);
+        if (t.limited()) {
+            String error = limited.begin(t);
+            if (error != null) {
+                t.state = Tournament.CANCELLED;
+                t.finishedAt = now();
+                t.entrants.forEach(e -> refund(t, e));
+                t.news("Called off: " + error);
+                announce(t, Component.literal("\"" + t.name + "\" was called off: " + error)
+                        .withStyle(ChatFormatting.GOLD));
+            }
+            changed();
+            return null;
+        }
         Banlist banlist = banlist(t, t.step);
         for (Tournament.Entrant e : t.entrants) {
             if (e.npc()) {
@@ -512,17 +543,28 @@ public final class TournamentManager {
                 e.deckName = deck.name().equals(e.name) ? "their own deck" : deck.name();
             }
         }
+        startBracket(t);
+        return null;
+    }
+
+    /** Draws the bracket and calls the first matches: at the start, or once a Sealed or Draft has its decks. */
+    void startBracket(Tournament t) {
         t.bracket = Bracket.create(t.format(), t.entrants.size(), t.integer("bestOf"), t.integer("swissRounds"),
                 t.integer("topCut"), t.bool("thirdPlaceMatch"), t.bool("grandFinalReset"));
+        for (int i = 0; i < t.entrants.size(); i++) {
+            if (t.entrants.get(i).left) {
+                t.bracket.drop(i);
+            }
+        }
         t.state = Tournament.RUNNING;
         t.news("Started with " + t.entrants.size() + " duelists");
-        announce(t, Component.literal("\"" + t.name + "\" begins: " + t.entrants.size() + " duelists, "
-                + t.format().displayName + ", " + ruleset(t).displayName() + ". ").withStyle(ChatFormatting.GOLD)
+        announce(t, Component.literal("\"" + t.name + "\" " + (t.limited() ? "draws its bracket" : "begins") + ": "
+                + t.entrants.size() + " duelists, " + t.format().displayName + ", " + ruleset(t).displayName()
+                + ". ").withStyle(ChatFormatting.GOLD)
                 .append(button("[Bracket]", "/jadm tournament", "Open the tournament window")));
         announceRound(t);
         process();
         changed();
-        return null;
     }
 
     /** The furthest progression step among the people who joined (the step of the world if none is online). */
@@ -568,6 +610,8 @@ public final class TournamentManager {
             start(null);
         } else if (t != null && t.state.equals(Tournament.RUNNING)) {
             process();
+        } else if (t != null && t.limitedPhase()) {
+            limited.tick(t);
         }
         schedule(now);
     }
@@ -1063,6 +1107,7 @@ public final class TournamentManager {
                         .withStyle(ChatFormatting.GOLD));
             }
         }
+        limited.handOut(t);
         t.news("Finished: " + podium);
         announce(t, Component.literal("\"" + t.name + "\" is over! " + podium + ".").withStyle(ChatFormatting.GOLD)
                 .append(" ").append(button("[Results]", "/jadm tournament", "Open the tournament window")));
@@ -1158,9 +1203,30 @@ public final class TournamentManager {
             if (t.state.equals(Tournament.OPEN) && t.entrant(player.getUUID()) == null) {
                 player.sendSystemMessage(Component.literal("Tournament \"" + t.name + "\" is open: " + summary(t)
                         + ". ").withStyle(ChatFormatting.GOLD).append(button("[Join]", "/jadm tournament join",
-                        "Join with your deck box")));
+                        joinHint(t))));
+            }
+            Tournament.Entrant e = t.entrant(player.getUUID());
+            if (t.limitedPhase() && e != null && !e.left) {
+                limited.send(t, t.indexOf(player.getUUID()), true);
             }
         }
+    }
+
+    /** {@code /jadm tournament deck}: the draft or deck building window. */
+    String openLimited(ServerPlayer player) {
+        return limited.open(current(), player);
+    }
+
+    /** A pick or deck change from the draft and deck building window. */
+    public void limitedAction(ServerPlayer player, String action, int value) {
+        Tournament t = current();
+        if (t != null && t.limitedPhase()) {
+            limited.action(t, player, action, value);
+        }
+    }
+
+    String limitedStatus(Tournament t) {
+        return Limited.status(t);
     }
 
     /** Sends the tournament window to {@code player}, at {@code tab} ("default" for the usual one). */
@@ -1275,13 +1341,13 @@ public final class TournamentManager {
         return count == 1 || name.endsWith("s") ? name : name + "s";
     }
 
-    private static MutableComponent button(String text, String command, String hover) {
+    static MutableComponent button(String text, String command, String hover) {
         return Component.literal(text).withStyle(style -> style.withColor(ChatFormatting.GREEN)
                 .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(hover))));
     }
 
-    private void announce(Tournament t, Component text) {
+    void announce(Tournament t, Component text) {
         if (t.bool("announce")) {
             server.getPlayerList().broadcastSystemMessage(text, false);
             return;

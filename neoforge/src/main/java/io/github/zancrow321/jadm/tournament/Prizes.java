@@ -18,7 +18,8 @@ import java.util.Locale;
 
 /**
  * Prize entries such as {@code "pack 3"}, {@code "pack:LOB 2"}, {@code "card 89631139"}, {@code "points 500"},
- * {@code "xp 100"}, {@code "minecraft:diamond 5"} and {@code "command give {player} minecraft:cake"}.
+ * {@code "xp 100"}, {@code "minecraft:diamond 5"} and {@code "command give {player} minecraft:cake"}. A card can
+ * name its rarity after the count ({@code "card 89631139 1 ultra"}).
  */
 final class Prizes {
     private Prizes() {
@@ -33,7 +34,7 @@ final class Prizes {
         if (kind.equals("command")) {
             return p.length == 2;
         }
-        if (p.length == 2 && !p[1].matches("\\d{1,6}") && !(kind.equals("card") && p[1].matches("\\d+( \\d{1,4})?"))) {
+        if (p.length == 2 && !p[1].matches("\\d{1,6}") && !(kind.equals("card") && p[1].matches("\\d+( \\d{1,4}( [a-z]+)?)?"))) {
             return false;
         }
         if (kind.equals("points")) {
@@ -82,8 +83,10 @@ final class Prizes {
                     if (JadmData.cards().card(code) == null) {
                         return null;
                     }
+                    // A card from a Sealed or Draft pool keeps its rarity.
+                    BoosterSets.Rarity rarity = p.length > 3 ? Limited.rarity(p[3]) : BoosterSets.Rarity.COMMON;
                     for (int i = 0; i < n; i++) {
-                        hand(player, CardItem.of(code));
+                        hand(player, CardItem.of(code, rarity));
                     }
                     return (n > 1 ? n + "x " : "") + JadmData.text().cardName(code);
                 }

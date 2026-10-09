@@ -34,6 +34,8 @@ public final class TournamentView {
     public List<String> prizes = new ArrayList<>();
     public List<String> news = new ArrayList<>();
     public int arenas;
+    /** "constructed", "sealed" or "draft" */
+    public String deckMode;
 
     static TournamentView of(Tournament t, TournamentManager manager) {
         TournamentView v = new TournamentView();
@@ -45,6 +47,7 @@ public final class TournamentView {
         v.bestOf = t.integer("bestOf");
         v.closesAt = t.closesAt;
         v.arenas = manager.arenaCount();
+        v.deckMode = t.deckMode();
         for (Tournament.Entrant e : t.entrants) {
             v.entrants.add(e.name);
             v.npc.add(e.npc());
@@ -58,6 +61,7 @@ public final class TournamentView {
                     + (t.closesAt > 0 ? ", starts in " + minutes(t.closesAt) : ", starts when " + t.hostName
                     + " starts it");
             case Tournament.RUNNING -> running(t);
+            case Tournament.DRAFT, Tournament.BUILD -> manager.limitedStatus(t);
             case Tournament.DONE -> "Finished";
             default -> "Called off";
         };
@@ -120,14 +124,23 @@ public final class TournamentView {
                     case "bracket" -> "to a full bracket";
                     default -> "to " + t.integer("minPlayers");
                 } + (t.integer("npcCount") > 0 ? ", plus " + t.integer("npcCount") + " NPCs" : ""));
-        out.add("Rules: " + manager.ruleset(t).displayName() + ", banlist: "
-                + TournamentManager.banlist(t, manager.effectiveStep(t)).name());
+        out.add("Rules: " + manager.ruleset(t).displayName() + (t.limited() ? "" : ", banlist: "
+                + TournamentManager.banlist(t, manager.effectiveStep(t)).name()));
         int lp = t.integer("startingLifePoints");
         int time = t.integer("turnTimeLimit");
         int turns = t.integer("maxTurns");
         out.add((lp > 0 ? lp + " LP" : "Server's LP") + ", turn time: " + (time < 0 ? "server's" : time == 0
                 ? "none" : time + " s") + (turns > 0 ? ", games end after turn " + turns + " (on LP)" : ""));
-        out.add(t.bool("lockDeck") ? "Decks are locked in at joining" : "Any legal deck box, match by match");
+        if (t.limited()) {
+            out.add((t.deckMode().equals("sealed") ? "Sealed: everyone opens " : "Draft: everyone drafts ")
+                    + Limited.describePacks(t) + (t.deckMode().equals("draft") ? ", taking one card at a time ("
+                    + t.integer("pickSeconds") + " s per pick) and passing the rest on" : ""));
+            out.add("Decks are built on the spot in " + t.integer("buildMinutes") + " minutes: at least "
+                    + t.integer("deckMinimum") + " main deck cards, only as many copies as you pulled, no banlist"
+                    + (t.bool("keepCards") ? ". You keep the cards afterwards" : ". The cards are only lent"));
+        } else {
+            out.add(t.bool("lockDeck") ? "Decks are locked in at joining" : "Any legal deck box, match by match");
+        }
         int fee = t.integer("entryFee");
         if (fee > 0) {
             out.add("Entry: " + Fees.amount(t, fee)

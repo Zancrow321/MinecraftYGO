@@ -173,7 +173,14 @@
         "- When registration closes, NPC duelists fill empty seats and the field is paired round by round.",
         "- Matches are played only on Duel Arenas added with `{cmd} tournament arena add`. When your match is due you are brought onto a podium; click **[Ready]** to start sooner. Afterwards you go back to where you were.",
         "- If you are offline or in another duel for {server:tournament.noShowMinutes} minutes when your match is due, you lose it.",
-        "`{cmd} tournament` opens the tournament window: bracket (drag to move it), table, matches, and rules and prizes. Entry fees are paid in the shop currency, and prizes replace the usual duel rewards."
+        "`{cmd} tournament` opens the tournament window: bracket (drag to move it), table, matches, and rules and prizes. Entry fees are paid in the shop currency, and prizes replace the usual duel rewards.",
+        "# Draft & Sealed",
+        "In a Draft or Sealed tournament nobody brings a deck: everyone gets fresh packs at the start and builds a deck from them on the spot. The host opens one with `{cmd} tournament create sealed [name]` or `create draft [name]` (or sets `deckMode`). You join without a deck box.",
+        "- **Sealed**: everyone opens the same packs (`limitedPacks`, e.g. \"pack 5\" for five packs of a random set that is out, or \"pack:lob 3; pack:mrd 2\"). The packs are revealed one by one, then the deck building opens.",
+        "- **Draft**: everyone opens a pack, takes one card and passes the rest on, all at the same time: to the next duelist in the 1st, 3rd, ... pack, back the other way in the 2nd, 4th, ... Click a card to take it. After {server:tournament.pickSeconds} seconds a card is picked for you. NPCs draft too.",
+        "- **Deck building**: your deck on the left, the rest of your pool on the right. At least {server:tournament.deckMinimum} main deck cards, up to 15 in the extra deck, as many copies as you pulled, no banlist. **Auto** builds a deck from your best cards, **Done** locks it in. After {server:tournament.buildMinutes} minutes whoever isn't done plays an automatically built deck.",
+        "- Once all decks are done, the bracket is drawn and the matches run as in any tournament. With `keepCards` on, you keep your pool afterwards; otherwise the cards are only lent for the tournament.",
+        "`{cmd} tournament deck` opens the draft or deck building window again if you closed it."
       ]
     },
     {
@@ -223,6 +230,7 @@
         "# Tournaments",
         "- `{cmd} tournament`: the tournament window; `bracket`, `table`, `matches` and `rules` open it at that tab.",
         "- `{cmd} tournament join`, `leave` and `ready`: take part, drop out, start your match.",
+        "- `{cmd} tournament deck`: the draft or deck building window of a Draft or Sealed tournament.",
         "- `{cmd} tournament status` and `settings`: where it stands and what it plays with.",
         "- Hosts: `{cmd} tournament create [format] [name]`, `set <setting> <value>`, `start`, `cancel`, `addnpc [count]`, `kick <name>`.",
         "# For operators",

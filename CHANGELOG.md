@@ -36,6 +36,21 @@
 - New `[trade]` server settings: `enabled`, `onlyModItems` (on by default: cards, packs, binders, deck boxes...),
   `points`, `maxDistance` (0 = anywhere), `requestSeconds` and `rightClick`.
 
+### Draft & Sealed tournaments
+- Tournaments can now be **Sealed** or **Draft** (`/jadm tournament create sealed|draft [name]`, or the new
+  `deckMode` setting): nobody brings a deck, everyone gets fresh packs at the start and builds a deck from them on
+  the spot.
+- Sealed: everyone opens the same packs (`limitedPacks`, e.g. "pack 5" for five packs of a random set that is out, or
+  "pack:LOB 3; pack:MRD 2"), revealed one by one.
+- Draft: everyone opens a pack, takes one card and passes the rest on, all at once, left and right in turns, until
+  every pack is drafted (`pickSeconds` per pick, then a card is picked for you). NPCs draft and build too.
+- The deck building window works like the deck box: your deck on the left, the rest of your pool on the right, with
+  search, filters, **Auto** (a deck from your best cards) and **Done**. Decks need at least `deckMinimum` (20) main
+  deck cards, only as many copies as you pulled, and no banlist. After `buildMinutes` whoever isn't done gets a
+  deck built for them, and the bracket is drawn as in any tournament.
+- The cards are only lent for the tournament; with `keepCards` players keep their pool (into a binder they carry).
+- `/jadm tournament deck` opens the draft or deck building window again; the Duelist's Handbook explains it all.
+
 ### Card pictures when picking cards
 - Searching your Deck now shows the cards you can pick. Before, every card in the window showed its back without a
   name, so you couldn't tell what you were choosing.

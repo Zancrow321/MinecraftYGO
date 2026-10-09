@@ -1,6 +1,7 @@
 package io.github.zancrow321.jadm.tournament;
 
 import io.github.zancrow321.jadm.engine.tournament.Bracket;
+import io.github.zancrow321.jadm.engine.tournament.Draft;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +16,10 @@ import java.util.UUID;
 final class Tournament {
     static final String OPEN = "open";
     static final String RUNNING = "running";
+    /** Sealed and Draft: the cards are being drafted (Draft only) */
+    static final String DRAFT = "draft";
+    /** Sealed and Draft: everyone builds a deck from their pool */
+    static final String BUILD = "build";
     static final String DONE = "done";
     static final String CANCELLED = "cancelled";
 
@@ -38,6 +43,14 @@ final class Tournament {
     List<String> news = new ArrayList<>();
     /** Entry fees taken, to share out or refund. */
     int pot;
+    /** Sealed and Draft: the booster set of each pack everyone opens, in order. */
+    List<String> packSets;
+    /** Draft: the packs going around. */
+    Draft draft;
+    /** Sealed and Draft: when the current pick or the deck building ends (epoch ms). */
+    long phaseEndsAt;
+    /** Sealed and Draft: whether the players got the cards of their pools (keepCards). */
+    boolean poolsHandedOut;
 
     /** A duelist: a person, or an NPC when {@code player} is {@code null}. */
     static final class Entrant {
@@ -51,6 +64,12 @@ final class Tournament {
         String deckName;
         int feePaid;
         int place;
+        /** Sealed and Draft: the cards opened or drafted, to build the deck from. */
+        List<Draft.Card> pool;
+        /** Sealed and Draft: the deck is finished (NPCs build at once). */
+        boolean built;
+        /** Left (or was removed) after the start, before the bracket was drawn: drops out once it is. */
+        boolean left;
 
         boolean npc() {
             return player == null;
@@ -117,7 +136,23 @@ final class Tournament {
     }
 
     boolean active() {
-        return state.equals(OPEN) || state.equals(RUNNING);
+        return state.equals(OPEN) || state.equals(RUNNING) || limitedPhase();
+    }
+
+    /** Drafting or building decks: started, but no bracket yet. */
+    boolean limitedPhase() {
+        return state.equals(DRAFT) || state.equals(BUILD);
+    }
+
+    /** "constructed", "sealed" or "draft" */
+    String deckMode() {
+        String mode = setting("deckMode").strip().toLowerCase(java.util.Locale.ROOT);
+        return mode.equals("sealed") || mode.equals("draft") ? mode : "constructed";
+    }
+
+    /** Sealed or Draft: decks are built on the spot from fresh packs. */
+    boolean limited() {
+        return !deckMode().equals("constructed");
     }
 
     Entrant entrant(UUID player) {

@@ -50,6 +50,15 @@ public final class JadmNetwork {
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.tournament(payload)));
         registrar.playToClient(RankingPayload.TYPE, RankingPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.ranking(payload)));
+        registrar.playToClient(LimitedPayload.TYPE, LimitedPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.limited(payload)));
+        registrar.playToServer(LimitedActionPayload.TYPE, LimitedActionPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        io.github.zancrow321.jadm.tournament.TournamentManager.get(player.server)
+                                .limitedAction(player, payload.action(), payload.value());
+                    }
+                }));
         registrar.playToClient(StarterChoicesPayload.TYPE, StarterChoicesPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.starterChoices(payload)));
         registrar.playToServer(StarterPickPayload.TYPE, StarterPickPayload.STREAM_CODEC,
