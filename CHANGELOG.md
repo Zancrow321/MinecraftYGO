@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+### Build your own duel arena
+- Players can build a duel arena from any blocks. An Arena Core anywhere in it and a Duelist Podium where each
+  duelist stands (one per side, or two side by side for tag duels) are all the mod needs.
+- The field fits the build: it lies between the podiums on the arena's floor, turns with them, and grows or shrinks
+  with the free floor (a tight cellar gets a small field, a big hall a big one). Under a roof, monsters stay below it
+  and the duel mode camera stays in the room.
+- Right-clicking the core measures the arena, shows the field's outline on the floor and opens its settings: field
+  size (fit the room, or 50 to 200 %), how far the podiums rise in a duel (0 to 5 blocks), and the look (holo mat,
+  or only the zone outlines so the floor you built shows). It also says what is missing, like a second podium or
+  room for the field.
+- Built arenas work like the Duel Arena: auto duels when both sides are taken (two pairs start a tag duel), tournaments
+  (`/jadm tournament arena add` while standing in one), NPC opponents walking to the free podium, spectators.
+- The Duel Dome Core and Duelist Platform became the Arena Core and Duelist Podium; Duel Domes already built keep
+  working. New server settings `[arena] maxFieldSize` and `minFieldSize`.
+
 ### Card pictures when picking cards
 - Searching your Deck now shows the cards you can pick. Before, every card in the window showed its back without a
   name, so you couldn't tell what you were choosing.

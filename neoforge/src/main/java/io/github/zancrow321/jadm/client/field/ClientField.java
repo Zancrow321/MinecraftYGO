@@ -43,6 +43,12 @@ public final class ClientField {
     /** When the field starts growing, and its current size (0 to 1) for this frame. */
     private static long revealAt;
     private static double scale = 1;
+    /** How far the field has grown (0 to 1), and its full size: 1 normally, other sizes on a player-built arena. */
+    private static double grow = 1;
+    private static double size = 1;
+    /** Blocks of room over the mat (0 for open sky), and whether only the zone frames are drawn. */
+    private static double ceiling;
+    private static boolean outline;
     private static final List<FieldAnimation> animations = new ArrayList<>();
     /** The board as of the previous view, to find attackers that the new view no longer shows. */
     private static Board lastBoard;
@@ -64,6 +70,9 @@ public final class ClientField {
         ClientDuel.forget(); // a new duel: its first view is on its way
         split = payload.layout().split();
         watching = payload.layout().watching();
+        size = payload.layout().size() > 0 ? payload.layout().size() : 1;
+        ceiling = payload.layout().ceiling();
+        outline = payload.layout().outline();
         sleeves.clear();
         payload.layout().sleeves().forEach(s -> sleeves.add(Cosmetics.sleeveTexture(s)));
         forward = Vec3.directionFromRotation(0, payload.yaw());
@@ -76,6 +85,7 @@ public final class ClientField {
         // Spectators join a running duel: no start show for them.
         queueFree = revealAt + (watching ? GROW_TICKS : Math.max(GROW_TICKS, DuelStaging.INTRO_TICKS));
         scale = 0;
+        grow = 0;
         FieldRenderer.reset();
     }
 
@@ -121,7 +131,23 @@ public final class ClientField {
     /** Updates how far the field has grown, once per frame before it is drawn. */
     public static void updateScale(float partialTick) {
         double t = Mth.clamp((tick - revealAt + partialTick) / GROW_TICKS, 0, 1);
-        scale = t * t * (3 - 2 * t);
+        grow = t * t * (3 - 2 * t);
+        scale = grow * size;
+    }
+
+    /** The field's full size: 1 normally, more or less on a player-built arena that fits it to its room. */
+    public static double size() {
+        return size;
+    }
+
+    /** Blocks of room over the mat, or 0 under open sky. */
+    public static double ceiling() {
+        return ceiling;
+    }
+
+    /** Whether the mat shows only its zone frames, so the arena's floor shows through. */
+    public static boolean outline() {
+        return outline;
     }
 
     /** Whether this client is only watching the duel. */
@@ -141,7 +167,7 @@ public final class ClientField {
 
     /** Whether the field has finished growing. */
     public static boolean grown() {
-        return scale >= 1;
+        return grow >= 1;
     }
 
     /** World position of a field-local point, {@code up} blocks above the mat. */
@@ -275,7 +301,7 @@ public final class ClientField {
             return null;
         }
         Vec3 hit = eye.add(look.scale(t)).subtract(center);
-        return FieldLayout.zoneAt(hit.dot(right), hit.dot(forward));
+        return FieldLayout.zoneAt(hit.dot(right) / size, hit.dot(forward) / size);
     }
 
     /**

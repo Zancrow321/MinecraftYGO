@@ -86,6 +86,14 @@ public final class JadmNetwork {
                         io.github.zancrow321.jadm.admin.AdminMenu.handle(player, payload);
                     }
                 }));
+        registrar.playToClient(ArenaCoreOpenPayload.TYPE, ArenaCoreOpenPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.arenaCore(payload.pos())));
+        registrar.playToServer(ArenaCoreSettingsPayload.TYPE, ArenaCoreSettingsPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        io.github.zancrow321.jadm.arena.BuiltArena.settings(player, payload);
+                    }
+                }));
         registrar.playToServer(DuelResponsePayload.TYPE, DuelResponsePayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer player) {

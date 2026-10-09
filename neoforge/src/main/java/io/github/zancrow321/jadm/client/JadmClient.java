@@ -98,6 +98,8 @@ public final class JadmClient {
             event.registerEntityRenderer(JadmEntities.MONSTER.get(), MonsterRenderer::new);
             event.registerEntityRenderer(JadmEntities.DUELIST.get(), DuelistNpcRenderer::new);
             event.registerBlockEntityRenderer(DuelArena.ARENA_ENTITY.get(), ArenaRenderer::new);
+            event.registerBlockEntityRenderer(io.github.zancrow321.jadm.arena.DuelDome.CORE_ENTITY.get(),
+                    io.github.zancrow321.jadm.client.arena.ArenaCoreRenderer::new);
         }
 
         @SubscribeEvent
