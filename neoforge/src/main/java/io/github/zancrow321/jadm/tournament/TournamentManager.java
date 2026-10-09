@@ -1387,7 +1387,7 @@ public final class TournamentManager {
             TournamentData.ArenaRef ref = data.store.arenas.get(i);
             ServerLevel level = level(ref.dim);
             String state = level == null ? "world missing" : !level.isLoaded(pos(ref)) ? "not loaded"
-                    : !level.getBlockState(pos(ref)).is(DuelArena.ARENA.get()) ? "gone"
+                    : !DuelArena.exists(level, pos(ref)) ? "gone"
                     : DuelArena.available(level, pos(ref)) ? "free" : "in use";
             out.add("Arena " + (i + 1) + ": " + ref.x + " " + ref.y + " " + ref.z + " in " + ref.dim + " (" + state + ")");
         }

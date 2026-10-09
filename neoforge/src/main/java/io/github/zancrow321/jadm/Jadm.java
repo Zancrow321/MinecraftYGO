@@ -69,6 +69,7 @@ public final class Jadm {
             io.github.zancrow321.jadm.starchips.StarChips.shutdown();
             io.github.zancrow321.jadm.arena.ArenaLobby.reset();
             io.github.zancrow321.jadm.trade.Trades.reset();
+            io.github.zancrow321.jadm.arena.BuiltArena.reset();
             Progress.stopped();
         });
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> {

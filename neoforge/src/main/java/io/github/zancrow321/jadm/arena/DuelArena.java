@@ -79,7 +79,7 @@ public final class DuelArena {
     /** Everyone riding a podium (or coming back down from one), by entity. */
     private static final Map<UUID, Rider> RIDERS = new HashMap<>();
 
-    private record Rider(ServerLevel level, BlockPos arena, Vec3 base, long since, boolean up) {
+    private record Rider(ServerLevel level, BlockPos arena, Vec3 base, long since, boolean up, int lift) {
     }
 
     private DuelArena() {
@@ -161,6 +161,11 @@ public final class DuelArena {
      * @return the field over the arena's middle, facing from team 0's end to team 1's, or {@code null}
      */
     public static DuelFieldPayload claim(List<ServerPlayer> team0, List<ServerPlayer> team1, Entity npc) {
+        DuelFieldPayload field = claimModel(team0, team1, npc);
+        return field != null ? field : BuiltArena.claim(team0, team1, npc);
+    }
+
+    private static DuelFieldPayload claimModel(List<ServerPlayer> team0, List<ServerPlayer> team1, Entity npc) {
         List<ServerPlayer> all = new ArrayList<>(team0);
         all.addAll(team1);
         if (all.isEmpty() || !(all.get(0).level() instanceof ServerLevel level)) {
@@ -177,7 +182,7 @@ public final class DuelArena {
         }
         long now = level.getGameTime();
         for (ServerPlayer player : all) {
-            RIDERS.put(player.getUUID(), new Rider(level, arena, player.position(), now, true));
+            RIDERS.put(player.getUUID(), new Rider(level, arena, player.position(), now, true, LIFT));
         }
         if (npc != null && npc.level() == level) {
             int npcEnd = team0.isEmpty() ? end0 : -end0;
@@ -185,7 +190,7 @@ public final class DuelArena {
             float yaw = (npcEnd > 0 ? facing.getOpposite() : facing).toYRot();
             npc.moveTo(spot.x, spot.y, spot.z, yaw, 0);
             npc.setYHeadRot(yaw);
-            RIDERS.put(npc.getUUID(), new Rider(level, arena, spot, now, true));
+            RIDERS.put(npc.getUUID(), new Rider(level, arena, spot, now, true, LIFT));
         }
         if (level.getBlockEntity(arena) instanceof ArenaBlockEntity entity) {
             entity.raise();
@@ -213,7 +218,12 @@ public final class DuelArena {
         return end;
     }
 
-    /** A podium someone stands on: the arena's middle block and its end (+1 or -1). */
+    /** Someone starts going up on a podium of the arena at {@code arena}, {@code lift} blocks. */
+    static void ride(ServerLevel level, BlockPos arena, Entity entity, Vec3 base, int lift) {
+        RIDERS.put(entity.getUUID(), new Rider(level, arena, base, level.getGameTime(), true, lift));
+    }
+
+    /** A podium someone stands on: the arena's middle block (or Arena Core) and its end (+1 or -1). */
     public record Podium(BlockPos arena, int end) {
     }
 
@@ -223,6 +233,10 @@ public final class DuelArena {
      */
     public static Podium podiumOf(ServerPlayer player) {
         Level level = player.level();
+        BlockPos podium = BuiltArena.podiumUnder(player);
+        if (podium != null) {
+            return BuiltArena.podiumAt(level, podium);
+        }
         BlockPos below = player.blockPosition().below();
         if (!level.getBlockState(below).is(SOLID.get())) {
             below = below.below();
@@ -251,7 +265,7 @@ public final class DuelArena {
             return 0;
         }
         double t = Math.clamp((rider.level.getGameTime() - rider.since) / (double) LIFT_TICKS, 0, 1);
-        return LIFT * (rider.up ? t : 1 - t);
+        return rider.lift * (rider.up ? t : 1 - t);
     }
 
     /** Whether a podium is carrying this entity up or down, or holding it up for a duel. */
@@ -265,21 +279,36 @@ public final class DuelArena {
             Rider rider = RIDERS.get(id);
             if (rider != null && rider.up) {
                 long now = rider.level.getGameTime();
-                RIDERS.put(id, new Rider(rider.level, rider.arena, rider.base, now, false));
+                RIDERS.put(id, new Rider(rider.level, rider.arena, rider.base, now, false, rider.lift));
                 if (rider.level.getBlockEntity(rider.arena) instanceof ArenaBlockEntity entity) {
                     entity.lower();
+                } else if (rider.level.getBlockEntity(rider.arena) instanceof ArenaCoreBlockEntity core) {
+                    core.lower();
                 }
             }
         }
     }
 
-    /** The middle block of the arena someone standing at {@code pos} is on (or under), or {@code null}. */
+    /**
+     * The middle block of the arena someone standing at {@code pos} is on (or under), or the Arena Core of the
+     * player-built arena they are in, or {@code null}.
+     */
     public static BlockPos arenaUnder(Level level, BlockPos pos) {
-        return arenaAt(level, pos);
+        BlockPos arena = arenaAt(level, pos);
+        return arena != null ? arena : BuiltArena.arenaAround(level, pos);
+    }
+
+    /** Whether an arena (the Duelist Kingdom one or a player-built one) stands at {@code arena}. */
+    public static boolean exists(Level level, BlockPos arena) {
+        return level.isLoaded(arena) && (level.getBlockState(arena).is(ARENA.get())
+                || level.getBlockState(arena).is(DuelDome.CORE.get()));
     }
 
     /** Whether an arena stands at {@code arena} and no duel is using it. */
     public static boolean available(Level level, BlockPos arena) {
+        if (level.isLoaded(arena) && level.getBlockState(arena).is(DuelDome.CORE.get())) {
+            return BuiltArena.available(level, arena);
+        }
         return level.isLoaded(arena) && level.getBlockState(arena).is(ARENA.get()) && !inUse(level, arena)
                 && !(level.getBlockEntity(arena) instanceof ArenaBlockEntity entity && entity.raised());
     }
@@ -289,6 +318,9 @@ public final class DuelArena {
     }
 
     public static Spot podium(Level level, BlockPos arena, int end) {
+        if (level.getBlockState(arena).is(DuelDome.CORE.get())) {
+            return BuiltArena.spot(level, arena, end);
+        }
         Direction facing = facing(level.getBlockState(arena));
         Vec3 pos = Vec3.atBottomCenterOf(arena.relative(facing, end * PODIUM_ALONG).above(HEIGHT));
         return new Spot(pos, (end > 0 ? facing.getOpposite() : facing).toYRot());

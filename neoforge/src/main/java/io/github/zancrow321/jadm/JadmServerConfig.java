@@ -194,15 +194,26 @@ public final class JadmServerConfig {
             .comment("Seconds counted down before that duel starts; stepping off a podium calls it off.")
             .defineInRange("countdownSeconds", 5, 1, 60);
 
+    public static final ModConfigSpec.DoubleValue ARENA_MAX_FIELD_SIZE = BUILDER
+            .comment("Player-built arenas (Arena Core and Duelist Podiums) fit the duel field to the room they have. "
+                    + "This is the biggest it gets, 1 being the usual size.")
+            .defineInRange("maxFieldSize", 1.5, 0.5, 3.0);
+
+    public static final ModConfigSpec.DoubleValue ARENA_MIN_FIELD_SIZE = BUILDER
+            .comment("A player-built arena with room for less than this field size can't be used.")
+            .defineInRange("minFieldSize", 0.35, 0.2, 1.0);
+
     /** The ranking: Elo ratings and ranks from ranked duels, in {@code [ranking]}. */
     public static final Ranking RANKING = new Ranking(BUILDER.pop()
             .comment("The ranking: ranked duels (/jadm duel <player> ranked) win and lose rating points, which put "
                     + "players into ranks from Bronze to Duel King. /jadm rank and Ranking Boards show it.")
             .push("ranking"));
+
     /** Trading between players, in {@code [trade]}. */
     public static final Trade TRADE = new Trade(BUILDER.pop()
             .comment("Trading: two players swap cards (and Duel Points) in a trade window that both have to "
                     + "confirm. /jadm trade <player> asks someone.").push("trade"));
+
     public static final ModConfigSpec.IntValue SET_POINTS_PER_CARD = BUILDER.pop().push("collection")
             .comment("The Set Collection Book shows how much of each set a player owns (cards in binders, deck boxes "
                     + "and loose in the inventory or ender chest). Completing a set brings the rewards below, once per "
@@ -224,6 +235,7 @@ public final class JadmServerConfig {
     public static final ModConfigSpec.BooleanValue SET_ANNOUNCE = BUILDER
             .comment("Tell everyone on the server in chat when a player completes a set.")
             .define("announce", true);
+
     public static final StarChips STAR_CHIPS = new StarChips(BUILDER.pop()
             .comment("Star Chip events (Duelist Kingdom): everyone who joins gets Star Chips, puts them up in duels and "
                     + "whoever collects enough goes to the finals, a tournament on the tournament arenas. An operator "

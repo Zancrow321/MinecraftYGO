@@ -166,15 +166,23 @@ public final class DuelMode {
         // A longer field (Extra Monster Zones in the middle) needs the camera further back and higher.
         double longer = io.github.zancrow321.jadm.client.field.FieldLayout.halfLength()
                 - io.github.zancrow321.jadm.client.field.FieldLayout.HALF_LENGTH;
-        Vec3 back = towardOpponent().scale(-(CAMERA_BACK + longer));
+        // A bigger or smaller field (on a player-built arena) moves the camera with it.
+        double size = ClientField.size();
+        Vec3 back = towardOpponent().scale(-(CAMERA_BACK + longer) * size);
         Vec3 turned = new Vec3(back.x * Math.cos(turn) - back.z * Math.sin(turn), 0,
                 back.x * Math.sin(turn) + back.z * Math.cos(turn));
-        return ClientField.center().add(turned).add(0, CAMERA_HEIGHT + longer * 1.6 + (1 - sweep) * 5, 0);
+        double up = (CAMERA_HEIGHT + longer * 1.6) * size + (1 - sweep) * 5;
+        if (ClientField.ceiling() > 0) {
+            // Under a roof the camera stays inside the arena.
+            up = Math.min(up, ClientField.ceiling() - 0.4);
+        }
+        return ClientField.center().add(turned).add(0, up, 0);
     }
 
     /** What the top-down camera looks at: the middle of the field while it sweeps in, then nearer your end. */
     private static Vec3 topDownTarget() {
-        return ClientField.center().subtract(towardOpponent().scale(CAMERA_AIM * DuelStaging.sweep()));
+        return ClientField.center().subtract(towardOpponent().scale(CAMERA_AIM * ClientField.size()
+                * DuelStaging.sweep()));
     }
 
     @SubscribeEvent

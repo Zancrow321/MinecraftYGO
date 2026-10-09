@@ -77,7 +77,7 @@ public final class ArenaRenderer extends GeoBlockRenderer<ArenaBlockEntity> {
      * Text facing the camera at {@code at} (from the middle block's corner), seen through walls a little, on a dark
      * plate if {@code plate}.
      */
-    private static void label(PoseStack poseStack, MultiBufferSource buffers, Vec3 at, Component text, int color,
+    static void label(PoseStack poseStack, MultiBufferSource buffers, Vec3 at, Component text, int color,
                               float scale, boolean plate) {
         Minecraft mc = Minecraft.getInstance();
         Font font = mc.font;

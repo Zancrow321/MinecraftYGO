@@ -52,6 +52,11 @@ public final class ClientScreens {
         io.github.zancrow321.jadm.client.collection.LimitedScreen.receive(payload.open(), payload.json());
     }
 
+    /** Opens the settings of the Arena Core at {@code pos}. */
+    public static void arenaCore(net.minecraft.core.BlockPos pos) {
+        Minecraft.getInstance().setScreen(new io.github.zancrow321.jadm.client.arena.ArenaCoreScreen(pos));
+    }
+
     /** Opens the admin menu, or refreshes it if it is open. */
     public static void admin(io.github.zancrow321.jadm.network.AdminPayload payload) {
         Minecraft mc = Minecraft.getInstance();

@@ -19,14 +19,26 @@ public record DuelFieldPayload(boolean active, double x, double y, double z, flo
      * How the mat is split and dressed. Normally {@code sleeves} has one card sleeve per team. In a Battle City duel
      * ({@code split}) each partner has their own half of the team's zones and {@code sleeves} has one per duelist:
      * team 0's first and second partner, then team 1's. {@code watching} is set for a spectator's copy.
+     *
+     * <p>A player-built arena fits the field to itself: {@code size} scales the whole mat (1 is the usual size),
+     * {@code ceiling} is how many blocks of room there are over the mat (0 for open sky), so monsters stay under
+     * the roof, and {@code outline} draws only the zone frames so the arena's own floor shows through.
      */
-    public record Layout(boolean split, List<String> sleeves, boolean watching) {
+    public record Layout(boolean split, List<String> sleeves, boolean watching, double size, double ceiling,
+                         boolean outline) {
         public static final Layout NONE = new Layout(false, List.of(), false);
         public static final StreamCodec<ByteBuf, Layout> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.BOOL, Layout::split,
                 ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), Layout::sleeves,
                 ByteBufCodecs.BOOL, Layout::watching,
+                ByteBufCodecs.DOUBLE, Layout::size,
+                ByteBufCodecs.DOUBLE, Layout::ceiling,
+                ByteBufCodecs.BOOL, Layout::outline,
                 Layout::new);
+
+        public Layout(boolean split, List<String> sleeves, boolean watching) {
+            this(split, sleeves, watching, 1, 0, false);
+        }
     }
 
     public static final Type<DuelFieldPayload> TYPE =
@@ -45,12 +57,25 @@ public record DuelFieldPayload(boolean active, double x, double y, double z, flo
     }
 
     public DuelFieldPayload withLayout(boolean split, List<String> sleeves) {
-        return new DuelFieldPayload(active, x, y, z, yaw, new Layout(split, List.copyOf(sleeves), false));
+        return new DuelFieldPayload(active, x, y, z, yaw, new Layout(split, List.copyOf(sleeves), false,
+                layout.size(), layout.ceiling(), layout.outline()));
+    }
+
+    /** The field fitted to a player-built arena (see {@link Layout}). */
+    public DuelFieldPayload fitted(double size, double ceiling, boolean outline) {
+        return new DuelFieldPayload(active, x, y, z, yaw, new Layout(layout.split(), layout.sleeves(),
+                layout.watching(), size, ceiling, outline));
+    }
+
+    /** The same field seen from the other end. */
+    public DuelFieldPayload turned() {
+        return new DuelFieldPayload(active, x, y, z, yaw + 180, layout);
     }
 
     /** The copy sent to a spectator. */
     public DuelFieldPayload watching() {
-        return new DuelFieldPayload(active, x, y, z, yaw, new Layout(layout.split(), layout.sleeves(), true));
+        return new DuelFieldPayload(active, x, y, z, yaw, new Layout(layout.split(), layout.sleeves(), true,
+                layout.size(), layout.ceiling(), layout.outline()));
     }
 
     public static DuelFieldPayload none() {
