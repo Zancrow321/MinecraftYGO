@@ -828,7 +828,8 @@ public final class TournamentManager {
                 banlist(t, t.step), t.integer("turnTimeLimit"), t.integer("maxTurns"));
         int matchId = m.id;
         String error = DuelManager.get(server).startMatch(new MatchSetup(seats, rules, live.first,
-                npcEntity instanceof DuelistNpc npc ? npc : null, winner -> gameOver(t, matchId, winner)));
+                npcEntity instanceof DuelistNpc npc ? npc : null, t.bool("ranked"),
+                winner -> gameOver(t, matchId, winner)));
         if (error != null) {
             tell(m, t, Component.literal("The game couldn't start: " + error + ". Trying again shortly.")
                     .withStyle(ChatFormatting.RED));

@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "jadm:block/ranking_board_side",
+    "front": "jadm:block/ranking_board_front",
+    "side": "jadm:block/ranking_board_side"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 16, 2],
+      "faces": {
+        "south": {"uv": [0, 0, 16, 16], "texture": "#front"},
+        "north": {"uv": [0, 0, 16, 16], "texture": "#side", "cullface": "north"},
+        "east": {"uv": [14, 0, 16, 16], "texture": "#side"},
+        "west": {"uv": [0, 0, 2, 16], "texture": "#side"},
+        "up": {"uv": [0, 0, 16, 2], "texture": "#side"},
+        "down": {"uv": [0, 14, 16, 16], "texture": "#side"}
+      }
+    }
+  ],
+  "display": {
+    "gui": {"rotation": [0, 0, 0], "translation": [0, 0, 0], "scale": [0.8, 0.8, 0.8]},
+    "fixed": {"rotation": [0, 180, 0], "scale": [0.5, 0.5, 0.5]}
+  }
+}

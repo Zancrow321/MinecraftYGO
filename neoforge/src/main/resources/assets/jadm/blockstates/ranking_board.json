@@ -1,0 +1,6 @@
+{"variants": {
+  "facing=south": {"model": "jadm:block/ranking_board"},
+  "facing=west": {"model": "jadm:block/ranking_board", "y": 90},
+  "facing=north": {"model": "jadm:block/ranking_board", "y": 180},
+  "facing=east": {"model": "jadm:block/ranking_board", "y": 270}
+}}

@@ -2,6 +2,8 @@ package io.github.zancrow321.jadm;
 
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.List;
+
 /**
  * Per-world settings, in {@code serverconfig/jadm-server.toml}.
  */
@@ -188,6 +190,12 @@ public final class JadmServerConfig {
             .comment("Seconds counted down before that duel starts; stepping off a podium calls it off.")
             .defineInRange("countdownSeconds", 5, 1, 60);
 
+    /** The ranking: Elo ratings and ranks from ranked duels, in {@code [ranking]}. */
+    public static final Ranking RANKING = new Ranking(BUILDER.pop()
+            .comment("The ranking: ranked duels (/jadm duel <player> ranked) win and lose rating points, which put "
+                    + "players into ranks from Bronze to Duel King. /jadm rank and Ranking Boards show it.")
+            .push("ranking"));
+
     static {
         BUILDER.pop();
     }
@@ -221,6 +229,60 @@ public final class JadmServerConfig {
                     .defineInRange("lossEmeralds", 0, 0, 640);
             lossXp = builder.comment("Experience points each loser gets as a consolation.")
                     .defineInRange("lossXp", 0, 0, 100_000);
+        }
+    }
+
+    /** The ranking's settings. */
+    public static final class Ranking {
+        public final ModConfigSpec.BooleanValue enabled;
+        public final ModConfigSpec.IntValue startRating;
+        public final ModConfigSpec.IntValue kFactor;
+        public final ModConfigSpec.IntValue placementGames;
+        public final ModConfigSpec.ConfigValue<List<? extends Integer>> tiers;
+        public final ModConfigSpec.IntValue promotionPoints;
+        public final ModConfigSpec.IntValue maxPerPairPerDay;
+        public final ModConfigSpec.BooleanValue arenaDuels;
+        public final ModConfigSpec.BooleanValue showInTabList;
+        public final ModConfigSpec.BooleanValue announcePromotions;
+
+        private Ranking(ModConfigSpec.Builder builder) {
+            enabled = builder.comment("Ranked duels can be played. Off, the ranking stays as it is but nothing changes "
+                    + "it.").define("enabled", true);
+            startRating = builder.comment("The rating every player starts with (and gets back when a new season "
+                    + "starts).").defineInRange("startRating", 1000, 0, 100_000);
+            kFactor = builder.comment("How many rating points a ranked duel moves at most: an even match moves half "
+                    + "this, an upset almost all of it.").defineInRange("kFactor", 32, 1, 400);
+            placementGames = builder.comment("A player's first this many ranked duels move twice as many points, so "
+                    + "new players find their rank quickly.").defineInRange("placementGames", 5, 0, 100);
+            tiers = builder.comment("The rating each rank starts at, lowest first: Silver, Gold, Platinum, Diamond, "
+                    + "Duel King. Below the first is Bronze.")
+                    .defineListAllowEmpty("tiers", io.github.zancrow321.jadm.ranking.Tiers.DEFAULT_STARTS,
+                            () -> 0, o -> o instanceof Number);
+            promotionPoints = builder.comment("Duel Points a player gets the first time they reach each rank (per "
+                    + "season), when the [shop] currency is points; 0 for none.")
+                    .defineInRange("promotionPoints", 200, 0, 1_000_000);
+            maxPerPairPerDay = builder.comment("Ranked duels between the same two players count this many times a "
+                    + "day at most (more are played unranked), so two friends can't farm points; 0 for no limit.")
+                    .defineInRange("maxPerPairPerDay", 5, 0, 1000);
+            arenaDuels = builder.comment("Duels that start by themselves on a Duel Arena are ranked.")
+                    .define("arenaDuels", false);
+            showInTabList = builder.comment("Show each ranked player's rank in front of their name in the player "
+                    + "list (Tab).").define("showInTabList", true);
+            announcePromotions = builder.comment("Tell everyone in chat when a player reaches a new rank.")
+                    .define("announcePromotions", true);
+        }
+
+        /** Where each rank above Bronze starts, lowest first. */
+        public List<Integer> tierStarts() {
+            List<Integer> starts = new java.util.ArrayList<>();
+            for (Object o : tiers.get()) {
+                // The config file may hand back longs.
+                if (o instanceof Number n) {
+                    starts.add(n.intValue());
+                }
+            }
+            starts.sort(null);
+            return starts.isEmpty() ? io.github.zancrow321.jadm.ranking.Tiers.DEFAULT_STARTS : starts;
         }
     }
 

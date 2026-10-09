@@ -16,9 +16,11 @@ import java.util.function.IntConsumer;
  * @param seats     team 0 first, then team 1
  * @param firstTeam the team that goes first, or -1 for a coin toss
  * @param npc       an NPC standing in for a bot seat, only for show (it walks onto the free podium), or {@code null}
+ * @param ranked    the game moves both people's ratings in the ranking
  * @param onEnd     told the winning team (0 or 1), 2 for a draw, or -1 if the duel broke off with an error
  */
-public record MatchSetup(List<Seat> seats, Rules rules, int firstTeam, DuelistNpc npc, IntConsumer onEnd) {
+public record MatchSetup(List<Seat> seats, Rules rules, int firstTeam, DuelistNpc npc, boolean ranked,
+                         IntConsumer onEnd) {
     /**
      * @param player {@code null} for a bot
      * @param deck   the deck to play, or {@code null} for the person's deck box (or a starter deck)

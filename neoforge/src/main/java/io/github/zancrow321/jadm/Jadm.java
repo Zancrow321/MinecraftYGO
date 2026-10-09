@@ -55,6 +55,7 @@ public final class Jadm {
         RandomCardFunction.register(modBus);
         DuelDome.register(modBus);
         DuelArena.register(modBus);
+        io.github.zancrow321.jadm.ranking.RankingBoard.register(modBus);
         container.registerConfig(ModConfig.Type.SERVER, JadmServerConfig.SPEC);
         modBus.addListener(JadmNetwork::register);
         if (FMLEnvironment.dist == Dist.CLIENT) {
@@ -95,6 +96,7 @@ public final class Jadm {
             }
         });
         NeoForge.EVENT_BUS.addListener(this::onInteractPlayer);
+        NeoForge.EVENT_BUS.addListener(io.github.zancrow321.jadm.ranking.RankedDuels::tabListName);
         // With points as the currency, card traders open a points shop instead of the trade window.
         NeoForge.EVENT_BUS.addListener((PlayerInteractEvent.EntityInteract event) -> {
             if (event.getTarget() instanceof net.minecraft.world.entity.npc.Villager villager

@@ -73,6 +73,7 @@ public final class JadmItems {
                         output.accept(io.github.zancrow321.jadm.village.PlayerShops.STAND_ITEM.get());
                         output.accept(DuelArena.KIT.get());
                         output.accept(DuelDome.KIT.get());
+                        output.accept(io.github.zancrow321.jadm.ranking.RankingBoard.ITEM.get());
                         output.accept(DuelDome.CORE_ITEM.get());
                         output.accept(DuelDome.PLATFORM_ITEM.get());
                         output.accept(DUELIST_SPAWN_EGG.get());
