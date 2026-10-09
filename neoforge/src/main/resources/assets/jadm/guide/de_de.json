@@ -82,7 +82,13 @@
         "# Kartenordner",
         "Hält deine Sammlung. \"Alle Karten einlegen\" legt jede lose Karte hinein; ein Klick auf eine Karte nimmt sie wieder heraus (Shift-Klick alle Kopien). Er behält die Seltenheit jeder Karte, in der Ecke angezeigt (R, SR, UR, ScR), und Decks nehmen zuerst Commons, damit deine Foils im Ordner bleiben. Karten aus noch gesperrten Sets zeigen ein Schloss.",
         "**Suchen:** Einfach lostippen, sobald der Ordner offen ist. Jedes Wort muss im Namen, Kartentext, Attribut oder Typ vorkommen, also findet finsternis drache, empfänger oder schnellzauber etwas (Kartennamen und -texte sind englisch); Wörter in Anführungszeichen zählen als ein Ausdruck, etwa \"destroy all\". Rechtsklick leert das Feld. Die Knöpfe darunter filtern nach Kartentyp, Attribut, Stufe und Seltenheit (oder nur Foils) und sortieren nach Name, ATK, DEF oder Stufe; Shift-Klick geht zurück. Die Suche der Deckbox funktioniert genauso.",
-        "[recipe {modid}:binder]"
+        "[recipe {modid}:binder]",
+        "# Set-Sammelbuch",
+        "Zeigt jedes erschienene Set (in einer Fortschritts-Welt die bisher freigeschalteten) und wie viel du davon besitzt: Jede Karte des Sets zählt einmal, egal in welcher Seltenheit. Gezählt werden die Karten in deinen Kartenordnern, Deckboxen und lose Karten in Inventar und Endertruhe, auch in Shulkerkisten dort. Öffne es mit dem Buch oder `{cmd} sets`.",
+        "- Die Liste zeigt für jedes Set sein Bild, deine Karten und einen Balken. Filtern nach angefangen, komplett, Belohnung offen oder nicht begonnen, sortieren nach Erscheinen, Name oder Fortschritt; tippe Name oder Kürzel eines Sets, um es zu finden.",
+        "- Klick auf ein Set zeigt seine Karten: Fehlende sind ausgegraut, ein Knopf zeigt nur die fehlenden.",
+        "- Ein komplettes Set bringt einmal pro Spieler und Set eine Belohnung: auf diesem Server {server:collection.pointsPerCard} DP pro Karte des Sets und {server:collection.packs} Booster. Klick auf [Abholen] (oder \"Alle abholen\" für mehrere). Alle erfahren es im Chat.",
+        "[recipe {modid}:set_book]"
       ]
     },
     {
@@ -204,6 +210,7 @@
         "- `{cmd} dp` und `{cmd} dp pay <player> <amount>`: deine Duel Points, und welche verschenken.",
         "- `{cmd} shop`: der Shop des Kartenautomaten von überall, wenn der Server es erlaubt.",
         "- `{cmd} starter`: dein erstes Deck wählen, falls noch nicht geschehen.",
+        "- `{cmd} sets`: das Set-Sammelbuch.",
         "- `{cmd} cosmetics`: Disk-Skins und Kartenhüllen.",
         "- `{cmd} version`: die Version der Regel-Engine.",
         "# Turniere",
@@ -254,6 +261,7 @@
         "- `[tournament] playersCanHost` = {server:tournament.playersCanHost}: Spieler dürfen ausrichten. `schedule`: Zeiten wie \"20:00\" oder \"SAT 18:30\", zu denen Turniere von selbst öffnen.",
         "- `[guide] giveOnFirstJoin` = {server:guide.giveOnFirstJoin} und `craftable` = {server:guide.craftable}: dieses Buch.",
         "- `[arena] autoStart` = {server:arena.autoStart}: ein Duell startet von selbst, wenn auf jedem Pult einer Duellarena ein Spieler steht, nach `countdownSeconds` = {server:arena.countdownSeconds} Sekunden Countdown.",
+        "- `[collection]`: was ein komplettes Set im Set-Sammelbuch einmal pro Spieler bringt: `pointsPerCard` = {server:collection.pointsPerCard} (DP pro Karte des Sets, mit Punkten als Währung), `packs` = {server:collection.packs}, `emeralds` = {server:collection.emeralds}, `xp` = {server:collection.xp}; `announce` = {server:collection.announce}: allen im Chat sagen.",
         "# Deine eigenen Einstellungen",
         "In `config/{modid}-client.toml`:",
         "- `downloadCardArt` = {client:downloadCardArt}: Kartenbilder werden beim ersten Anzeigen heruntergeladen und auf deinem Rechner behalten. `cardArtUrl` und `cardArtCroppedUrl` sagen, woher.",
