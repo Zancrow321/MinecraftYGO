@@ -63,6 +63,7 @@ public final class TournamentOptions {
         integer("turnTimeLimit", -1, -1, 3600, "Seconds per duelist and turn; -1 keeps the server's, 0 for none.");
         integer("maxTurns", 0, 0, 1000, "A game ends after this many turns and whoever has more life points wins it "
                 + "(level life points are a draw); 0 for no limit.");
+        bool("ranked", false, "Games between two players count for the ranking, like ranked duels.");
         bool("lockDeck", true, "The deck a duelist joins with is the one they play the whole tournament with.");
         bool("starterDecks", false, "Players without a legal deck box may join with Yugi's starter deck (only if "
                 + "the server lends starter decks).");

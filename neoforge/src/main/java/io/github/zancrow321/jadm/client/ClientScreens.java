@@ -43,6 +43,10 @@ public final class ClientScreens {
         io.github.zancrow321.jadm.client.tournament.TournamentScreen.receive(payload.open(), payload.json());
     }
 
+    public static void ranking(io.github.zancrow321.jadm.network.RankingPayload payload) {
+        io.github.zancrow321.jadm.client.ranking.RankingScreen.receive(payload.json());
+    }
+
     /** Opens the admin menu, or refreshes it if it is open. */
     public static void admin(io.github.zancrow321.jadm.network.AdminPayload payload) {
         Minecraft mc = Minecraft.getInstance();

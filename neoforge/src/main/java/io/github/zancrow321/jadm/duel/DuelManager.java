@@ -24,6 +24,9 @@ import io.github.zancrow321.jadm.network.DuelFieldPayload;
 import io.github.zancrow321.jadm.network.DuelResultPayload;
 import io.github.zancrow321.jadm.network.DuelistStatePayload;
 import io.github.zancrow321.jadm.network.DuelViewPayload;
+import io.github.zancrow321.jadm.ranking.RankedDuels;
+import io.github.zancrow321.jadm.ranking.Ranking;
+import io.github.zancrow321.jadm.ranking.Tiers;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -78,11 +81,12 @@ public final class DuelManager {
      *
      * @param npc   the NPC duelist sitting in the bot seat, or {@code null}
      * @param split a Battle City tag duel, each partner on their own half of the team's zones
+     * @param ranked a ranked 1v1 duel between two people, which moves their ratings
      */
     private record Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt,
-                          DuelistNpc npc, boolean split) {
+                          DuelistNpc npc, boolean split, boolean ranked) {
         Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt, DuelistNpc npc) {
-            this(host, entrants, pending, ante, expiresAt, npc, false);
+            this(host, entrants, pending, ante, expiresAt, npc, false, false);
         }
     }
 
@@ -92,9 +96,10 @@ public final class DuelManager {
      * @param ante the escrow id of the ante, or {@code null} for a duel without one
      * @param npc the NPC duelist playing the bot seat, or {@code null}
      * @param match the organized duel (a tournament game) this is, or {@code null}
+     * @param ranked whether it moves the two people's ratings
      */
     private record ServerDuel(DuelTable table, UUID[] seats, DuelFieldPayload field, UUID ante, DuelistNpc npc,
-                              Set<UUID> spectators, Clock clock, MatchSetup match) {
+                              Set<UUID> spectators, Clock clock, MatchSetup match, boolean ranked) {
     }
 
     /**
@@ -138,6 +143,14 @@ public final class DuelManager {
 
     /** Invites {@code target} to a 1v1 duel, with an ante if {@code ante} and the server allows it. */
     public void challenge(ServerPlayer challenger, ServerPlayer target, boolean ante) {
+        challenge(challenger, target, ante, false);
+    }
+
+    /**
+     * Invites {@code target} to a 1v1 duel, with an ante if {@code ante} and the server allows it, ranked if
+     * {@code ranked}.
+     */
+    public void challenge(ServerPlayer challenger, ServerPlayer target, boolean ante, boolean ranked) {
         if (challenger == target) {
             challenger.sendSystemMessage(Component.literal("You can't duel yourself. Try /jadm duel bot"));
             return;
@@ -146,8 +159,15 @@ public final class DuelManager {
             challenger.sendSystemMessage(Component.literal("Ante duels are turned off on this server."));
             return;
         }
+        if (ranked) {
+            String why = RankedDuels.whyNot(server, challenger.getUUID(), target.getUUID());
+            if (why != null) {
+                challenger.sendSystemMessage(Component.literal(why));
+                return;
+            }
+        }
         invite(challenger, List.of(new Entrant(0, challenger.getUUID(), challenger.getScoreboardName()),
-                new Entrant(1, target.getUUID(), target.getScoreboardName())), ante);
+                new Entrant(1, target.getUUID(), target.getScoreboardName())), ante, false, ranked);
     }
 
     /**
@@ -177,10 +197,14 @@ public final class DuelManager {
     }
 
     private void invite(ServerPlayer host, List<Entrant> entrants, boolean ante) {
-        invite(host, entrants, ante, false);
+        invite(host, entrants, ante, false, false);
     }
 
     private void invite(ServerPlayer host, List<Entrant> entrants, boolean ante, boolean split) {
+        invite(host, entrants, ante, split, false);
+    }
+
+    private void invite(ServerPlayer host, List<Entrant> entrants, boolean ante, boolean split, boolean ranked) {
         for (Entrant e : entrants) {
             ServerPlayer player = player(e.player());
             if (player != null && inDuel(player)) {
@@ -192,12 +216,13 @@ public final class DuelManager {
         entrants.stream().map(Entrant::player).filter(Objects::nonNull).filter(id -> !id.equals(host.getUUID()))
                 .forEach(pending::add);
         Invite invite = new Invite(host.getUUID(), List.copyOf(entrants), pending, ante,
-                server.getTickCount() + INVITE_TIMEOUT_TICKS, null, split);
+                server.getTickCount() + INVITE_TIMEOUT_TICKS, null, split, ranked);
         if (pending.isEmpty()) {
             launch(invite);
             return;
         }
-        String matchup = matchup(entrants) + (ante ? " (ante)" : split ? " (Battle City)" : "");
+        String matchup = matchup(entrants) + (ranked && ante ? " (ranked, ante)" : ranked ? " (ranked)"
+                : ante ? " (ante)" : split ? " (Battle City)" : "");
         host.sendSystemMessage(Component.literal("Invitation sent: " + matchup + "."));
         for (UUID id : pending) {
             invites.put(id, invite);
@@ -210,9 +235,20 @@ public final class DuelManager {
             String how = entrants.size() == 2 && DuelDisks.has(target)
                     ? " Right-click them with your Duel Disk or click " : " Click ";
             target.sendSystemMessage(Component.literal(host.getScoreboardName() + " invites you: " + matchup
-                    + (ante ? ". The winner takes a random card from the loser's deck box." : ".") + how)
+                    + (ante ? ". The winner takes a random card from the loser's deck box." : ".")
+                    + (ranked ? rankedNote(host, target) : "") + how)
                     .append(accept));
         }
+    }
+
+    /** " Ranked: your rating 1180 (Silver) against their 1216 (Gold)." */
+    private String rankedNote(ServerPlayer host, ServerPlayer target) {
+        Ranking ranking = Ranking.get(server);
+        int mine = ranking.rating(target.getUUID());
+        int theirs = ranking.rating(host.getUUID());
+        List<Integer> starts = JadmServerConfig.RANKING.tierStarts();
+        return " Ranked: your rating " + mine + " (" + Tiers.name(Tiers.of(mine, starts)) + ") against their "
+                + theirs + " (" + Tiers.name(Tiers.of(theirs, starts)) + ").";
     }
 
     private static String matchup(List<Entrant> entrants) {
@@ -295,8 +331,11 @@ public final class DuelManager {
         if (first == second || inDuel(first) || inDuel(second)) {
             return;
         }
+        boolean ranked = JadmServerConfig.RANKING.arenaDuels.get()
+                && RankedDuels.whyNot(server, first.getUUID(), second.getUUID()) == null;
         launch(new Invite(first.getUUID(), List.of(new Entrant(0, first.getUUID(), first.getScoreboardName()),
-                new Entrant(1, second.getUUID(), second.getScoreboardName())), Set.of(), false, 0, null));
+                new Entrant(1, second.getUUID(), second.getScoreboardName())), Set.of(), false, 0, null, false,
+                ranked));
     }
 
     /**
@@ -385,7 +424,13 @@ public final class DuelManager {
                     : team0.isEmpty() ? turned(fieldInFrontOf(team1.get(0)))
                     : fieldBetween(team0.get(0), team1.get(0));
         }
-        start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step, null);
+        if (invite.ranked()) {
+            broadcast(entrants, Component.literal("Ranked duel: " + String.join(" vs ", entrants.stream()
+                    .map(e -> e.name() + " (" + Ranking.get(server).rating(e.player()) + ")").toList()) + ".")
+                    .withStyle(ChatFormatting.GOLD));
+        }
+        start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step, null,
+                invite.ranked());
     }
 
     /**
@@ -438,8 +483,10 @@ public final class DuelManager {
         }
         java.util.function.IntConsumer told = setup.onEnd();
         MatchSetup unswapped = new MatchSetup(setup.seats(), setup.rules(), setup.firstTeam(), setup.npc(),
-                winner -> told.accept(swapped && (winner == 0 || winner == 1) ? 1 - winner : winner));
-        return start(entrants, decks, field, null, setup.npc(), false, step, unswapped) ? null
+                setup.ranked(), winner -> told.accept(swapped && (winner == 0 || winner == 1) ? 1 - winner : winner));
+        boolean ranked = setup.ranked() && online.size() == 2
+                && RankedDuels.whyNot(server, online.get(0).getUUID(), online.get(1).getUUID()) == null;
+        return start(entrants, decks, field, null, setup.npc(), false, step, unswapped, ranked) ? null
                 : "the duel engine isn't available";
     }
 
@@ -552,7 +599,7 @@ public final class DuelManager {
      * @return whether the duel started
      */
     private boolean start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes,
-                          DuelistNpc npc, boolean split, int step, MatchSetup match) {
+                          DuelistNpc npc, boolean split, int step, MatchSetup match, boolean ranked) {
         var random = server.overworld().getRandom();
         long[] seed = {random.nextLong(), random.nextLong(), random.nextLong(), random.nextLong() | 1};
         List<DuelTable.Seat> seats = new ArrayList<>();
@@ -602,7 +649,7 @@ public final class DuelManager {
             field = field.withLayout(false, List.of(sleeveOf(entrants, 0, npc), sleeveOf(entrants, 1, npc)));
         }
         ServerDuel duel = new ServerDuel(table, people, field, ante, npc, new HashSet<>(),
-                new Clock(random.nextLong()), match);
+                new Clock(random.nextLong()), match, ranked);
         duels.add(duel);
         if (npc != null) {
             npc.setDueling(true);
@@ -951,6 +998,19 @@ public final class DuelManager {
                 }
             }
         }
+        Map<UUID, RankedDuels.Outcome> ranks = new HashMap<>();
+        if (duel.ranked() && duel.table().finished() && duel.seats().length == 2 && duel.seats()[0] != null
+                && duel.seats()[1] != null) {
+            int team0 = duel.table().seats().get(0).team();
+            double score = !decided ? 0.5 : team0 == winner ? 1 : 0;
+            ranks = RankedDuels.finish(server, duel.seats()[0], duel.table().seats().get(0).name(),
+                    duel.seats()[1], duel.table().seats().get(1).name(), score);
+            ranks.forEach((id, outcome) -> {
+                if (rewards.containsKey(id)) {
+                    rewards.get(id).addAll(outcome.notes());
+                }
+            });
+        }
         if (againstNpc && duel.match() != null) {
             // An NPC standing in for a tournament duelist only came to show; it hands out nothing.
             duel.npc().setDueling(false);
@@ -1000,8 +1060,10 @@ public final class DuelManager {
             if (player != null) {
                 int outcome = !decided ? DuelResultPayload.DRAW
                         : duel.table().seats().get(seat).team() == winner ? DuelResultPayload.WON : DuelResultPayload.LOST;
+                RankedDuels.Outcome rank = ranks.get(player.getUUID());
                 PacketDistributor.sendToPlayer(player, new DuelResultPayload(outcome,
-                        List.copyOf(rewards.get(player.getUUID())), records.getOrDefault(player.getUUID(), "")));
+                        List.copyOf(rewards.get(player.getUUID())), records.getOrDefault(player.getUUID(), ""),
+                        rank == null ? "" : rank.line(), rank == null ? 0 : rank.color()));
             }
         }
         duel.table().close();

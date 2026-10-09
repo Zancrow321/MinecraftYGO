@@ -200,8 +200,9 @@ public final class DuelStaging {
         List<String> rewards = result == null ? List.of() : result.rewards();
         boolean watched = result == null;
         String record = watched ? "" : result.record();
+        String rank = watched ? "" : result.rank();
         int height = 44 + reason.size() * 10 + (watched ? 0 : 14 + Math.max(1, rewards.size()) * 10)
-                + (record.isEmpty() ? 0 : 24) + 24;
+                + (record.isEmpty() ? 0 : 24) + (rank.isEmpty() ? 0 : 24) + 24;
         int x = w / 2 - width / 2;
         int y = Math.max(4, h / 2 - height / 2);
         DuelUi.panel(g, x, y, width, height);
@@ -229,6 +230,13 @@ public final class DuelStaging {
             g.drawString(font, "Your record", x + 8, ty, GOLD);
             ty += 10;
             g.drawString(font, font.plainSubstrByWidth(record, width - 16), x + 8, ty, DIM);
+            ty += 10;
+        }
+        if (!rank.isEmpty()) {
+            ty += 4;
+            g.drawString(font, "Ranking", x + 8, ty, GOLD);
+            ty += 10;
+            g.drawString(font, font.plainSubstrByWidth(rank, width - 16), x + 8, ty, 0xFF000000 | result.rankColor());
             ty += 10;
         }
         DuelUi.button(g, font, w / 2 - 40, ty + 6, 80, "Continue", true, mx, my, DuelStaging::closeResult);

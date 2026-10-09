@@ -7,6 +7,23 @@
   `serverconfig/jadm-server.toml`, 16000 by default. 1v1 duels keep `startingLifePoints` (8000). A tournament that
   sets its own life points still uses those.
 
+### Ranking
+- **Ranked duels:** `/jadm duel <player> ranked` (with `ante` too, if you like). Ranked 1v1 duels between two
+  players win and lose Elo rating points; everyone starts at 1000, and the first 5 ranked duels count double.
+  Other duels stay unranked.
+- **Ranks** from Bronze over Silver, Gold, Platinum and Diamond to **Duel King**. Reaching a rank for the first time
+  in a season brings 200 Duel Points and is announced in chat; the player list (Tab) shows each player's rank.
+- **Ranking window** with the key J or `/jadm rank`: your rank, rating, place and the way to the next rank, the
+  ladder of ranks and the best 100 duelists. The result screen shows your new rating after a ranked duel.
+- **Ranking Board**: a craftable plate for the wall that shows the ten best ranked duelists on a glowing board
+  three blocks wide and two high. Right-click it for the ranking window.
+- Ranked duels between the same two players count 5 times a day at most, so friends can't farm points.
+- Server settings in `[ranking]`: start rating, K-factor, placement games, where each rank starts, promotion
+  bonus, the daily limit per pair, ranked arena auto duels, the rank in the player list and the chat
+  announcement. Tournaments get a `ranked` setting.
+- Operators: `/jadm rank set <player> <rating>`, `/jadm rank reset <player>` and `/jadm rank season confirm` (a new
+  season puts everyone back to the start rating).
+
 ### Card pictures when picking cards
 - Searching your Deck now shows the cards you can pick. Before, every card in the window showed its back without a
   name, so you couldn't tell what you were choosing.
