@@ -85,6 +85,7 @@ final class JadmCommands {
                     return 1;
                 }))
                 .then(io.github.zancrow321.jadm.points.PointsCommands.build())
+                .then(io.github.zancrow321.jadm.trade.Trades.command())
                 .then(io.github.zancrow321.jadm.admin.AdminMenu.command())
                 .then(Commands.literal("cosmetics").executes(ctx -> {
                     PlayerCosmetics.open(ctx.getSource().getPlayerOrException());

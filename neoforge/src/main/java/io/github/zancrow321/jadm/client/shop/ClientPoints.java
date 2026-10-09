@@ -41,6 +41,11 @@ public final class ClientPoints {
         return balance;
     }
 
+    /** What the points are called, e.g. "DP". */
+    public static String symbol() {
+        return symbol;
+    }
+
     /** An amount with the points' symbol, e.g. "1,250 DP". */
     public static String format(long amount) {
         return String.format("%,d %s", amount, symbol);

@@ -188,6 +188,11 @@ public final class JadmServerConfig {
             .comment("Seconds counted down before that duel starts; stepping off a podium calls it off.")
             .defineInRange("countdownSeconds", 5, 1, 60);
 
+    /** Trading between players, in {@code [trade]}. */
+    public static final Trade TRADE = new Trade(BUILDER.pop()
+            .comment("Trading: two players swap cards (and Duel Points) in a trade window that both have to "
+                    + "confirm. /jadm trade <player> asks someone.").push("trade"));
+
     static {
         BUILDER.pop();
     }
@@ -357,6 +362,31 @@ public final class JadmServerConfig {
             sellSecret = builder.defineInRange("sellSecret", 120, 0, 1_000_000);
             emeraldExchange = builder.comment("Card Vending Machines take emeralds for this many points each; 0 for "
                     + "no exchange.").defineInRange("emeraldExchange", 10, 0, 1_000_000);
+        }
+    }
+
+    /** The settings of trading between players. */
+    public static final class Trade {
+        public final ModConfigSpec.BooleanValue enabled;
+        public final ModConfigSpec.BooleanValue onlyModItems;
+        public final ModConfigSpec.BooleanValue points;
+        public final ModConfigSpec.IntValue maxDistance;
+        public final ModConfigSpec.IntValue requestSeconds;
+        public final ModConfigSpec.BooleanValue rightClick;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private Trade(ModConfigSpec.Builder builder) {
+            enabled = builder.comment("Players can trade with each other.").define("enabled", true);
+            onlyModItems = builder.comment("Only this mod's items can be traded: cards, packs, decks, tins, binders, "
+                    + "deck boxes, duel disks... Off, any item can.").define("onlyModItems", true);
+            points = builder.comment("Duel Points can be put into a trade, when the [shop] currency is points and "
+                    + "[shop.points] transfers is on.").define("points", true);
+            maxDistance = builder.comment("How close (in blocks) the two have to be to start and keep trading; 0 "
+                    + "means anywhere, even in another dimension.").defineInRange("maxDistance", 0, 0, 10_000);
+            requestSeconds = builder.comment("Seconds a trade request waits to be accepted.")
+                    .defineInRange("requestSeconds", 60, 5, 3600);
+            rightClick = builder.comment("Sneaking and right-clicking another player with a card, binder or deck box "
+                    + "in your hand asks them to trade.").define("rightClick", true);
         }
     }
 
