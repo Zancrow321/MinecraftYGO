@@ -65,6 +65,7 @@ public final class Jadm {
             DuelManager.shutdown();
             TournamentManager.shutdown();
             io.github.zancrow321.jadm.arena.ArenaLobby.reset();
+            io.github.zancrow321.jadm.arena.BuiltArena.reset();
             Progress.stopped();
         });
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> {

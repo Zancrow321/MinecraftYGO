@@ -188,6 +188,15 @@ public final class JadmServerConfig {
             .comment("Seconds counted down before that duel starts; stepping off a podium calls it off.")
             .defineInRange("countdownSeconds", 5, 1, 60);
 
+    public static final ModConfigSpec.DoubleValue ARENA_MAX_FIELD_SIZE = BUILDER
+            .comment("Player-built arenas (Arena Core and Duelist Podiums) fit the duel field to the room they have. "
+                    + "This is the biggest it gets, 1 being the usual size.")
+            .defineInRange("maxFieldSize", 1.5, 0.5, 3.0);
+
+    public static final ModConfigSpec.DoubleValue ARENA_MIN_FIELD_SIZE = BUILDER
+            .comment("A player-built arena with room for less than this field size can't be used.")
+            .defineInRange("minFieldSize", 0.35, 0.2, 1.0);
+
     static {
         BUILDER.pop();
     }

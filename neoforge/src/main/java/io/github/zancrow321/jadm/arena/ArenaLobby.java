@@ -22,7 +22,8 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Starts a duel by itself when one person stands on each podium of a free Duel Arena. Whoever waits alone is told
+ * Starts a duel by itself when one person stands on each podium of a free Duel Arena (or each side of a
+ * player-built arena; with two podiums a side, two pairs make a tag duel). Whoever waits alone is told
  * they are waiting for an opponent (and the arena shows it over the podiums); once both podiums are taken a short
  * countdown runs, and stepping off calls it off. After a duel, people have to step off and back on to go again.
  */
@@ -32,8 +33,7 @@ public final class ArenaLobby {
 
     /** A waiting duel: who would play it, and when it starts (game time), or 0 while someone is missing. */
     private static final class Lobby {
-        UUID first;
-        UUID second;
+        List<UUID> who = List.of();
         long startsAt;
         /** The second last counted out loud. */
         int shownSecond;
@@ -116,30 +116,35 @@ public final class ArenaLobby {
                     "message.jadm.arena.tournament").withStyle(ChatFormatting.GRAY))));
             return;
         }
-        ServerPlayer[] ready = new ServerPlayer[2];
+        // A side holds one duelist per podium: the Duelist Kingdom arena has one a side, a built one up to two.
+        int seats = level.getBlockState(key.arena()).is(DuelDome.CORE.get()) ? 2 : 1;
+        List<List<ServerPlayer>> ready = List.of(new ArrayList<>(), new ArrayList<>());
         int waiting = 0;
         for (int i = 0; i < 2; i++) {
             List<ServerPlayer> here = ends.get(i);
-            if (here.size() > 1) {
+            if (here.size() > seats || seats > 1 && crowded(here)) {
                 here.forEach(p -> bar(p, Component.translatable("message.jadm.arena.crowded")
                         .withStyle(ChatFormatting.RED)));
-            } else if (here.size() == 1) {
-                String problem = DuelManager.deckProblem(here.get(0));
+                continue;
+            }
+            for (ServerPlayer player : here) {
+                String problem = DuelManager.deckProblem(player);
                 if (problem != null) {
-                    bar(here.get(0), Component.literal(problem).withStyle(ChatFormatting.RED));
+                    bar(player, Component.literal(problem).withStyle(ChatFormatting.RED));
                 } else {
-                    ready[i] = here.get(0);
+                    ready.get(i).add(player);
                     waiting |= 1 << i;
                 }
             }
         }
         Lobby lobby = LOBBIES.computeIfAbsent(key, k -> new Lobby());
         long now = level.getGameTime();
-        if (ready[0] != null && ready[1] != null) {
-            if (lobby.startsAt == 0 || !ready[0].getUUID().equals(lobby.first)
-                    || !ready[1].getUUID().equals(lobby.second)) {
-                lobby.first = ready[0].getUUID();
-                lobby.second = ready[1].getUUID();
+        int team = ready.get(0).size();
+        if (team > 0 && team == ready.get(1).size() && team == ends.get(0).size() && team == ends.get(1).size()) {
+            List<UUID> who = new ArrayList<>();
+            ready.forEach(side -> side.forEach(p -> who.add(p.getUUID())));
+            if (lobby.startsAt == 0 || !who.equals(lobby.who)) {
+                lobby.who = List.copyOf(who);
                 lobby.startsAt = now + JadmServerConfig.ARENA_COUNTDOWN.get() * 20L;
                 lobby.shownSecond = -1;
             }
@@ -147,9 +152,12 @@ public final class ArenaLobby {
             if (left <= 0) {
                 close(key);
                 // Whatever happens next, they step off before this arena counts them again.
-                STEP_OFF.add(lobby.first);
-                STEP_OFF.add(lobby.second);
-                duels.arenaDuel(ready[0], ready[1]);
+                STEP_OFF.addAll(lobby.who);
+                if (team == 1) {
+                    duels.arenaDuel(ready.get(0).get(0), ready.get(1).get(0));
+                } else {
+                    duels.arenaDuel(ready.get(0), ready.get(1));
+                }
                 return;
             }
             int seconds = (int) ((left + 19) / 20);
@@ -158,24 +166,28 @@ public final class ArenaLobby {
                 sound(level, key.arena(), SoundEvents.NOTE_BLOCK_HAT.value(), 1.2f);
             }
             for (int i = 0; i < 2; i++) {
-                bar(ready[i], Component.translatable("message.jadm.arena.countdown",
-                        Component.literal(ready[1 - i].getScoreboardName()).withStyle(ChatFormatting.WHITE),
-                        Component.literal(String.valueOf(seconds)).withStyle(ChatFormatting.WHITE))
-                        .withStyle(ChatFormatting.GOLD));
+                String opponents = String.join(" & ", ready.get(1 - i).stream()
+                        .map(ServerPlayer::getScoreboardName).toList());
+                for (ServerPlayer player : ready.get(i)) {
+                    bar(player, Component.translatable("message.jadm.arena.countdown",
+                            Component.literal(opponents).withStyle(ChatFormatting.WHITE),
+                            Component.literal(String.valueOf(seconds)).withStyle(ChatFormatting.WHITE))
+                            .withStyle(ChatFormatting.GOLD));
+                }
             }
         } else {
-            lobby.first = null;
-            lobby.second = null;
+            lobby.who = List.of();
             lobby.startsAt = 0;
             if (waiting != 0 && (lobby.waiting & waiting) != waiting) {
                 // Someone just stepped up.
                 sound(level, key.arena(), SoundEvents.NOTE_BLOCK_CHIME.value(), 1.0f);
             }
             String dots = ".".repeat(1 + (int) (now / 10 % 3));
-            for (ServerPlayer player : ready) {
-                if (player != null) {
-                    bar(player, Component.translatable("message.jadm.arena.waiting", dots)
-                            .withStyle(ChatFormatting.YELLOW));
+            boolean tag = ready.get(0).size() + ready.get(1).size() > 2;
+            for (List<ServerPlayer> side : ready) {
+                for (ServerPlayer player : side) {
+                    bar(player, Component.translatable(tag ? "message.jadm.arena.waiting_tag"
+                            : "message.jadm.arena.waiting", dots).withStyle(ChatFormatting.YELLOW));
                 }
             }
         }
@@ -189,10 +201,26 @@ public final class ArenaLobby {
     }
 
     private static void show(Key key, int waiting, long startsAt) {
-        if (key.level().isLoaded(key.arena())
-                && key.level().getBlockEntity(key.arena()) instanceof ArenaBlockEntity arena) {
-            arena.lobby(waiting, startsAt);
+        if (!key.level().isLoaded(key.arena())) {
+            return;
         }
+        if (key.level().getBlockEntity(key.arena()) instanceof ArenaBlockEntity arena) {
+            arena.lobby(waiting, startsAt);
+        } else if (key.level().getBlockEntity(key.arena()) instanceof ArenaCoreBlockEntity core) {
+            core.lobby(waiting, startsAt);
+        }
+    }
+
+    /** Whether two of these people share one podium. */
+    private static boolean crowded(List<ServerPlayer> players) {
+        Set<BlockPos> podiums = new HashSet<>();
+        for (ServerPlayer player : players) {
+            BlockPos podium = BuiltArena.podiumUnder(player);
+            if (podium != null && !podiums.add(podium)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void bar(ServerPlayer player, Component text) {

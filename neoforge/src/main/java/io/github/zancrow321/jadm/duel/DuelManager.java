@@ -4,7 +4,6 @@ import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.JadmServerConfig;
 import io.github.zancrow321.jadm.arena.DuelArena;
-import io.github.zancrow321.jadm.arena.DuelDome;
 import io.github.zancrow321.jadm.cosmetics.Cosmetics;
 import io.github.zancrow321.jadm.cosmetics.PlayerCosmetics;
 import io.github.zancrow321.jadm.engine.DuelSettings;
@@ -299,6 +298,20 @@ public final class DuelManager {
                 new Entrant(1, second.getUUID(), second.getScoreboardName())), Set.of(), false, 0, null));
     }
 
+    /** Starts a tag duel between two pairs standing on the podiums of a free player-built arena. */
+    public void arenaDuel(List<ServerPlayer> team0, List<ServerPlayer> team1) {
+        List<Entrant> entrants = new ArrayList<>();
+        for (int team = 0; team < 2; team++) {
+            for (ServerPlayer player : team == 0 ? team0 : team1) {
+                if (inDuel(player)) {
+                    return;
+                }
+                entrants.add(new Entrant(team, player.getUUID(), player.getScoreboardName()));
+            }
+        }
+        launch(new Invite(team0.get(0).getUUID(), List.copyOf(entrants), Set.of(), false, 0, null));
+    }
+
     /**
      * Why {@code player} couldn't duel for want of a deck, or {@code null} if they can (with a legal deck box, or a
      * lent starter deck). Tells them nothing.
@@ -371,9 +384,6 @@ public final class DuelManager {
         List<ServerPlayer> team0 = online.stream().filter(p -> teamOf(seated, p) == 0).toList();
         List<ServerPlayer> team1 = online.stream().filter(p -> teamOf(seated, p) == 1).toList();
         DuelFieldPayload field = DuelArena.claim(team0, team1, invite.npc());
-        if (field == null) {
-            field = team0.isEmpty() ? turned(DuelDome.field(team1, team0)) : DuelDome.field(team0, team1);
-        }
         if (field == null && invite.npc() != null) {
             // Against an NPC the one person may be on either team; the field is built from their end.
             ServerPlayer person = online.get(0);
@@ -445,7 +455,7 @@ public final class DuelManager {
 
     /** The same field seen from the other end: team 0 gets the far side. */
     private static DuelFieldPayload turned(DuelFieldPayload field) {
-        return field == null ? null : new DuelFieldPayload(true, field.x(), field.y(), field.z(), field.yaw() + 180);
+        return field == null ? null : field.turned();
     }
 
     private static int teamOf(List<Entrant> entrants, ServerPlayer player) {

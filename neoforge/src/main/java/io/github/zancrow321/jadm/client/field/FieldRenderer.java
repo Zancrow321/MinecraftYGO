@@ -247,12 +247,15 @@ public final class FieldRenderer {
         Vec3 f = ClientField.forward();
         float pulse = 0.5f + 0.5f * Mth.sin((now + partial) / 4f);
         int you = ClientDuel.view().you();
-        // A faint plate under the whole mat.
+        // A faint plate under the whole mat; an outlined mat leaves the arena's own floor to show.
+        boolean outline = ClientField.outline();
         Vec3 c = ClientField.toWorld(0, 0, MAT_Y - 0.005);
         Vec3 hu = r.scale(HALF_WIDTH + 0.3);
         Vec3 hv = f.scale(FieldLayout.halfLength() + 0.3);
-        draw.colorQuad(vc, c.subtract(hu).subtract(hv), c.add(hu).subtract(hv), c.add(hu).add(hv),
-                c.subtract(hu).add(hv), 0x300A2A4A);
+        if (!outline) {
+            draw.colorQuad(vc, c.subtract(hu).subtract(hv), c.add(hu).subtract(hv), c.add(hu).add(hv),
+                    c.subtract(hu).add(hv), 0x300A2A4A);
+        }
         for (int[] zone : ZONES) {
             Loc loc = new Loc(zone[0], zone[1], zone[2], 0);
             Slot s = slot(loc);
@@ -270,6 +273,10 @@ public final class FieldRenderer {
                 fill = own ? 0x50186E40 : 0x506E4018;
                 edge = own ? 0xC040FFA0 : 0xC0FFA040;
             }
+            if (outline) {
+                fill = 0;
+                edge |= 0xFF000000;
+            }
             if (ClientField.selected(loc)) {
                 fill = 0x8030C060;
                 edge = 0xFF60FF90;
@@ -284,9 +291,11 @@ public final class FieldRenderer {
             Vec3 center = ClientField.toWorld(s.x(), s.z(), MAT_Y);
             Vec3 u = r.scale(ZONE_WIDTH / 2 - 0.08);
             Vec3 v = f.scale(ZONE_DEPTH / 2 - 0.08);
-            draw.colorQuad(vc, center.subtract(u).subtract(v), center.add(u).subtract(v), center.add(u).add(v),
-                    center.subtract(u).add(v), fill);
-            border(draw, vc, center.add(0, 0.002, 0), u, v, 0.06, edge);
+            if (fill != 0) {
+                draw.colorQuad(vc, center.subtract(u).subtract(v), center.add(u).subtract(v),
+                        center.add(u).add(v), center.subtract(u).add(v), fill);
+            }
+            border(draw, vc, center.add(0, 0.002, 0), u, v, outline ? 0.09 : 0.06, edge);
         }
     }
 
@@ -597,7 +606,11 @@ public final class FieldRenderer {
                                   CardPool.Model model, int player, int seq, boolean defense, float grow, Vec3 offset,
                                   long now, float partial) {
         Slot s = slot(player, LOCATION_MZONE, seq);
-        double scale = modelScale(model) * grow;
+        double scale = modelScale(model) * grow * ClientField.size();
+        if (ClientField.ceiling() > 0 && model.height() * scale > ClientField.ceiling() - 0.4) {
+            // Under a roof: the monster stays below it.
+            scale = Math.max(ClientField.ceiling() - 0.4, 0.5) / model.height();
+        }
         if (scale <= 0.001) {
             return;
         }
