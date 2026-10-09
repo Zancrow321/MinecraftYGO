@@ -11,17 +11,35 @@ import net.minecraft.sounds.SoundEvents;
 import java.util.List;
 
 /**
- * Reveals the cards of a freshly opened booster pack one by one, the rare slot last. Click or Esc to close.
+ * Reveals the cards of a freshly opened booster pack one by one, the rare slot last. Click or Esc to close (or go
+ * on to the next pack).
  */
 public final class PackOpenScreen extends Screen {
     private static final int REVEAL_TICKS = 5;
 
     private final List<JadmComponents.CardStack> cards;
+    /** The screen to go on to once this one is closed, or {@code null} */
+    private final Screen next;
     private int ticks;
 
     public PackOpenScreen(String setName, List<JadmComponents.CardStack> cards) {
+        this(setName, cards, null);
+    }
+
+    /** A pack of several opened one after the other, e.g. the packs of a Sealed tournament. */
+    public PackOpenScreen(String setName, List<JadmComponents.CardStack> cards, Screen next) {
         super(Component.literal(setName));
         this.cards = cards;
+        this.next = next;
+    }
+
+    @Override
+    public void onClose() {
+        if (next != null && minecraft != null) {
+            minecraft.setScreen(next);
+        } else {
+            super.onClose();
+        }
     }
 
     private int revealed() {

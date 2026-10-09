@@ -43,6 +43,11 @@ public final class ClientScreens {
         io.github.zancrow321.jadm.client.tournament.TournamentScreen.receive(payload.open(), payload.json());
     }
 
+    /** A Sealed or Draft tournament's draft or deck building: open, refresh or close its window. */
+    public static void limited(io.github.zancrow321.jadm.network.LimitedPayload payload) {
+        io.github.zancrow321.jadm.client.collection.LimitedScreen.receive(payload.open(), payload.json());
+    }
+
     /** Opens the admin menu, or refreshes it if it is open. */
     public static void admin(io.github.zancrow321.jadm.network.AdminPayload payload) {
         Minecraft mc = Minecraft.getInstance();

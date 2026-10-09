@@ -161,7 +161,14 @@
         "- Wenn die Anmeldung schließt, füllen NPC-Duellanten freie Plätze auf, und gepaart wird Runde für Runde.",
         "- Gespielt wird nur auf Duellarenen, die mit `{cmd} tournament arena add` hinzugefügt wurden. Ist dein Match dran, wirst du auf ein Pult gebracht; mit **[Ready]** geht es früher los. Danach kommst du zurück, wo du warst.",
         "- Bist du {server:tournament.noShowMinutes} Minuten offline oder in einem anderen Duell, während dein Match dran ist, verlierst du es.",
-        "`{cmd} tournament` öffnet das Turnierfenster: Turnierbaum (zum Verschieben ziehen), Tabelle, Matches sowie Regeln und Preise. Startgebühren zahlt man in der Shop-Währung, und die Preise ersetzen die üblichen Duell-Belohnungen."
+        "`{cmd} tournament` öffnet das Turnierfenster: Turnierbaum (zum Verschieben ziehen), Tabelle, Matches sowie Regeln und Preise. Startgebühren zahlt man in der Shop-Währung, und die Preise ersetzen die üblichen Duell-Belohnungen.",
+        "# Draft & Sealed",
+        "Bei einem Draft- oder Sealed-Turnier bringt niemand ein Deck mit: Alle bekommen zum Start frische Packs und bauen daraus vor Ort ein Deck. Der Ausrichter eröffnet es mit `{cmd} tournament create sealed [name]` oder `create draft [name]` (oder stellt `deckMode` um). Du trittst ohne Deckbox bei.",
+        "- **Sealed**: Alle öffnen dieselben Packs (`limitedPacks`, z. B. \"pack 5\" für fünf Packs eines zufälligen erschienenen Sets oder \"pack:lob 3; pack:mrd 2\"). Die Packs werden nacheinander aufgedeckt, dann öffnet sich der Deckbau.",
+        "- **Draft**: Alle öffnen ein Pack, nehmen eine Karte und geben den Rest weiter, alle gleichzeitig: im 1., 3., ... Pack zum nächsten Duellanten, im 2., 4., ... in die andere Richtung. Klick eine Karte an, um sie zu nehmen. Nach {server:tournament.pickSeconds} Sekunden wird eine für dich gewählt. NPCs draften mit.",
+        "- **Deckbau**: links dein Deck, rechts der Rest deines Pools. Mindestens {server:tournament.deckMinimum} Karten im Main Deck, bis zu 15 im Extra Deck, so viele Kopien, wie du gezogen hast, keine Banlist. **Auto** baut ein Deck aus deinen besten Karten, **Done** legt es fest. Nach {server:tournament.buildMinutes} Minuten spielt, wer nicht fertig ist, ein automatisch gebautes Deck.",
+        "- Sind alle Decks fertig, wird der Turnierbaum gezogen, und die Matches laufen wie bei jedem Turnier. Mit `keepCards` behältst du deinen Pool danach; sonst sind die Karten nur fürs Turnier geliehen.",
+        "`{cmd} tournament deck` öffnet das Draft- oder Deckbau-Fenster wieder, falls du es geschlossen hast."
       ]
     },
     {
@@ -209,6 +216,7 @@
         "# Turniere",
         "- `{cmd} tournament`: das Turnierfenster; `bracket`, `table`, `matches` und `rules` öffnen es bei diesem Reiter.",
         "- `{cmd} tournament join`, `leave` und `ready`: mitmachen, aussteigen, dein Match starten.",
+        "- `{cmd} tournament deck`: das Draft- oder Deckbau-Fenster eines Draft- oder Sealed-Turniers.",
         "- `{cmd} tournament status` und `settings`: wie es steht und womit gespielt wird.",
         "- Ausrichter: `{cmd} tournament create [format] [name]`, `set <setting> <value>`, `start`, `cancel`, `addnpc [count]`, `kick <name>`.",
         "# Für Operatoren",
