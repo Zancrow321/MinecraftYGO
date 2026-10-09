@@ -595,6 +595,86 @@ public final class TournamentManager {
         return s.equalsIgnoreCase("server") ? JadmData.banlist(step) : JadmData.banlist(step, s);
     }
 
+    // ---- Invitationals -------------------------------------------------------------------------------------------
+
+    /**
+     * Opens and starts a tournament for exactly these people, such as the finals of a Star Chip event: no entry fee,
+     * no NPCs, and each duelist plays the deck box they bring to each match.
+     *
+     * @param settings tournament settings ({@code key=value}) on top of the {@code [tournament]} defaults
+     * @return what went wrong, or {@code null} once it has started
+     */
+    public String invitational(String name, List<UUID> players, List<String> names, List<String> settings) {
+        Tournament old = current();
+        if (old != null && old.active()) {
+            return "the tournament \"" + old.name + "\" isn't over yet";
+        }
+        if (data.store.arenas.isEmpty()) {
+            return "no Duel Arena belongs to tournaments yet (stand on one and run /jadm tournament arena add)";
+        }
+        if (players.size() < 2) {
+            return "it needs at least 2 duelists";
+        }
+        Tournament t = new Tournament();
+        t.settings = TournamentOptions.snapshot();
+        for (String entry : settings) {
+            int eq = entry.indexOf('=');
+            TournamentOptions.Option o = eq < 0 ? null : TournamentOptions.option(entry.substring(0, eq).strip());
+            String value = o == null || !o.perTournament() ? null : TournamentOptions.parse(o, entry.substring(eq + 1));
+            if (value == null) {
+                Jadm.LOGGER.warn("Ignoring the tournament setting \"{}\"", entry);
+                continue;
+            }
+            t.settings.put(o.key(), value);
+        }
+        // Fixed for an invitational: exactly the invited, nobody else.
+        t.settings.put("minPlayers", "2");
+        t.settings.put("maxPlayers", String.valueOf(Math.max(2, players.size())));
+        t.settings.put("registrationMinutes", "0");
+        t.settings.put("startWhenFull", "false");
+        t.settings.put("npcFill", "none");
+        t.settings.put("npcCount", "0");
+        t.settings.put("entryFee", "0");
+        t.settings.put("lockDeck", "false");
+        t.hostName = "the server";
+        t.name = name;
+        t.openedAt = now();
+        for (int i = 0; i < players.size(); i++) {
+            Tournament.Entrant e = new Tournament.Entrant();
+            e.player = players.get(i);
+            e.name = names.get(i);
+            e.deckName = "their deck box";
+            t.entrants.add(e);
+        }
+        t.news("Opened for " + String.join(", ", names));
+        data.store.current = t;
+        String error = start(null);
+        changed();
+        return error;
+    }
+
+    /**
+     * How the current tournament called {@code name} ended: the winner's name, {@code ""} if it was called off, or
+     * {@code null} while it is still on (or if the current tournament is another one).
+     */
+    public String outcome(String name) {
+        Tournament t = current();
+        if (t == null || !t.name.equals(name) || t.active()) {
+            return null;
+        }
+        if (t.state.equals(Tournament.CANCELLED)) {
+            return "";
+        }
+        return t.entrants.stream().filter(e -> e.place == 1).map(e -> e.name).findFirst().orElse("");
+    }
+
+    /** Hands prize entries ("pack 5", "points 1000", ...) to a player, now or when they are next online. */
+    public List<String> handOut(UUID player, List<String> entries) {
+        List<String> got = new ArrayList<>();
+        entries.forEach(entry -> got.addAll(owe(player, entry)));
+        return got;
+    }
+
     // ---- Running ------------------------------------------------------------------------------------------------
 
     public void tick() {

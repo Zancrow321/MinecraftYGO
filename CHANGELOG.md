@@ -61,6 +61,18 @@
   booster packs, and everyone hears about it in chat. `[collection]` in the server config sets the points, packs,
   emeralds, experience and the announcement.
 
+### Star Chips
+- **Star Chip events**, as on Duelist Kingdom: an operator starts one with `/jadm starchips start [name]`, and
+  everyone who joins gets 2 Star Chips. Every 1v1 duel between two duelists of the event (arena auto duels too) is
+  for Star Chips: each side puts up 1, or more with `/jadm starchips duel <player> <chips>`, and the winner takes
+  them all. Duels against NPC duelists don't count, as on Duelist Kingdom (`npcDuels` turns them on, for 1 chip).
+- Collect 10 and you qualify; lose your last chip and you are out. Once 4 have qualified the finals are held as a
+  tournament on the tournament arenas, with their own prizes (`finalsSettings`). With a time limit
+  (`durationMinutes`) or `/jadm starchips finals`, empty seats go to the duelists with the most chips.
+- A **Duelist Glove** in the top left corner shows your chips; a chip won pops in, a chip lost flashes red. The
+  duel result screen says what you won or lost, and `/jadm starchips` shows the standings.
+- Everything is in the new `[starchips]` server config section and in the handbook (Arenas and tournaments).
+
 ### Card pictures when picking cards
 - Searching your Deck now shows the cards you can pick. Before, every card in the window showed its back without a
   name, so you couldn't tell what you were choosing.

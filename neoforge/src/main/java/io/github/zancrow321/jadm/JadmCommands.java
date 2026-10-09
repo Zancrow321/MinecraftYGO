@@ -40,6 +40,7 @@ final class JadmCommands {
                 .then(Commands.literal("version").executes(JadmCommands::version))
                 .then(io.github.zancrow321.jadm.progression.ProgressionCommands.build())
                 .then(io.github.zancrow321.jadm.tournament.TournamentCommands.build())
+                .then(io.github.zancrow321.jadm.starchips.StarChipCommands.build())
                 .then(io.github.zancrow321.jadm.duel.StatsCommands.build())
                 .then(io.github.zancrow321.jadm.ranking.RankCommands.build())
                 .then(Commands.literal("duel")

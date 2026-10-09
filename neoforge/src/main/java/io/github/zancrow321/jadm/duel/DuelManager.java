@@ -27,6 +27,7 @@ import io.github.zancrow321.jadm.network.DuelViewPayload;
 import io.github.zancrow321.jadm.ranking.RankedDuels;
 import io.github.zancrow321.jadm.ranking.Ranking;
 import io.github.zancrow321.jadm.ranking.Tiers;
+import io.github.zancrow321.jadm.starchips.StarChips;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -223,6 +224,8 @@ public final class DuelManager {
         }
         String matchup = matchup(entrants) + (ranked && ante ? " (ranked, ante)" : ranked ? " (ranked)"
                 : ante ? " (ante)" : split ? " (Battle City)" : "");
+        String chips = entrants.size() == 2
+                ? StarChips.get(server).inviteNote(entrants.get(0).player(), entrants.get(1).player()) : "";
         host.sendSystemMessage(Component.literal("Invitation sent: " + matchup + "."));
         for (UUID id : pending) {
             invites.put(id, invite);
@@ -236,7 +239,7 @@ public final class DuelManager {
                     ? " Right-click them with your Duel Disk or click " : " Click ";
             target.sendSystemMessage(Component.literal(host.getScoreboardName() + " invites you: " + matchup
                     + (ante ? ". The winner takes a random card from the loser's deck box." : ".")
-                    + (ranked ? rankedNote(host, target) : "") + how)
+                    + (ranked ? rankedNote(host, target) : "") + chips + how)
                     .append(accept));
         }
     }
@@ -429,8 +432,10 @@ public final class DuelManager {
                     .map(e -> e.name() + " (" + Ranking.get(server).rating(e.player()) + ")").toList()) + ".")
                     .withStyle(ChatFormatting.GOLD));
         }
-        start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step, null,
-                invite.ranked());
+        if (start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step, null,
+                invite.ranked()) && entrants.size() == 2) {
+            StarChips.get(server).begin(entrants.get(0).player(), entrants.get(1).player(), invite.npc() != null);
+        }
     }
 
     /**
@@ -978,11 +983,13 @@ public final class DuelManager {
                 records.put(id, record.summary() + (record.streak() > 1 ? ", " + record.streak() + " wins in a row"
                         : ""));
             }
+            // Settled for people who left mid-duel too: leaving forfeits.
+            List<String> chips = StarChips.get(server).settle(id, decided, won);
             ServerPlayer player = player(id);
             if (player == null) {
                 continue;
             }
-            List<String> lines = new ArrayList<>();
+            List<String> lines = new ArrayList<>(chips);
             rewards.put(id, lines);
             if (won) {
                 PlayerCosmetics.wonDuel(player, againstNpc).forEach(u -> lines.add("Unlocked: " + u));

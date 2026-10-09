@@ -66,6 +66,7 @@ public final class Jadm {
         NeoForge.EVENT_BUS.addListener((ServerStoppingEvent event) -> {
             DuelManager.shutdown();
             TournamentManager.shutdown();
+            io.github.zancrow321.jadm.starchips.StarChips.shutdown();
             io.github.zancrow321.jadm.arena.ArenaLobby.reset();
             io.github.zancrow321.jadm.trade.Trades.reset();
             Progress.stopped();
@@ -73,6 +74,7 @@ public final class Jadm {
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> {
             DuelManager.get(event.getServer()).tick();
             TournamentManager.get(event.getServer()).tick();
+            io.github.zancrow321.jadm.starchips.StarChips.get(event.getServer()).tick();
             io.github.zancrow321.jadm.arena.ArenaLobby.tick(event.getServer());
             io.github.zancrow321.jadm.village.CardShop.tick(event.getServer());
             io.github.zancrow321.jadm.points.Points.tick(event.getServer());
@@ -85,6 +87,7 @@ public final class Jadm {
                 io.github.zancrow321.jadm.guide.GuideBook.onLogin(player);
                 DuelManager.get(player.server).onLogin(player);
                 TournamentManager.get(player.server).onLogin(player);
+                io.github.zancrow321.jadm.starchips.StarChips.get(player.server).onLogin(player);
                 io.github.zancrow321.jadm.points.Points.login(player);
             }
         });
