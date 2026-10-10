@@ -215,6 +215,8 @@ In game:
   [docs/figura.md](docs/figura.md). A ready-made starter avatar (Millennium Puzzle, Battle City coat, duel reactions,
   emotes) lives in [figura/jadm-duelist](figura/jadm-duelist) and is built as its own download by
   `./gradlew figuraStarterKit`.
+- **KubeJS** (optional): server scripts get `JadmEvents` (duel start and end, pack opened, tournament end, rank
+  change, set completed) and `Jadm` helpers for cards, packs and Duel Points. See [docs/kubejs.md](docs/kubejs.md).
 - `/jadm version` reports the loaded OCG-Core version.
 - `/jadm duel bot` or `/jadm duel <player>` (then `/jadm accept`) starts a duel. In a duel you stand still
   and play with the mouse: click a card for its actions or drag it from your hand onto a zone, use the phase

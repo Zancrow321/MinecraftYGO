@@ -329,7 +329,8 @@
         "- Eine Karte passt nicht ins Deck? Sie stammt aus einem noch gesperrten Set, oder die Bannliste begrenzt sie. Die Deckbox sagt dir, welche.",
         "- Die Karten eines Ante-Duells sind sicher: Ein Absturz oder Neustart gibt sie zurück, und ein Sieger, der offline ist, bekommt sie beim nächsten Einloggen.",
         "- Im 2-gegen-2 beantwortet nur der Partner, der am Zug ist, die Abfragen; beide sehen die Hand des Teams.",
-        "- Buch verloren? `{cmd} guide` öffnet es, oder bau ein neues aus einem Buch und Papier."
+        "- Buch verloren? `{cmd} guide` öffnet es, oder bau ein neues aus einem Buch und Papier.",
+        "- Für Server mit KubeJS: Skripte können auf Duelle, Booster, Turniere und Ränge reagieren (`JadmEvents`) und Karten, Packs und Duel Points vergeben (`Jadm`). Die Anleitung steht in `docs/kubejs.md` im GitHub-Repository des Mods."
       ]
     }
   ]
