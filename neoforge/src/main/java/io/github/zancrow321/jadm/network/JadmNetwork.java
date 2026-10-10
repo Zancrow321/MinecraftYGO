@@ -115,6 +115,14 @@ public final class JadmNetwork {
                         io.github.zancrow321.jadm.collection.SetCollection.handle(player, payload);
                     }
                 }));
+        registrar.playToClient(QuestPayload.TYPE, QuestPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.quests(payload)));
+        registrar.playToServer(QuestActionPayload.TYPE, QuestActionPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        io.github.zancrow321.jadm.quest.Quests.handle(player, payload);
+                    }
+                }));
         registrar.playToClient(ArenaCoreOpenPayload.TYPE, ArenaCoreOpenPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.arenaCore(payload.pos())));
         registrar.playToServer(ArenaCoreSettingsPayload.TYPE, ArenaCoreSettingsPayload.STREAM_CODEC,

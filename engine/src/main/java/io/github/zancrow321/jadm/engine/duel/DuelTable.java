@@ -15,6 +15,7 @@ import io.github.zancrow321.jadm.engine.text.DuelLog;
 import io.github.zancrow321.jadm.engine.text.DuelText;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +42,40 @@ public final class DuelTable implements AutoCloseable {
     public record Seat(int team, String name, Responder bot) {
     }
 
+    /**
+     * What one team did in the duel so far (daily quests count from it). Summons list the monsters' passcodes; damage
+     * is what the other team lost to damage, not to paid costs.
+     */
+    public static final class Tally {
+        private final List<Integer> normalSummons = new ArrayList<>();
+        private final List<Integer> flipSummons = new ArrayList<>();
+        private final List<Integer> specialSummons = new ArrayList<>();
+        private final List<Integer> activations = new ArrayList<>();
+        private int damageDealt;
+
+        /** Normal and Tribute Summons. */
+        public List<Integer> normalSummons() {
+            return Collections.unmodifiableList(normalSummons);
+        }
+
+        public List<Integer> flipSummons() {
+            return Collections.unmodifiableList(flipSummons);
+        }
+
+        public List<Integer> specialSummons() {
+            return Collections.unmodifiableList(specialSummons);
+        }
+
+        /** Every card effect the team activated, spells and traps included. */
+        public List<Integer> activations() {
+            return Collections.unmodifiableList(activations);
+        }
+
+        public int damageDealt() {
+            return damageDealt;
+        }
+    }
+
     /** The log line a person gets when their answer wasn't allowed and they're asked again. */
     public static final String RETRY_LINE = "That choice isn't allowed, try again";
 
@@ -63,6 +98,7 @@ public final class DuelTable implements AutoCloseable {
      * a pick among them right after shows what they are. See {@link #revealKey}.
      */
     private final List<Set<String>> revealed = List.of(new HashSet<>(), new HashSet<>());
+    private final List<Tally> tallies = List.of(new Tally(), new Tally());
     private long hint;
     private int botRetries;
     private String forfeitResult;
@@ -197,6 +233,11 @@ public final class DuelTable implements AutoCloseable {
         return new DuelView(0, names, duel.board().viewedBy(-1, false), List.of(), List.of(), null, 0, null);
     }
 
+    /** What {@code team} (0 or 1) did in the duel so far. */
+    public Tally tally(int team) {
+        return tallies.get(team);
+    }
+
     /** The current turn number, 1 for the first turn. */
     public int turn() {
         return duel.board().turn();
@@ -318,6 +359,7 @@ public final class DuelTable implements AutoCloseable {
             if (message instanceof DuelMessage.NewTurn) {
                 revealed.forEach(Set::clear);
             }
+            count(message);
             if (message instanceof DuelMessage.ConfirmCards confirm && confirm.player() >= 0 && confirm.player() < 2) {
                 // Shown cards go to the player named; the top of a deck is shown to both.
                 for (int team = 0; team < 2; team++) {
@@ -364,6 +406,23 @@ public final class DuelTable implements AutoCloseable {
                 if (line != null) {
                     pendingLog.get(viewer).add(line);
                 }
+            }
+        }
+    }
+
+    private void count(DuelMessage message) {
+        switch (message) {
+            case DuelMessage.Summoning m when m.loc().controller() == 0 || m.loc().controller() == 1 -> {
+                Tally tally = tallies.get(m.loc().controller());
+                (m.type() == MessageType.SPSUMMONING ? tally.specialSummons
+                        : m.type() == MessageType.FLIPSUMMONING ? tally.flipSummons : tally.normalSummons)
+                        .add(m.code());
+            }
+            case DuelMessage.Chaining m when m.loc().controller() == 0 || m.loc().controller() == 1 ->
+                    tallies.get(m.loc().controller()).activations.add(m.code());
+            case DuelMessage.LifePoints m when m.type() == MessageType.DAMAGE && (m.player() == 0 || m.player() == 1) ->
+                    tallies.get(1 - m.player()).damageDealt += m.amount();
+            default -> {
             }
         }
     }

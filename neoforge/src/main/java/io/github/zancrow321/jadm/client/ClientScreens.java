@@ -77,6 +77,11 @@ public final class ClientScreens {
         }
     }
 
+    /** The player's quests: pop up what moved, and open or refresh the quest window. */
+    public static void quests(io.github.zancrow321.jadm.network.QuestPayload payload) {
+        io.github.zancrow321.jadm.client.quest.QuestScreen.receive(payload.open(), payload.json());
+    }
+
     public static void packOpened(PackOpenedPayload payload) {
         Minecraft.getInstance().setScreen(new PackOpenScreen(payload.setName(), payload.cards()));
     }

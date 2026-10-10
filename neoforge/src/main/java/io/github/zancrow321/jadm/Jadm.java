@@ -90,6 +90,7 @@ public final class Jadm {
                 TournamentManager.get(player.server).onLogin(player);
                 io.github.zancrow321.jadm.starchips.StarChips.get(player.server).onLogin(player);
                 io.github.zancrow321.jadm.points.Points.login(player);
+                io.github.zancrow321.jadm.quest.Quests.onLogin(player);
             }
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {
@@ -164,6 +165,7 @@ public final class Jadm {
 
     private void onServerStarting(ServerStartingEvent event) {
         JadmServerConfig.migrate();
+        io.github.zancrow321.jadm.quest.QuestPool.load();
         Progress.started(event.getServer());
         // Duels run on the server, so load the engine there and fail loudly but harmlessly if it's unavailable.
         try {
