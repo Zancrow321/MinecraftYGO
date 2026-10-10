@@ -9,6 +9,11 @@
 - **Clan tag everywhere:** every clan becomes a vanilla scoreboard team, so each member's `[TAG]` stands in the clan's
   color in front of their name in chat, in the player list (Tab) and above their head, and chat mods that show teams
   show it too. Turn it off with `[clans] showTag`.
+- **FTB Teams:** with FTB Teams installed, every clan is also an FTB Teams party with the same members, leader
+  (owner), officers, name, color, motto and open/closed, so FTB Chunks claims, FTB Quests progress and team chat count
+  for the whole clan. Changes on either side carry over: joining, leaving, kicks, a new owner, promotions and party
+  settings. Founding a clan turns the founder's own party into the clan; existing clans get a party when their leader
+  logs in; disbanding a clan keeps its party. Turn it off with `[clans] ftbTeams`.
 - **Crest:** hold a banner made on a loom and run `/jadm clan crest`; it becomes the clan's crest in the clan window
   and the clan ranking. `/jadm clan banner` gives members a copy.
 - **Clan treasury** in Duel Points: members pay in with `/jadm clan deposit`, the leader pays out. Clan chat with
