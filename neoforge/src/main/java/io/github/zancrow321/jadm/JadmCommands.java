@@ -43,6 +43,7 @@ final class JadmCommands {
                 .then(io.github.zancrow321.jadm.starchips.StarChipCommands.build())
                 .then(io.github.zancrow321.jadm.duel.StatsCommands.build())
                 .then(io.github.zancrow321.jadm.ranking.RankCommands.build())
+                .then(io.github.zancrow321.jadm.clan.ClanCommands.build())
                 .then(Commands.literal("duel")
                         .then(Commands.literal("bot").executes(ctx -> {
                             ServerPlayer player = ctx.getSource().getPlayerOrException();

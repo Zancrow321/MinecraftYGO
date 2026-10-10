@@ -691,8 +691,24 @@ public final class DuelManager {
                     + ruleset.displayName() + " rules. L opens the duel log, Esc the duel menu." + (tag ? " Partners take turns; you answer when it's yours." : "")
                     + (split ? " Each partner plays on their own half of the field." : "")));
         }
+        Component clanWar = io.github.zancrow321.jadm.clan.ClanWars.startNote(server, teamPeople(entrants, 0),
+                teamPeople(entrants, 1), ranked);
+        if (clanWar != null) {
+            broadcast(entrants, clanWar);
+        }
         run(duel, table::start);
         return true;
+    }
+
+    /** The people (and {@code null} for each bot) on {@code team}. */
+    private static List<UUID> teamPeople(List<Entrant> entrants, int team) {
+        List<UUID> out = new ArrayList<>();
+        for (Entrant e : entrants) {
+            if (e.team() == team) {
+                out.add(e.player());
+            }
+        }
+        return out;
     }
 
     /** A team's card sleeve: its first person's pick, the NPC's own, or the classic back for bots. */
@@ -1027,6 +1043,19 @@ public final class DuelManager {
                     rewards.get(id).addAll(outcome.notes());
                 }
             });
+        }
+        if (duel.table().finished() && !againstNpc) {
+            List<UUID> team0 = new ArrayList<>();
+            List<UUID> team1 = new ArrayList<>();
+            for (int seat = 0; seat < duel.seats().length; seat++) {
+                (duel.table().seats().get(seat).team() == 0 ? team0 : team1).add(duel.seats()[seat]);
+            }
+            io.github.zancrow321.jadm.clan.ClanWars.duelEnded(server, team0, team1, winner, duel.ranked())
+                    .forEach((id, note) -> {
+                        if (rewards.containsKey(id)) {
+                            rewards.get(id).add(note);
+                        }
+                    });
         }
         if (againstNpc && duel.match() != null) {
             // An NPC standing in for a tournament duelist only came to show; it hands out nothing.

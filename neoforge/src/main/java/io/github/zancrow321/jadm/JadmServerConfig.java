@@ -241,6 +241,12 @@ public final class JadmServerConfig {
                     + "whoever collects enough goes to the finals, a tournament on the tournament arenas. An operator "
                     + "starts one with /jadm starchips start.").push("starchips"));
 
+    /** Duelist clans, their crests, the clan ranking and clan wars, in {@code [clans]}. */
+    public static final Clans CLANS = new Clans(BUILDER.pop()
+            .comment("Duelist clans: players found clans with a tag and a crest (a banner from the loom), fill a clan "
+                    + "treasury with Duel Points and fight clan wars, which move the clans' ratings in the clan "
+                    + "ranking. /jadm clan opens the clan window.").push("clans"));
+
     static {
         BUILDER.pop();
     }
@@ -547,6 +553,82 @@ public final class JadmServerConfig {
                             "thirdPlaceMatch=false", "prizesFirst=pack 10; points 1000",
                             "prizesSecond=pack 5; points 300", "prizesThird=pack 2", "prizesFourth=pack 1",
                             "prizesTop8=pack 1"), () -> "", v -> v instanceof String s && s.contains("="));
+        }
+    }
+
+    /** The settings of clans and clan wars. */
+    public static final class Clans {
+        public final ModConfigSpec.BooleanValue enabled;
+        public final ModConfigSpec.IntValue createPrice;
+        public final ModConfigSpec.IntValue maxMembers;
+        public final ModConfigSpec.IntValue bannerPrice;
+        public final ModConfigSpec.BooleanValue showTag;
+        public final ModConfigSpec.IntValue startRating;
+        public final ModConfigSpec.IntValue kFactor;
+        public final ModConfigSpec.IntValue warHours;
+        public final ModConfigSpec.IntValue warTarget;
+        public final ModConfigSpec.IntValue warMaxPerPair;
+        public final ModConfigSpec.BooleanValue warOnlyRanked;
+        public final ModConfigSpec.IntValue warAcceptHours;
+        public final ModConfigSpec.IntValue warCooldownHours;
+        public final ModConfigSpec.IntValue warMinMembers;
+        public final ModConfigSpec.IntValue maxStake;
+        public final ModConfigSpec.IntValue warWinPoints;
+        public final ModConfigSpec.BooleanValue announceWars;
+        public final ModConfigSpec.IntValue battleDuelists;
+        public final ModConfigSpec.IntValue battleCallSeconds;
+        public final ModConfigSpec.IntValue battleNoShowMinutes;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private Clans(ModConfigSpec.Builder builder) {
+            enabled = builder.comment("Players can found and join clans. Off, the clans stay as they are but nobody "
+                    + "can found one, join one or declare war.").define("enabled", true);
+            createPrice = builder.comment("Duel Points it costs to found a clan, when the [shop] currency is points; "
+                    + "0 for free.").defineInRange("createPrice", 500, 0, 1_000_000);
+            maxMembers = builder.comment("The most members a clan can have, its leader included; 0 for no limit.")
+                    .defineInRange("maxMembers", 20, 0, 1000);
+            bannerPrice = builder.comment("Duel Points a copy of the clan's crest as a banner costs "
+                    + "(/jadm clan banner), when the [shop] currency is points; 0 for free.")
+                    .defineInRange("bannerPrice", 25, 0, 1_000_000);
+            showTag = builder.comment("Show each member's clan tag, in the clan's color, in front of their name in "
+                    + "chat, in the player list (Tab) and above their head. Each clan gets a vanilla scoreboard team "
+                    + "for this (named jadm_clan_...), so chat mods that show teams show the tag too. Off removes "
+                    + "those teams.").define("showTag", true);
+            startRating = builder.comment("The clan rating every new clan starts with (and gets back when an operator "
+                    + "starts a new clan season).").defineInRange("startRating", 1000, 0, 100_000);
+            kFactor = builder.comment("How many rating points a clan war moves at most: an even war moves half this, "
+                    + "an upset almost all of it.").defineInRange("kFactor", 40, 1, 400);
+            warHours = builder.comment("How long a clan war lasts once it is accepted, in hours. In a race for "
+                    + "points the clan that is ahead when the time is up wins (an even score is a draw); an arena "
+                    + "battle has to begin within this time or ends in a draw.").defineInRange("warHours", 72, 1, 2160);
+            warTarget = builder.comment("A race for points ends early when a clan reaches this many points (one per "
+                    + "duel won); 0 to always play the full time.").defineInRange("warTarget", 10, 0, 10_000);
+            warMaxPerPair = builder.comment("Duels between the same two duelists count this many times per war at "
+                    + "most, so a clan has to beat many of the other clan's duelists; 0 for no limit.")
+                    .defineInRange("warMaxPerPair", 3, 0, 1000);
+            warOnlyRanked = builder.comment("Only ranked duels (/jadm duel <player> ranked) count in clan wars. Off, "
+                    + "every duel between members of the two clans counts, tag duels too.")
+                    .define("warOnlyRanked", false);
+            warAcceptHours = builder.comment("Hours a declared war waits for the other clan's leader or an officer "
+                    + "to accept it.").defineInRange("warAcceptHours", 24, 1, 720);
+            warCooldownHours = builder.comment("Hours after a war before the same two clans can fight again; 0 for "
+                    + "none.").defineInRange("warCooldownHours", 24, 0, 8760);
+            warMinMembers = builder.comment("Members a clan needs to declare or accept a war.")
+                    .defineInRange("warMinMembers", 1, 1, 1000);
+            maxStake = builder.comment("The most Duel Points from the clan treasury each clan can put up in a war "
+                    + "(the winner takes both); 0 turns stakes off.").defineInRange("maxStake", 10_000, 0,
+                    100_000_000);
+            warWinPoints = builder.comment("Duel Points the server adds to the winning clan's treasury, when the "
+                    + "[shop] currency is points; 0 for none.").defineInRange("warWinPoints", 500, 0, 1_000_000);
+            announceWars = builder.comment("Tell everyone on the server when a clan war begins and how it ended; "
+                    + "off tells only the two clans.").define("announceWars", true);
+            battleDuelists = builder.comment("Duelists each clan sends into an arena battle; they fight one bout "
+                    + "after another on a tournament arena (/jadm tournament arena add), first against first. An odd "
+                    + "number avoids even scores.").defineInRange("battleDuelists", 3, 1, 15);
+            battleCallSeconds = builder.comment("Seconds the two duelists of a bout stand on the podiums before it "
+                    + "starts.").defineInRange("battleCallSeconds", 10, 3, 120);
+            battleNoShowMinutes = builder.comment("Minutes a bout waits for a duelist who is offline or busy before "
+                    + "the other one wins it.").defineInRange("battleNoShowMinutes", 3, 1, 60);
         }
     }
 

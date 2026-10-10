@@ -2,6 +2,36 @@
 
 ## Unreleased
 
+### Duelist clans
+- **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
+  invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,
+  officers and members; promote, demote, remove, hand over the lead, rename, change the tag, set a motto.
+- **Clan tag everywhere:** every clan becomes a vanilla scoreboard team, so each member's `[TAG]` stands in the clan's
+  color in front of their name in chat, in the player list (Tab) and above their head, and chat mods that show teams
+  show it too. Turn it off with `[clans] showTag`.
+- **Crest:** hold a banner made on a loom and run `/jadm clan crest`; it becomes the clan's crest in the clan window
+  and the clan ranking. `/jadm clan banner` gives members a copy.
+- **Clan treasury** in Duel Points: members pay in with `/jadm clan deposit`, the leader pays out. Clan chat with
+  `/jadm clan chat <message>`.
+- **Clan wars**, declared by the leader or an officer (`/jadm clan war declare <tag> race|battle [stake]`) and accepted
+  by the other clan within 24 hours. Both clans put up the same stake from their treasury; the winner takes both plus
+  500 DP and rating from the loser.
+  - **Race for points:** for 3 days every duel a member wins against a member of the other clan is a point (tag duels
+    too); first to 10 wins early. The same two duelists count 3 times at most per war. The duel's start message and
+    result screen show the war score.
+  - **Arena battle:** each clan names 3 duelists (`/jadm clan war join` or `lineup`); once both clans are `ready`, the
+    duelists are brought onto a tournament arena and fight one bout after another, first against first. No-shows
+    lose their bout.
+- **Clan ranking:** clans have an Elo rating (start 1000) that wars move. `/jadm clan top` and `/jadm clan info <tag>`
+  in chat.
+- **Clan window** with the key G or `/jadm clan`: your clan with crest, rating, treasury and members; its wars with
+  score, time left, lineups and past wars; and the clan ranking, where leaders and officers declare war. Every button
+  runs the matching command.
+- Server settings in `[clans]`: founding price, member limit, banner price, tag display, start rating, K-factor, war
+  length and target, the per-pair limit, ranked-only wars, accept time, cooldown, minimum members, the most a stake
+  can be, the winner's bonus, announcements, and the arena battle's size, call time and no-show time.
+- Operators: `/jadm clan admin disband|rating|treasury|endwar <tag>` and `/jadm clan admin season confirm`.
+
 ### Tag duel life points
 - Tag and Battle City duels (2v2) have their own starting life points, `tagStartingLifePoints` in
   `serverconfig/jadm-server.toml`, 16000 by default. 1v1 duels keep `startingLifePoints` (8000). A tournament that

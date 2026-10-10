@@ -50,6 +50,8 @@ public final class JadmNetwork {
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.tournament(payload)));
         registrar.playToClient(RankingPayload.TYPE, RankingPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.ranking(payload)));
+        registrar.playToClient(ClanPayload.TYPE, ClanPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.clan(payload)));
         registrar.playToClient(LimitedPayload.TYPE, LimitedPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.limited(payload)));
         registrar.playToServer(LimitedActionPayload.TYPE, LimitedActionPayload.STREAM_CODEC,

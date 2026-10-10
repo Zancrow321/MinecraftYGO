@@ -1331,6 +1331,30 @@ public final class TournamentManager {
         return data.store.arenas.stream().anyMatch(ref -> ref.dim.equals(dim) && pos(ref).equals(arena));
     }
 
+    /**
+     * The tournament arenas other organized duels (clan arena battles) may use now: standing, free, and not held by
+     * an open or running tournament.
+     */
+    public List<Map.Entry<ServerLevel, BlockPos>> freeArenas() {
+        List<Map.Entry<ServerLevel, BlockPos>> out = new ArrayList<>();
+        Tournament t = current();
+        if (t != null && t.active()) {
+            return out;
+        }
+        for (TournamentData.ArenaRef ref : data.store.arenas) {
+            ServerLevel level = level(ref.dim);
+            if (level != null && DuelArena.available(level, pos(ref))) {
+                out.add(Map.entry(level, pos(ref)));
+            }
+        }
+        return out;
+    }
+
+    /** Whether any arenas were added for tournaments. */
+    public boolean hasArenas() {
+        return !data.store.arenas.isEmpty();
+    }
+
     String addArena(ServerPlayer player) {
         BlockPos arena = DuelArena.arenaUnder(player.level(), player.blockPosition());
         if (arena == null) {
