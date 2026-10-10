@@ -1,0 +1,579 @@
+{
+  "quests": [
+    {
+      "id": "win_3",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 3,
+      "weight": 10,
+      "title": {
+        "en_us": "Win 3 duels",
+        "de_de": "Gewinne 3 Duelle"
+      },
+      "reward": {
+        "points": 120
+      }
+    },
+    {
+      "id": "play_5",
+      "period": "daily",
+      "type": "duel_play",
+      "goal": 5,
+      "weight": 10,
+      "title": {
+        "en_us": "Play 5 duels",
+        "de_de": "Spiele 5 Duelle"
+      },
+      "reward": {
+        "points": 100
+      }
+    },
+    {
+      "id": "win_player",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 1,
+      "weight": 10,
+      "title": {
+        "en_us": "Beat another player",
+        "de_de": "Besiege einen anderen Spieler"
+      },
+      "against": "players",
+      "reward": {
+        "points": 120,
+        "packs": 1
+      }
+    },
+    {
+      "id": "win_npc_2",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 2,
+      "weight": 10,
+      "title": {
+        "en_us": "Beat 2 NPC duelists",
+        "de_de": "Besiege 2 NPC-Duellanten"
+      },
+      "against": "npcs",
+      "reward": {
+        "points": 120
+      }
+    },
+    {
+      "id": "win_dragon_2",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 2,
+      "weight": 10,
+      "title": {
+        "en_us": "Win 2 duels with a Dragon deck",
+        "de_de": "Gewinne 2 Duelle mit einem Drachen-Deck"
+      },
+      "race": "dragon",
+      "reward": {
+        "points": 150
+      }
+    },
+    {
+      "id": "win_spellcaster_2",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 2,
+      "weight": 10,
+      "title": {
+        "en_us": "Win 2 duels with a Spellcaster deck",
+        "de_de": "Gewinne 2 Duelle mit einem Hexer-Deck"
+      },
+      "race": "spellcaster",
+      "reward": {
+        "points": 150
+      }
+    },
+    {
+      "id": "win_warrior_2",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 2,
+      "weight": 10,
+      "title": {
+        "en_us": "Win 2 duels with a Warrior deck",
+        "de_de": "Gewinne 2 Duelle mit einem Krieger-Deck"
+      },
+      "race": "warrior",
+      "reward": {
+        "points": 150
+      }
+    },
+    {
+      "id": "win_fiend_2",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 2,
+      "weight": 6,
+      "title": {
+        "en_us": "Win 2 duels with a Fiend deck",
+        "de_de": "Gewinne 2 Duelle mit einem Unterweltler-Deck"
+      },
+      "race": "fiend",
+      "reward": {
+        "points": 150
+      }
+    },
+    {
+      "id": "win_machine_2",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 2,
+      "weight": 6,
+      "title": {
+        "en_us": "Win 2 duels with a Machine deck",
+        "de_de": "Gewinne 2 Duelle mit einem Maschinen-Deck"
+      },
+      "race": "machine",
+      "reward": {
+        "points": 150
+      }
+    },
+    {
+      "id": "win_light_2",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 2,
+      "weight": 6,
+      "title": {
+        "en_us": "Win 2 duels with a LIGHT deck",
+        "de_de": "Gewinne 2 Duelle mit einem LICHT-Deck"
+      },
+      "attribute": "light",
+      "reward": {
+        "points": 150
+      }
+    },
+    {
+      "id": "win_dark_2",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 2,
+      "weight": 6,
+      "title": {
+        "en_us": "Win 2 duels with a DARK deck",
+        "de_de": "Gewinne 2 Duelle mit einem FINSTERNIS-Deck"
+      },
+      "attribute": "dark",
+      "reward": {
+        "points": 150
+      }
+    },
+    {
+      "id": "win_dark_magician",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 1,
+      "weight": 5,
+      "title": {
+        "en_us": "Win a duel with Dark Magician in your deck",
+        "de_de": "Gewinne ein Duell mit dem Dunklen Magier im Deck"
+      },
+      "card": 46986414,
+      "reward": {
+        "points": 150
+      }
+    },
+    {
+      "id": "win_blue_eyes",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 1,
+      "weight": 5,
+      "title": {
+        "en_us": "Win a duel with Blue-Eyes White Dragon in your deck",
+        "de_de": "Gewinne ein Duell mit dem Blauäugigen weißen Drachen im Deck"
+      },
+      "card": 89631139,
+      "reward": {
+        "points": 150
+      }
+    },
+    {
+      "id": "win_fast",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 1,
+      "weight": 7,
+      "title": {
+        "en_us": "Win a duel by turn 6",
+        "de_de": "Gewinne ein Duell bis Runde 6"
+      },
+      "maxTurns": 6,
+      "reward": {
+        "points": 150
+      }
+    },
+    {
+      "id": "win_high_lp",
+      "period": "daily",
+      "type": "duel_win",
+      "goal": 1,
+      "weight": 7,
+      "title": {
+        "en_us": "Win a duel with 4000 LP or more left",
+        "de_de": "Gewinne ein Duell mit mindestens 4000 LP übrig"
+      },
+      "minLifePoints": 4000,
+      "reward": {
+        "points": 150
+      }
+    },
+    {
+      "id": "summon_special_8",
+      "period": "daily",
+      "type": "summon",
+      "goal": 8,
+      "weight": 10,
+      "title": {
+        "en_us": "Special Summon 8 monsters",
+        "de_de": "Beschwöre 8 Monster als Spezialbeschwörung"
+      },
+      "summon": "special",
+      "reward": {
+        "points": 100
+      }
+    },
+    {
+      "id": "summon_normal_8",
+      "period": "daily",
+      "type": "summon",
+      "goal": 8,
+      "weight": 10,
+      "title": {
+        "en_us": "Normal Summon 8 monsters",
+        "de_de": "Beschwöre 8 Monster als Normalbeschwörung"
+      },
+      "summon": "normal",
+      "reward": {
+        "points": 80
+      }
+    },
+    {
+      "id": "summon_fusion_2",
+      "period": "daily",
+      "type": "summon",
+      "goal": 2,
+      "weight": 10,
+      "title": {
+        "en_us": "Fusion Summon 2 monsters",
+        "de_de": "Führe 2 Fusionsbeschwörungen durch"
+      },
+      "summon": "fusion",
+      "reward": {
+        "points": 130
+      }
+    },
+    {
+      "id": "summon_ritual_1",
+      "period": "daily",
+      "type": "summon",
+      "goal": 1,
+      "weight": 5,
+      "title": {
+        "en_us": "Ritual Summon a monster",
+        "de_de": "Führe eine Ritualbeschwörung durch"
+      },
+      "summon": "ritual",
+      "reward": {
+        "points": 130
+      }
+    },
+    {
+      "id": "summon_synchro_2",
+      "period": "daily",
+      "type": "summon",
+      "goal": 2,
+      "weight": 10,
+      "title": {
+        "en_us": "Synchro Summon 2 monsters",
+        "de_de": "Führe 2 Synchrobeschwörungen durch"
+      },
+      "summon": "synchro",
+      "unlockedBy": "TDGS",
+      "reward": {
+        "points": 130
+      }
+    },
+    {
+      "id": "summon_xyz_2",
+      "period": "daily",
+      "type": "summon",
+      "goal": 2,
+      "weight": 10,
+      "title": {
+        "en_us": "Xyz Summon 2 monsters",
+        "de_de": "Führe 2 Xyz-Beschwörungen durch"
+      },
+      "summon": "xyz",
+      "unlockedBy": "PHSW",
+      "reward": {
+        "points": 130
+      }
+    },
+    {
+      "id": "summon_pendulum_3",
+      "period": "daily",
+      "type": "summon",
+      "goal": 3,
+      "weight": 6,
+      "title": {
+        "en_us": "Pendulum Summon 3 monsters",
+        "de_de": "Beschwöre 3 Pendelmonster"
+      },
+      "summon": "pendulum",
+      "unlockedBy": "DUEA",
+      "reward": {
+        "points": 130
+      }
+    },
+    {
+      "id": "summon_link_2",
+      "period": "daily",
+      "type": "summon",
+      "goal": 2,
+      "weight": 10,
+      "title": {
+        "en_us": "Link Summon 2 monsters",
+        "de_de": "Führe 2 Linkbeschwörungen durch"
+      },
+      "summon": "link",
+      "unlockedBy": "COTD",
+      "reward": {
+        "points": 130
+      }
+    },
+    {
+      "id": "damage_10000",
+      "period": "daily",
+      "type": "damage",
+      "goal": 10000,
+      "weight": 10,
+      "title": {
+        "en_us": "Deal 10000 damage",
+        "de_de": "Füge 10000 Schaden zu"
+      },
+      "reward": {
+        "points": 100
+      }
+    },
+    {
+      "id": "spells_8",
+      "period": "daily",
+      "type": "activate",
+      "goal": 8,
+      "weight": 10,
+      "title": {
+        "en_us": "Activate 8 Spell Cards",
+        "de_de": "Aktiviere 8 Zauberkarten"
+      },
+      "cardType": "spell",
+      "reward": {
+        "points": 90
+      }
+    },
+    {
+      "id": "traps_4",
+      "period": "daily",
+      "type": "activate",
+      "goal": 4,
+      "weight": 10,
+      "title": {
+        "en_us": "Activate 4 Trap Cards",
+        "de_de": "Aktiviere 4 Fallenkarten"
+      },
+      "cardType": "trap",
+      "reward": {
+        "points": 90
+      }
+    },
+    {
+      "id": "packs_3",
+      "period": "daily",
+      "type": "open_packs",
+      "goal": 3,
+      "weight": 6,
+      "title": {
+        "en_us": "Open 3 booster packs",
+        "de_de": "Öffne 3 Booster-Packs"
+      },
+      "reward": {
+        "points": 80
+      }
+    },
+    {
+      "id": "weekly_win_12",
+      "period": "weekly",
+      "type": "duel_win",
+      "goal": 12,
+      "weight": 10,
+      "title": {
+        "en_us": "Win 12 duels",
+        "de_de": "Gewinne 12 Duelle"
+      },
+      "reward": {
+        "points": 500,
+        "packs": 2
+      }
+    },
+    {
+      "id": "weekly_play_20",
+      "period": "weekly",
+      "type": "duel_play",
+      "goal": 20,
+      "weight": 10,
+      "title": {
+        "en_us": "Play 20 duels",
+        "de_de": "Spiele 20 Duelle"
+      },
+      "reward": {
+        "points": 400,
+        "packs": 1
+      }
+    },
+    {
+      "id": "weekly_win_players_5",
+      "period": "weekly",
+      "type": "duel_win",
+      "goal": 5,
+      "weight": 10,
+      "title": {
+        "en_us": "Beat other players 5 times",
+        "de_de": "Besiege 5-mal andere Spieler"
+      },
+      "against": "players",
+      "reward": {
+        "points": 600,
+        "packs": 2
+      }
+    },
+    {
+      "id": "weekly_ranked_3",
+      "period": "weekly",
+      "type": "duel_win",
+      "goal": 3,
+      "weight": 7,
+      "title": {
+        "en_us": "Win 3 ranked duels",
+        "de_de": "Gewinne 3 gewertete Duelle"
+      },
+      "ranked": true,
+      "reward": {
+        "points": 600,
+        "packs": 2
+      }
+    },
+    {
+      "id": "weekly_npc_6",
+      "period": "weekly",
+      "type": "duel_win",
+      "goal": 6,
+      "weight": 10,
+      "title": {
+        "en_us": "Beat 6 NPC duelists",
+        "de_de": "Besiege 6 NPC-Duellanten"
+      },
+      "against": "npcs",
+      "reward": {
+        "points": 500,
+        "packs": 1
+      }
+    },
+    {
+      "id": "weekly_dragon_5",
+      "period": "weekly",
+      "type": "duel_win",
+      "goal": 5,
+      "weight": 6,
+      "title": {
+        "en_us": "Win 5 duels with a Dragon deck",
+        "de_de": "Gewinne 5 Duelle mit einem Drachen-Deck"
+      },
+      "race": "dragon",
+      "reward": {
+        "points": 600,
+        "packs": 2
+      }
+    },
+    {
+      "id": "weekly_damage_60000",
+      "period": "weekly",
+      "type": "damage",
+      "goal": 60000,
+      "weight": 10,
+      "title": {
+        "en_us": "Deal 60000 damage",
+        "de_de": "Füge 60000 Schaden zu"
+      },
+      "reward": {
+        "points": 500,
+        "packs": 1
+      }
+    },
+    {
+      "id": "weekly_special_40",
+      "period": "weekly",
+      "type": "summon",
+      "goal": 40,
+      "weight": 10,
+      "title": {
+        "en_us": "Special Summon 40 monsters",
+        "de_de": "Beschwöre 40 Monster als Spezialbeschwörung"
+      },
+      "summon": "special",
+      "reward": {
+        "points": 500,
+        "packs": 1
+      }
+    },
+    {
+      "id": "weekly_tournament",
+      "period": "weekly",
+      "type": "tournament",
+      "goal": 1,
+      "weight": 5,
+      "title": {
+        "en_us": "Take part in a tournament",
+        "de_de": "Nimm an einem Turnier teil"
+      },
+      "reward": {
+        "points": 500,
+        "packs": 2
+      }
+    },
+    {
+      "id": "weekly_packs_12",
+      "period": "weekly",
+      "type": "open_packs",
+      "goal": 12,
+      "weight": 6,
+      "title": {
+        "en_us": "Open 12 booster packs",
+        "de_de": "Öffne 12 Booster-Packs"
+      },
+      "reward": {
+        "points": 300,
+        "packs": 1
+      }
+    },
+    {
+      "id": "weekly_trades_3",
+      "period": "weekly",
+      "type": "trade",
+      "goal": 3,
+      "weight": 4,
+      "title": {
+        "en_us": "Complete 3 trades with players",
+        "de_de": "Schließe 3 Tauschgeschäfte mit Spielern ab"
+      },
+      "reward": {
+        "points": 300
+      }
+    }
+  ]
+}

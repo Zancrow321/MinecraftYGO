@@ -155,14 +155,6 @@ final class CardFilter implements IntPredicate {
     /** What {@link #matches} looks through, lower case, one per card. */
     private static final Map<Integer, String> SEARCH_TEXT = new HashMap<>();
 
-    /** German names of the attributes, by bit (EARTH, WATER, FIRE, WIND, LIGHT, DARK, DIVINE). */
-    private static final String[] ATTRIBUTES_DE = {"Erde", "Wasser", "Feuer", "Wind", "Licht", "Finsternis",
-            "Göttlich"};
-    /** German names of the monster types, by bit, as on German cards. */
-    private static final String[] RACES_DE = {"Krieger", "Hexer", "Fee", "Unterweltler", "Zombie", "Maschine", "Aqua",
-            "Pyro", "Fels", "Geflügeltes Ungeheuer", "Pflanze", "Insekt", "Donner", "Drache", "Ungeheuer",
-            "Ungeheuer-Krieger", "Dinosaurier", "Fisch", "Seeschlange", "Reptil", "Psi", "Göttliches Ungeheuer",
-            "Schöpfergott", "Wyrm", "Cyberse", "Illusion"};
     /** German names of the card type bits (monster, spell, trap, ..., link), as on German cards. */
     private static final String[] TYPES_DE = {"Monster", "Zauber", "Falle", "", "Normal", "Effekt", "Fusion", "Ritual",
             "Fallenmonster", "Spirit", "Union", "Zwilling", "Empfänger", "Synchro", "Spielmarke", "", "Schnellzauber",
@@ -187,12 +179,12 @@ final class CardFilter implements IntPredicate {
         if (card.is(OcgConstants.TYPE_MONSTER)) {
             s.append(' ').append(CardItem.typeLine(card));
             int attribute = Integer.numberOfTrailingZeros(Math.max(1, data.attribute()));
-            if (attribute < ATTRIBUTES_DE.length) {
-                s.append(' ').append(ATTRIBUTES_DE[attribute]);
+            if (attribute < CardItem.ATTRIBUTES_DE.length) {
+                s.append(' ').append(CardItem.ATTRIBUTES_DE[attribute]);
             }
             int race = Long.numberOfTrailingZeros(Math.max(1, data.race()));
-            if (race < RACES_DE.length) {
-                s.append(' ').append(RACES_DE[race]);
+            if (race < CardItem.RACES_DE.length) {
+                s.append(' ').append(CardItem.RACES_DE[race]);
             }
             s.append(card.is(OcgConstants.TYPE_XYZ) ? " Rang " : " Stufe ").append(level(card));
         }

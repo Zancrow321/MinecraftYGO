@@ -114,6 +114,14 @@ public final class CardItem extends Item {
         }
     }
 
+    /** German names of the attributes, by bit (EARTH, WATER, FIRE, WIND, LIGHT, DARK, DIVINE). */
+    public static final String[] ATTRIBUTES_DE = {"Erde", "Wasser", "Feuer", "Wind", "Licht", "Finsternis",
+            "Göttlich"};
+    /** German names of the monster types, by bit, as on German cards. */
+    public static final String[] RACES_DE = {"Krieger", "Hexer", "Fee", "Unterweltler", "Zombie", "Maschine", "Aqua",
+            "Pyro", "Fels", "Geflügeltes Ungeheuer", "Pflanze", "Insekt", "Donner", "Drache", "Ungeheuer",
+            "Ungeheuer-Krieger", "Dinosaurier", "Fisch", "Seeschlange", "Reptil", "Psi", "Göttliches Ungeheuer",
+            "Schöpfergott", "Wyrm", "Cyberse", "Illusion"};
     /** "DARK Spellcaster · Level 7 · ATK 2500 / DEF 2100", or "Spell Card" / "Trap Card". */
     public static String typeLine(CardInfo card) {
         if (card.is(OcgConstants.TYPE_SPELL)) {

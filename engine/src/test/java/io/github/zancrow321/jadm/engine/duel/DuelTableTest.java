@@ -63,6 +63,16 @@ class DuelTableTest {
                 }
                 if (view.result() != null) {
                     assertTrue(table.finished());
+                    // Some of the loser's life points went to damage the winner dealt (the rest to costs they paid).
+                    int winner = table.winner();
+                    if (winner == 0 || winner == 1) {
+                        assertTrue(table.tally(winner).damageDealt() > 0, "damage is counted");
+                    }
+                    DuelTable.Tally team0 = table.tally(0);
+                    DuelTable.Tally team1 = table.tally(1);
+                    assertFalse(team0.normalSummons().isEmpty() && team1.normalSummons().isEmpty()
+                            && team0.specialSummons().isEmpty() && team1.specialSummons().isEmpty(),
+                            "summons are counted");
                     break;
                 }
                 if (view.prompt() == null) {

@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+### Daily and weekly quests
+- **Quests:** every player gets 3 daily and 2 weekly quests, such as "Win 2 duels with a Dragon deck", "Fusion
+  Summon 2 monsters", "Deal 10000 damage", "Beat another player" or "Take part in a tournament". They bring Duel
+  Points and booster packs (or emeralds, experience and any other item, as the server likes).
+- **Quest window** with the key U or `/jadm quests`: progress bars, the reward of each quest, a time until new
+  quests come, **Claim** / **Claim all**, and **Reroll** to swap an unfinished quest for another (once a day).
+  A pop-up in the corner shows when a quest moves on; chat says when one is done, with a button for the window.
+  Rewards you forget to claim are handed out when the quests are replaced.
+- Quests count duel wins and finished duels (filtered by opponent: players, NPC duelists or bots; ranked;
+  tournament; a deck theme by monster type, attribute, name or a card in the deck; life points left; turns),
+  summons by kind (Normal, Special, Fusion, Ritual, Synchro, Xyz, Pendulum, Link), damage dealt, activated Spells,
+  Traps or effects, opened booster packs, finished trades and tournament places.
+- **Free to set up:** the quests live in `config/jadm/quests.json`, written with a starting pool of 38 quests
+  (English and German titles) on first start. Add, change or remove quests, their goals, weights and rewards, then
+  `/jadm quests reload`. Quests for Synchro, Xyz, Pendulum and Link only come once those cards are out in a
+  progression world (`unlockedBy`).
+- New `[quests]` server settings: `enabled`, `daily`, `weekly`, `sameForEveryone` (everyone gets the same quests,
+  no rerolls), `rerollsPerDay`, `resetHour`, `weeklyResetDay`, `minTurns` (duels count once they reach turn 3, so
+  forfeiting right away doesn't play quests off), `botDuels` and `announceWeekly`.
+- Operators: `/jadm quests list`, `/jadm quests reset <player>` and `/jadm quests complete <player> <quest>`.
+- The Duelist's Handbook explains quests in "Shops and Duel Points", with the key, commands and settings.
+
 ### Tag duel life points
 - Tag and Battle City duels (2v2) have their own starting life points, `tagStartingLifePoints` in
   `serverconfig/jadm-server.toml`, 16000 by default. 1v1 duels keep `startingLifePoints` (8000). A tournament that

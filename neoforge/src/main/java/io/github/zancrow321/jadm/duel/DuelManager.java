@@ -23,6 +23,8 @@ import io.github.zancrow321.jadm.network.DuelFieldPayload;
 import io.github.zancrow321.jadm.network.DuelResultPayload;
 import io.github.zancrow321.jadm.network.DuelistStatePayload;
 import io.github.zancrow321.jadm.network.DuelViewPayload;
+import io.github.zancrow321.jadm.quest.DuelFacts;
+import io.github.zancrow321.jadm.quest.Quests;
 import io.github.zancrow321.jadm.ranking.RankedDuels;
 import io.github.zancrow321.jadm.ranking.Ranking;
 import io.github.zancrow321.jadm.ranking.Tiers;
@@ -97,9 +99,10 @@ public final class DuelManager {
      * @param npc the NPC duelist playing the bot seat, or {@code null}
      * @param match the organized duel (a tournament game) this is, or {@code null}
      * @param ranked whether it moves the two people's ratings
+     * @param decks the deck of each seat
      */
     private record ServerDuel(DuelTable table, UUID[] seats, DuelFieldPayload field, UUID ante, DuelistNpc npc,
-                              Set<UUID> spectators, Clock clock, MatchSetup match, boolean ranked) {
+                              Set<UUID> spectators, Clock clock, MatchSetup match, boolean ranked, List<Deck> decks) {
     }
 
     /**
@@ -664,7 +667,7 @@ public final class DuelManager {
             field = field.withLayout(false, List.of(sleeveOf(entrants, 0, npc), sleeveOf(entrants, 1, npc)));
         }
         ServerDuel duel = new ServerDuel(table, people, field, ante, npc, new HashSet<>(),
-                new Clock(random.nextLong()), match, ranked);
+                new Clock(random.nextLong()), match, ranked, List.copyOf(decks));
         duels.add(duel);
         if (npc != null) {
             npc.setDueling(true);
@@ -1003,6 +1006,11 @@ public final class DuelManager {
             rewards.put(id, lines);
             if (won) {
                 PlayerCosmetics.wonDuel(player, againstNpc).forEach(u -> lines.add("Unlocked: " + u));
+            }
+            if (duel.table().finished()) {
+                Quests.duelEnded(player, new DuelFacts(won, againstNpc ? "npcs" : vsPlayers ? "players" : "bots",
+                        duel.ranked(), duel.match() != null, duel.decks().get(seat), duel.table().lifePoints(team),
+                        duel.table().turn(), duel.table().tally(team)));
             }
             // Tournament games bring the tournament's prizes instead.
             if (decided && duel.match() == null

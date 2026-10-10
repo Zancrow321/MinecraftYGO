@@ -1185,6 +1185,7 @@ public final class TournamentManager {
                 player.sendSystemMessage(Component.literal("You finished " + ordinal(p.place()) + " in \"" + t.name
                         + "\"" + (got.isEmpty() ? "." : ": " + String.join(", ", got) + "."))
                         .withStyle(ChatFormatting.GOLD));
+                io.github.zancrow321.jadm.quest.Quests.tournamentFinished(player, p.place());
             }
         }
         limited.handOut(t);

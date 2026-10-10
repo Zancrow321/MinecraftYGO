@@ -241,8 +241,61 @@ public final class JadmServerConfig {
                     + "whoever collects enough goes to the finals, a tournament on the tournament arenas. An operator "
                     + "starts one with /jadm starchips start.").push("starchips"));
 
+    public static final Quests QUESTS = new Quests(BUILDER.pop()
+            .comment("Daily and weekly quests (\"Win 3 duels with a Dragon deck\") that bring Duel Points, packs and "
+                    + "more. Which quests there are and what they bring is in config/jadm/quests.json (written with a "
+                    + "starting pool on first start; /jadm quests reload reads it again). Players see theirs with the "
+                    + "key U or /jadm quests.").push("quests"));
+
     static {
         BUILDER.pop();
+    }
+
+    /** The daily and weekly quests' settings; the quests themselves are in config/jadm/quests.json. */
+    public static final class Quests {
+        public final ModConfigSpec.BooleanValue enabled;
+        public final ModConfigSpec.IntValue daily;
+        public final ModConfigSpec.IntValue weekly;
+        public final ModConfigSpec.BooleanValue sameForEveryone;
+        public final ModConfigSpec.IntValue rerollsPerDay;
+        public final ModConfigSpec.IntValue resetHour;
+        public final ModConfigSpec.ConfigValue<String> weeklyResetDay;
+        public final ModConfigSpec.IntValue minTurns;
+        public final ModConfigSpec.BooleanValue botDuels;
+        public final ModConfigSpec.BooleanValue announceWeekly;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private Quests(ModConfigSpec.Builder builder) {
+            enabled = builder.comment("Players get quests and progress counts. Off, nothing is counted and the quest "
+                    + "window says so.").define("enabled", true);
+            daily = builder.comment("Daily quests each player has at once.").defineInRange("daily", 3, 0, 10);
+            weekly = builder.comment("Weekly quests each player has at once.").defineInRange("weekly", 2, 0, 10);
+            sameForEveryone = builder.comment("Everyone gets the same quests (\"today everyone duels with "
+                    + "Dragons\"), and there is no rerolling. Off, each player draws their own.")
+                    .define("sameForEveryone", false);
+            rerollsPerDay = builder.comment("How many unfinished quests a player can swap for another each day "
+                    + "(without sameForEveryone).").defineInRange("rerollsPerDay", 1, 0, 10);
+            resetHour = builder.comment("The hour of the server's clock (0-23) when new daily quests come.")
+                    .defineInRange("resetHour", 0, 0, 23);
+            weeklyResetDay = builder.comment("The day new weekly quests come, at resetHour: monday ... sunday.")
+                    .define("weeklyResetDay", "monday", v -> v instanceof String s && day(s) != null);
+            minTurns = builder.comment("A duel counts for quests only if it reached this turn, so forfeiting right "
+                    + "away doesn't play quests off.").defineInRange("minTurns", 3, 1, 100);
+            botDuels = builder.comment("Duels against bots (/jadm duel bot) count for quests. NPC duelists in the "
+                    + "world always do.").define("botDuels", true);
+            announceWeekly = builder.comment("Tell everyone in chat when a player finishes a weekly quest.")
+                    .define("announceWeekly", false);
+        }
+
+        /** The weekday a {@code weeklyResetDay} value names, or {@code null}. */
+        public static java.time.DayOfWeek day(String name) {
+            for (java.time.DayOfWeek day : java.time.DayOfWeek.values()) {
+                if (day.name().equalsIgnoreCase(name.strip())) {
+                    return day;
+                }
+            }
+            return null;
+        }
     }
 
     /** Booster packs, Duel Points, emeralds and experience points for the winners and the losers of a duel. */
