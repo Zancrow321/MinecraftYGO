@@ -104,8 +104,8 @@ public final class ClanBattles {
                 MutableComponent text = Component.literal("Arena battle! ").withStyle(ChatFormatting.GOLD,
                         ChatFormatting.BOLD).append(Component.literal("").withStyle(ChatFormatting.RESET)
                         .append(ClanText.named(a)).append(Component.literal(" vs ").withStyle(ChatFormatting.GOLD))
-                        .append(ClanText.named(d)).append(Component.literal(": " + war.attackerLineup.size()
-                                + " bouts begin now. Right-click a duelist to watch.").withStyle(ChatFormatting.GOLD)));
+                        .append(ClanText.named(d)).append(Component.literal(": " + ClanText.count(Math.min(war.attackerLineup.size(),
+                                war.defenderLineup.size()), "bout") + " begin now. Right-click a duelist to watch.").withStyle(ChatFormatting.GOLD)));
                 if (JadmServerConfig.CLANS.announceWars.get()) {
                     server.getPlayerList().broadcastSystemMessage(text, false);
                 } else {
@@ -142,7 +142,8 @@ public final class ClanBattles {
                         tellBoth(server, a, d, Component.literal(TournamentManager.get(server).hasArenas()
                                 ? "Bout " + (war.bout + 1) + " waits for a free tournament arena."
                                 : "Arena battles are fought on tournament arenas, and this server has none yet: an "
-                                + "operator adds one with /jadm tournament arena add.").withStyle(ChatFormatting.YELLOW));
+                                + "operator adds one with /jadm tournament arena add.")
+                                .withStyle(ChatFormatting.YELLOW));
                     }
                     return;
                 }
@@ -215,7 +216,8 @@ public final class ClanBattles {
         }
         if (now - bout.missingSince >= minutes * 60_000L) {
             tellBoth(server, a, d, Component.literal((goneA && goneD ? "Neither duelist" : goneA ? name(a, pa)
-                    : name(d, pd)) + " didn't show up for bout " + (war.bout + 1) + ".").withStyle(ChatFormatting.GRAY));
+                    : name(d, pd)) + " didn't show up for bout " + (war.bout + 1) + ".")
+                    .withStyle(ChatFormatting.GRAY));
             score(server, clans, war, goneA && goneD ? -1 : goneA ? 1 : 0, pa, pd);
         }
         return true;

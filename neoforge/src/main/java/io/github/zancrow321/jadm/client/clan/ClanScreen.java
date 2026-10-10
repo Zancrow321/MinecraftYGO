@@ -10,6 +10,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
@@ -158,9 +159,16 @@ public final class ClanScreen extends Screen {
         }
 
         Button button(String label, Runnable action) {
+            return button(label, null, action);
+        }
+
+        Button button(String label, String tooltip, Runnable action) {
             int w = font.width(label) + 12;
-            Button b = addRenderableWidget(Button.builder(Component.literal(label), btn -> action.run())
-                    .bounds(x, y, w, 18).build());
+            Button.Builder builder = Button.builder(Component.literal(label), btn -> action.run()).bounds(x, y, w, 18);
+            if (tooltip != null) {
+                builder.tooltip(Tooltip.create(Component.literal(tooltip)));
+            }
+            Button b = addRenderableWidget(builder.build());
             x += w + 4;
             return b;
         }
@@ -204,15 +212,18 @@ public final class ClanScreen extends Screen {
         boolean manages = manages();
         boolean leads = leads();
         if (manages) {
-            textA = row1.box(80, "Player", keepA);
+            textA = row1.box(70, "Player", keepA);
             textA.setMaxLength(16);
-            row1.button("Invite", () -> {
+            row1.button("Invite", "Invite this player into the clan", () -> {
                 if (!textA.getValue().isBlank()) {
                     command("invite " + textA.getValue().trim());
                 }
             });
-            row1.button("Crest from held banner", () -> command("crest"));
-            row1.button(view.clan.open ? "Open to all" : "Invite only", () -> command("open " + !view.clan.open));
+            row1.button("Crest", "Make the banner in your hand (from a loom) the clan's crest", () -> command("crest"));
+            row1.button(view.clan.open ? "Open" : "Invite only", view.clan.open
+                    ? "Anyone can join. Click to take only invited duelists."
+                    : "Only invited duelists can join. Click to open the clan to all.",
+                    () -> command("open " + !view.clan.open));
         }
         ClanView.MemberRow m = pickedMember();
         if (m != null && !m.name.equals(me())) {
@@ -230,12 +241,12 @@ public final class ClanScreen extends Screen {
             }
         } else {
             if (view.clan.crest.base >= 0) {
-                row2.button("Get banner" + (view.bannerPrice > 0 ? " (" + points(view.bannerPrice) + ")" : ""),
-                        () -> command("banner"));
+                row2.button("Banner" + (view.bannerPrice > 0 ? " (" + points(view.bannerPrice) + ")" : ""),
+                        "A banner with the clan's crest for you", () -> command("banner"));
             }
             if (view.points) {
-                textB = row2.box(56, "DP", "");
-                row2.button("Pay in", () -> {
+                textB = row2.box(44, "DP", "");
+                row2.button("Pay in", "Pay Duel Points into the clan treasury", () -> {
                     String amount = textB.getValue().trim();
                     if (amount.matches("\\d{1,12}")) {
                         command("deposit " + amount);
@@ -370,10 +381,14 @@ public final class ClanScreen extends Screen {
         }
         ClanView.ClanRow c = view.clan;
         int color = 0xFF000000 | c.color;
-        crest(g, c.crest, c.tag, color, cx - 18, y + 8, 60);
-        g.drawCenteredString(font, "[" + c.tag + "]", cx, y + 74, color);
-        g.drawCenteredString(font, font.plainSubstrByWidth(c.name, LEFT_W - 8), cx, y + 86, WHITE);
-        int ty = y + 98;
+        // The crest gets what the name, motto and the seven lines below leave over.
+        int mottoLines = view.motto.isEmpty() ? 0 : wrap("\"" + view.motto + "\"", LEFT_W - 16).size();
+        int crestH = Mth.clamp(h - 8 - 26 - mottoLines * 10 - 6 - (view.points ? 7 : 6) * 11 - 4, 20, 60);
+        crest(g, c.crest, c.tag, color, cx - crestH / 4, y + 6, crestH);
+        int ty = y + 6 + crestH + 4;
+        g.drawCenteredString(font, "[" + c.tag + "]", cx, ty, color);
+        g.drawCenteredString(font, font.plainSubstrByWidth(c.name, LEFT_W - 8), cx, ty + 12, WHITE);
+        ty += 24;
         if (!view.motto.isEmpty()) {
             for (String line : wrap("\"" + view.motto + "\"", LEFT_W - 16)) {
                 g.drawCenteredString(font, line, cx, ty, GRAY);
@@ -448,7 +463,8 @@ public final class ClanScreen extends Screen {
             }
             crest(g, c.crest, c.tag, 0xFF000000 | c.color, x + 8, ry - 2, 16);
             g.drawString(font, "[" + c.tag + "]", x + 20, ry + 2, 0xFF000000 | c.color);
-            g.drawString(font, c.name + "  " + c.members + " members, rating " + c.rating, x + 56, ry + 2, WHITE);
+            g.drawString(font, c.name + "  " + c.members + (c.members == 1 ? " member" : " members") + ", rating "
+                    + c.rating, x + 56, ry + 2, WHITE);
             g.drawString(font, "/jadm clan join " + c.tag, x + w - 8 - font.width("/jadm clan join " + c.tag),
                     ry + 2, DARK);
             ry += 18;
@@ -465,7 +481,7 @@ public final class ClanScreen extends Screen {
             g.drawString(font, "Your clan isn't at war.", x + 8, y, WHITE);
             for (String line : wrap("The leader or an officer declares one in the clan ranking: pick a clan, then a "
                     + "race for points (every duel won against them counts) or an arena battle (" + view.battleDuelists
-                    + " duelists a side fight one bout after another on a tournament arena).", w - 16)) {
+                    + (view.battleDuelists == 1 ? " duelist" : " duelists") + " a side fight one bout after another on a tournament arena).", w - 16)) {
                 y += 11;
                 g.drawString(font, line, x + 8, y, GRAY);
             }
@@ -513,8 +529,8 @@ public final class ClanScreen extends Screen {
         int cx = x + w / 2;
         String kind = r.battle ? "Arena battle" : "Race for points";
         if (!r.running) {
-            g.drawCenteredString(font, (r.incoming ? "[" + r.otherTag + "] declared war on you" : "You declared war on ["
-                    + r.otherTag + "]"), cx, y + 6, GOLD);
+            g.drawCenteredString(font, r.incoming ? "[" + r.otherTag + "] declared war on you"
+                    : "You declared war on [" + r.otherTag + "]", cx, y + 6, GOLD);
             g.drawCenteredString(font, kind + (r.stake > 0 ? ", " + points(r.stake) + " each" : ""), cx, y + 18,
                     WHITE);
             g.drawCenteredString(font, (r.incoming ? "Answer within " : "They have ") + duration(r.millisLeft)

@@ -86,7 +86,7 @@ public final class ClanWars {
         clan.treasury -= stake;
         Clans.War war = clans.declare(clan.id, other.id, stake, format);
         long hours = JadmServerConfig.CLANS.warAcceptHours.get();
-        String kind = war.battle() ? " an arena battle (" + ClanBattles.size() + " duelists a side)"
+        String kind = war.battle() ? " an arena battle (" + ClanText.count(ClanBattles.size(), "duelist") + " a side)"
                 : " a race for points";
         String stakeText = stake > 0 ? " Each clan puts up " + Points.format(stake) + "; the winner takes both."
                 : "";
@@ -149,7 +149,7 @@ public final class ClanWars {
     /** "Every duel won against the other clan brings a point. First to 10 or ahead in 3 days wins." */
     static String rules(Clans.War war) {
         if (war.battle()) {
-            return "Arena battle: each clan names " + ClanBattles.size() + " duelists (/jadm clan war lineup or the "
+            return "Arena battle: each clan names " + ClanText.count(ClanBattles.size(), "duelist") + " (/jadm clan war lineup or the "
                     + "clan window); once both are ready, they fight one bout after another on a tournament arena. "
                     + "The battle has to begin within " + ClanText.duration(war.endsAt - war.startedAt) + "."
                     + (war.stake > 0 ? " The winner takes both stakes, " + Points.format(2 * war.stake) + "." : "");

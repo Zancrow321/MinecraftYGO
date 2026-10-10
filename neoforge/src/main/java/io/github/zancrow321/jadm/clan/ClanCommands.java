@@ -678,7 +678,7 @@ public final class ClanCommands {
         source.sendSuccess(() -> Component.literal("Rating " + shown.rating + ", " + ordinal(clans.place(shown))
                 + " place. Wars: " + shown.warsWon + " won, " + shown.warsLost + " lost, " + shown.warsDrawn
                 + " drawn.").withStyle(ChatFormatting.GRAY), false);
-        source.sendSuccess(() -> Component.literal(shown.members.size() + " members, led by "
+        source.sendSuccess(() -> Component.literal(members(shown.members.size()) + ", led by "
                 + (leader == null ? "nobody" : shown.members.get(leader).name) + (shown.open ? "; anyone can join."
                 : "; by invitation.")).withStyle(ChatFormatting.GRAY), false);
         source.sendSuccess(() -> Component.literal(String.join(", ", shown.members.values().stream()
@@ -709,7 +709,7 @@ public final class ClanCommands {
             int place = i + 1;
             source.sendSuccess(() -> Component.literal(place + ". ").append(ClanText.named(c))
                     .append(Component.literal(": " + c.rating + " (" + c.warsWon + "-" + c.warsLost + "-"
-                            + c.warsDrawn + "), " + c.members.size() + " members").withStyle(ChatFormatting.GRAY)),
+                            + c.warsDrawn + "), " + members(c.members.size())).withStyle(ChatFormatting.GRAY)),
                     false);
         }
         return Math.min(TOP, standings.size());
@@ -864,7 +864,7 @@ public final class ClanCommands {
             picked.add(id);
         }
         if (picked.size() > ClanBattles.size()) {
-            return fail(ctx, "An arena battle has " + ClanBattles.size() + " duelists a side.");
+            return fail(ctx, "An arena battle has " + ClanText.count(ClanBattles.size(), "duelist") + " a side.");
         }
         List<UUID> lineup = war.lineup(clan.id);
         lineup.clear();
@@ -1164,6 +1164,10 @@ public final class ClanCommands {
 
     private static Clans clans(CommandContext<CommandSourceStack> ctx) {
         return Clans.get(ctx.getSource().getServer());
+    }
+
+    private static String members(int n) {
+        return n == 1 ? "1 member" : n + " members";
     }
 
     static String ordinal(int n) {

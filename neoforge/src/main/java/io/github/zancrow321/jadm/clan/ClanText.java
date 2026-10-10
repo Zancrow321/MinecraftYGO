@@ -81,6 +81,11 @@ public final class ClanText {
     }
 
     /** "2 days 5 hours", "3 hours 10 minutes" or "4 minutes". */
+    /** "1 duelist", "3 duelists". */
+    public static String count(int n, String word) {
+        return n + " " + word + (n == 1 ? "" : "s");
+    }
+
     public static String duration(long millis) {
         long minutes = Math.max(0, millis) / 60_000;
         long days = minutes / (60 * 24);
