@@ -90,6 +90,7 @@ public final class Jadm {
                 TournamentManager.get(player.server).onLogin(player);
                 io.github.zancrow321.jadm.starchips.StarChips.get(player.server).onLogin(player);
                 io.github.zancrow321.jadm.points.Points.login(player);
+                io.github.zancrow321.jadm.bounty.Bounties.login(player);
             }
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {
@@ -105,6 +106,7 @@ public final class Jadm {
         });
         NeoForge.EVENT_BUS.addListener(this::onInteractPlayer);
         NeoForge.EVENT_BUS.addListener(io.github.zancrow321.jadm.ranking.RankedDuels::tabListName);
+        NeoForge.EVENT_BUS.addListener(io.github.zancrow321.jadm.bounty.Bounties::tabListName);
         // With points as the currency, card traders open a points shop instead of the trade window.
         NeoForge.EVENT_BUS.addListener((PlayerInteractEvent.EntityInteract event) -> {
             if (event.getTarget() instanceof net.minecraft.world.entity.npc.Villager villager
