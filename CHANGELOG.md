@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+### Bounties
+- `/jadm bounty place <player> <amount>` puts Duel Points on someone's head. The DP are taken right away (plus a
+  10% fee by default) and kept until someone collects them. Bounties from several players on the same player add
+  up; nobody can put one on themselves.
+- Whoever beats that player in a duel collects the whole bounty, shown on the result screen and announced in chat; a
+  winning tag team shares it. Only duels between people count (no bots or NPCs), and the duel has to reach turn 3,
+  so a player can't hand their own bounty to a friend by giving up at once.
+- `/jadm bounty` lists the biggest bounties, `/jadm bounty <player>` who put up what. The player list (Tab) shows the
+  bounty after each name, a duel invitation names the bounty on the opponent, and a player with a bounty is told on
+  login.
+- `/jadm bounty withdraw <player>` takes your part back (not while that player is dueling; the fee stays paid).
+  Operators call a bounty off with `/jadm bounty clear <player>`, which pays everyone back.
+- New `[bounty]` server settings: `enabled`, `minAmount` (100), `feePercent` (10), `minTurns` (3), `withdraw`,
+  `announce` and `showInTabList`. The Duelist's Handbook explains it under Shops and Duel Points.
+
 ### Tag duel life points
 - Tag and Battle City duels (2v2) have their own starting life points, `tagStartingLifePoints` in
   `serverconfig/jadm-server.toml`, 16000 by default. 1v1 duels keep `startingLifePoints` (8000). A tournament that

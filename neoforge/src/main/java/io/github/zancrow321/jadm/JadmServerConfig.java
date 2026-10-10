@@ -241,6 +241,12 @@ public final class JadmServerConfig {
                     + "whoever collects enough goes to the finals, a tournament on the tournament arenas. An operator "
                     + "starts one with /jadm starchips start.").push("starchips"));
 
+    /** Bounties on players, in {@code [bounty]}. */
+    public static final Bounty BOUNTY = new Bounty(BUILDER.pop()
+            .comment("Bounties: players put Duel Points on someone's head with /jadm bounty place <player> <amount>, and "
+                    + "whoever beats that player in a duel between people (no bots or NPCs) collects them. Bounties "
+                    + "on the same player add up. Needs the [shop] currency to be points.").push("bounty"));
+
     static {
         BUILDER.pop();
     }
@@ -489,6 +495,36 @@ public final class JadmServerConfig {
                     .defineInRange("requestSeconds", 60, 5, 3600);
             rightClick = builder.comment("Sneaking and right-clicking another player with a card, binder or deck box "
                     + "in your hand asks them to trade.").define("rightClick", true);
+        }
+    }
+
+    /** The settings of bounties. */
+    public static final class Bounty {
+        public final ModConfigSpec.BooleanValue enabled;
+        public final ModConfigSpec.IntValue minAmount;
+        public final ModConfigSpec.IntValue feePercent;
+        public final ModConfigSpec.IntValue minTurns;
+        public final ModConfigSpec.BooleanValue withdraw;
+        public final ModConfigSpec.BooleanValue announce;
+        public final ModConfigSpec.BooleanValue showInTabList;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private Bounty(ModConfigSpec.Builder builder) {
+            enabled = builder.comment("Players can put up bounties and collect them. Off, bounties already put up "
+                    + "stay as they are.").define("enabled", true);
+            minAmount = builder.comment("The smallest bounty a player can put up, in Duel Points.")
+                    .defineInRange("minAmount", 100, 1, 1_000_000);
+            feePercent = builder.comment("A fee on top of a bounty, in percent of it, which is gone for good (so a "
+                    + "bounty of 1000 costs 1100 with 10). 0 for no fee.").defineInRange("feePercent", 10, 0, 100);
+            minTurns = builder.comment("A duel has to reach this turn for the winner to collect a bounty, so a "
+                    + "player can't hand their own bounty to a friend by giving up right away. 1 counts every duel.")
+                    .defineInRange("minTurns", 3, 1, 100);
+            withdraw = builder.comment("Whoever put up a bounty can take it back (not while that player is in a "
+                    + "duel); the fee isn't paid back.").define("withdraw", true);
+            announce = builder.comment("Tell everyone in chat when a bounty is raised and when it is collected.")
+                    .define("announce", true);
+            showInTabList = builder.comment("Show the bounty after a player's name in the player list (Tab).")
+                    .define("showInTabList", true);
         }
     }
 
