@@ -69,6 +69,9 @@ public final class JadmClient {
     public static final KeyMapping RANKING = new KeyMapping("key.jadm.ranking",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_J, "key.categories.jadm");
     /** Opens the admin menu, for operators. */
+    public static final KeyMapping CLAN = new KeyMapping("key.jadm.clan",
+            InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, "key.categories.jadm");
+
     public static final KeyMapping ADMIN = new KeyMapping("key.jadm.admin",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "key.categories.jadm");
 
@@ -242,6 +245,7 @@ public final class JadmClient {
             event.register(COSMETICS);
             event.register(ADMIN);
             event.register(RANKING);
+            event.register(CLAN);
         }
     }
 
@@ -313,6 +317,11 @@ public final class JadmClient {
         while (RANKING.consumeClick()) {
             if (mc.screen == null && mc.player != null) {
                 mc.player.connection.sendCommand(Jadm.COMMAND + " rank");
+            }
+        }
+        while (CLAN.consumeClick()) {
+            if (mc.screen == null && mc.player != null) {
+                mc.player.connection.sendCommand(Jadm.COMMAND + " clan");
             }
         }
         while (ADMIN.consumeClick()) {

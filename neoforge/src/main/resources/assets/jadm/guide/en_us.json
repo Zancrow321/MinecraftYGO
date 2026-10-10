@@ -69,6 +69,7 @@
         "- **{key:duel_log}**: the duel log (scroll with the mouse wheel).",
         "- **{key:duel_responses}**: be asked to respond, or pass every response you don't have to take.",
         "- **{key:ranking}** (outside a duel): the ranking window.",
+        "- **{key:clan}** (outside a duel): the clan window.",
         "- **Space**: pass a response, confirm a pick or go to the next phase.",
         "- **Enter**: confirm a pick. **1 to 9**: pick a plain answer.",
         "- **Escape**: the duel menu (camera, responses, surrender, game menu).",
@@ -205,6 +206,31 @@
       ]
     },
     {
+      "title": "Clans",
+      "icon": "minecraft:white_banner",
+      "text": [
+        "Duelists band together in **clans**: a tag in your clan's color in front of your name, a crest, a clan treasury and a clan ranking, and clan wars against other clans.",
+        "**{key:clan}** or `{cmd} clan` opens the clan window: your clan, its wars and the clan ranking. Its buttons run the same commands as below.",
+        "# Founding and joining",
+        "- `{cmd} clan create <tag> <name>` founds a clan (costs {server:clans.createPrice} DP). The tag is 2 to 5 letters or digits, like KC.",
+        "- The leader and officers invite with `{cmd} clan invite <player>`; the invited player clicks **[Join]** or uses `{cmd} clan join <tag>`. An open clan (`{cmd} clan open true`) takes anyone.",
+        "- A clan holds up to {server:clans.maxMembers} members (0 means no limit). `{cmd} clan leave` leaves it.",
+        "- **Roles:** the **leader** runs everything; **officers** invite, remove members, set the crest and motto and answer war declarations; **members** duel and pay in. The leader promotes with `{cmd} clan promote <member>`, demotes with `demote` and hands over the lead with `{cmd} clan leader <member>`.",
+        "# Tag, crest and treasury",
+        "- Every member's tag stands in front of their name in chat, in the player list and above their head (`showTag`: {server:clans.showTag}). The leader picks the color with `{cmd} clan color <color>`.",
+        "- **Crest:** make a banner on a loom, hold it and run `{cmd} clan crest`. Its colors and patterns become the crest in the clan window and the ranking. `{cmd} clan banner` gives you a copy ({server:clans.bannerPrice} DP).",
+        "- **Treasury:** members pay Duel Points in with `{cmd} clan deposit <amount>`. It pays for war stakes; the leader pays out with `{cmd} clan withdraw <amount>` or `{cmd} clan pay <member> <amount>`.",
+        "- `{cmd} clan chat <message>` talks to your clan only.",
+        "# Clan wars",
+        "The leader or an officer declares war from the clan ranking (pick a clan) or with `{cmd} clan war declare <tag> race|battle [stake]`. The other clan has {server:clans.warAcceptHours} hours to accept (**[Accept]** in chat or `{cmd} clan war accept`). Each side puts up the same stake from its treasury (at most {server:clans.maxStake} DP); the winner takes both and {server:clans.warWinPoints} DP more.",
+        "- **Race for points:** for {server:clans.warHours} hours, every duel a member wins against a member of the other clan is a point. First to {server:clans.warTarget} points wins early; otherwise whoever is ahead when the time is up. The same two duelists count {server:clans.warMaxPerPair} times at most, so beat many of them. Tag duels count when each side is from one clan. Only ranked duels count: {server:clans.warOnlyRanked}.",
+        "- **Arena battle:** each clan names {server:clans.battleDuelists} duelists (`{cmd} clan war join`, or the leader with `{cmd} clan war lineup <names>`). Once both say `{cmd} clan war ready`, they fight one bout after another on a tournament arena, first against first: each duelist is brought onto a podium, the bout starts after {server:clans.battleCallSeconds} seconds, and afterwards everyone goes back. Every bout won is a point. A duelist who doesn't show up within {server:clans.battleNoShowMinutes} minutes loses the bout.",
+        "- `{cmd} clan war` shows how your wars stand; the leader can give up with `{cmd} clan war surrender`. After a war the same two clans rest {server:clans.warCooldownHours} hours.",
+        "# Clan ranking",
+        "Every clan starts at a rating of {server:clans.startRating}. Winning a war takes rating from the loser, more for beating a stronger clan (up to {server:clans.kFactor} a war). The clan window lists the clans by rating with their crest and war record; `{cmd} clan top` shows the ten best in chat, `{cmd} clan info <tag>` one clan."
+      ]
+    },
+    {
       "title": "NPC duelists",
       "icon": "{modid}:duelist_spawn_egg",
       "text": [
@@ -242,6 +268,7 @@
         "- `{cmd} watch <player>` and `{cmd} unwatch`: watch a duel and stop.",
         "- `{cmd} stats [player]` and `{cmd} stats top`: duel records.",
         "- `{cmd} duel <player> ranked`: a ranked duel; `{cmd} rank`, `{cmd} rank <player>` and `{cmd} rank top`: the ranking.",
+        "- `{cmd} clan`: the clan window; `{cmd} clan create|invite|join|leave|chat|deposit|banner|info|top` and `{cmd} clan war declare|accept|deny|join|ready|surrender`: clans and clan wars (see Clans).",
         "- `{cmd} dp` and `{cmd} dp pay <player> <amount>`: your Duel Points, and giving some away.",
         "- `{cmd} trade <player>`: ask someone to trade; `{cmd} trade accept [player]` and `deny [player]`: accept or decline a request.",
         "- `{cmd} shop`: the vending machine's shop from anywhere, if the server allows it.",
@@ -265,6 +292,7 @@
         "- `{cmd} dp <player>` and `{cmd} dp give|take|set <players> <amount>`: look at and change Duel Points.",
         "- `{cmd} stats reset <player>`: clear a duel record.",
         "- `{cmd} rank set <player> <rating>`, `{cmd} rank reset <player>` and `{cmd} rank season confirm` (a new season: everyone back to the start rating).",
+        "- `{cmd} clan admin disband <tag>`, `rating <tag> <rating>`, `treasury <tag> <amount>`, `endwar <tag>` (ends a war on the current score) and `season confirm` (every clan back to the start rating).",
         "- `{cmd} tournament arena add`, `arena remove [number]` and `arena list`: the Duel Arenas tournaments play on (stand on one to add it); `{cmd} tournament award <name>`: decide a match.",
         "- `{cmd} starchips give|take|set <name> <amount>`: change someone's Star Chips.",
         "- `{cmd} gallery [page]`: lays out a page of monster models to look at; `{cmd} gallery clear` removes them.",
@@ -308,6 +336,7 @@
         "- `[arena] autoStart` = {server:arena.autoStart}: a duel starts by itself when one player stands on each podium of a Duel Arena, after `countdownSeconds` = {server:arena.countdownSeconds}.",
         "- `[arena] maxFieldSize` = {server:arena.maxFieldSize} and `minFieldSize` = {server:arena.minFieldSize}: how big the field in a player-built arena may get at most, and how little room still works (1 is the usual size).",
         "- `[ranking] enabled` = {server:ranking.enabled}, `startRating` = {server:ranking.startRating}, `kFactor` = {server:ranking.kFactor} (the most points one duel moves), `placementGames` = {server:ranking.placementGames}, `tiers` = {server:ranking.tiers} (where Silver to Duel King start), `promotionPoints` = {server:ranking.promotionPoints}, `maxPerPairPerDay` = {server:ranking.maxPerPairPerDay}, `arenaDuels` = {server:ranking.arenaDuels} (Duel Arena auto duels are ranked), `showInTabList` = {server:ranking.showInTabList}, `announcePromotions` = {server:ranking.announcePromotions}. Tournaments are ranked with their own setting `ranked`.",
+        "- `[clans]`: `enabled` = {server:clans.enabled}, `createPrice` = {server:clans.createPrice}, `maxMembers` = {server:clans.maxMembers}, `bannerPrice` = {server:clans.bannerPrice}, `showTag` = {server:clans.showTag}, `startRating` = {server:clans.startRating}, `kFactor` = {server:clans.kFactor}, `warHours` = {server:clans.warHours}, `warTarget` = {server:clans.warTarget}, `warMaxPerPair` = {server:clans.warMaxPerPair}, `warOnlyRanked` = {server:clans.warOnlyRanked}, `warAcceptHours` = {server:clans.warAcceptHours}, `warCooldownHours` = {server:clans.warCooldownHours}, `warMinMembers` = {server:clans.warMinMembers}, `maxStake` = {server:clans.maxStake}, `warWinPoints` = {server:clans.warWinPoints}, `announceWars` = {server:clans.announceWars}, `battleDuelists` = {server:clans.battleDuelists}, `battleCallSeconds` = {server:clans.battleCallSeconds}, `battleNoShowMinutes` = {server:clans.battleNoShowMinutes}. See the Clans chapter.",
         "- `[trade]`: `enabled` = {server:trade.enabled}, `onlyModItems` = {server:trade.onlyModItems} (only this mod's items), `points` = {server:trade.points} (DP in trades, needs `transfers`), `maxDistance` = {server:trade.maxDistance} (blocks, 0 for anywhere), `requestSeconds` = {server:trade.requestSeconds}, `rightClick` = {server:trade.rightClick} (sneak-right-click asks).",
         "- `[collection]`: what a complete set in the Set Collection Book brings, once per player: `pointsPerCard` = {server:collection.pointsPerCard} (DP per card of the set, with points as the currency), `packs` = {server:collection.packs}, `emeralds` = {server:collection.emeralds}, `xp` = {server:collection.xp}; `announce` = {server:collection.announce}: tell everyone in chat.",
         "- `[starchips]`: `startChips` = {server:starchips.startChips}, `goal` = {server:starchips.goal}, `finalists` = {server:starchips.finalists}, `defaultWager` = {server:starchips.defaultWager}, `maxWager` = {server:starchips.maxWager} (0: no limit), `npcDuels` = {server:starchips.npcDuels}, `npcWager` = {server:starchips.npcWager}, `durationMinutes` = {server:starchips.durationMinutes} (0: until enough qualify), `fillFinals` = {server:starchips.fillFinals}, `lateJoin` = {server:starchips.lateJoin}, `entryFee` = {server:starchips.entryFee} Duel Points, `playersCanHost` = {server:starchips.playersCanHost}, `announce` = {server:starchips.announce}. `finalsSettings`: tournament settings for the finals such as \"bestOf=3\" or \"prizesFirst=pack 10; points 1000\".",

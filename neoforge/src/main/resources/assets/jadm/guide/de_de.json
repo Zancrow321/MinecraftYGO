@@ -69,6 +69,7 @@
         "- **{key:duel_log}**: das Duellprotokoll (mit dem Mausrad scrollen).",
         "- **{key:duel_responses}**: nach Antworten fragen lassen oder alle auslassen, die du nicht nehmen musst.",
         "- **{key:ranking}** (außerhalb des Duells): das Ranglisten-Fenster.",
+        "- **{key:clan}** (außerhalb des Duells): das Clan-Fenster.",
         "- **Leertaste**: Antwort auslassen, Auswahl bestätigen oder zur nächsten Phase.",
         "- **Enter**: Auswahl bestätigen. **1 bis 9**: eine einfache Antwort wählen.",
         "- **Escape**: das Duellmenü (Kamera, Antworten, Aufgeben, Spielmenü).",
@@ -205,6 +206,31 @@
       ]
     },
     {
+      "title": "Clans",
+      "icon": "minecraft:white_banner",
+      "text": [
+        "Duellanten schließen sich zu **Clans** zusammen: ein Tag in der Clanfarbe vor deinem Namen, ein Wappen, eine Clan-Kasse, eine Clan-Rangliste und Clan-Kriege gegen andere Clans.",
+        "**{key:clan}** oder `{cmd} clan` öffnet das Clan-Fenster: dein Clan, seine Kriege und die Clan-Rangliste. Die Knöpfe dort machen dasselbe wie die Befehle unten.",
+        "# Gründen und beitreten",
+        "- `{cmd} clan create <tag> <name>` gründet einen Clan (kostet {server:clans.createPrice} DP). Der Tag hat 2 bis 5 Buchstaben oder Ziffern, etwa KC.",
+        "- Leiter und Offiziere laden mit `{cmd} clan invite <player>` ein; der Eingeladene klickt **[Join]** oder nutzt `{cmd} clan join <tag>`. Ein offener Clan (`{cmd} clan open true`) nimmt jeden.",
+        "- Ein Clan hat bis zu {server:clans.maxMembers} Mitglieder (0 heißt unbegrenzt). `{cmd} clan leave` verlässt ihn.",
+        "- **Rollen:** der **Leiter** bestimmt alles; **Offiziere** laden ein, entfernen Mitglieder, setzen Wappen und Motto und beantworten Kriegserklärungen; **Mitglieder** duellieren sich und zahlen ein. Der Leiter befördert mit `{cmd} clan promote <member>`, stuft mit `demote` zurück und übergibt die Leitung mit `{cmd} clan leader <member>`.",
+        "# Tag, Wappen und Kasse",
+        "- Der Tag jedes Mitglieds steht vor seinem Namen im Chat, in der Spielerliste und über dem Kopf (`showTag`: {server:clans.showTag}). Der Leiter wählt die Farbe mit `{cmd} clan color <color>`.",
+        "- **Wappen:** Mach am Webstuhl ein Banner, halte es und nutze `{cmd} clan crest`. Seine Farben und Muster werden das Wappen im Clan-Fenster und in der Rangliste. `{cmd} clan banner` gibt dir eine Kopie ({server:clans.bannerPrice} DP).",
+        "- **Kasse:** Mitglieder zahlen Duel Points mit `{cmd} clan deposit <amount>` ein. Daraus kommen die Kriegseinsätze; der Leiter zahlt mit `{cmd} clan withdraw <amount>` oder `{cmd} clan pay <member> <amount>` aus.",
+        "- `{cmd} clan chat <message>` schreibt nur an deinen Clan.",
+        "# Clan-Kriege",
+        "Leiter oder Offiziere erklären den Krieg in der Clan-Rangliste (Clan anklicken) oder mit `{cmd} clan war declare <tag> race|battle [stake]`. Der andere Clan hat {server:clans.warAcceptHours} Stunden zum Annehmen (**[Accept]** im Chat oder `{cmd} clan war accept`). Beide setzen denselben Einsatz aus ihrer Kasse (höchstens {server:clans.maxStake} DP); der Sieger bekommt beide und {server:clans.warWinPoints} DP dazu.",
+        "- **Punkte-Rennen:** {server:clans.warHours} Stunden lang bringt jedes Duell, das ein Mitglied gegen ein Mitglied des anderen Clans gewinnt, einen Punkt. Wer zuerst {server:clans.warTarget} Punkte hat, gewinnt sofort, sonst wer am Ende vorn liegt. Dieselben zwei Duellanten zählen höchstens {server:clans.warMaxPerPair}-mal, also schlagt viele von ihnen. Tag-Duelle zählen, wenn jede Seite aus einem Clan kommt. Nur gewertete Duelle zählen: {server:clans.warOnlyRanked}.",
+        "- **Arena-Schlacht:** Jeder Clan stellt {server:clans.battleDuelists} Duellanten (`{cmd} clan war join`, oder der Leiter mit `{cmd} clan war lineup <names>`). Sobald beide `{cmd} clan war ready` sagen, kämpfen sie nacheinander auf einer Turnier-Arena, erster gegen ersten: Jeder wird auf ein Podest gebracht, nach {server:clans.battleCallSeconds} Sekunden geht der Kampf los, danach geht es zurück. Jeder gewonnene Kampf ist ein Punkt. Wer nicht innerhalb von {server:clans.battleNoShowMinutes} Minuten kommt, verliert seinen Kampf.",
+        "- `{cmd} clan war` zeigt, wie eure Kriege stehen; der Leiter kann mit `{cmd} clan war surrender` aufgeben. Nach einem Krieg haben dieselben zwei Clans {server:clans.warCooldownHours} Stunden Pause.",
+        "# Clan-Rangliste",
+        "Jeder Clan startet mit einer Wertung von {server:clans.startRating}. Wer einen Krieg gewinnt, nimmt dem Verlierer Wertung ab, mehr für einen stärkeren Gegner (bis zu {server:clans.kFactor} pro Krieg). Das Clan-Fenster listet die Clans nach Wertung mit Wappen und Kriegsbilanz; `{cmd} clan top` zeigt die zehn besten im Chat, `{cmd} clan info <tag>` einen Clan."
+      ]
+    },
+    {
       "title": "NPC-Duellanten",
       "icon": "{modid}:duelist_spawn_egg",
       "text": [
@@ -242,6 +268,7 @@
         "- `{cmd} watch <player>` und `{cmd} unwatch`: einem Duell zuschauen und aufhören.",
         "- `{cmd} stats [player]` und `{cmd} stats top`: Duell-Bilanzen.",
         "- `{cmd} duel <player> ranked`: ein gewertetes Duell; `{cmd} rank`, `{cmd} rank <player>` und `{cmd} rank top`: die Rangliste.",
+        "- `{cmd} clan`: das Clan-Fenster; `{cmd} clan create|invite|join|leave|chat|deposit|banner|info|top` und `{cmd} clan war declare|accept|deny|join|ready|surrender`: Clans und Clan-Kriege (siehe Clans).",
         "- `{cmd} dp` und `{cmd} dp pay <player> <amount>`: deine Duel Points, und welche verschenken.",
         "- `{cmd} trade <player>`: jemandem einen Handel anbieten; `{cmd} trade accept [player]` und `deny [player]`: eine Anfrage annehmen oder ablehnen.",
         "- `{cmd} shop`: der Shop des Kartenautomaten von überall, wenn der Server es erlaubt.",
@@ -265,6 +292,7 @@
         "- `{cmd} dp <player>` und `{cmd} dp give|take|set <players> <amount>`: Duel Points ansehen und ändern.",
         "- `{cmd} stats reset <player>`: eine Duell-Bilanz löschen.",
         "- `{cmd} rank set <player> <rating>`, `{cmd} rank reset <player>` und `{cmd} rank season confirm` (neue Saison: alle zurück auf die Startwertung).",
+        "- `{cmd} clan admin disband <tag>`, `rating <tag> <rating>`, `treasury <tag> <amount>`, `endwar <tag>` (beendet einen Krieg beim aktuellen Stand) und `season confirm` (alle Clans zurück auf die Startwertung).",
         "- `{cmd} tournament arena add`, `arena remove [number]` und `arena list`: die Duellarenen für Turniere (zum Hinzufügen darauf stehen); `{cmd} tournament award <name>`: ein Match entscheiden.",
         "- `{cmd} starchips give|take|set <name> <amount>`: die Star Chips von jemandem ändern.",
         "- `{cmd} gallery [page]`: stellt eine Seite Monster-Modelle zum Ansehen auf; `{cmd} gallery clear` räumt sie weg.",
@@ -308,6 +336,7 @@
         "- `[arena] autoStart` = {server:arena.autoStart}: ein Duell startet von selbst, wenn auf jedem Pult einer Duellarena ein Spieler steht, nach `countdownSeconds` = {server:arena.countdownSeconds} Sekunden Countdown.",
         "- `[arena] maxFieldSize` = {server:arena.maxFieldSize} und `minFieldSize` = {server:arena.minFieldSize}: wie groß das Feld in einer selbstgebauten Arena höchstens werden darf, und mit wie wenig Platz sie noch geht (1 ist die normale Größe).",
         "- `[ranking] enabled` = {server:ranking.enabled}, `startRating` = {server:ranking.startRating}, `kFactor` = {server:ranking.kFactor} (so viele Punkte bewegt ein Duell höchstens), `placementGames` = {server:ranking.placementGames}, `tiers` = {server:ranking.tiers} (wo Silver bis Duel King beginnen), `promotionPoints` = {server:ranking.promotionPoints}, `maxPerPairPerDay` = {server:ranking.maxPerPairPerDay}, `arenaDuels` = {server:ranking.arenaDuels} (Auto-Duelle auf Duellarenen sind gewertet), `showInTabList` = {server:ranking.showInTabList}, `announcePromotions` = {server:ranking.announcePromotions}. Turniere werden mit ihrer eigenen Einstellung `ranked` gewertet.",
+        "- `[clans]`: `enabled` = {server:clans.enabled}, `createPrice` = {server:clans.createPrice}, `maxMembers` = {server:clans.maxMembers}, `bannerPrice` = {server:clans.bannerPrice}, `showTag` = {server:clans.showTag}, `startRating` = {server:clans.startRating}, `kFactor` = {server:clans.kFactor}, `warHours` = {server:clans.warHours}, `warTarget` = {server:clans.warTarget}, `warMaxPerPair` = {server:clans.warMaxPerPair}, `warOnlyRanked` = {server:clans.warOnlyRanked}, `warAcceptHours` = {server:clans.warAcceptHours}, `warCooldownHours` = {server:clans.warCooldownHours}, `warMinMembers` = {server:clans.warMinMembers}, `maxStake` = {server:clans.maxStake}, `warWinPoints` = {server:clans.warWinPoints}, `announceWars` = {server:clans.announceWars}, `battleDuelists` = {server:clans.battleDuelists}, `battleCallSeconds` = {server:clans.battleCallSeconds}, `battleNoShowMinutes` = {server:clans.battleNoShowMinutes}. Siehe das Kapitel Clans.",
         "- `[trade]`: `enabled` = {server:trade.enabled}, `onlyModItems` = {server:trade.onlyModItems} (nur Items dieser Mod), `points` = {server:trade.points} (DP im Handel, braucht `transfers`), `maxDistance` = {server:trade.maxDistance} (Blöcke, 0 für überall), `requestSeconds` = {server:trade.requestSeconds}, `rightClick` = {server:trade.rightClick} (Schleich-Rechtsklick fragt).",
         "- `[collection]`: was ein komplettes Set im Set-Sammelbuch einmal pro Spieler bringt: `pointsPerCard` = {server:collection.pointsPerCard} (DP pro Karte des Sets, mit Punkten als Währung), `packs` = {server:collection.packs}, `emeralds` = {server:collection.emeralds}, `xp` = {server:collection.xp}; `announce` = {server:collection.announce}: allen im Chat sagen.",
         "- `[starchips]`: `startChips` = {server:starchips.startChips}, `goal` = {server:starchips.goal}, `finalists` = {server:starchips.finalists}, `defaultWager` = {server:starchips.defaultWager}, `maxWager` = {server:starchips.maxWager} (0: keine Grenze), `npcDuels` = {server:starchips.npcDuels}, `npcWager` = {server:starchips.npcWager}, `durationMinutes` = {server:starchips.durationMinutes} (0: bis genug qualifiziert sind), `fillFinals` = {server:starchips.fillFinals}, `lateJoin` = {server:starchips.lateJoin}, `entryFee` = {server:starchips.entryFee} Duel Points, `playersCanHost` = {server:starchips.playersCanHost}, `announce` = {server:starchips.announce}. `finalsSettings`: Turnier-Einstellungen fürs Finale wie \"bestOf=3\" oder \"prizesFirst=pack 10; points 1000\".",

@@ -47,6 +47,11 @@ public final class ClientScreens {
         io.github.zancrow321.jadm.client.ranking.RankingScreen.receive(payload.json());
     }
 
+    /** The clan window: open it, or refresh it if it is open. */
+    public static void clan(io.github.zancrow321.jadm.network.ClanPayload payload) {
+        io.github.zancrow321.jadm.client.clan.ClanScreen.receive(payload.open(), payload.json());
+    }
+
     /** A Sealed or Draft tournament's draft or deck building: open, refresh or close its window. */
     public static void limited(io.github.zancrow321.jadm.network.LimitedPayload payload) {
         io.github.zancrow321.jadm.client.collection.LimitedScreen.receive(payload.open(), payload.json());

@@ -63,6 +63,8 @@ public final class Jadm {
             container.registerConfig(ModConfig.Type.CLIENT, JadmClientConfig.SPEC);
         }
         NeoForge.EVENT_BUS.addListener(this::onServerStarting);
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerStartedEvent event) ->
+                io.github.zancrow321.jadm.clan.ClanTeams.syncAll(event.getServer()));
         NeoForge.EVENT_BUS.addListener((ServerStoppingEvent event) -> {
             DuelManager.shutdown();
             TournamentManager.shutdown();
@@ -70,6 +72,7 @@ public final class Jadm {
             io.github.zancrow321.jadm.arena.ArenaLobby.reset();
             io.github.zancrow321.jadm.trade.Trades.reset();
             io.github.zancrow321.jadm.arena.BuiltArena.reset();
+            io.github.zancrow321.jadm.clan.ClanBattles.reset();
             Progress.stopped();
         });
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post event) -> {
@@ -80,6 +83,8 @@ public final class Jadm {
             io.github.zancrow321.jadm.village.CardShop.tick(event.getServer());
             io.github.zancrow321.jadm.points.Points.tick(event.getServer());
             io.github.zancrow321.jadm.trade.Trades.tick(event.getServer());
+            io.github.zancrow321.jadm.clan.ClanWars.tick(event.getServer());
+            io.github.zancrow321.jadm.clan.ClanBattles.tick(event.getServer());
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
@@ -90,6 +95,7 @@ public final class Jadm {
                 TournamentManager.get(player.server).onLogin(player);
                 io.github.zancrow321.jadm.starchips.StarChips.get(player.server).onLogin(player);
                 io.github.zancrow321.jadm.points.Points.login(player);
+                io.github.zancrow321.jadm.clan.ClanCommands.onLogin(player);
             }
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {

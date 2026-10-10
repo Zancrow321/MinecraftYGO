@@ -110,6 +110,12 @@ public final class ArenaLobby {
             close(key);
             return;
         }
+        if (io.github.zancrow321.jadm.clan.ClanBattles.holds(level, key.arena())) {
+            close(key);
+            ends.forEach(players -> players.forEach(p -> bar(p, Component.literal(
+                    "This arena is taken by a clan battle.").withStyle(ChatFormatting.GRAY))));
+            return;
+        }
         if (TournamentManager.get(server).holds(level, key.arena())) {
             close(key);
             ends.forEach(players -> players.forEach(p -> bar(p, Component.translatable(
