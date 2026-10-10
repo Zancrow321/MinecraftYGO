@@ -41,7 +41,7 @@ public final class ClanCommands {
     private static final Gson GSON = new Gson();
     private static final Pattern TAG = Pattern.compile("[A-Za-z0-9]{2,5}");
     private static final Pattern NAME = Pattern.compile("[\\p{L}\\p{N} '&.!-]{3,24}");
-    private static final int MOTTO = 60;
+    static final int MOTTO = 60;
     private static final long INVITE_TICKS = 20 * 60 * 5;
     private static final int TOP = 10;
 
@@ -234,6 +234,9 @@ public final class ClanCommands {
         if (why == null) {
             why = checkName(clans, name, null);
         }
+        if (why == null) {
+            why = ClanParties.whyNotFound(player);
+        }
         if (why != null) {
             return fail(ctx, why);
         }
@@ -249,6 +252,7 @@ public final class ClanCommands {
                 + "Next: hold a banner from the loom and run /jadm clan crest for your crest, and invite duelists with "
                 + "/jadm clan invite <player>.").withStyle(ChatFormatting.GRAY));
         refresh(player.server, clan);
+        ClanParties.founded(clan, player);
         return 1;
     }
 
@@ -300,7 +304,12 @@ public final class ClanCommands {
         if (full(clan)) {
             return fail(ctx, "[" + clan.tag + "] is full.");
         }
+        String why = ClanParties.whyNotJoin(player, clan);
+        if (why != null) {
+            return fail(ctx, why);
+        }
         clans.join(clan, player.getUUID(), player.getScoreboardName());
+        ClanParties.joined(player.server, clan, player.getUUID(), player.getScoreboardName());
         ClanText.tell(player.server, clan, Component.literal(player.getScoreboardName() + " joined the clan ")
                 .withStyle(ChatFormatting.GREEN).append(ClanText.tag(clan)).append(
                         Component.literal("!").withStyle(ChatFormatting.GREEN)));
@@ -319,9 +328,8 @@ public final class ClanCommands {
                     ? "You lead the clan: hand that over first with /jadm clan leader <member>, or disband it."
                     : "You are the clan's last member: /jadm clan disband ends it.");
         }
-        ClanWars.dropFromLineups(clans(ctx), clan, player.getUUID());
-        clans(ctx).leave(clan, player.getUUID());
-        ClanTeams.leave(player.server, player.getScoreboardName());
+        dropMember(player.server, clan, player.getUUID());
+        ClanParties.left(player.server, clan, player.getUUID(), player.getScoreboardName(), false);
         ClanText.tell(player.server, clan, Component.literal(player.getScoreboardName() + " left the clan.")
                 .withStyle(ChatFormatting.GRAY));
         player.sendSystemMessage(Component.literal("You left ").withStyle(ChatFormatting.GRAY)
@@ -350,9 +358,8 @@ public final class ClanCommands {
             return fail(ctx, "Only the leader can remove an officer.");
         }
         String name = clan.members.get(target).name;
-        ClanWars.dropFromLineups(clans(ctx), clan, target);
-        clans(ctx).leave(clan, target);
-        ClanTeams.leave(player.server, name);
+        dropMember(player.server, clan, target);
+        ClanParties.left(player.server, clan, target, name, true);
         ClanText.tell(player.server, clan, Component.literal(player.getScoreboardName() + " removed " + name
                 + " from the clan.").withStyle(ChatFormatting.GRAY));
         ServerPlayer kicked = player.server.getPlayerList().getPlayer(target);
@@ -384,6 +391,7 @@ public final class ClanCommands {
         }
         m.role = role;
         clans(ctx).changed();
+        ClanParties.roleChanged(clan, player, target, m.name, role);
         ClanText.tell(player.server, clan, Component.literal(m.name + (role == Clans.Role.OFFICER
                 ? " is now an officer of the clan." : " is a member again.")).withStyle(ChatFormatting.AQUA));
         refresh(player.server, clan);
@@ -403,6 +411,7 @@ public final class ClanCommands {
         clan.members.get(player.getUUID()).role = Clans.Role.OFFICER;
         clan.members.get(target).role = Clans.Role.LEADER;
         clans(ctx).changed();
+        ClanParties.leaderChanged(clan, player, target, clan.members.get(target).name);
         ClanText.tell(player.server, clan, Component.literal(clan.members.get(target).name
                 + " now leads the clan.").withStyle(ChatFormatting.GOLD));
         refresh(player.server, clan);
@@ -415,13 +424,29 @@ public final class ClanCommands {
         if (clan == null) {
             return 0;
         }
+        String party = ClanParties.partyName(clan);
         long treasury = disband(player.server, clan);
+        if (party != null) {
+            player.sendSystemMessage(Component.literal("Its FTB Teams party " + party + " stays, with its claims and "
+                    + "quests; /ftbteams party leave leaves it.").withStyle(ChatFormatting.GRAY));
+        }
         if (treasury > 0) {
             Points.get(player.server).add(player.server, player.getUUID(), treasury);
             player.sendSystemMessage(Component.literal("The clan treasury, " + Points.format(treasury)
                     + ", goes to you.").withStyle(ChatFormatting.GRAY));
         }
         return 1;
+    }
+
+    /** Takes a member out of the clan, its battle lineups and its scoreboard team. */
+    static void dropMember(MinecraftServer server, Clans.Clan clan, UUID player) {
+        Clans.Member m = clan.members.get(player);
+        if (m == null) {
+            return;
+        }
+        ClanWars.dropFromLineups(Clans.get(server), clan, player);
+        Clans.get(server).leave(clan, player);
+        ClanTeams.leave(server, m.name);
     }
 
     /**
@@ -507,6 +532,7 @@ public final class ClanCommands {
         }
         clan.color = color;
         clans(ctx).changed();
+        ClanParties.looksChanged(player.server, clan);
         ClanText.tell(player.server, clan, Component.literal("The clan's color is now ").withStyle(ChatFormatting.GRAY)
                 .append(ClanText.tag(clan)).append("."));
         refresh(player.server, clan);
@@ -525,6 +551,7 @@ public final class ClanCommands {
         }
         clan.motto = motto;
         clans(ctx).changed();
+        ClanParties.looksChanged(player.server, clan);
         ClanText.tell(player.server, clan, Component.literal(motto.isEmpty() ? "The clan motto was cleared."
                 : "New clan motto: \"" + motto + "\"").withStyle(ChatFormatting.GRAY));
         refresh(player.server, clan);
@@ -544,6 +571,7 @@ public final class ClanCommands {
         }
         clan.name = name;
         clans(ctx).changed();
+        ClanParties.looksChanged(player.server, clan);
         ClanText.tell(player.server, clan, Component.literal("The clan is now called ").withStyle(ChatFormatting.GRAY)
                 .append(ClanText.named(clan)).append("."));
         refresh(player.server, clan);
@@ -577,6 +605,7 @@ public final class ClanCommands {
         }
         clan.open = BoolArgumentType.getBool(ctx, "open");
         clans(ctx).changed();
+        ClanParties.looksChanged(player.server, clan);
         ClanText.tell(player.server, clan, Component.literal(clan.open
                 ? "Anyone can join the clan now with /jadm clan join " + clan.tag + "."
                 : "The clan takes only invited duelists now.").withStyle(ChatFormatting.GRAY));
@@ -684,6 +713,11 @@ public final class ClanCommands {
         source.sendSuccess(() -> Component.literal(String.join(", ", shown.members.values().stream()
                 .map(m -> m.name + (m.role == Clans.Role.MEMBER ? "" : " (" + m.role.title + ")")).toList()))
                 .withStyle(ChatFormatting.WHITE), false);
+        String party = ClanParties.partyName(shown);
+        if (party != null) {
+            source.sendSuccess(() -> Component.literal("FTB Teams party: " + party).withStyle(ChatFormatting.GRAY),
+                    false);
+        }
         for (Clans.War w : clans.warsOf(shown.id)) {
             if (w.running()) {
                 Clans.Clan other = clans.byId(w.other(shown.id));
@@ -1093,7 +1127,7 @@ public final class ClanCommands {
         return null;
     }
 
-    private static String checkName(Clans clans, String name, Clans.Clan except) {
+    static String checkName(Clans clans, String name, Clans.Clan except) {
         if (!NAME.matcher(name).matches()) {
             return "A clan name is 3 to 24 letters, digits, spaces and ' & . ! -";
         }
