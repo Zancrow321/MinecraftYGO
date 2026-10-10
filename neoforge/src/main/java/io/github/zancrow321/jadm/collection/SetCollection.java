@@ -1,6 +1,7 @@
 package io.github.zancrow321.jadm.collection;
 
 import io.github.zancrow321.jadm.JadmServerConfig;
+import io.github.zancrow321.jadm.api.event.SetCompleteEvent;
 import io.github.zancrow321.jadm.engine.data.BoosterSets;
 import io.github.zancrow321.jadm.item.BinderItem;
 import io.github.zancrow321.jadm.item.BoosterPackItem;
@@ -26,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -91,6 +93,7 @@ public final class SetCollection extends SavedData {
         data.claimed.computeIfAbsent(player.getUUID(), u -> new HashSet<>()).add(id);
         data.setDirty();
         List<String> got = give(player, set);
+        NeoForge.EVENT_BUS.post(new SetCompleteEvent(player, id, set.product().name(), set.size()));
         player.sendSystemMessage(Component.translatable("message.jadm.sets.claimed", set.product().name(),
                 String.join(", ", got)).withStyle(ChatFormatting.GOLD));
         if (JadmServerConfig.SET_ANNOUNCE.get()) {

@@ -3,6 +3,7 @@ package io.github.zancrow321.jadm.tournament;
 import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.JadmServerConfig;
+import io.github.zancrow321.jadm.api.event.TournamentEndEvent;
 import io.github.zancrow321.jadm.arena.DuelArena;
 import io.github.zancrow321.jadm.duel.DuelManager;
 import io.github.zancrow321.jadm.duel.MatchSetup;
@@ -39,6 +40,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.time.LocalDateTime;
@@ -1188,6 +1190,9 @@ public final class TournamentManager {
             }
         }
         limited.handOut(t);
+        NeoForge.EVENT_BUS.post(new TournamentEndEvent(server, t.name, t.setting("format"), places.stream()
+                .map(p -> new TournamentEndEvent.Placement(t.entrants.get(p.entrant()).player,
+                        t.entrants.get(p.entrant()).name, p.place())).toList()));
         t.news("Finished: " + podium);
         announce(t, Component.literal("\"" + t.name + "\" is over! " + podium + ".").withStyle(ChatFormatting.GOLD)
                 .append(" ").append(button("[Results]", "/jadm tournament", "Open the tournament window")));

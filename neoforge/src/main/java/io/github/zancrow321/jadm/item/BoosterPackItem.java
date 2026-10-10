@@ -1,6 +1,7 @@
 package io.github.zancrow321.jadm.item;
 
 import io.github.zancrow321.jadm.JadmData;
+import io.github.zancrow321.jadm.api.event.PackOpenEvent;
 import io.github.zancrow321.jadm.engine.data.BoosterSets;
 import io.github.zancrow321.jadm.engine.data.Products;
 import io.github.zancrow321.jadm.network.PackOpenedPayload;
@@ -17,6 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -81,14 +83,25 @@ public final class BoosterPackItem extends Item {
             return InteractionResultHolder.fail(stack);
         }
         RandomSource random = level.getRandom();
-        List<BoosterSets.Card> cards = set.open(new java.util.Random(random.nextLong()));
+        List<ItemStack> cards = set.open(new java.util.Random(random.nextLong())).stream()
+                .map(card -> CardItem.of(card.code(), card.rarity())).toList();
+        if (player instanceof ServerPlayer serverPlayer) {
+            cards = NeoForge.EVENT_BUS.post(new PackOpenEvent(serverPlayer, set.id(), set.code(), set.name(),
+                    cards)).getCards();
+        }
         List<JadmComponents.CardStack> shown = new ArrayList<>();
-        for (BoosterSets.Card card : cards) {
-            ItemStack item = CardItem.of(card.code(), card.rarity());
-            if (!player.getInventory().add(item)) {
-                player.drop(item, false);
+        for (ItemStack item : cards) {
+            if (item.isEmpty()) {
+                continue;
             }
-            shown.add(new JadmComponents.CardStack(card.code(), card.rarity().id()));
+            JadmComponents.CardStack card = item.get(JadmComponents.CARD.get());
+            if (card != null) {
+                shown.add(card);
+            }
+            ItemStack given = item.copy();
+            if (!player.getInventory().add(given)) {
+                player.drop(given, false);
+            }
         }
         stack.consume(1, player);
         level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1, 0.8f);

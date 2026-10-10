@@ -329,7 +329,8 @@
         "- Can't put a card in your deck? It is from a set that is still locked, or the banlist limits it. The deck box tells you which.",
         "- An ante duel's cards are safe: a crash or restart gives them back, and a winner who logged off gets them on the next login.",
         "- In a 2v2 duel only the partner whose turn it is answers prompts; both see the team's hand.",
-        "- Lost this book? `{cmd} guide` opens it, or craft a new one from a book and paper."
+        "- Lost this book? `{cmd} guide` opens it, or craft a new one from a book and paper.",
+        "- For servers with KubeJS: scripts can react to duels, packs, tournaments and ranks (`JadmEvents`) and give cards, packs and Duel Points (`Jadm`). The guide is `docs/kubejs.md` in the mod's GitHub repository."
       ]
     }
   ]
