@@ -563,6 +563,7 @@ public final class JadmServerConfig {
         public final ModConfigSpec.IntValue maxMembers;
         public final ModConfigSpec.IntValue bannerPrice;
         public final ModConfigSpec.BooleanValue showTag;
+        public final ModConfigSpec.BooleanValue ftbTeams;
         public final ModConfigSpec.IntValue startRating;
         public final ModConfigSpec.IntValue kFactor;
         public final ModConfigSpec.IntValue warHours;
@@ -594,6 +595,12 @@ public final class JadmServerConfig {
                     + "chat, in the player list (Tab) and above their head. Each clan gets a vanilla scoreboard team "
                     + "for this (named jadm_clan_...), so chat mods that show teams show the tag too. Off removes "
                     + "those teams.").define("showTag", true);
+            ftbTeams = builder.comment("When FTB Teams is installed, every clan is also an FTB Teams party with the "
+                    + "same members, leader, officers, name, color and motto, so FTB mods (chunk claims, quests, "
+                    + "team chat) treat the whole clan as one team. Changes on either side carry over: joining or "
+                    + "leaving the party joins or leaves the clan. Founding a clan turns the founder's own party into "
+                    + "the clan; disbanding a clan keeps its party. Off leaves FTB Teams alone.")
+                    .define("ftbTeams", true);
             startRating = builder.comment("The clan rating every new clan starts with (and gets back when an operator "
                     + "starts a new clan season).").defineInRange("startRating", 1000, 0, 100_000);
             kFactor = builder.comment("How many rating points a clan war moves at most: an even war moves half this, "

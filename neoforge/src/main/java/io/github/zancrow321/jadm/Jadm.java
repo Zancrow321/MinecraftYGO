@@ -58,6 +58,7 @@ public final class Jadm {
         DuelArena.register(modBus);
         io.github.zancrow321.jadm.ranking.RankingBoard.register(modBus);
         container.registerConfig(ModConfig.Type.SERVER, JadmServerConfig.SPEC);
+        io.github.zancrow321.jadm.clan.ClanParties.init();
         modBus.addListener(JadmNetwork::register);
         if (FMLEnvironment.dist == Dist.CLIENT) {
             container.registerConfig(ModConfig.Type.CLIENT, JadmClientConfig.SPEC);
@@ -85,6 +86,7 @@ public final class Jadm {
             io.github.zancrow321.jadm.trade.Trades.tick(event.getServer());
             io.github.zancrow321.jadm.clan.ClanWars.tick(event.getServer());
             io.github.zancrow321.jadm.clan.ClanBattles.tick(event.getServer());
+            io.github.zancrow321.jadm.clan.ClanParties.tick(event.getServer());
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
@@ -96,6 +98,7 @@ public final class Jadm {
                 io.github.zancrow321.jadm.starchips.StarChips.get(player.server).onLogin(player);
                 io.github.zancrow321.jadm.points.Points.login(player);
                 io.github.zancrow321.jadm.clan.ClanCommands.onLogin(player);
+                io.github.zancrow321.jadm.clan.ClanParties.onLogin(player);
             }
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {

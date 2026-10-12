@@ -48,3 +48,10 @@ type = "optional"
 versionRange = "[0.1.5,)"
 ordering = "NONE"
 side = "CLIENT"
+
+[[dependencies.${mod_id}]]
+modId = "ftbteams"
+type = "optional"
+versionRange = "[2101.1.7,)"
+ordering = "NONE"
+side = "BOTH"

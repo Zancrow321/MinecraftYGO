@@ -89,6 +89,8 @@ public final class Clans extends SavedData {
         public int warsLost;
         public int warsDrawn;
         public long created;
+        /** The FTB Teams party that mirrors this clan, or {@code null}; see {@link ClanParties}. */
+        public UUID party;
         /** In order of joining; the leader is one of them. */
         public final Map<UUID, Member> members = new LinkedHashMap<>();
 
@@ -413,6 +415,9 @@ public final class Clans extends SavedData {
             t.putInt("warsLost", c.warsLost);
             t.putInt("warsDrawn", c.warsDrawn);
             t.putLong("created", c.created);
+            if (c.party != null) {
+                t.putUUID("party", c.party);
+            }
             CompoundTag crest = new CompoundTag();
             crest.putInt("base", c.crest.base());
             ListTag layers = new ListTag();
@@ -531,6 +536,7 @@ public final class Clans extends SavedData {
             c.warsLost = t.getInt("warsLost");
             c.warsDrawn = t.getInt("warsDrawn");
             c.created = t.getLong("created");
+            c.party = t.hasUUID("party") ? t.getUUID("party") : null;
             CompoundTag crest = t.getCompound("crest");
             List<Crest.Layer> layers = new ArrayList<>();
             for (Tag l : crest.getList("layers", Tag.TAG_COMPOUND)) {
