@@ -288,7 +288,8 @@ public final class PromptChoices {
             return text.cardName(card.code());
         }
         String side = card.loc().controller() == viewer ? "your " : "opponent's ";
-        return text.cardName(card.code()) + " (" + side + text.location(card.loc().location()) + ")";
+        String where = card.loc().isOverlay() ? "Xyz material" : text.location(card.loc().location());
+        return text.cardName(card.code()) + " (" + side + where + ")";
     }
 
     private static byte[] autoCounters(SelectCounter p) {

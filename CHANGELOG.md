@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Detaching Xyz materials
+- **You pick which materials to detach:** a cost like "detach 1 material" opens a window with the monster's materials
+  as cards instead of taking the first one, and effects that detach 2 or more work again (clicking the Xyz monster
+  only ever picked the same first material). The opponent's materials show their pictures too.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,
