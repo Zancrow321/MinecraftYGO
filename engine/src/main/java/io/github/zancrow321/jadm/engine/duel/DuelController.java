@@ -201,7 +201,8 @@ public final class DuelController implements AutoCloseable {
         return new Board(turn, turnPlayer, phase, List.copyOf(sides), field.options);
     }
 
-    private List<CardState> query(int player, int location) {
+    /** The cards in one of a player's locations, in sequence order (for a deck, the bottom card first). */
+    List<CardState> query(int player, int location) {
         return QueryDecoder.decodeLocation(duel.queryLocation(player, location, QueryDecoder.STANDARD_FLAGS));
     }
 
