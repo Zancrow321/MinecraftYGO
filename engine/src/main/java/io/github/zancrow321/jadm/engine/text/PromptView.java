@@ -41,10 +41,12 @@ public record PromptView(String title, List<Choice> choices, MultiSelect multi, 
     /**
      * Pick between {@code min} and {@code max} of {@code options}, then send {@code encode(selectedIndices)}.
      *
-     * @param codes the card behind each option, or 0 (same order as {@code options})
+     * @param codes   the card behind each option, or 0 (same order as {@code options})
+     * @param ordered the order of the clicks is the answer (putting cards back on the deck in any order), so a UI
+     *                should number the picked options
      */
     public record MultiSelect(List<String> options, List<Loc> locs, List<Integer> codes, int min, int max,
-                              Function<List<Integer>, byte[]> encoder, Choice cancel) {
+                              Function<List<Integer>, byte[]> encoder, Choice cancel, boolean ordered) {
         public boolean canConfirm(List<Integer> selected) {
             return selected.size() >= min && selected.size() <= max;
         }
@@ -72,7 +74,19 @@ public record PromptView(String title, List<Choice> choices, MultiSelect multi, 
                                    int max, Function<List<Integer>, byte[]> encoder, boolean cancelable) {
         Choice cancel = cancelable ? new Choice("Cancel", Responses.cancel()) : null;
         return new PromptView(title, List.of(), new MultiSelect(List.copyOf(options),
-                Collections.unmodifiableList(new ArrayList<>(locs)), List.copyOf(codes), min, max, encoder, cancel),
-                0);
+                Collections.unmodifiableList(new ArrayList<>(locs)), List.copyOf(codes), min, max, encoder, cancel,
+                false), 0);
+    }
+
+    /**
+     * Click all of {@code options} one after another to put them in order; {@code encode} gets the click order.
+     *
+     * @param keep the answer that leaves the order as it is
+     */
+    public static PromptView order(String title, List<String> options, List<Loc> locs, List<Integer> codes,
+                                   Function<List<Integer>, byte[]> encoder, Choice keep) {
+        return new PromptView(title, List.of(), new MultiSelect(List.copyOf(options),
+                Collections.unmodifiableList(new ArrayList<>(locs)), List.copyOf(codes), options.size(),
+                options.size(), encoder, keep, true), 0);
     }
 }
