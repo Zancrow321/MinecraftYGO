@@ -237,9 +237,12 @@ public final class DuelUi {
         return p.multi() == null && p.choices().stream().anyMatch(c -> c.kind() == Kind.PLACE);
     }
 
-    /** Whether a place can be clicked where it is: a zone on the mat or a card in your own hand. */
+    /**
+     * Whether a place can be clicked where it is: a zone on the mat or a card in your own hand. Xyz materials can't:
+     * they all sit in their monster's zone, so a click there couldn't tell which one you mean.
+     */
     private static boolean clickable(Loc loc) {
-        if (loc == null) {
+        if (loc == null || loc.isOverlay()) {
             return false;
         }
         if ((loc.location() & ~LOCATION_OVERLAY) == LOCATION_HAND) {
