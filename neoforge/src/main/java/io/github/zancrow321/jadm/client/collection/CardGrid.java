@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * A paged grid of card thumbnails with copy counts, used by the binder and deck box screens.
  */
-final class CardGrid {
+public final class CardGrid {
     static final ResourceLocation CARD_BACK =
             ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID, "textures/field/card_back.png");
     static final ResourceLocation CARD_BLANK =
@@ -157,7 +157,7 @@ final class CardGrid {
     }
 
     /** Draws a card with its foil, and a foil card's rarity in the bottom left corner. */
-    static void drawCard(GuiGraphics g, Font font, int code, Rarity rarity, int x, int y, int w, int h) {
+    public static void drawCard(GuiGraphics g, Font font, int code, Rarity rarity, int x, int y, int w, int h) {
         CardArt.Texture art = CardArt.get(code);
         if (art != null) {
             g.blit(art.location(), x, y, w, h, 0, 0, art.width(), art.height(), art.width(), art.height());
