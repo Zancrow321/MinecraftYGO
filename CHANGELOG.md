@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Product contents fixes
+- **Legendary Decks boxes give every card:** Legendary 5D's Decks, Dragon, Hero, Arc-V and Modern Decks 2026 hold
+  three decks, but opening one gave only 15 extra deck monsters, so Black Rose Dragon and others were missing. A sealed
+  deck now gives its whole extra deck; a deck box made from a deck still keeps to 15.
+- **Rarity Collection 5 packs:** YGOPRODeck lists some cards with a note instead of a rarity ("2", "3", "New",
+  "force-SMW"...), which counted as common. In the all-foil Rarity Collection 5 that made Maliss <P> White Rabbit its
+  only common, and most foil slots fell back to it. Those notes now get the product's usual rarity (194 cards in 15
+  products), and a foil slot only drops to a common when the set has no better rarity at all.
+- "Legendary 5D&apos;s Decks" is now shown as "Legendary 5D's Decks".
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

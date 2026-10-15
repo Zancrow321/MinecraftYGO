@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PackProfileTest {
@@ -42,5 +44,31 @@ class PackProfileTest {
 
         assertEquals("mini", SETS.get("hidden_arsenal").profile().name());
         assertTrue(SETS.sets().containsKey("2014_mega_tin_mega_pack"), "a Mega-Tin's own pack is a set");
+    }
+
+    @Test
+    void foilSlotsNeverDropToAFewCommons() {
+        BoosterSets.BoosterSet ra05 = SETS.get("rarity_collection_5");
+        assertEquals("premium", ra05.profile().name());
+        assertEquals(5000, foils(ra05, 1000), "Rarity Collection 5 packs are all foils");
+
+        // One common among foils: the foil slots take the foils, not that common.
+        List<BoosterSets.Card> cards = List.of(new BoosterSets.Card(1, BoosterSets.Rarity.COMMON),
+                new BoosterSets.Card(2, BoosterSets.Rarity.SECRET), new BoosterSets.Card(3, BoosterSets.Rarity.SECRET));
+        BoosterSets.BoosterSet set = new BoosterSets.BoosterSet("test", "TST", "Test", cards,
+                ra05.profile());
+        assertEquals(5000, foils(set, 1000));
+    }
+
+    @Test
+    void printedRaritiesAreRarities() {
+        // YGOPRODeck's set lists carry notes such as "2", "New" or "force-SMW" in the rarity field.
+        Pattern real = Pattern.compile("(?i)rare|common|short print");
+        for (Products.Product product : Products.loadBundled().products()) {
+            assertFalse(product.name().contains("&apos;") || product.name().contains("&amp;"), product.name());
+            for (Products.Printing printing : product.cards()) {
+                assertTrue(real.matcher(printing.rarity()).find(), product.id() + " " + printing);
+            }
+        }
     }
 }

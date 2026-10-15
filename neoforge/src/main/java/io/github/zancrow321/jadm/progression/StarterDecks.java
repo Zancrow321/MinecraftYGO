@@ -70,6 +70,18 @@ public final class StarterDecks {
      * @param banlist if not {@code null}, forbidden cards are left out and copies stay within their limit
      */
     public static Deck deckOf(Products.Product product, Banlist banlist) {
+        return deckOf(product, banlist, DeckRules.EXTRA_MAX);
+    }
+
+    /**
+     * Everything a sealed deck holds: as {@link #deckOf}, but with every extra deck monster, also past the 15 a
+     * deck may run. Boxes of several decks such as the Legendary Decks hold more than that.
+     */
+    public static Deck contentsOf(Products.Product product) {
+        return deckOf(product, null, Integer.MAX_VALUE);
+    }
+
+    private static Deck deckOf(Products.Product product, Banlist banlist, int extraMax) {
         List<Integer> main = new ArrayList<>();
         List<Integer> extra = new ArrayList<>();
         List<Integer> commons = new ArrayList<>();
@@ -80,7 +92,7 @@ public final class StarterDecks {
                 continue;
             }
             if (DeckRules.isExtra(card)) {
-                if (extra.size() < DeckRules.EXTRA_MAX) {
+                if (extra.size() < extraMax) {
                     extra.add(printing.code());
                 }
             } else {
