@@ -36,6 +36,17 @@
 - Products now hold every card in its original artwork. Before, about 30 cards (Dark Magician, Red-Eyes Black
   Dragon, Monster Reborn...) always came in one alternate artwork, because the card list named them that way.
 
+### Shop window in the mod's style
+- **DP shops** (card trader, Card Vending Machine, Shop Stands) are now a card shop instead of a plain list: wares
+  as tiles with the real product pictures (cards as their card, other items blown up), price badges in DP, stock in
+  the corner and sold-out tiles greyed out. Click a tile to see it large on the right with its set code, year, stock
+  and price, then **Buy** once or **Buy N×** as often as you can afford (double-click, Enter and Shift work too).
+  What the shop buys from you is on its own **Sell** tab (Tab key). The balance counts down as you pay, with the
+  amount rising from it, and a card's big preview shows left of the window.
+- **Shop search:** just start typing in a DP shop; every word has to be in the name, set code or kind (booster,
+  deck, tin), and cards are also found by their text, attribute and type, like in the binder.
+- **Shop Stand** owner window in the same dark-and-gold look instead of a vanilla chest.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

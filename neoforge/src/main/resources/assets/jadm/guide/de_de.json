@@ -128,7 +128,7 @@
         "- Du startest mit {server:shop.points.startBalance} DP und bekommst einmal am Tag {server:shop.points.dailyBonus} DP.",
         "- Kartenautomaten kaufen lose Karten ({server:shop.points.sellCommon} DP für eine Common bis {server:shop.points.sellSecret} für eine Secret Rare) und Smaragde ({server:shop.points.emeraldExchange} DP pro Stück).",
         "- `{cmd} dp pay <player> <amount>` gibt einem anderen DP.",
-        "In einem DP-Shop kaufst du mit einem Klick einmal und mit Shift-Klick so viele, wie du dir leisten kannst.",
+        "Ein DP-Shop zeigt seine Waren als Kacheln mit den echten Produktbildern; ein Klick zeigt die Ware groß mit ihrem Preis, dann Kaufen (oder Doppelklick auf die Kachel, oder Enter). Mit Shift oder dem zweiten Knopf kaufst du so viele, wie du dir leisten kannst. Der Reiter Verkaufen (Tab-Taste) zeigt, was der Shop dir abkauft. Einfach lostippen durchsucht den Shop, wie im Ordner.",
         "# Spielerhandel",
         "Tausche Karten und Duel Points mit einem anderen Spieler: `{cmd} trade <player>` fragt ihn, oder du schleichst und rechtsklickst ihn mit einer Karte, einem Kartenordner oder einer Deckbox in der Hand. Er nimmt per Klick auf **[Annehmen]** im Chat an.",
         "Im Tauschfenster legst du links dein Angebot hinein und tippst darunter die DP ein; rechts siehst du, was der andere gibt. Getauscht wird erst, wenn **beide bestätigt** haben. Jede Änderung an einem Angebot hebt beide Bestätigungen auf, und danach geht Bestätigen erst nach einem kurzen Moment wieder, damit niemand in letzter Sekunde etwas austauscht.",
