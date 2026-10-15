@@ -7,6 +7,7 @@ import io.github.zancrow321.jadm.engine.data.Products;
 import io.github.zancrow321.jadm.progression.StarterDecks;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -131,8 +132,13 @@ public final class SealedProductItem extends Item {
         Component card = Component.literal("-");
         if (!promos.isEmpty()) {
             Products.Printing promo = promos.get(random.nextInt(promos.size()));
-            give(player, CardItem.of(promo.code(), BoosterSets.Rarity.ofPrinted(promo.rarity())), 1);
-            card = Component.literal(JadmData.cards().card(promo.code()).name() + " (" + promo.rarity() + ")");
+            int code = JadmData.pullArtwork(promo.code(), new java.util.Random(random.nextLong()));
+            give(player, CardItem.of(code, BoosterSets.Rarity.ofPrinted(promo.rarity())), 1);
+            MutableComponent named = Component.literal(JadmData.cards().card(code).name() + " (" + promo.rarity());
+            if (JadmData.isAltArt(code)) {
+                named.append(", ").append(Component.translatable("item.jadm.card.alt_art.short"));
+            }
+            card = named.append(")");
         }
         List<String> packs = tinPacks(tin);
         for (String set : packs) {

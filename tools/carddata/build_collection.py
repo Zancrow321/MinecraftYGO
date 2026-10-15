@@ -18,7 +18,8 @@ are in the pool are written. Server owners can replace it with config/jadm/banli
 
 products.json lists every TCG product YGOPRODeck knows that has a release date and at least one bundled card,
 oldest first: its id, set code, name, date, a rough kind (booster, deck, tin, promo, special), every card with
-its rarity as printed, and the cards it is the first TCG product for ("new"). Reprint-only products have an
+its rarity as printed, and the cards it is the first TCG product for ("new"). Cards are listed by their original
+passcode, never an alternate artwork's. Reprint-only products have an
 empty "new". Cards never printed in the TCG are listed under "ocgOnly" with their OCG release date.
 
     curl -o ygoprodeck.json "https://db.ygoprodeck.com/api/v7/cardinfo.php?misc=yes"
@@ -89,6 +90,11 @@ def write_products(cards, cardsets):
         code = card["id"]
         if code not in bundled:
             continue
+        # YGOPRODeck lists some cards under one of their alternate artworks (Dark Magician as 46986420); a product
+        # holds the original, and alt arts come from packs at random (see build_alt_arts.py).
+        alias = bundled[code]["alias"]
+        if alias and abs(alias - code) < 10 and alias in bundled:
+            code = alias
         misc = (card.get("misc_info") or [{}])[0]
         if misc.get("ocg_date"):
             ocg_dates[code] = misc["ocg_date"]

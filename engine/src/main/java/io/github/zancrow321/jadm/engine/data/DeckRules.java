@@ -43,15 +43,22 @@ public final class DeckRules {
         if (deck.extra().size() > EXTRA_MAX) {
             problems.add("The extra deck holds at most " + EXTRA_MAX + " cards (it has " + deck.extra().size() + ").");
         }
+        // Alternate artworks are copies of their original: they share its limit.
         Map<Integer, Integer> copies = new TreeMap<>();
+        Map<Integer, Integer> limits = new TreeMap<>();
         for (List<Integer> part : List.of(deck.main(), deck.extra(), deck.side())) {
-            part.forEach(code -> copies.merge(code, 1, Integer::sum));
+            for (int code : part) {
+                int original = cards.original(code);
+                copies.merge(original, 1, Integer::sum);
+                limits.merge(original, Math.min(banlist.limit(code), banlist.limit(original)), Math::min);
+            }
         }
-        copies.keySet().stream().filter(code -> !playable.test(code)).findFirst().ifPresent(code ->
+        java.util.stream.Stream.of(deck.main(), deck.extra(), deck.side()).flatMap(List::stream)
+                .filter(code -> !playable.test(code)).findFirst().ifPresent(code ->
                 problems.add((cards.card(code) == null ? "#" + code : cards.name(code))
                         + " can't be played on this server."));
         copies.forEach((code, n) -> {
-            int limit = banlist.limit(code);
+            int limit = limits.get(code);
             if (n > limit) {
                 String name = cards.card(code) == null ? "#" + code : cards.name(code);
                 problems.add(limit == 0 ? name + " is forbidden."
