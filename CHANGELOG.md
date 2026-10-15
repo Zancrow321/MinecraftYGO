@@ -9,6 +9,8 @@
 - **Clan tag everywhere:** every clan becomes a vanilla scoreboard team, so each member's `[TAG]` stands in the clan's
   color in front of their name in chat, in the player list (Tab) and above their head, and chat mods that show teams
   show it too. Turn it off with `[clans] showTag`.
+- **Clan color in the window:** the leader's **Color** button in the clan window shows the 15 clan colors as
+  squares; a click recolors the tag and name (same as `/jadm clan color <color>`).
 - **FTB Teams:** with FTB Teams installed, every clan is also an FTB Teams party with the same members, leader
   (owner), officers, name, color, motto and open/closed, so FTB Chunks claims, FTB Quests progress and team chat count
   for the whole clan. Changes on either side carry over: joining, leaving, kicks, a new owner, promotions and party
