@@ -320,7 +320,8 @@ public final class ClientField {
 
     /**
      * Picks {@code zone} for the current prompt: answers if exactly one choice is about it, toggles it in a
-     * multi-select, or offers the choices about it in a menu.
+     * multi-select, or offers the choices about it in a menu. Xyz materials share their monster's zone, so a click
+     * there never picks one; they are picked in the card window.
      */
     public static void clickAt(Loc zone) {
         PromptView prompt = ClientDuel.prompt();
@@ -330,7 +331,8 @@ public final class ClientField {
         if (prompt.multi() != null) {
             PromptView.MultiSelect multi = prompt.multi();
             for (int i = 0; i < multi.locs().size(); i++) {
-                if (FieldLayout.sameZone(multi.locs().get(i), zone)) {
+                Loc at = multi.locs().get(i);
+                if (at != null && !at.isOverlay() && FieldLayout.sameZone(at, zone)) {
                     ClientDuel.toggle(i);
                     List<Integer> selected = ClientDuel.selected();
                     if (selected.size() == multi.max() && multi.canConfirm(selected)) {
@@ -352,7 +354,7 @@ public final class ClientField {
     public static List<PromptView.Choice> choicesAt(PromptView prompt, Loc zone) {
         List<PromptView.Choice> out = new ArrayList<>();
         for (PromptView.Choice choice : prompt.choices()) {
-            if (FieldLayout.sameZone(choice.at(), zone)) {
+            if (choice.at() != null && !choice.at().isOverlay() && FieldLayout.sameZone(choice.at(), zone)) {
                 out.add(choice);
             }
         }
