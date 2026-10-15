@@ -1,5 +1,6 @@
 package io.github.zancrow321.jadm.client.collection;
 
+import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.engine.data.BoosterSets.Rarity;
 import io.github.zancrow321.jadm.item.CardItem;
 import io.github.zancrow321.jadm.item.JadmComponents;
@@ -86,6 +87,10 @@ public final class PackOpenScreen extends Screen {
                     g.fill(x - 2, y0 - 2, x + cardWidth + 2, y0 + cardHeight + 2, glow);
                 }
                 CardGrid.drawCard(g, font, cards.get(i).code(), rarity, x, y0, cardWidth, cardHeight);
+                if (JadmData.isAltArt(cards.get(i).code())) {
+                    g.drawCenteredString(font, Component.translatable("screen.jadm.pack.alt_art"),
+                            x + cardWidth / 2, y0 - 12, 0xFFFFC040);
+                }
                 if (rarity != Rarity.COMMON) {
                     // Wrapped to the card's width, so the labels of cards side by side don't run into each other.
                     var lines = font.split(Component.literal(CardItem.rarityName(rarity)), cardWidth + 4);

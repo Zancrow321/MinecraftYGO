@@ -24,6 +24,18 @@
   products), and a foil slot only drops to a common when the set has no better rarity at all.
 - "Legendary 5D&apos;s Decks" is now shown as "Legendary 5D's Decks".
 
+### Alternate artworks
+- **Alt arts:** 145 alternate artworks of 113 cards (Dark Magician, Blue-Eyes White Dragon, Red-Eyes Black Dragon,
+  Monster Reborn...) can now be pulled. A card from a pack or tin that has other artworks comes as one of them with
+  the chance in `[cards] altArtChance` (default 0.2, so one in five; 0 turns them off), each artwork as likely.
+- An alt art shows its own picture everywhere: in the inventory, binder, deck box, pack opening ("Alt Art!"), card
+  panel and as a hologram in the duel. A gold **ALT** sits in its corner and the tooltip says "Alternate Art 2 of 8".
+- It plays exactly like the original (same model and effects in the duel) and counts as the same card: at most three
+  of a card and its alt arts together in a deck (or what the banlist allows), one card in the Set Collection Book.
+- The admin menu lists each card's alt arts right after it.
+- Products now hold every card in its original artwork. Before, about 30 cards (Dark Magician, Red-Eyes Black
+  Dragon, Monster Reborn...) always came in one alternate artwork, because the card list named them that way.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

@@ -79,6 +79,12 @@ public final class JadmServerConfig {
                     + "count in the binder, with a lock).")
             .define("lockedInDeck", true);
 
+    public static final ModConfigSpec.DoubleValue ALT_ART_CHANCE = BUILDER
+            .comment("The chance that a card pulled from a pack or tin comes as one of its alternate artworks, if it "
+                    + "has any (Dark Magician, Blue-Eyes White Dragon, ...). An alt art plays and counts as the "
+                    + "original card. 0 turns them off, 1 makes every such card an alt art.")
+            .defineInRange("altArtChance", io.github.zancrow321.jadm.engine.data.AltArts.DEFAULT_CHANCE, 0.0, 1.0);
+
     public static final ModConfigSpec.ConfigValue<String> SHOP_CURRENCY = BUILDER.pop().push("shop")
             .comment("What the shops take: \"points\" for Duel Points, a balance each player has (see "
                     + "[shop.points]), or an item id such as \"minecraft:emerald\" or \"minecraft:diamond\" for "

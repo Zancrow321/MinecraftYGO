@@ -163,6 +163,7 @@ final class CardGrid {
             g.blit(art.location(), x, y, w, h, 0, 0, art.width(), art.height(), art.width(), art.height());
             FoilEffect.drawGui(g, code, rarity, x, y, w, h);
             drawRarityTag(g, font, rarity, x, y, w, h);
+            drawAltTag(g, font, code, x, y, w, h);
             return;
         }
         g.blit(CARD_BLANK, x, y, w, h, 0, 0, 68, 100, 68, 100);
@@ -176,6 +177,27 @@ final class CardGrid {
         }
         g.pose().popPose();
         drawRarityTag(g, font, rarity, x, y, w, h);
+        drawAltTag(g, font, code, x, y, w, h);
+    }
+
+    /** "ALT" in the bottom right corner of an alternate artwork, across from the rarity. At half size on small cards. */
+    static void drawAltTag(GuiGraphics g, Font font, int code, int x, int y, int w, int h) {
+        if (!JadmData.isAltArt(code)) {
+            return;
+        }
+        String tag = "ALT";
+        float scale = w < 60 ? 0.5f : 1f;
+        int tw = Math.round(font.width(tag) * scale);
+        int th = Math.round(8 * scale);
+        int right = x + w - 1;
+        int bottom = y + h - 1;
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 10);
+        g.fill(right - tw - 2, bottom - th - 2, right, bottom, 0xD0000000);
+        g.pose().translate(right - tw - 1, bottom - th - 1, 0);
+        g.pose().scale(scale, scale, 1);
+        g.drawString(font, tag, 0, 0, 0xFFFFC040, false);
+        g.pose().popPose();
     }
 
     /**
@@ -253,6 +275,10 @@ final class CardGrid {
             return lines;
         }
         lines.add(Component.literal(card.name()).withStyle(ChatFormatting.WHITE));
+        Component art = CardItem.artLine(code);
+        if (art != null) {
+            lines.add(art);
+        }
         if (!text) {
             if (action != null) {
                 lines.add(Component.literal(action).withStyle(ChatFormatting.YELLOW));

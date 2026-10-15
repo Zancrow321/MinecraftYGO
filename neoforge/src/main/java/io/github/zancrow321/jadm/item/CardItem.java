@@ -102,6 +102,10 @@ public final class CardItem extends Item {
         if (rarity != Rarity.COMMON) {
             tooltip.add(Component.literal(rarityName(rarity)).withStyle(color(rarity)));
         }
+        Component art = artLine(code);
+        if (art != null) {
+            tooltip.add(art);
+        }
         if (preview) {
             return;
         }
@@ -112,6 +116,17 @@ public final class CardItem extends Item {
         } else {
             tooltip.add(Component.literal("Shift for card text").withStyle(ChatFormatting.DARK_GRAY));
         }
+    }
+
+    /** "Alternate Art 2 of 8" for an alternate artwork, {@code null} for the original. */
+    public static Component artLine(int code) {
+        if (!JadmData.isAltArt(code)) {
+            return null;
+        }
+        int number = JadmData.altArts().number(JadmData.cards(), code);
+        return (number > 0 ? Component.translatable("item.jadm.card.alt_art", number,
+                JadmData.altArts().count(JadmData.cards(), code))
+                : Component.translatable("item.jadm.card.alt_art.short")).withStyle(ChatFormatting.GOLD);
     }
 
     /** "DARK Spellcaster · Level 7 · ATK 2500 / DEF 2100", or "Spell Card" / "Trap Card". */
