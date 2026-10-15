@@ -125,7 +125,7 @@
         "- You start with {server:shop.points.startBalance} DP and get {server:shop.points.dailyBonus} DP once a day.",
         "- Card Vending Machines buy loose cards ({server:shop.points.sellCommon} DP for a common up to {server:shop.points.sellSecret} for a Secret Rare) and emeralds ({server:shop.points.emeraldExchange} DP each).",
         "- `{cmd} dp pay <player> <amount>` gives DP to someone else.",
-        "In a DP shop, click to buy once and shift-click to buy as many as you can.",
+        "A DP shop shows its wares as tiles with the real product pictures; click one to see it large with its price, then Buy (or double-click it, or press Enter). Shift, or the second button, buys as many as you can afford. The Sell tab (Tab key) lists what the shop buys from you. Just start typing to search the shop, like the binder.",
         "# Trading",
         "Swap cards and Duel Points with another player: `{cmd} trade <player>` asks them, or sneak and right-click them with a card, binder or deck box in your hand. They accept by clicking **[Accept]** in chat.",
         "In the trade window you put your offer on the left and type your DP below it; on the right you see what the other player gives. The trade only happens once **both have confirmed**. Any change to either offer takes both confirmations back, and confirming then waits a moment, so nobody can swap something at the last second.",

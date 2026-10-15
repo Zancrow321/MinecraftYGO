@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  * The filters of the binder and the deck box (card type, attribute, level) and how they are sorted. Each is a button
  * that steps through its choices. The search box looks through the card text too, see {@link #matches}.
  */
-final class CardFilter implements IntPredicate {
+public final class CardFilter implements IntPredicate {
     enum Kind { ALL, MONSTER, SPELL, TRAP, EXTRA }
 
     enum Sort { NAME, ATK, DEF, LEVEL }
@@ -133,7 +133,7 @@ final class CardFilter implements IntPredicate {
      * one phrase ("destroy all"). Attributes and types also go by their German names ("drache", "finsternis",
      * "schnellzauber"), since the card data is English.
      */
-    static boolean matches(int code, String query) {
+    public static boolean matches(int code, String query) {
         String q = query.strip().toLowerCase(Locale.ROOT);
         if (q.isEmpty()) {
             return true;
@@ -147,6 +147,16 @@ final class CardFilter implements IntPredicate {
             }
         }
         return true;
+    }
+
+    /** The words of a search, lower case, a phrase in quotes counting as one word. */
+    public static java.util.List<String> terms(String query) {
+        java.util.List<String> words = new java.util.ArrayList<>();
+        Matcher term = TERM.matcher(query.strip().toLowerCase(Locale.ROOT));
+        while (term.find()) {
+            words.add(term.group(1) != null ? term.group(1) : term.group(2));
+        }
+        return words;
     }
 
     /** A word of a search, or a phrase in quotes. */
