@@ -8,6 +8,8 @@
   box is named after the file, a file added later is given on the next join, and unknown passcodes are left out and
   named in chat. `/jadm joindecks give <player>` (operators) gives them all again. The folder and a README are created
   on server start.
+- The mod brings its author's own deck and gives it to him the same way on every server; `bundledJoinDecks = false`
+  in the server config turns that off.
 
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers

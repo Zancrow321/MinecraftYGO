@@ -3,6 +3,7 @@ package io.github.zancrow321.jadm.collection;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.JadmData;
+import io.github.zancrow321.jadm.JadmServerConfig;
 import io.github.zancrow321.jadm.engine.data.CardInfo;
 import io.github.zancrow321.jadm.engine.data.Deck;
 import io.github.zancrow321.jadm.item.DeckBoxItem;
@@ -26,6 +27,7 @@ import net.minecraft.world.level.saveddata.SavedData;
 import net.neoforged.fml.loading.FMLPaths;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,6 +39,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -45,6 +48,9 @@ import java.util.stream.Stream;
  * a single {@code config/jadm/join_decks/<uuid>.ydk}) becomes a deck box with those cards, given to that player on
  * their next join. Each file is given once per world, so dropping in a new file later gives just that deck.
  * {@code /jadm joindecks give <player>} gives them all again.
+ *
+ * <p>The mod also brings decks of its own for particular players, in {@code /jadm/join_decks/<uuid>/} inside the
+ * jar and listed in {@link #BUNDLED}; {@code bundledJoinDecks} in the server config turns them off.
  */
 public final class JoinDecks {
     private static final String README = """
@@ -61,7 +67,19 @@ public final class JoinDecks {
             /jadm joindecks give <player> gives all of a player's decks again.
             """;
 
+    /** The decks inside the jar, by player: the mod author's own deck. */
+    private static final Map<UUID, List<String>> BUNDLED = Map.of(
+            UUID.fromString("e4c7e475-c1ff-4f94-956c-ac5be02ce04a"), List.of("dARKLORD"));
+
     private JoinDecks() {
+    }
+
+    /** A deck to give: its name (the deck box's), the key it is remembered by, and how to read it. */
+    private record Source(String name, String key, Reader reader) {
+    }
+
+    private interface Reader {
+        String read() throws IOException;
     }
 
     static Path folder() {
@@ -82,9 +100,23 @@ public final class JoinDecks {
         }
     }
 
-    /** A player's deck files, keyed by the name they are remembered by, in name order. */
-    static Map<String, Path> files(UUID player) {
-        Map<String, Path> files = new java.util.TreeMap<>();
+    /** A player's decks: the mod's own first (if turned on), then the config folder's in name order. */
+    private static List<Source> sources(UUID player) {
+        List<Source> sources = new ArrayList<>();
+        if (JadmServerConfig.BUNDLED_JOIN_DECKS.get()) {
+            for (String name : BUNDLED.getOrDefault(player, List.of())) {
+                String resource = "/jadm/join_decks/" + player + "/" + name + ".ydk";
+                sources.add(new Source(name, "bundled/" + player + "/" + name + ".ydk", () -> {
+                    try (InputStream in = JoinDecks.class.getResourceAsStream(resource)) {
+                        if (in == null) {
+                            throw new IOException("Missing " + resource);
+                        }
+                        return new String(in.readAllBytes(), StandardCharsets.UTF_8);
+                    }
+                }));
+            }
+        }
+        Map<String, Path> files = new TreeMap<>();
         Path folder = folder();
         Path single = folder.resolve(player + ".ydk");
         if (Files.isRegularFile(single)) {
@@ -100,30 +132,35 @@ public final class JoinDecks {
                 Jadm.LOGGER.warn("Could not list {}", own, e);
             }
         }
-        return files;
+        files.forEach((key, file) -> {
+            String name = file.getFileName().toString();
+            name = name.substring(0, name.length() - ".ydk".length());
+            sources.add(new Source(name, key, () -> Files.readString(file, StandardCharsets.UTF_8)));
+        });
+        return sources;
     }
 
     /** Gives the player each of their decks they haven't been given in this world. */
     public static void onLogin(ServerPlayer player) {
-        Map<String, Path> files = files(player.getUUID());
-        if (files.isEmpty()) {
+        List<Source> sources = sources(player.getUUID());
+        if (sources.isEmpty()) {
             return;
         }
         Data data = Data.get(player.server);
-        files.forEach((key, file) -> {
-            if (!data.given(player.getUUID(), key) && give(player, file)) {
-                data.give(player.getUUID(), key);
+        for (Source source : sources) {
+            if (!data.given(player.getUUID(), source.key()) && give(player, source)) {
+                data.give(player.getUUID(), source.key());
             }
-        });
+        }
     }
 
     /** @return how many of the player's decks were given */
     static int giveAll(ServerPlayer player) {
         Data data = Data.get(player.server);
         int given = 0;
-        for (Map.Entry<String, Path> entry : files(player.getUUID()).entrySet()) {
-            if (give(player, entry.getValue())) {
-                data.give(player.getUUID(), entry.getKey());
+        for (Source source : sources(player.getUUID())) {
+            if (give(player, source)) {
+                data.give(player.getUUID(), source.key());
                 given++;
             }
         }
@@ -131,23 +168,22 @@ public final class JoinDecks {
     }
 
     /**
-     * Puts the deck in {@code file} into a deck box in the player's inventory. Passcodes the card data doesn't know
+     * Puts the deck from {@code source} into a deck box in the player's inventory. Passcodes the card data doesn't know
      * are left out and named in chat; the side deck isn't kept, as deck boxes have none.
      *
      * @return whether the file could be read
      */
-    static boolean give(ServerPlayer player, Path file) {
-        String name = file.getFileName().toString();
-        name = name.substring(0, name.length() - ".ydk".length());
+    private static boolean give(ServerPlayer player, Source source) {
+        String name = source.name();
         if (name.equalsIgnoreCase(player.getUUID().toString())) {
             name = player.getGameProfile().getName();
         }
         Deck deck;
         try {
-            String text = Files.readString(file, StandardCharsets.UTF_8).replace("﻿", "");
+            String text = source.reader().read().replace("\uFEFF", "");
             deck = Deck.parseYdk(name, text);
         } catch (IOException | RuntimeException e) {
-            Jadm.LOGGER.warn("Could not read the join deck {}", file, e);
+            Jadm.LOGGER.warn("Could not read the join deck {}", source.key(), e);
             return false;
         }
         Set<String> unknown = new LinkedHashSet<>();
@@ -170,7 +206,7 @@ public final class JoinDecks {
         if (!problems.isEmpty()) {
             player.sendSystemMessage(Component.literal(problems.get(0)).withStyle(ChatFormatting.GRAY));
         }
-        Jadm.LOGGER.info("Gave {} the join deck {} ({} + {} cards)", player.getGameProfile().getName(), file,
+        Jadm.LOGGER.info("Gave {} the join deck {} ({} + {} cards)", player.getGameProfile().getName(), source.key(),
                 main.size(), extra.size());
         return true;
     }
