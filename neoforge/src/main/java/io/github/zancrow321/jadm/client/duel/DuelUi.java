@@ -788,7 +788,7 @@ public final class DuelUi {
         button(g, font, x, y, SIDE_BUTTON_WIDTH, label, multi.canConfirm(picked), mx, my,
                 () -> ClientDuel.answer(multi.encode(List.copyOf(picked))));
         if (multi.cancel() != null) {
-            button(g, font, x, y + BUTTON_HEIGHT + 2, SIDE_BUTTON_WIDTH, "Cancel", true, mx, my,
+            button(g, font, x, y + BUTTON_HEIGHT + 2, SIDE_BUTTON_WIDTH, multi.cancel().label(), true, mx, my,
                     () -> ClientDuel.answer(multi.cancel().response()));
         }
     }
@@ -818,6 +818,7 @@ public final class DuelUi {
         List<String> names = new ArrayList<>();
         List<Runnable> picks = new ArrayList<>();
         List<Boolean> ticked = new ArrayList<>();
+        List<String> badges = new ArrayList<>();
         List<Choice> extra = new ArrayList<>();
         if (multi != null) {
             for (int i = 0; i < multi.options().size(); i++) {
@@ -825,6 +826,9 @@ public final class DuelUi {
                 codes.add(multi.codes().get(i));
                 names.add(multi.options().get(i));
                 ticked.add(ClientDuel.selected().contains(i));
+                // When the clicks put the cards in order, each picked card shows its place.
+                int place = ClientDuel.selected().indexOf(i);
+                badges.add(multi.ordered() && place >= 0 ? String.valueOf(place + 1) : "");
                 picks.add(() -> ClientDuel.toggle(index));
             }
         } else {
@@ -837,11 +841,12 @@ public final class DuelUi {
                 names.add(c.label());
                 // Cards picked so far stay in the window, marked, and a click takes them back out.
                 ticked.add(c.kind() == Kind.UNSELECT);
+                badges.add("");
                 picks.add(() -> choose(c, null));
             }
         }
         String title = p.title() + (multi != null ? "  (" + ClientDuel.selected().size() + ")" : "");
-        int[] footer = cardGrid(g, font, title, codes, ticked, picks, mx, my, w, h);
+        int[] footer = cardGrid(g, font, title, codes, ticked, badges, picks, mx, my, w, h);
         if (footer == null) {
             return;
         }
@@ -853,7 +858,7 @@ public final class DuelUi {
                     () -> ClientDuel.answer(multi.encode(List.copyOf(picked))));
             bx += 74;
             if (multi.cancel() != null) {
-                button(g, font, bx, by, 60, "Cancel", true, mx, my,
+                button(g, font, bx, by, 60, multi.cancel().label(), true, mx, my,
                         () -> ClientDuel.answer(multi.cancel().response()));
             }
         }
@@ -881,7 +886,7 @@ public final class DuelUi {
             picks.add(actions.size() == 1 ? () -> choose(actions.getFirst(), null)
                     : () -> menu = new Menu(mouseX, mouseY, List.copyOf(actions), null));
         }
-        int[] footer = cardGrid(g, font, picker.title(), codes, ticked, picks, mx, my, w, h);
+        int[] footer = cardGrid(g, font, picker.title(), codes, ticked, null, picks, mx, my, w, h);
         if (footer != null) {
             button(g, font, footer[0], footer[1], 60, "Cancel", true, mx, my, () -> picker = null);
         }
@@ -890,10 +895,12 @@ public final class DuelUi {
     /**
      * A window of cards to click, under the prompt: title, cards as big as fit, and pages when they don't.
      *
+     * @param badges a short mark for the corner of each card ("" for none), or {@code null}
      * @return where buttons go along the bottom (x, y), or {@code null} while the window is folded away
      */
     private static int[] cardGrid(GuiGraphics g, Font font, String title, List<Integer> codes,
-                                  List<Boolean> ticked, List<Runnable> picks, int mx, int my, int w, int h) {
+                                  List<Boolean> ticked, List<String> badges, List<Runnable> picks, int mx, int my,
+                                  int w, int h) {
         int width = windowWidth(w, 300);
         int room = windowBottom(h) - DuelHud.promptBottom(w) - 16 - 22;
         // As big as the cards can be with all of them on one page (a few cards from a deck search show large);
@@ -935,6 +942,12 @@ public final class DuelUi {
                 outline(g, cx - 1, cy - 1, cw + 2, ch + 2, SELECTED);
             }
             card(g, codes.get(i), cx, cy, cw, ch);
+            if (badges != null && !badges.get(i).isEmpty()) {
+                int bw = font.width(badges.get(i)) + 6;
+                g.fill(cx, cy, cx + bw, cy + 12, 0xE0000000);
+                outline(g, cx, cy, bw, 12, SELECTED);
+                g.drawString(font, badges.get(i), cx + 3, cy + 2, SELECTED);
+            }
             if (mx >= cx && mx < cx + cw && my >= cy && my < cy + ch) {
                 if (codes.get(i) != 0) {
                     hoverCode = codes.get(i);
@@ -1456,6 +1469,9 @@ public final class DuelUi {
         }
         if (p.multi() != null) {
             String count = " (" + ClientDuel.selected().size() + "/" + p.multi().max() + ")";
+            if (p.multi().ordered()) {
+                return "Click the cards in their new order, then Confirm" + count;
+            }
             return pickInPlace(p) ? "Click glowing cards, then Confirm" + count : "Pick cards in the window" + count;
         }
         if (commands(p)) {

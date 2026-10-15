@@ -7,6 +7,13 @@
   as cards instead of taking the first one, and effects that detach 2 or more work again (clicking the Xyz monster
   only ever picked the same first material). The opponent's materials show their pictures too.
 
+### Putting cards back on the Deck in any order
+- Effects that let you look at the top (or bottom) cards of a Deck and put them back in any order, like Spellbook
+  Organization, Card Advance or Goddess Skuld's Oracle, used to keep the old order: the duel only offered
+  "Keep the current order". Now a window shows the cards; click them in their new order (the first click becomes the
+  top card, for the bottom of the Deck the last click goes to the very bottom), each picked card shows its number,
+  and Confirm puts them back that way. "Keep order" leaves them as they are.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

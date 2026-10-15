@@ -86,8 +86,7 @@ public final class PromptChoices {
                 }
                 yield PromptView.choices(or(hinted, "Select a card"), choices);
             }
-            case SortCards p -> PromptView.choices("Order the cards", List.of(
-                    new Choice("Keep the current order", Responses.defaultOrder())));
+            case SortCards p -> sort(p);
             case SelectCounter p -> PromptView.choices("Remove " + p.count() + " counter(s)", List.of(
                     new Choice("Remove automatically", autoCounters(p))));
             case RockPaperScissors p -> PromptView.choices("Rock, paper, scissors!", List.of(
@@ -233,6 +232,33 @@ public final class PromptChoices {
         return PromptView.multi(title, labels,
                 zones.stream().map(z -> new Loc(z.player(), z.location(), z.sequence(), 0)).toList(), p.count(),
                 p.count(), selected -> Responses.zones(selected.stream().map(zones::get).toList()), false);
+    }
+
+    /**
+     * Putting cards back on top of (or under) a deck in any order, or ordering effects that apply at the same time:
+     * the cards are clicked in their new order. The core wants the new position of each card it listed, 0 being the
+     * highest on the deck (or the effect applied first).
+     */
+    private PromptView sort(SortCards p) {
+        List<CardRef> cards = p.cards();
+        String title;
+        if (p.chain()) {
+            title = "Click the effects in the order they apply";
+        } else {
+            // From the top the core lists them top down (falling sequence), from the bottom bottom up.
+            boolean bottom = cards.size() > 1 && cards.get(0).loc().sequence() < cards.get(1).loc().sequence();
+            String deck = cards.isEmpty() || cards.get(0).loc().controller() == p.player() ? "your Deck"
+                    : "your opponent's Deck";
+            title = bottom ? "Order the bottom of " + deck + ": click the card for the very bottom last"
+                    : "Order the top of " + deck + ": click the new top card first";
+        }
+        return PromptView.order(title, cardLabels(cards, p.player()), locs(cards), codes(cards), clicks -> {
+            List<Integer> order = new ArrayList<>(Collections.nCopies(clicks.size(), 0));
+            for (int position = 0; position < clicks.size(); position++) {
+                order.set(clicks.get(position), position);
+            }
+            return Responses.order(order);
+        }, new Choice("Keep order", Responses.defaultOrder()));
     }
 
     private PromptView bits(String title, long available, int count, boolean race) {
