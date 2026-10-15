@@ -9,6 +9,8 @@
   and price, then **Buy** once or **Buy N×** as often as you can afford (double-click, Enter and Shift work too).
   What the shop buys from you is on its own **Sell** tab (Tab key). The balance counts down as you pay, with the
   amount rising from it, and a card's big preview shows left of the window.
+- **Shop search:** just start typing in a DP shop; every word has to be in the name, set code or kind (booster,
+  deck, tin), and cards are also found by their text, attribute and type, like in the binder.
 - **Shop Stand** owner window in the same dark-and-gold look instead of a vanilla chest.
 
 ### Duelist clans

@@ -3,6 +3,7 @@ package io.github.zancrow321.jadm.client.shop;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.client.ProductArt;
+import io.github.zancrow321.jadm.client.collection.CardFilter;
 import io.github.zancrow321.jadm.client.collection.CardGrid;
 import io.github.zancrow321.jadm.client.collection.CardPreview;
 import io.github.zancrow321.jadm.engine.data.Products;
@@ -12,6 +13,8 @@ import io.github.zancrow321.jadm.network.PointShopTradePayload;
 import io.github.zancrow321.jadm.points.PointShopMenu;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
@@ -26,11 +29,13 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A shop that takes Duel Points, laid out like a card shop: what it sells as tiles with the real product pictures
  * (and what it buys under a second tab), and the picked one large on the right with its price and the buttons to
- * buy or sell it once or as often as you can. The balance in the corner counts up and down as you trade.
+ * buy or sell it once or as often as you can. The balance in the corner counts up and down as you trade. The search
+ * box next to the tabs narrows the tiles down by name, set code and kind, and for cards by their text and type too.
  */
 public final class PointShopScreen extends AbstractContainerScreen<PointShopMenu> {
     private static final int GOLD = 0xFFFFD040;
@@ -72,6 +77,8 @@ public final class PointShopScreen extends AbstractContainerScreen<PointShopMenu
     private final List<long[]> changes = new ArrayList<>();
     private long lastClick;
     private int lastClicked = -1;
+    private EditBox search;
+    private String query = "";
 
     public PointShopScreen(PointShopMenu menu, Inventory inventory, Component title) {
         super(menu, inventory, title);
@@ -84,6 +91,25 @@ public final class PointShopScreen extends AbstractContainerScreen<PointShopMenu
         imageWidth = Math.min(MAX_WIDTH, width - 12);
         imageHeight = Math.min(MAX_HEIGHT, height - 12);
         super.init();
+        int x = leftPos + 8 + tabsWidth() + 6;
+        // No vanilla frame: the box behind it is drawn in renderBg.
+        search = addRenderableWidget(new EditBox(font, x + 4, topPos + HEADER + 4, gridX() + gridWidth() - x - 8, 9,
+                Component.translatable("screen.jadm.search")));
+        search.setBordered(false);
+        search.setTooltip(Tooltip.create(Component.translatable("gui.jadm.points.search.hint")));
+        search.setMaxLength(64);
+        search.setValue(query);
+        search.setResponder(text -> {
+            query = text;
+            scroll = 0;
+        });
+        setInitialFocus(search);
+    }
+
+    /** How wide the tabs are together, with room for two-digit counts (the lines arrive after the window opens). */
+    private int tabsWidth() {
+        return font.width(Component.translatable("gui.jadm.points.buy_tab").append(" (99)")) + 16 + 2
+                + font.width(Component.translatable("gui.jadm.points.sell").append(" (99)")) + 16;
     }
 
     // ---- layout
@@ -144,12 +170,31 @@ public final class PointShopScreen extends AbstractContainerScreen<PointShopMenu
         }
         List<Integer> shown = new ArrayList<>();
         List<PointShopMenu.Entry> entries = menu.entries();
+        List<String> words = CardFilter.terms(query);
         for (int i = 0; i < entries.size(); i++) {
-            if (entries.get(i).sell() == selling) {
+            if (entries.get(i).sell() == selling && matches(entries.get(i).item(), words)) {
                 shown.add(i);
             }
         }
         return shown;
+    }
+
+    /**
+     * Whether every word of a search is in an item's name, set code or kind; a card also matches the binder's way
+     * (its text, attribute and type, in English or German).
+     */
+    private static boolean matches(ItemStack stack, List<String> words) {
+        if (words.isEmpty()) {
+            return true;
+        }
+        String text = (name(stack) + " " + about(stack)).toLowerCase(Locale.ROOT);
+        boolean card = stack.getItem() instanceof CardItem && CardItem.code(stack) != 0;
+        for (String word : words) {
+            if (!text.contains(word) && !(card && CardFilter.matches(CardItem.code(stack), "\"" + word + "\""))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private PointShopMenu.Entry pickedEntry(List<Integer> shown) {
@@ -200,6 +245,12 @@ public final class PointShopScreen extends AbstractContainerScreen<PointShopMenu
             int x1 = leftPos + 8 + (i + 1) * (imageWidth - 16) / 4;
             g.fill(x0, topPos + HEADER - 3, x1, topPos + HEADER - 2, (0xC0 - i * 0x28) << 24 | 0xC0A040);
         }
+        if (search != null) {
+            int x = search.getX() - 4;
+            int w = search.getWidth() + 8;
+            g.fill(x, topPos + HEADER, x + w, topPos + HEADER + TABS, BOX);
+            g.renderOutline(x, topPos + HEADER, w, TABS, search.isFocused() ? 0xFF8888A0 : BOX_EDGE);
+        }
     }
 
     @Override
@@ -214,6 +265,11 @@ public final class PointShopScreen extends AbstractContainerScreen<PointShopMenu
         scroll = Mth.clamp(scroll, 0, maxScroll(shown.size()));
         renderHeader(g);
         renderTabs(g, mouseX, mouseY);
+        if (search.getValue().isEmpty()) {
+            // The box keeps the focus, so its own hint would never show; this one stands after the cursor.
+            g.drawString(font, Component.translatable("gui.jadm.points.search"), search.getX() + 6, search.getY(),
+                    0xFF6A6A7A, false);
+        }
         int hovered = renderGrid(g, mouseX, mouseY, shown);
         renderDetail(g, mouseX, mouseY, pickedEntry(shown));
         Component hint = Component.translatable("gui.jadm.points.hint");
@@ -295,7 +351,8 @@ public final class PointShopScreen extends AbstractContainerScreen<PointShopMenu
         int y0 = gridY();
         int h = gridHeight();
         if (shown.isEmpty()) {
-            g.drawCenteredString(font, Component.translatable("gui.jadm.points.empty"), x0 + gridWidth() / 2,
+            g.drawCenteredString(font, Component.translatable(query.isBlank() ? "gui.jadm.points.empty"
+                    : "gui.jadm.points.no_match"), x0 + gridWidth() / 2,
                     y0 + h / 2 - 4, DIM);
             return -1;
         }
@@ -591,6 +648,12 @@ public final class PointShopScreen extends AbstractContainerScreen<PointShopMenu
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        // Right-click empties the search box, like the binder's.
+        if (button == 1 && search.isMouseOver(mouseX, mouseY)) {
+            search.setValue("");
+            setFocused(search);
+            return true;
+        }
         if (button != 0) {
             return super.mouseClicked(mouseX, mouseY, button);
         }
@@ -681,6 +744,14 @@ public final class PointShopScreen extends AbstractContainerScreen<PointShopMenu
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        // While the search box has the focus it takes the typing (so E doesn't close the shop); Enter, Escape, Tab and
+        // the up and down arrows still work on the shop.
+        if (search.isFocused() && keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER
+                && keyCode != GLFW.GLFW_KEY_ESCAPE && keyCode != GLFW.GLFW_KEY_TAB && keyCode != GLFW.GLFW_KEY_UP
+                && keyCode != GLFW.GLFW_KEY_DOWN) {
+            search.keyPressed(keyCode, scanCode, modifiers);
+            return true;
+        }
         if ((keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER || keyCode == GLFW.GLFW_KEY_SPACE)
                 && pickedEntry(shown()) != null) {
             trade(picked, hasShiftDown());
