@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.6 (2026-10-15)
 
 ### Detaching Xyz materials
 - **You pick which materials to detach:** a cost like "detach 1 material" opens a window with the monster's materials
