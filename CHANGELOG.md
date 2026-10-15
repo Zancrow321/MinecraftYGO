@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Decks for particular players
+- **Join decks:** a YDK deck list in `config/jadm/join_decks/<uuid>/` (or `config/jadm/join_decks/<uuid>.ydk`) becomes a
+  deck box holding those cards, given to the player with that UUID the next time they join, once per world. The deck
+  box is named after the file, a file added later is given on the next join, and unknown passcodes are left out and
+  named in chat. `/jadm joindecks give <player>` (operators) gives them all again. The folder and a README are created
+  on server start.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,
