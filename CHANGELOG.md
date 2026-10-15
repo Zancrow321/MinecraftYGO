@@ -12,6 +12,10 @@
 - **Shop search:** just start typing in a DP shop; every word has to be in the name, set code or kind (booster,
   deck, tin), and cards are also found by their text, attribute and type, like in the binder.
 - **Shop Stand** owner window in the same dark-and-gold look instead of a vanilla chest.
+- **Server menus in the mod's style:** chest menus a server builds with a plugin (a format selector, rewards, kits)
+  are drawn in the same dark and gold, with their glass-pane padding as coloured tiles. Which ones: client config
+  `styledMenus` (parts of the title, default `Format Selector`, `*` for every chest) and `styleGlassMenus` (any chest
+  padded with renamed glass panes, on by default). Clicks work as before; ordinary chests keep the vanilla look.
 
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers

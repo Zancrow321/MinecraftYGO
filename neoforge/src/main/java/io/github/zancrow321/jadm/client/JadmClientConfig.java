@@ -13,6 +13,8 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.BooleanValue CHOOSE_ZONE;
     public static final ModConfigSpec.BooleanValue SKIP_RESPONSES;
     public static final ModConfigSpec.BooleanValue CARD_PREVIEW;
+    public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> STYLED_MENUS;
+    public static final ModConfigSpec.BooleanValue STYLE_GLASS_MENUS;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -47,6 +49,16 @@ public final class JadmClientConfig {
                         + "the binder and the deck box, where there is room for it, and of a card held in the hand in "
                         + "the top left corner.")
                 .define("cardPreview", true);
+        STYLED_MENUS = builder
+                .comment("Chest menus from a server (a plugin's selectors, rewards or kits) drawn in the mod's dark "
+                        + "and gold instead of the vanilla chest, by a part of their title, upper or lower case alike. "
+                        + "\"*\" styles every chest window. The menus work as before; only the look changes.")
+                .defineListAllowEmpty("styledMenus", java.util.List.of("Format Selector"), () -> "",
+                        o -> o instanceof String);
+        STYLE_GLASS_MENUS = builder
+                .comment("Also style any chest menu that is padded with renamed glass panes, the way server plugins "
+                        + "build their menus; the panes become coloured tiles. Ordinary chests are left alone.")
+                .define("styleGlassMenus", true);
         SPEC = builder.build();
     }
 
