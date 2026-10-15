@@ -8,7 +8,7 @@
   deck now gives its whole extra deck; a deck box made from a deck still keeps to 15.
 - **Rarity Collection 5 packs:** YGOPRODeck lists some cards with a note instead of a rarity ("2", "3", "New",
   "force-SMW"...), which counted as common. In the all-foil Rarity Collection 5 that made Maliss <P> White Rabbit its
-  only common, and most foil slots fell back to it. Those notes now get the product's usual rarity (194 cards in 13
+  only common, and most foil slots fell back to it. Those notes now get the product's usual rarity (194 cards in 15
   products), and a foil slot only drops to a common when the set has no better rarity at all.
 - "Legendary 5D&apos;s Decks" is now shown as "Legendary 5D's Decks".
 
