@@ -92,14 +92,14 @@ public final class SealedProductItem extends Item {
     }
 
     private static int deckSize(Products.Product product) {
-        Deck deck = StarterDecks.deckOf(product, null);
+        Deck deck = StarterDecks.contentsOf(product);
         return deck.main().size() + deck.extra().size();
     }
 
     /** Every card of the deck goes into the player's first binder, or loose into the inventory without one. */
     private static void openDeck(ServerPlayer player, Products.Product product) {
         Map<Integer, Integer> counts = new HashMap<>();
-        Deck deck = StarterDecks.deckOf(product, null);
+        Deck deck = StarterDecks.contentsOf(product);
         deck.main().forEach(code -> counts.merge(code, 1, Integer::sum));
         deck.extra().forEach(code -> counts.merge(code, 1, Integer::sum));
         ItemStack binder = ItemStack.EMPTY;

@@ -81,7 +81,8 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
 
         /**
          * Opens a pack as its {@link #profile} says: commons, then each better slot rolled, falling back to the next
-         * lower rarity the set doesn't have.
+         * lower rarity the set has. A slot above common only drops to the commons when the set has nothing better,
+         * else it takes the next higher rarity: an all-foil set's few commons never fill its foil slots.
          */
         public List<Card> open(RandomGenerator random) {
             Map<Rarity, List<Card>> byRarity = new EnumMap<>(Rarity.class);
@@ -94,14 +95,27 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
                 pack.add(commons.get(random.nextInt(commons.size())));
             }
             for (PackProfile.Slot slot : profile.slots()) {
-                Rarity rarity = slot.roll(random);
-                while (rarity.ordinal() > 0 && byRarity.get(rarity).isEmpty()) {
-                    rarity = Rarity.values()[rarity.ordinal() - 1];
-                }
-                List<Card> pool = byRarity.get(rarity).isEmpty() ? cards : byRarity.get(rarity);
+                List<Card> pool = slotPool(byRarity, slot.roll(random));
                 pack.add(pool.get(random.nextInt(pool.size())));
             }
             return pack;
+        }
+
+        /** The cards a slot rolled as this rarity draws from, see {@link #open}. */
+        private List<Card> slotPool(Map<Rarity, List<Card>> byRarity, Rarity rolled) {
+            if (rolled != Rarity.COMMON) {
+                for (int i = rolled.ordinal(); i > Rarity.COMMON.ordinal(); i--) {
+                    if (!byRarity.get(Rarity.values()[i]).isEmpty()) {
+                        return byRarity.get(Rarity.values()[i]);
+                    }
+                }
+                for (int i = rolled.ordinal() + 1; i < Rarity.values().length; i++) {
+                    if (!byRarity.get(Rarity.values()[i]).isEmpty()) {
+                        return byRarity.get(Rarity.values()[i]);
+                    }
+                }
+            }
+            return byRarity.get(Rarity.COMMON).isEmpty() ? cards : byRarity.get(Rarity.COMMON);
         }
     }
 
