@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.Lighting;
 import io.github.zancrow321.jadm.clan.ClanCrests;
+import io.github.zancrow321.jadm.clan.ClanText;
 import io.github.zancrow321.jadm.clan.ClanView;
 import io.github.zancrow321.jadm.clan.Clans;
 import net.minecraft.client.Minecraft;
@@ -57,6 +58,8 @@ public final class ClanScreen extends Screen {
     /** The member (clan tab) or clan (ranking tab) row clicked last, or -1. */
     private int picked = -1;
     private boolean surrenderAsked;
+    /** The leader opened the color palette under the members. */
+    private boolean choosingColor;
     private ModelPart flag;
     private EditBox textA;
     private EditBox textB;
@@ -125,6 +128,7 @@ public final class ClanScreen extends Screen {
                 scroll = 0;
                 picked = -1;
                 surrenderAsked = false;
+                choosingColor = false;
                 rebuildWidgets();
             }).bounds(tx, 8, w, 18).build());
             b.active = tab != t;
@@ -171,6 +175,27 @@ public final class ClanScreen extends Screen {
             Button b = addRenderableWidget(builder.build());
             x += w + 4;
             return b;
+        }
+
+        /** A square in a clan color; clicking it gives the clan that color. */
+        void swatch(String name) {
+            int rgb = 0xFF000000 | ClanText.rgb(name);
+            boolean current = (view.clan.color & 0xFFFFFF) == (rgb & 0xFFFFFF);
+            Button b = new Button(x, y, 18, 18, Component.empty(), btn -> {
+                choosingColor = false;
+                command("color " + name);
+            }, narration -> narration.get()) {
+                @Override
+                protected void renderWidget(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+                    g.fill(getX(), getY(), getX() + width, getY() + height,
+                            current || isHoveredOrFocused() ? 0xFFFFFFFF : 0xFF000000);
+                    g.fill(getX() + 2, getY() + 2, getX() + width - 2, getY() + height - 2, rgb);
+                }
+            };
+            b.setTooltip(Tooltip.create(Component.literal(name.replace('_', ' ')
+                    + (current ? " (now)" : ""))));
+            addRenderableWidget(b);
+            x += 20;
         }
 
         EditBox box(int w, String hint, String value) {
@@ -224,6 +249,18 @@ public final class ClanScreen extends Screen {
                     ? "Anyone can join. Click to take only invited duelists."
                     : "Only invited duelists can join. Click to open the clan to all.",
                     () -> command("open " + !view.clan.open));
+        }
+        if (leads) {
+            row1.button("Color", "Pick the color of the clan's tag and name", () -> {
+                choosingColor = !choosingColor;
+                rebuildWidgets();
+            });
+        }
+        if (leads && choosingColor) {
+            for (String name : ClanText.COLORS) {
+                row2.swatch(name);
+            }
+            return;
         }
         ClanView.MemberRow m = pickedMember();
         if (m != null && !m.name.equals(me())) {
