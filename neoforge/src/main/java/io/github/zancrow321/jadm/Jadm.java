@@ -91,6 +91,7 @@ public final class Jadm {
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
                 Progress.sync(player);
+                io.github.zancrow321.jadm.collection.JoinDecks.onLogin(player);
                 io.github.zancrow321.jadm.progression.StarterDecks.offer(player);
                 io.github.zancrow321.jadm.guide.GuideBook.onLogin(player);
                 DuelManager.get(player.server).onLogin(player);
@@ -174,6 +175,7 @@ public final class Jadm {
     private void onServerStarting(ServerStartingEvent event) {
         JadmServerConfig.migrate();
         Progress.started(event.getServer());
+        io.github.zancrow321.jadm.collection.JoinDecks.prepare();
         // Duels run on the server, so load the engine there and fail loudly but harmlessly if it's unavailable.
         try {
             LOGGER.info("Loaded OCG-Core {} with {} cards", OcgCore.get().version(), JadmData.cards().all().size());

@@ -14,6 +14,11 @@ public final class JadmServerConfig {
             .comment("Players without a legal deck box duel with a starter deck instead of being turned away.")
             .define("starterDecksWithoutDeckBox", true);
 
+    public static final ModConfigSpec.BooleanValue BUNDLED_JOIN_DECKS = BUILDER
+            .comment("Give the decks that come with the mod for particular players (the mod author's) on their "
+                    + "first join. Decks in config/jadm/join_decks/ are given either way.")
+            .define("bundledJoinDecks", true);
+
     /** Bumped when a release changes defaults that older config files should pick up, see {@link #migrate}. */
     private static final int VERSION = 2;
 
