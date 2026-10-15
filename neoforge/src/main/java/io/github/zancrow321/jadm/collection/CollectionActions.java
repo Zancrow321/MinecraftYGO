@@ -100,13 +100,15 @@ public final class CollectionActions {
         }
         DeckList deck = DeckBoxItem.deck(box);
         boolean extra = DeckRules.isExtra(card);
-        int copies = (int) (deck.main().stream().filter(c -> c == code).count()
-                + deck.extra().stream().filter(c -> c == code).count());
+        // Alternate artworks count as copies of their original.
+        int original = JadmData.original(code);
+        int copies = (int) (deck.main().stream().filter(c -> JadmData.original(c) == original).count()
+                + deck.extra().stream().filter(c -> JadmData.original(c) == original).count());
         if (!JadmData.playable(player).test(code)) {
             player.displayClientMessage(Component.translatable("message.jadm.deck.locked", card.name()), true);
             return;
         }
-        int limit = JadmData.banlist(player).limit(code);
+        int limit = Math.min(JadmData.banlist(player).limit(code), JadmData.banlist(player).limit(original));
         if (copies >= limit) {
             player.displayClientMessage(Component.translatable(limit == 0 ? "message.jadm.deck.forbidden"
                     : "message.jadm.deck.limit", card.name(), limit), true);

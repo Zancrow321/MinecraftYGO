@@ -88,6 +88,9 @@
         "Fährst du mit der Maus über eine Karte im Inventar, in einer Truhe, im Kartenordner oder in der Deckbox, siehst du sie links groß mit ihrem ganzen Text. Eine Karte, die du in der Hand hältst, erscheint genauso oben links.",
         "# Foils",
         "Seltene Karten glänzen wie die echten: eine Rare hat einen silbernen Namen, eine Super Rare ein Holo-Bild, eine Ultra Rare ein Holo-Bild und einen goldenen Namen, eine Secret Rare ein Bild mit Regenbogenrand und einen silbernen Namen.",
+        "# Alternative Artworks",
+        "Manche Karten wurden mit mehr als einem Artwork gedruckt: Dark Magician, Blue-Eyes White Dragon, Red-Eyes Black Dragon und rund hundert weitere. Eine Karte aus einem Pack oder einer Tin kommt manchmal als eines ihrer anderen Artworks (Chance {server:cards.altArtChance}, 1 heißt immer). Eine Alt-Art zeigt überall ihr eigenes Bild, ein goldenes ALT in der Ecke und \"Alternatives Artwork 2 von 8\" im Tooltip.",
+        "Sie spielt sich genau wie das Original und zählt als dieselbe Karte: höchstens drei davon zusammen in einem Deck (weniger, wenn die Banlist es sagt) und eine Karte im Set-Sammelbuch.",
         "# Kartenordner",
         "Hält deine Sammlung. \"Alle Karten einlegen\" legt jede lose Karte hinein; ein Klick auf eine Karte nimmt sie wieder heraus (Shift-Klick alle Kopien). Er behält die Seltenheit jeder Karte, in der Ecke angezeigt (R, SR, UR, ScR), und Decks nehmen zuerst Commons, damit deine Foils im Ordner bleiben. Karten aus noch gesperrten Sets zeigen ein Schloss.",
         "**Suchen:** Einfach lostippen, sobald der Ordner offen ist. Jedes Wort muss im Namen, Kartentext, Attribut oder Typ vorkommen, also findet finsternis drache, empfänger oder schnellzauber etwas (Kartennamen und -texte sind englisch); Wörter in Anführungszeichen zählen als ein Ausdruck, etwa \"destroy all\". Rechtsklick leert das Feld. Die Knöpfe darunter filtern nach Kartentyp, Attribut, Stufe und Seltenheit (oder nur Foils) und sortieren nach Name, ATK, DEF oder Stufe; Shift-Klick geht zurück. Die Suche der Deckbox funktioniert genauso.",
@@ -300,7 +303,7 @@
         "# Admin-Menü",
         "**{key:admin}** oder `{cmd} admin` öffnet für Operatoren (Stufe 2, wie `/give`) das Admin-Menü. Oben rechts wählst du, für wen: dich, einen anderen Spieler oder alle online.",
         "- **Produkte**: jedes Booster-Pack, Struktur-Deck und Tin, nach Name oder Set-Code suchen, oder ein Zufallspack. Anklicken gibt die eingestellte Anzahl.",
-        "- **Karten**: jede Karte nach Name oder Passcode, in jeder Seltenheit, auch noch gesperrte.",
+        "- **Karten**: jede Karte nach Name oder Passcode, in jeder Seltenheit, auch noch gesperrte. Alternative Artworks stehen direkt hinter ihrer Karte.",
         "- **Duel Points**: Menge eintippen, dann geben, abziehen oder setzen; darunter die Kontostände aller online.",
         "Alles läuft auf dem Server und erscheint wie ein Befehl im Chat der Operatoren und im Server-Log."
       ]
@@ -323,6 +326,7 @@
         "- `[progression] startProduct` = {server:progression.startProduct}: wo neue Welten oder Spieler beginnen.",
         "- `[progression] announce` = {server:progression.announce}: Freischaltungen im Chat ansagen.",
         "- `[cards] lockedInDeck` = {server:cards.lockedInDeck}: gesperrte Karten bleiben aus Decks draußen.",
+        "- `[cards] altArtChance` = {server:cards.altArtChance}: wie oft eine Karte aus einem Pack oder einer Tin als eines ihrer alternativen Artworks kommt (0 nie, 1 immer).",
         "- `[results] trackRecord` = {server:results.trackRecord}, `announce` = {server:results.announce}, `rewardBotDuels` = {server:results.rewardBotDuels}: Duell-Bilanzen, Ergebnisse im Chat, Belohnungen für Bot-Duelle.",
         "- `[results.players]` und `[results.npcs]`: `winPacks`, `winPoints`, `winEmeralds`, `winXp`, `lossPacks`, `lossPoints`, `lossEmeralds`, `lossXp` (siehe Duelle; DP nur mit Punkten als Währung); `[results.npcs] rematchMinutes` = {server:results.npcs.rematchMinutes}.",
         "- `[shop] currency` = {server:shop.currency}: \"points\" oder ein Item wie minecraft:emerald. `priceMultiplier` = {server:shop.priceMultiplier}, `dynamicPrices` = {server:shop.dynamicPrices}, `wanderingTrader` = {server:shop.wanderingTrader}.",

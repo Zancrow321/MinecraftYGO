@@ -43,6 +43,8 @@ public final class JadmData {
     private static final Lazy<io.github.zancrow321.jadm.engine.data.TournamentDecks> TOURNAMENT_DECKS =
             new Lazy<>(() -> io.github.zancrow321.jadm.engine.data.TournamentDecks.loadBundled(cards()));
     private static final Lazy<Banlist> ERA_BANLIST = new Lazy<>(JadmData::loadEraBanlist);
+    private static final Lazy<io.github.zancrow321.jadm.engine.data.AltArts> ALT_ARTS =
+            new Lazy<>(io.github.zancrow321.jadm.engine.data.AltArts::loadBundled);
     private static final Lazy<BoosterSets> MODELED_SETS = new Lazy<>(BoosterSets::loadBundled);
     private static final Lazy<BoosterSets> ALL_SETS =
             new Lazy<>(() -> BoosterSets.fromProducts(products(), everything()));
@@ -66,6 +68,31 @@ public final class JadmData {
 
     public static CardDatabase cards() {
         return text().cards();
+    }
+
+    /** The alternate artworks that can be pulled. */
+    public static io.github.zancrow321.jadm.engine.data.AltArts altArts() {
+        return ALT_ARTS.get();
+    }
+
+    /** The original card's passcode for an alternate artwork, else the code itself. */
+    public static int original(int code) {
+        return cards().original(code);
+    }
+
+    /** Whether a card is an alternate artwork of another. */
+    public static boolean isAltArt(int code) {
+        return code > 0 && original(code) != code;
+    }
+
+    /**
+     * A card pulled from a pack or tin: now and then (the {@code [cards] altArtChance} setting) one of its alternate
+     * artworks instead, if it has any.
+     */
+    public static int pullArtwork(int code, java.util.random.RandomGenerator random) {
+        double chance = JadmServerConfig.SPEC.isLoaded() ? JadmServerConfig.ALT_ART_CHANCE.get()
+                : io.github.zancrow321.jadm.engine.data.AltArts.DEFAULT_CHANCE;
+        return altArts().roll(cards(), code, chance, random);
     }
 
     /** The pool mode in the server config, or on a client on another server the one that server sent. */
@@ -139,7 +166,9 @@ public final class JadmData {
     /** The cards a player's deck may hold: their pool, or every card when locked cards are allowed in decks. */
     public static IntPredicate playable(Player player) {
         CardPool pool = poolMode() == PoolMode.PROGRESSION && !lockedInDeck() ? everything() : pool(player);
-        return pool::contains;
+        // An alternate artwork may go wherever its original may (and the other way round).
+        return code -> pool.contains(code) || pool.contains(original(code)) || altArts().of(cards(), code).stream()
+                .anyMatch(pool::contains);
     }
 
     /** Whether a card is still locked for a player in a progression world. */
@@ -209,6 +238,22 @@ public final class JadmData {
 
     /** @return the model a monster is drawn with: a resource pack's, else the bundled one, else {@code null} */
     public static CardPool.Model model(int code) {
+        CardPool.Model model = ownModel(code);
+        if (model != null || code <= 0) {
+            return model;
+        }
+        // An alternate artwork looks like its original, and the other way round.
+        int original = original(code);
+        model = original == code ? null : ownModel(original);
+        for (int alt : altArts().of(cards(), code)) {
+            if (model == null && alt != code) {
+                model = ownModel(alt);
+            }
+        }
+        return model;
+    }
+
+    private static CardPool.Model ownModel(int code) {
         CardPool.Model model = packModels.get(code);
         return model != null ? model : modeled().model(code);
     }

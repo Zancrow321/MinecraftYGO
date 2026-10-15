@@ -2,6 +2,7 @@ package io.github.zancrow321.jadm.client;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.zancrow321.jadm.Jadm;
+import io.github.zancrow321.jadm.JadmData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
@@ -58,7 +59,11 @@ public final class CardArt {
     /** Whether the hologram art failed for good (downloads off, or no image), so a fallback should be drawn. */
     public static boolean hologramMissing(int code) {
         CompletableFuture<Texture> art = HOLOGRAMS.get(code);
-        return art != null && art.isCompletedExceptionally();
+        if (art == null || !art.isCompletedExceptionally()) {
+            return false;
+        }
+        int original = JadmData.original(code);
+        return original == code || hologramMissing(original);
     }
 
     private static Texture ready(int code, Map<Integer, CompletableFuture<Texture>> cache, boolean cropped) {
@@ -66,7 +71,12 @@ public final class CardArt {
             return null;
         }
         CompletableFuture<Texture> art = cache.computeIfAbsent(code, c -> load(c, cropped));
-        return art.isDone() && !art.isCompletedExceptionally() ? art.join() : null;
+        if (art.isCompletedExceptionally()) {
+            // An alternate artwork without a picture of its own shows the original's.
+            int original = JadmData.original(code);
+            return original == code ? null : ready(original, cache, cropped);
+        }
+        return art.isDone() ? art.join() : null;
     }
 
     public static Path cacheDir() {

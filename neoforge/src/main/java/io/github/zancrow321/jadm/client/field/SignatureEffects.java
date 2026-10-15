@@ -48,11 +48,24 @@ final class SignatureEffects {
 
     /** How long an activation of this card plays, in ticks: the big spells get time to land. */
     static int activateDuration(int code) {
-        return switch (code) {
+        int original = JadmData.original(code);
+        return switch (original) {
             case RAIGEKI, DARK_HOLE, MIRROR_FORCE, SWORDS_OF_REVEALING_LIGHT -> 46;
             case MONSTER_REBORN, POT_OF_GREED -> 36;
-            default -> ClassicEffects.activateDuration(code);
+            default -> ClassicEffects.activateDuration(original);
         };
+    }
+
+    /** The animation with alternate artworks as their original card, so they get the same effects. */
+    private static FieldAnimation original(FieldAnimation a) {
+        FieldEvent e = a.event();
+        int code = JadmData.original(e.code());
+        int actor = JadmData.original(a.actor());
+        if (code == e.code() && actor == a.actor()) {
+            return a;
+        }
+        return new FieldAnimation(new FieldEvent(e.kind(), code, e.from(), e.to(), e.player(), e.amount()), a.start(),
+                a.duration(), actor);
     }
 
     private static boolean dark(int code) {
@@ -63,6 +76,7 @@ final class SignatureEffects {
 
     /** Called every tick while {@code a} plays, with the ticks since it started. */
     static void tick(FieldAnimation a, int elapsed) {
+        a = original(a);
         FieldEvent e = a.event();
         switch (e.kind()) {
             case SUMMON -> {
@@ -219,6 +233,7 @@ final class SignatureEffects {
     // ------------------------------------------------------------------ glow geometry, once per frame
 
     static void draw(FieldRenderer.Draw draw, VertexConsumer vc, FieldAnimation a, long now, float partial) {
+        a = original(a);
         float p = a.progress(now, partial);
         switch (a.event().kind()) {
             case ATTACK -> drawAttack(draw, vc, a, p, now);
