@@ -83,6 +83,7 @@ public final class ClientScreens {
     }
 
     public static void packOpened(PackOpenedPayload payload) {
-        Minecraft.getInstance().setScreen(new PackOpenScreen(payload.setName(), payload.cards()));
+        Minecraft.getInstance().setScreen(new PackOpenScreen(payload.setName(), payload.cards(),
+                payload.intoBinder()));
     }
 }

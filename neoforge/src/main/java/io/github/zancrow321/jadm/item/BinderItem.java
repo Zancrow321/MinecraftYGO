@@ -1,6 +1,8 @@
 package io.github.zancrow321.jadm.item;
 
+import io.github.zancrow321.jadm.JadmServerConfig;
 import io.github.zancrow321.jadm.client.ClientScreens;
+import io.github.zancrow321.jadm.collection.CollectionActions;
 import io.github.zancrow321.jadm.engine.data.BoosterSets.Rarity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -115,6 +117,14 @@ public final class BinderItem extends Item {
             }
         }
         return null;
+    }
+
+    /**
+     * The binder freshly opened cards go into: the first one the player carries, or {@link ItemStack#EMPTY} without
+     * one or with {@code packsIntoBinder} off.
+     */
+    public static ItemStack forPulls(Player player) {
+        return JadmServerConfig.PACKS_INTO_BINDER.get() ? CollectionActions.findBinder(player) : ItemStack.EMPTY;
     }
 
     @Override
