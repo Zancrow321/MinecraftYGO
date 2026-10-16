@@ -83,17 +83,23 @@ public final class BoosterPackItem extends Item {
         RandomSource random = level.getRandom();
         List<BoosterSets.Card> cards = set.open(new java.util.Random(random.nextLong()));
         List<JadmComponents.CardStack> shown = new ArrayList<>();
+        ItemStack binder = BinderItem.forPulls(player);
         for (BoosterSets.Card card : cards) {
-            ItemStack item = CardItem.of(card.code(), card.rarity());
-            if (!player.getInventory().add(item)) {
-                player.drop(item, false);
+            if (!binder.isEmpty()) {
+                BinderItem.add(binder, card.code(), card.rarity(), 1);
+            } else {
+                ItemStack item = CardItem.of(card.code(), card.rarity());
+                if (!player.getInventory().add(item)) {
+                    player.drop(item, false);
+                }
             }
             shown.add(new JadmComponents.CardStack(card.code(), card.rarity().id()));
         }
         stack.consume(1, player);
         level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1, 0.8f);
         if (player instanceof ServerPlayer serverPlayer) {
-            PacketDistributor.sendToPlayer(serverPlayer, new PackOpenedPayload(set.name(), shown));
+            PacketDistributor.sendToPlayer(serverPlayer, new PackOpenedPayload(set.name(), shown,
+                    !binder.isEmpty()));
             io.github.zancrow321.jadm.cosmetics.PlayerCosmetics.openedPack(serverPlayer);
         }
         return InteractionResultHolder.consume(stack);

@@ -25,7 +25,7 @@ import java.util.Map;
 
 /**
  * A sealed structure or starter deck, or a collector's tin, of one TCG product. Right-click to open it: a deck puts
- * its cards in your binder, a tin gives its promo card and three packs.
+ * its cards in your binder, a tin gives its promo card (into your binder too) and three packs.
  */
 public final class SealedProductItem extends Item {
     /** Packs in a tin. */
@@ -102,13 +102,7 @@ public final class SealedProductItem extends Item {
         Deck deck = StarterDecks.deckOf(product, null);
         deck.main().forEach(code -> counts.merge(code, 1, Integer::sum));
         deck.extra().forEach(code -> counts.merge(code, 1, Integer::sum));
-        ItemStack binder = ItemStack.EMPTY;
-        for (ItemStack item : player.getInventory().items) {
-            if (item.is(JadmItems.BINDER.get())) {
-                binder = item;
-                break;
-            }
-        }
+        ItemStack binder = BinderItem.forPulls(player);
         int total = counts.values().stream().mapToInt(Integer::intValue).sum();
         if (!binder.isEmpty()) {
             Map<Integer, Integer> merged = new HashMap<>(BinderItem.collection(binder).counts());
@@ -119,7 +113,8 @@ public final class SealedProductItem extends Item {
             return;
         }
         counts.forEach((code, n) -> give(player, CardItem.of(code), n));
-        player.sendSystemMessage(Component.translatable("message.jadm.structure_deck.loose", total,
+        player.sendSystemMessage(Component.translatable(io.github.zancrow321.jadm.JadmServerConfig.PACKS_INTO_BINDER.get()
+                ? "message.jadm.structure_deck.loose" : "message.jadm.structure_deck.inventory", total,
                 product.name()).withStyle(ChatFormatting.GREEN));
     }
 
@@ -129,17 +124,25 @@ public final class SealedProductItem extends Item {
         List<Products.Printing> promos = tin.cards().stream()
                 .filter(p -> JadmData.cards().card(p.code()) != null).toList();
         Component card = Component.literal("-");
+        boolean filed = false;
         if (!promos.isEmpty()) {
             Products.Printing promo = promos.get(random.nextInt(promos.size()));
-            give(player, CardItem.of(promo.code(), BoosterSets.Rarity.ofPrinted(promo.rarity())), 1);
+            BoosterSets.Rarity rarity = BoosterSets.Rarity.ofPrinted(promo.rarity());
+            ItemStack binder = BinderItem.forPulls(player);
+            if (!binder.isEmpty()) {
+                BinderItem.add(binder, promo.code(), rarity, 1);
+                filed = true;
+            } else {
+                give(player, CardItem.of(promo.code(), rarity), 1);
+            }
             card = Component.literal(JadmData.cards().card(promo.code()).name() + " (" + promo.rarity() + ")");
         }
         List<String> packs = tinPacks(tin);
         for (String set : packs) {
             give(player, BoosterPackItem.of(set), 1);
         }
-        player.sendSystemMessage(Component.translatable("message.jadm.tin.opened", tin.name(), card,
-                packs.size()).withStyle(ChatFormatting.GREEN));
+        player.sendSystemMessage(Component.translatable(filed ? "message.jadm.tin.opened.binder"
+                : "message.jadm.tin.opened", tin.name(), card, packs.size()).withStyle(ChatFormatting.GREEN));
     }
 
     /**
