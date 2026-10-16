@@ -1,6 +1,7 @@
 package io.github.zancrow321.jadm.item;
 
 import io.github.zancrow321.jadm.JadmData;
+import io.github.zancrow321.jadm.JadmServerConfig;
 import io.github.zancrow321.jadm.engine.data.BoosterSets;
 import io.github.zancrow321.jadm.engine.data.Deck;
 import io.github.zancrow321.jadm.engine.data.Products;
@@ -113,7 +114,7 @@ public final class SealedProductItem extends Item {
             return;
         }
         counts.forEach((code, n) -> give(player, CardItem.of(code), n));
-        player.sendSystemMessage(Component.translatable(io.github.zancrow321.jadm.JadmServerConfig.PACKS_INTO_BINDER.get()
+        player.sendSystemMessage(Component.translatable(JadmServerConfig.PACKS_INTO_BINDER.get()
                 ? "message.jadm.structure_deck.loose" : "message.jadm.structure_deck.inventory", total,
                 product.name()).withStyle(ChatFormatting.GREEN));
     }
