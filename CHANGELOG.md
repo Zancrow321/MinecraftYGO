@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Packs of sets without commons
+- **Fixed:** a Maze of Millennia or Justice Hunters pack held the same card seven times. These sets list a single
+  common among their rares, and all seven common slots rolled it. A set's plain slots now take its base rarity (rare
+  for these), and a stray lower listing counts as that rarity.
+- **Real pack formats:** sets without commons open as seven cards, six rares and a foil (the Maze sets, Toon Chaos,
+  King's Court, Justice Hunters...), or five cards, four Super Rares and a Secret Rare (The Secret Forces, Hidden
+  Summoners, Fists of the Gadgets...). Before, their "common" slots drew from the whole set. Both cost a premium pack
+  in the card shop.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

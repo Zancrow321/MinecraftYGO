@@ -378,7 +378,8 @@ public final class JadmServerConfig {
         private Prices(ModConfigSpec.Builder builder) {
             corePack = builder.comment("A 9-card core booster pack of a set.")
                     .defineInRange("corePack", 4, 0, 64);
-            premiumPack = builder.comment("A pack of an all-foil set (Dragons of Legend, Premium Gold...).")
+            premiumPack = builder.comment("A pack of an all-foil set (Dragons of Legend, Premium Gold...) or of a set "
+                    + "without commons (Maze of Millennia, The Secret Forces...).")
                     .defineInRange("premiumPack", 6, 0, 64);
             smallPack = builder.comment("A smaller pack: tournament packs (3 cards), mini boosters such as Duelist "
                     + "Packs and battle packs (5 cards).").defineInRange("smallPack", 3, 0, 64);
