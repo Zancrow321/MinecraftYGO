@@ -143,7 +143,7 @@ public final class CardShop {
             return prices.structureDeck.get();
         }
         PackProfile profile = JadmData.set(product.id()).profile();
-        return (profile.size() >= 9 ? prices.corePack : profile.slots().size() > 1 ? prices.premiumPack
+        return (profile.size() >= 9 ? prices.corePack : profile.premium() ? prices.premiumPack
                 : prices.smallPack).get();
     }
 
