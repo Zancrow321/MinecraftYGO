@@ -342,7 +342,8 @@ public final class DuelTable implements AutoCloseable {
             if (watched != null) {
                 spectatorEvents.add(watched);
             }
-            String watchedLine = new DuelLog(text, names, -1, loc -> faceUpCodeAt(board, loc)).describe(message);
+            String watchedLine = new DuelLog(text, names, -1, loc -> faceUpCodeAt(board, loc), card -> false)
+                    .describe(message);
             if (watchedLine != null && !(message instanceof DuelMessage.Retry)) {
                 spectatorLog.add(watchedLine);
             }
@@ -360,7 +361,9 @@ public final class DuelTable implements AutoCloseable {
                 if (event != null) {
                     pendingEvents.get(viewer).add(event);
                 }
-                String line = new DuelLog(text, names, as, loc -> faceUpCodeAt(board, loc)).describe(message);
+                Set<String> seen = revealed.get(as);
+                String line = new DuelLog(text, names, as, loc -> faceUpCodeAt(board, loc),
+                        card -> seen.contains(revealKey(card))).describe(message);
                 if (line != null) {
                     pendingLog.get(viewer).add(line);
                 }
