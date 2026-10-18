@@ -72,6 +72,19 @@ public record DuelFieldPayload(boolean active, double x, double y, double z, flo
         return new DuelFieldPayload(active, x, y, z, yaw + 180, layout);
     }
 
+    /**
+     * The field once the two teams trade ends, after the winner of the coin toss chose to go second: turned, with
+     * the card sleeves of the two teams swapped too.
+     */
+    public DuelFieldPayload endsTraded() {
+        List<String> sleeves = layout.sleeves();
+        int half = sleeves.size() / 2;
+        List<String> traded = new java.util.ArrayList<>(sleeves.subList(half, sleeves.size()));
+        traded.addAll(sleeves.subList(0, half));
+        return new DuelFieldPayload(active, x, y, z, yaw + 180, new Layout(layout.split(), List.copyOf(traded),
+                layout.watching(), layout.size(), layout.ceiling(), layout.outline()));
+    }
+
     /** The copy sent to a spectator. */
     public DuelFieldPayload watching() {
         return new DuelFieldPayload(active, x, y, z, yaw, new Layout(layout.split(), layout.sleeves(), true,

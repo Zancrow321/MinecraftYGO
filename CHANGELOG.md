@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Go first or second
+- **The winner of the coin toss chooses:** when the coin lands for you, **Go First** and **Go Second** buttons show
+  under it instead of "You go first!". Your opponent sees that you are choosing. Without a choice in about 30 seconds
+  you go first. Works for every duel decided by a coin toss: invitations, arena duels, NPCs and bots, tag duels (the
+  winning team's first duelist chooses), tournament game 1 and clan bouts. An NPC or bot that wins the toss still
+  simply goes first, and a tournament's later games keep "the loser goes first".
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

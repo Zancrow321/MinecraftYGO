@@ -353,6 +353,11 @@ public final class DuelUi {
         }
         if (DuelStaging.introRunning()) {
             DuelStaging.renderIntro(g, font, w, h);
+            if (DuelStaging.choiceButtons()) {
+                int y = DuelStaging.choiceButtonsY(h);
+                button(g, font, w / 2 - 84, y, 80, "Go First", true, mx, my, () -> DuelStaging.choose(true));
+                button(g, font, w / 2 + 4, y, 80, "Go Second", true, mx, my, () -> DuelStaging.choose(false));
+            }
             return;
         }
         hoverCode = 0;
