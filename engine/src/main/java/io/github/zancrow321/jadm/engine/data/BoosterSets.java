@@ -89,7 +89,9 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
 
         /**
          * Opens a pack as its {@link #profile} says: cards of the {@link #base} rarity, then each better slot rolled,
-         * falling back to the next lower rarity the set has.
+         * falling back to the next lower rarity the set has. A better slot only drops to the base rarity when the set
+         * has nothing better, else it takes the next higher rarity: an all-foil set's few commons never fill its foil
+         * slots.
          */
         public List<Card> open(RandomGenerator random) {
             Map<Rarity, List<Card>> byRarity = new EnumMap<>(Rarity.class);
@@ -103,14 +105,27 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
                 pack.add(plain.get(random.nextInt(plain.size())));
             }
             for (PackProfile.Slot slot : profile.slots()) {
-                Rarity rarity = slot.roll(random);
-                while (rarity.compareTo(base) > 0 && byRarity.get(rarity).isEmpty()) {
-                    rarity = Rarity.values()[rarity.ordinal() - 1];
-                }
-                List<Card> pool = byRarity.get(rarity.compareTo(base) < 0 ? base : rarity);
+                List<Card> pool = slotPool(byRarity, base, slot.roll(random));
                 pack.add(pool.get(random.nextInt(pool.size())));
             }
             return pack;
+        }
+
+        /** The cards a slot rolled as this rarity draws from, see {@link #open}. */
+        private static List<Card> slotPool(Map<Rarity, List<Card>> byRarity, Rarity base, Rarity rolled) {
+            if (rolled.compareTo(base) > 0) {
+                for (int i = rolled.ordinal(); i > base.ordinal(); i--) {
+                    if (!byRarity.get(Rarity.values()[i]).isEmpty()) {
+                        return byRarity.get(Rarity.values()[i]);
+                    }
+                }
+                for (int i = rolled.ordinal() + 1; i < Rarity.values().length; i++) {
+                    if (!byRarity.get(Rarity.values()[i]).isEmpty()) {
+                        return byRarity.get(Rarity.values()[i]);
+                    }
+                }
+            }
+            return byRarity.get(base);
         }
     }
 

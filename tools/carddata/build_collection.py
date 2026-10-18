@@ -26,9 +26,10 @@ empty "new". Cards never printed in the TCG are listed under "ocgOnly" with thei
     python3 tools/carddata/build_collection.py --ygoprodeck ygoprodeck.json --cardsets cardsets.json
 """
 import argparse
+import html
 import json
 import re
-from collections import defaultdict
+from collections import Counter, defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -54,6 +55,18 @@ LIMITS = {
 
 def slug(name):
     return re.sub(r"[^a-z0-9]+", "_", name.lower()).strip("_")
+
+
+# Words every real rarity name has; YGOPRODeck's set lists also carry notes in the rarity field ("2" and "3" for
+# copies in a deck, "New", "European debut", "force-SMW"...), and those are no rarity.
+REAL_RARITY = re.compile(r"rare|common|short print", re.I)
+RARITY_ALIASES = {"Cr": "Collector's Rare"}
+
+
+def printed_rarity(rarity):
+    """The rarity as printed, or None when the field holds a note instead."""
+    rarity = RARITY_ALIASES.get(rarity, rarity)
+    return rarity if REAL_RARITY.search(rarity) else None
 
 
 def kind(name, code, size):
@@ -82,7 +95,7 @@ def write_products(cards, cardsets):
             card = json.loads(line)
             bundled[card["code"]] = card
     dates = {s["set_name"]: s.get("tcg_date") for s in cardsets}
-    contents = defaultdict(dict)  # set name -> code -> rarity as printed (the first listed one)
+    contents = defaultdict(dict)  # set name -> code -> rarity as printed (the first real one listed)
     codes = {}
     ocg_dates = {}
     for card in cards:
@@ -95,8 +108,17 @@ def write_products(cards, cardsets):
         for printing in card.get("card_sets") or []:
             name = printing["set_name"]
             if dates.get(name):
-                contents[name].setdefault(code, printing["set_rarity"])
+                rarity = printed_rarity(printing["set_rarity"])
+                if contents[name].get(code) is None:
+                    contents[name][code] = rarity
                 codes.setdefault(name, printing["set_code"].split("-")[0])
+    # A card listed with a note only gets the product's most usual rarity: the commons of a deck, the foils of an
+    # all-foil set.
+    for name, members in contents.items():
+        usual = Counter(r for r in members.values() if r).most_common(1)
+        for code, rarity in members.items():
+            if rarity is None:
+                members[code] = usual[0][0] if usual else "Common"
     order = sorted(contents, key=lambda n: (dates[n], n))
     seen = set()
     ids = set()
@@ -104,11 +126,11 @@ def write_products(cards, cardsets):
     for name in order:
         new = sorted(c for c in contents[name] if c not in seen)
         seen.update(new)
-        pid = slug(name)
+        pid = slug(name)  # from the raw name, so ids made before the unescaping stay the same
         while pid in ids:
             pid += "_"
         ids.add(pid)
-        products.append({"id": pid, "code": codes[name], "name": name, "date": dates[name],
+        products.append({"id": pid, "code": codes[name], "name": html.unescape(name), "date": dates[name],
                          "kind": kind(name, codes[name], len(contents[name])),
                          "cards": [[c, r] for c, r in sorted(contents[name].items())], "new": new})
     # Cards that never came out in the TCG unlock with their OCG date; alternate artworks follow their original.
