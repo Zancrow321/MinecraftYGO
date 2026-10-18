@@ -32,8 +32,20 @@ public record Products(List<Product> products, Map<Integer, LocalDate> ocgOnly) 
         BOOSTER, DECK, TIN, PROMO, SPECIAL
     }
 
-    /** A card in a product, with its rarity as printed, e.g. {@code Ultra Rare} or {@code Starlight Rare}. */
-    public record Printing(int code, String rarity) {
+    /**
+     * A card in a product, with its rarity as printed, e.g. {@code Ultra Rare} or {@code Starlight Rare}.
+     *
+     * @param rarity the plainest one it is printed in
+     * @param better the better rarities it is also printed in, e.g. an ultra's {@code Quarter Century Secret Rare}
+     */
+    public record Printing(int code, String rarity, List<String> better) {
+        public Printing {
+            better = List.copyOf(better);
+        }
+
+        public Printing(int code, String rarity) {
+            this(code, rarity, List.of());
+        }
     }
 
     /**
@@ -73,7 +85,11 @@ public record Products(List<Product> products, Map<Integer, LocalDate> ocgOnly) 
                 List<Printing> cards = new ArrayList<>();
                 for (JsonElement c : o.getAsJsonArray("cards")) {
                     JsonArray pair = c.getAsJsonArray();
-                    cards.add(new Printing(pair.get(0).getAsInt(), pair.get(1).getAsString()));
+                    List<String> better = new ArrayList<>();
+                    if (pair.size() > 2) {
+                        pair.get(2).getAsJsonArray().forEach(r -> better.add(r.getAsString()));
+                    }
+                    cards.add(new Printing(pair.get(0).getAsInt(), pair.get(1).getAsString(), better));
                 }
                 List<Integer> newCards = new ArrayList<>();
                 for (JsonElement c : o.getAsJsonArray("new")) {

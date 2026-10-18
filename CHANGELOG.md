@@ -2,7 +2,14 @@
 
 ## Unreleased
 
-### Packs of sets without commons
+### Packs of sets without commons, and missing Ultra Rares
+- **Ultra Rares were missing:** YGOPRODeck lists many cards in several rarities per set, and the first one listed
+  counted. Phantom Nightmare, Legacy of Destruction, The Infinite Forbidden, Rage of the Abyss, Supreme Darkness,
+  Alliance Insight, Doom of Dimensions, Burst Protocol, Blazing Dominion, Duelist Nexus and Age of Overlord listed every
+  Ultra Rare as its Quarter Century Secret Rare first, so their packs never held an Ultra Rare; Toon Chaos, King's
+  Court, Maze of Memories, Justice Hunters and others were short of them too. A card now counts as its plainest
+  printing and also comes in each better one from that slot: an Ultra Rare from the ultra slot, its Quarter Century
+  Secret Rare from the secret slot. The Set Collection Book names every rarity a card was printed in.
 - **Fixed:** a Maze of Millennia or Justice Hunters pack held the same card seven times. These sets list a single
   common among their rares, and all seven common slots rolled it. A set's plain slots now take its base rarity (rare
   for these), and a stray lower listing counts as that rarity.

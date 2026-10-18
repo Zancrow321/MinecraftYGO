@@ -78,6 +78,35 @@ class PackProfileTest {
         }
     }
 
+    /**
+     * Phantom Nightmare and the other core sets list their ultras as Quarter Century Secret Rares too; taking that
+     * printing as the card's rarity left them without a single ultra.
+     */
+    @Test
+    void cardsPrintedInSeveralRaritiesAreInEachSlot() {
+        BoosterSets.BoosterSet phni = SETS.get("phantom_nightmare");
+        assertEquals(14, phni.of(BoosterSets.Rarity.ULTRA).size(), "Phantom Nightmare's ultras");
+        assertTrue(phni.of(BoosterSets.Rarity.SECRET).size() > 10, "its secrets and the Quarter Century ones");
+        assertEquals(BoosterSets.Rarity.ULTRA, SETS.rarity("phantom_nightmare",
+                phni.of(BoosterSets.Rarity.ULTRA).getFirst().code()), "listed as the plainest rarity");
+        Random random = new Random(3);
+        long ultras = 0;
+        for (int i = 0; i < 6000; i++) {
+            ultras += phni.open(random).stream().filter(c -> c.rarity() == BoosterSets.Rarity.ULTRA).count();
+        }
+        assertTrue(ultras > 800 && ultras < 1200, "about one ultra in six packs: " + ultras);
+
+        for (Products.Product product : Products.loadBundled().products()) {
+            BoosterSets.BoosterSet set = SETS.get(product.id());
+            boolean ultra = product.cards().stream().flatMap(p -> java.util.stream.Stream.concat(
+                    java.util.stream.Stream.of(p.rarity()), p.better().stream()))
+                    .anyMatch(r -> BoosterSets.Rarity.ofPrinted(r) == BoosterSets.Rarity.ULTRA);
+            if (set != null && ultra && set.base().compareTo(BoosterSets.Rarity.ULTRA) <= 0) {
+                assertTrue(!set.of(BoosterSets.Rarity.ULTRA).isEmpty(), product.id() + " has no ultras to pull");
+            }
+        }
+    }
+
     /** No booster set's plain slots come from a single card. */
     @Test
     void everySetsPlainCardsAreVaried() {

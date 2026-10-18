@@ -63,14 +63,15 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
     }
 
     /**
-     * @param cards   its cards; one listed below the set's {@link #base} rarity (a stray common in an all-rare set)
-     *                counts as that rarity
+     * @param cards   its cards, a card once for each rarity it comes in; one listed below the set's {@link #base}
+     *                rarity (a stray common in an all-rare set) counts as that rarity
      * @param profile how its packs are made
      */
     public record BoosterSet(String id, String code, String name, List<Card> cards, PackProfile profile) {
         public BoosterSet {
             Rarity base = BoosterSets.base(cards.stream().map(Card::rarity).toList());
-            cards = cards.stream().map(c -> c.rarity().compareTo(base) < 0 ? new Card(c.code(), base) : c).toList();
+            cards = cards.stream().map(c -> c.rarity().compareTo(base) < 0 ? new Card(c.code(), base) : c).distinct()
+                    .toList();
         }
 
         /** A set with the classic nine-card packs. */
@@ -163,7 +164,8 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
 
     /**
      * The booster products as sets, each with only the cards in the pool. A card printed in several rarities in
-     * one product gets the first one listed.
+     * one product is in the set once for each slot they fall into, its plainest one first: Phantom Nightmare's
+     * ultras also come as Quarter Century Secret Rares from the secret slot.
      */
     public static BoosterSets fromProducts(Products products, CardPool pool) {
         Map<String, BoosterSet> sets = new LinkedHashMap<>();
@@ -172,7 +174,10 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
                 continue;
             }
             List<Card> cards = product.cards().stream().filter(p -> pool.contains(p.code()))
-                    .map(p -> new Card(p.code(), Rarity.ofPrinted(p.rarity()))).toList();
+                    .flatMap(p -> java.util.stream.Stream.concat(java.util.stream.Stream.of(p.rarity()),
+                                    p.better().stream())
+                            .map(Rarity::ofPrinted).distinct().map(r -> new Card(p.code(), r)))
+                    .toList();
             if (!cards.isEmpty()) {
                 sets.put(product.id(), new BoosterSet(product.id(), product.code(), product.name(), cards,
                         PackProfile.of(product)));
