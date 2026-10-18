@@ -81,14 +81,16 @@ public final class BoosterPackItem extends Item {
             return InteractionResultHolder.fail(stack);
         }
         RandomSource random = level.getRandom();
-        List<BoosterSets.Card> cards = set.open(new java.util.Random(random.nextLong()));
+        java.util.Random rolls = new java.util.Random(random.nextLong());
+        List<BoosterSets.Card> cards = set.open(rolls);
         List<JadmComponents.CardStack> shown = new ArrayList<>();
         for (BoosterSets.Card card : cards) {
-            ItemStack item = CardItem.of(card.code(), card.rarity());
+            int code = JadmData.pullArtwork(card.code(), rolls);
+            ItemStack item = CardItem.of(code, card.rarity());
             if (!player.getInventory().add(item)) {
                 player.drop(item, false);
             }
-            shown.add(new JadmComponents.CardStack(card.code(), card.rarity().id()));
+            shown.add(new JadmComponents.CardStack(code, card.rarity().id()));
         }
         stack.consume(1, player);
         level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1, 0.8f);

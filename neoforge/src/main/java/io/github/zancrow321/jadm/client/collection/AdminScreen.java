@@ -248,12 +248,18 @@ public final class AdminScreen extends Screen {
         return allProducts;
     }
 
-    /** Every card but tokens and alternate artworks (whose passcode is within ten of the original's), by name. */
+    /**
+     * Every card but tokens, by name, each followed by the alternate artworks that can be pulled (other alternate
+     * artworks, without a picture of their own, are left out).
+     */
     private static List<Integer> allCards() {
         if (allCards == null) {
-            allCards = JadmData.cards().all().stream().filter(c -> !c.is(OcgConstants.TYPE_TOKEN)
-                            && (c.data().alias() == 0 || Math.abs(c.code() - c.data().alias()) > 10))
-                    .sorted(Comparator.comparing(CardInfo::name, String.CASE_INSENSITIVE_ORDER))
+            var cards = JadmData.cards();
+            allCards = cards.all().stream().filter(c -> !c.is(OcgConstants.TYPE_TOKEN)
+                            && (!JadmData.isAltArt(c.code()) || JadmData.altArts().number(cards, c.code()) > 0))
+                    .sorted(Comparator.comparing(CardInfo::name, String.CASE_INSENSITIVE_ORDER)
+                            .thenComparingInt(c -> cards.original(c.code()))
+                            .thenComparingInt(c -> JadmData.altArts().number(cards, c.code())))
                     .map(CardInfo::code).toList();
         }
         return allCards;

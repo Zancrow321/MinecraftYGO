@@ -88,6 +88,9 @@
         "Hover over a card in your inventory, a chest, the binder or the deck box to see it big on the left, with its full text. A card you hold in your hand shows the same way in the top left corner.",
         "# Foils",
         "Rarer cards shine like the real ones: a Rare has a silver name, a Super Rare holofoil art, an Ultra Rare holofoil art and a gold name, a Secret Rare rainbow-lined art and a silver name.",
+        "# Alternate artworks",
+        "Some cards were printed with more than one artwork: Dark Magician, Blue-Eyes White Dragon, Red-Eyes Black Dragon and about a hundred more. A card from a pack or tin sometimes comes as one of its other artworks (chance {server:cards.altArtChance}, where 1 means always). An alt art shows its own picture everywhere, a gold ALT in the corner and \"Alternate Art 2 of 8\" in its tooltip.",
+        "It plays exactly like the original and counts as the same card: at most three of them together in a deck (fewer if the banlist says so), and one card in the Set Collection Book.",
         "# Card Binder",
         "Holds your collection. \"Put all cards in\" moves every loose card into it; clicking a card takes it out again (shift-click for every copy). It keeps each card's rarity, shown in the corner (R, SR, UR, ScR), and decks use commons first so your foils stay in the binder. Cards from sets that are still locked show a padlock.",
         "**Searching:** just start typing when the binder opens. Every word has to turn up in the card's name, text, attribute or type, so dark dragon, tuner or quick-play all work (German type names like drache too); put words in quotes to find them as one phrase, like \"destroy all\". Right-click the box to clear it. The buttons below filter by card type, attribute, level and rarity (or only foils) and sort by name, ATK, DEF or level; shift-click steps back. The deck box's search works the same way.",
@@ -300,7 +303,7 @@
         "# Admin menu",
         "**{key:admin}** or `{cmd} admin` opens the admin menu for operators (level 2, like `/give`). Top right picks who for: you, another player or everyone online.",
         "- **Products**: every booster pack, structure deck and tin, searched by name or set code, or a random pack. Click gives the count you set.",
-        "- **Cards**: any card by name or passcode, in any rarity, locked ones too.",
+        "- **Cards**: any card by name or passcode, in any rarity, locked ones too. Alternate artworks come right after their card.",
         "- **Duel Points**: type an amount, then give, take or set; below are the balances of everyone online.",
         "Everything runs on the server and shows up like a command in the operators' chat and the server log."
       ]
@@ -323,6 +326,7 @@
         "- `[progression] startProduct` = {server:progression.startProduct}: where new worlds or players start.",
         "- `[progression] announce` = {server:progression.announce}: say unlocks in chat.",
         "- `[cards] lockedInDeck` = {server:cards.lockedInDeck}: locked cards stay out of decks.",
+        "- `[cards] altArtChance` = {server:cards.altArtChance}: how often a card from a pack or tin comes as one of its alternate artworks (0 never, 1 always).",
         "- `[results] trackRecord` = {server:results.trackRecord}, `announce` = {server:results.announce}, `rewardBotDuels` = {server:results.rewardBotDuels}: duel records, results in chat, rewards for bot duels.",
         "- `[results.players]` and `[results.npcs]`: `winPacks`, `winPoints`, `winEmeralds`, `winXp`, `lossPacks`, `lossPoints`, `lossEmeralds`, `lossXp` (see Dueling; DP only with points as the currency); `[results.npcs] rematchMinutes` = {server:results.npcs.rematchMinutes}.",
         "- `[shop] currency` = {server:shop.currency}: \"points\" or an item such as minecraft:emerald. `priceMultiplier` = {server:shop.priceMultiplier}, `dynamicPrices` = {server:shop.dynamicPrices}, `wanderingTrader` = {server:shop.wanderingTrader}.",
