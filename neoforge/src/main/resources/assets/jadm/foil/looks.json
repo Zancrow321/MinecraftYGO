@@ -1,0 +1,161 @@
+{
+  "_comment": "How each rarity's foil is drawn over a card, read by client/collection/FoilEffect. Boxes are fractions of the card image (left, top, right, bottom). A layer draws a foil texture (textures/foil/<texture>.png) over boxes: mode 'pattern' drifts it slowly, 'sheen' sweeps it as a glare, 'flat' takes its middle as one color. It is added (blend 'add', the default: black adds nothing) or multiplied with the card at 'strength' (blend 'multiply': colors white parts). 'ghost' turns the art into a pale silver hologram. 'use' pulls in a preset. Preview the looks with tools/textures/preview_foils.py.",
+  "boxes": {
+    "name": [[0.06, 0.045, 0.84, 0.115]],
+    "art": [[0.119, 0.182, 0.881, 0.702]],
+    "card": [[0.033, 0.023, 0.967, 0.977]],
+    "stars": [[0.12, 0.122, 0.905, 0.165]],
+    "attribute": [[0.835, 0.04, 0.935, 0.115]],
+    "art_border": [[0.103, 0.171, 0.897, 0.182], [0.103, 0.702, 0.897, 0.713], [0.103, 0.182, 0.119, 0.702],
+      [0.881, 0.182, 0.897, 0.702]],
+    "card_border": [[0.033, 0.023, 0.967, 0.045], [0.033, 0.955, 0.967, 0.977], [0.033, 0.023, 0.063, 0.977],
+      [0.937, 0.023, 0.967, 0.977]],
+    "frame": ["art_border", "card_border"],
+    "metal": ["art_border", "card_border", "stars", "attribute", "name"]
+  },
+  "pendulum_boxes": {
+    "art": [[0.066, 0.18, 0.934, 0.63]]
+  },
+  "presets": {
+    "silver_name": [
+      {"texture": "sheen", "on": "name", "color": "707888", "mode": "flat"},
+      {"texture": "sheen", "on": "name", "color": "FFFFFF", "mode": "sheen"}
+    ],
+    "gold_name": [
+      {"texture": "sheen", "on": "name", "color": "907028", "mode": "flat"},
+      {"texture": "sheen", "on": "name", "color": "F4D470", "mode": "flat", "blend": "multiply", "strength": 0.5},
+      {"texture": "sheen", "on": "name", "color": "FFD870", "mode": "sheen"}
+    ],
+    "rainbow_name": [
+      {"texture": "secret", "on": "name", "color": "909090", "mode": "pattern"},
+      {"texture": "rainbow", "on": "name", "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.4},
+      {"texture": "sheen", "on": "name", "color": "FFFFFF", "mode": "sheen"}
+    ],
+    "gold": [
+      {"texture": "brushed", "on": "metal", "color": "907028", "mode": "pattern"},
+      {"texture": "sheen", "on": "metal", "color": "F4D470", "mode": "flat", "blend": "multiply", "strength": 0.9},
+      {"texture": "sheen", "on": "metal", "color": "FFE080", "mode": "sheen"}
+    ],
+    "premium_gold": [
+      {"texture": "dots", "on": "metal", "color": "907028", "mode": "pattern"},
+      {"texture": "sheen", "on": "metal", "color": "F4D470", "mode": "flat", "blend": "multiply", "strength": 0.9},
+      {"texture": "sheen", "on": "metal", "color": "FFE080", "mode": "sheen"}
+    ],
+    "platinum": [
+      {"texture": "brushed", "on": "metal", "color": "808890", "mode": "pattern"},
+      {"texture": "sheen", "on": "metal", "color": "D8E0F0", "mode": "flat", "blend": "multiply", "strength": 0.9},
+      {"texture": "sheen", "on": "metal", "color": "FFFFFF", "mode": "sheen"}
+    ],
+    "holo_art": [
+      {"texture": "holo", "on": "art", "color": "909090", "mode": "pattern"},
+      {"texture": "sheen", "on": "art", "color": "B0B0B0", "mode": "sheen"}
+    ],
+    "secret_art": [
+      {"texture": "secret", "on": "art", "color": "808080", "mode": "pattern"},
+      {"texture": "rainbow", "on": "art", "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.2},
+      {"texture": "sheen", "on": "art", "color": "B0B0B0", "mode": "sheen"}
+    ],
+    "ghost_art": [
+      {"ghost": "art"},
+      {"texture": "ghost", "on": "art", "color": "384048", "mode": "pattern"},
+      {"texture": "holo", "on": "art", "color": "303030", "mode": "pattern"},
+      {"texture": "sheen", "on": "art", "color": "F0F0F0", "mode": "sheen"}
+    ],
+    "parallel": [
+      {"texture": "parallel_tint", "on": "card", "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.4},
+      {"texture": "parallel", "on": "card", "color": "686868", "mode": "pattern"},
+      {"texture": "sheen", "on": "card", "color": "707070", "mode": "sheen"}
+    ]
+  },
+  "looks": {
+    "common": [],
+    "normal_parallel": [{"use": "parallel"}],
+    "rare": [{"use": "silver_name"}],
+    "rare_parallel": [{"use": "silver_name"}, {"use": "parallel"}],
+    "starfoil": [
+      {"texture": "starfoil_tint", "on": "card", "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.8},
+      {"texture": "starfoil", "on": "card", "color": "909090", "mode": "pattern"},
+      {"texture": "sheen", "on": "card", "color": "909090", "mode": "sheen"},
+      {"use": "silver_name"}
+    ],
+    "shatterfoil": [
+      {"texture": "shatter_tint", "on": "card", "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.55},
+      {"texture": "shatter", "on": "card", "color": "606060", "mode": "pattern"},
+      {"texture": "sheen", "on": "card", "color": "909090", "mode": "sheen"},
+      {"use": "silver_name"}
+    ],
+    "mosaic": [
+      {"texture": "mosaic_tint", "on": "card", "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.5},
+      {"texture": "mosaic", "on": "card", "color": "686868", "mode": "pattern"},
+      {"texture": "sheen", "on": "card", "color": "909090", "mode": "sheen"},
+      {"use": "silver_name"}
+    ],
+    "super": [{"use": "holo_art"}],
+    "super_parallel": [{"use": "holo_art"}, {"use": "parallel"}],
+    "ultra": [{"use": "holo_art"}, {"use": "gold_name"}],
+    "ultra_parallel": [{"use": "holo_art"}, {"use": "gold_name"}, {"use": "parallel"}],
+    "pharaoh": [
+      {"use": "holo_art"},
+      {"texture": "pharaoh", "on": "art", "color": "705028", "mode": "pattern"},
+      {"use": "gold_name"}
+    ],
+    "gold": [{"use": "gold"}],
+    "premium_gold": [{"use": "premium_gold"}],
+    "platinum": [{"use": "platinum"}],
+    "ultimate": [
+      {"texture": "relief", "on": "art", "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.7},
+      {"texture": "relief", "on": ["frame", "stars", "attribute", "name"], "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.55},
+      {"texture": "holo", "on": "art", "color": "484848", "mode": "pattern"},
+      {"texture": "sheen", "on": ["art", "frame"], "color": "A0A0A0", "mode": "sheen"},
+      {"texture": "sheen", "on": "name", "color": "604820", "mode": "flat"},
+      {"texture": "sheen", "on": "name", "color": "FFE8A0", "mode": "sheen"}
+    ],
+    "secret": [{"use": "secret_art"}, {"use": "silver_name"}],
+    "ultra_secret": [{"use": "secret_art"}, {"use": "gold_name"}],
+    "prismatic_secret": [
+      {"texture": "prismatic", "on": "art", "color": "D0D0D0", "mode": "pattern"},
+      {"texture": "sheen", "on": "art", "color": "B0B0B0", "mode": "sheen"},
+      {"use": "silver_name"}
+    ],
+    "platinum_secret": [{"use": "secret_art"}, {"use": "platinum"}],
+    "gold_secret": [{"use": "secret_art"}, {"use": "gold"}],
+    "extra_secret": [
+      {"use": "secret_art"},
+      {"texture": "rainbow", "on": "card_border", "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.55},
+      {"texture": "starlight", "on": "card_border", "color": "808080", "mode": "pattern"},
+      {"use": "rainbow_name"}
+    ],
+    "ghost": [{"use": "ghost_art"}, {"use": "silver_name"}],
+    "ghost_gold": [{"use": "ghost_art"}, {"use": "gold"}],
+    "collectors": [
+      {"texture": "rainbow", "on": "card", "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.2},
+      {"texture": "collector", "on": "art", "color": "B0B0B0", "mode": "pattern"},
+      {"texture": "collector", "on": "card_border", "color": "707070", "mode": "pattern"},
+      {"texture": "sheen", "on": "art", "color": "D0D0D0", "mode": "sheen"},
+      {"use": "rainbow_name"}
+    ],
+    "quarter_century": [
+      {"texture": "quarter_century", "on": "art", "color": "989898", "mode": "pattern"},
+      {"texture": "sheen", "on": "art", "color": "C0C0C0", "mode": "sheen"},
+      {"texture": "rainbow", "on": "card_border", "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.5},
+      {"use": "rainbow_name"}
+    ],
+    "grand_master": [
+      {"texture": "collector", "on": "art", "color": "A08028", "mode": "pattern"},
+      {"texture": "sheen", "on": "art", "color": "FFD870", "mode": "sheen"},
+      {"use": "gold"}
+    ],
+    "starlight": [
+      {"texture": "rainbow", "on": "card", "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.55},
+      {"texture": "starlight", "on": "card", "color": "686868", "mode": "pattern"},
+      {"texture": "sheen", "on": "card", "color": "A0A0A0", "mode": "sheen"},
+      {"use": "rainbow_name"}
+    ],
+    "ten_thousand_secret": [
+      {"texture": "rainbow", "on": "card", "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.4},
+      {"texture": "prismatic", "on": "art", "color": "D0D0D0", "mode": "pattern"},
+      {"texture": "sheen", "on": "card", "color": "A0A0A0", "mode": "sheen"},
+      {"use": "gold"}
+    ]
+  }
+}

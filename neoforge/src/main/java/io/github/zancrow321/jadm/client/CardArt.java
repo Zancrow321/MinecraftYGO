@@ -35,6 +35,12 @@ public final class CardArt {
     /** Textures by passcode; an unfinished future is still loading. */
     private static final Map<Integer, CompletableFuture<Texture>> ART = new ConcurrentHashMap<>();
     private static final Map<Integer, CompletableFuture<Texture>> HOLOGRAMS = new ConcurrentHashMap<>();
+    private static final Map<Integer, CompletableFuture<Texture>> GHOSTS = new ConcurrentHashMap<>();
+
+    /** The kinds of art: the whole card, its artwork as a hologram, and the whole card as a Ghost Rare shows it. */
+    private enum Kind {
+        CARD, HOLOGRAM, GHOST
+    }
 
     /** A loaded artwork texture and its size in pixels (the size depends on the image source). */
     public record Texture(ResourceLocation location, int width, int height) {
@@ -45,7 +51,15 @@ public final class CardArt {
 
     /** @return the card's art texture if it's ready, otherwise {@code null} (and starts loading it) */
     public static Texture get(int code) {
-        return ready(code, ART, false);
+        return ready(code, ART, Kind.CARD);
+    }
+
+    /**
+     * @return the whole card with its colors gone, a pale silver image, as a Ghost Rare's artwork looks; or
+     *         {@code null} until it's ready (and starts loading it)
+     */
+    public static Texture ghost(int code) {
+        return ready(code, GHOSTS, Kind.GHOST);
     }
 
     /**
@@ -53,7 +67,7 @@ public final class CardArt {
      *         otherwise {@code null} (and starts loading it). Stays {@code null} if it can't be had.
      */
     public static Texture hologram(int code) {
-        return ready(code, HOLOGRAMS, true);
+        return ready(code, HOLOGRAMS, Kind.HOLOGRAM);
     }
 
     /** Whether the hologram art failed for good (downloads off, or no image), so a fallback should be drawn. */
@@ -66,15 +80,15 @@ public final class CardArt {
         return original == code || hologramMissing(original);
     }
 
-    private static Texture ready(int code, Map<Integer, CompletableFuture<Texture>> cache, boolean cropped) {
+    private static Texture ready(int code, Map<Integer, CompletableFuture<Texture>> cache, Kind kind) {
         if (code <= 0) {
             return null;
         }
-        CompletableFuture<Texture> art = cache.computeIfAbsent(code, c -> load(c, cropped));
+        CompletableFuture<Texture> art = cache.computeIfAbsent(code, c -> load(c, kind));
         if (art.isCompletedExceptionally()) {
             // An alternate artwork without a picture of its own shows the original's.
             int original = JadmData.original(code);
-            return original == code ? null : ready(original, cache, cropped);
+            return original == code ? null : ready(original, cache, kind);
         }
         return art.isDone() ? art.join() : null;
     }
@@ -83,11 +97,15 @@ public final class CardArt {
         return Minecraft.getInstance().gameDirectory.toPath().resolve("jadm").resolve("card_art");
     }
 
-    private static CompletableFuture<Texture> load(int code, boolean cropped) {
+    private static CompletableFuture<Texture> load(int code, Kind kind) {
+        boolean cropped = kind == Kind.HOLOGRAM;
         Path dir = cropped ? cacheDir().resolveSibling("card_art_cropped") : cacheDir();
         Path file = dir.resolve(code + ".jpg");
         CompletableFuture<byte[]> bytes;
-        if (Files.isRegularFile(file)) {
+        if (kind == Kind.GHOST) {
+            // Made from the card's own image once that is cached, so the two never download it at once.
+            bytes = ART.computeIfAbsent(code, c -> load(c, Kind.CARD)).thenApplyAsync(texture -> read(file));
+        } else if (Files.isRegularFile(file)) {
             bytes = CompletableFuture.supplyAsync(() -> read(file));
         } else if (JadmClientConfig.DOWNLOAD_CARD_ART.get()) {
             String url = (cropped ? JadmClientConfig.CARD_ART_CROPPED_URL : JadmClientConfig.CARD_ART_URL).get();
@@ -104,17 +122,27 @@ public final class CardArt {
         } else {
             return CompletableFuture.failedFuture(new IllegalStateException("card art downloads are off"));
         }
-        return bytes.thenApply(data -> cropped ? holographic(decode(data)) : decode(data))
+        return bytes.thenApply(data -> switch (kind) {
+                    case CARD -> decode(data);
+                    case HOLOGRAM -> holographic(decode(data));
+                    case GHOST -> ghostly(decode(data));
+                })
                 .thenCompose(image -> CompletableFuture.supplyAsync(() -> {
-                    ResourceLocation location = ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID,
-                            (cropped ? "card_hologram/" : "card_art/") + code);
+                    ResourceLocation location = ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID, switch (kind) {
+                        case CARD -> "card_art/";
+                        case HOLOGRAM -> "card_hologram/";
+                        case GHOST -> "card_ghost/";
+                    } + code);
                     Minecraft.getInstance().getTextureManager().register(location, new DynamicTexture(image));
                     return new Texture(location, image.getWidth(), image.getHeight());
                 }, Minecraft.getInstance()))
                 .whenComplete((location, error) -> {
                     if (error != null) {
-                        Jadm.LOGGER.warn("No {} for card {}: {}", cropped ? "hologram art" : "art", code,
-                                error.toString());
+                        Jadm.LOGGER.warn("No {} for card {}: {}", switch (kind) {
+                            case CARD -> "art";
+                            case HOLOGRAM -> "hologram art";
+                            case GHOST -> "ghost art";
+                        }, code, error.toString());
                     }
                 });
     }
@@ -146,6 +174,26 @@ public final class CardArt {
                 double edge = Math.min(Math.min(x, w - 1 - x), Math.min(y, h - 1 - y)) / fade;
                 int a = (int) (235 * Math.min(1, edge));
                 image.setPixelRGBA(x, y, (a << 24) | (b << 16) | (g << 8) | r);
+            }
+        }
+        return image;
+    }
+
+    /**
+     * Makes a card look as a Ghost Rare's artwork does: the colors gone, a pale silver image with a cool cast, its
+     * dark lines softened. Works on the ABGR pixels of a {@link NativeImage} in place.
+     */
+    private static NativeImage ghostly(NativeImage image) {
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                int abgr = image.getPixelRGBA(x, y);
+                double lum = ((abgr & 0xFF) * 0.299 + ((abgr >> 8) & 0xFF) * 0.587 + ((abgr >> 16) & 0xFF) * 0.114)
+                        / 255;
+                double v = 0.30 + 0.70 * Math.pow(lum, 0.85);
+                int r = (int) Math.min(255, v * 0.93 * 255);
+                int g = (int) Math.min(255, v * 0.97 * 255);
+                int b = (int) Math.min(255, v * 1.04 * 255);
+                image.setPixelRGBA(x, y, 0xFF000000 | (b << 16) | (g << 8) | r);
             }
         }
         return image;

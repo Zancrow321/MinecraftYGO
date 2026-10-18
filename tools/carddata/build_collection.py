@@ -103,22 +103,35 @@ def kind(name, code, size):
     return "special"
 
 
+PLAIN = {"Common", "Rare", "Super Rare", "Ultra Rare", "Secret Rare"}
+
+
+def plainness(rarity):
+    """Sorts a card's rarities plainest first: by slot, the plain name of a slot before its finishes (Ultra Rare
+    before Gold Rare or Ultimate Rare)."""
+    return slot(rarity), rarity not in PLAIN
+
+
 def listing(code, rarities):
-    """A card of a product: [code, rarity], with [the better rarities it is also printed in] when there are any."""
-    better = []
-    for r in rarities[1:]:
-        if slot(r) > slot(rarities[0]) and slot(r) not in [slot(b) for b in better]:
-            better.append(r)
+    """A card of a product: [code, rarity], with [every other rarity it is also printed in] when there are any: a
+    Phantom Nightmare ultra is also a Quarter Century Secret Rare and a Starlight Rare, an old core set's rare also
+    an Ultimate Rare. Each one can be pulled."""
+    better = [r for r in rarities[1:] if r != rarities[0]]
     return [code, rarities[0], better] if better else [code, rarities[0]]
 
 
-def write_products(cards, cardsets):
+def bundled_cards():
     bundled = {}
     for line in (RESOURCES / "cards.json").read_text(encoding="utf-8").splitlines():
         line = line.rstrip(",")
         if line.startswith("{"):
             card = json.loads(line)
             bundled[card["code"]] = card
+    return bundled
+
+
+def write_products(cards, cardsets, rarities_only=False):
+    bundled = bundled_cards()
     dates = {s["set_name"]: s.get("tcg_date") for s in cardsets}
     contents = defaultdict(dict)  # set name -> code -> its rarities as printed (the real ones, in listed order)
     codes = {}
@@ -152,7 +165,10 @@ def write_products(cards, cardsets):
         for code, rarities in members.items():
             if not rarities:
                 rarities.append(usual[0][0] if usual else "Common")
-            rarities.sort(key=slot)
+            rarities.sort(key=plainness)
+    if rarities_only:
+        update_rarities(contents)
+        return
     order = sorted(contents, key=lambda n: (dates[n], n))
     seen = set()
     ids = set()
@@ -182,11 +198,39 @@ def write_products(cards, cardsets):
           f"{len(seen)} TCG cards, {len(ocg_only)} OCG-only, {len(undated)} undated non-token cards: {undated[:10]}")
 
 
+def update_rarities(contents):
+    """Rewrites only the rarities of the cards products.json already lists, keeping every list as it is: a fresh
+    dump also changes card lists (a new set's temporary passcodes go away), which a rarity fix shouldn't touch."""
+    path = RESOURCES / "products.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    by_name = {html.unescape(name): members for name, members in contents.items()}
+    changed = 0
+    for product in data["products"]:
+        members = by_name.get(product["name"], {})
+        for i, card in enumerate(product["cards"]):
+            rarities = members.get(card[0])
+            if rarities:
+                updated = listing(card[0], rarities)
+                changed += updated != card
+                product["cards"][i] = updated
+    with path.open("w", encoding="utf-8") as out:
+        out.write('{"products":[\n')
+        out.write(",\n".join(json.dumps(p, ensure_ascii=False, separators=(",", ":")) for p in data["products"]))
+        out.write('\n],\n"ocgOnly":' + json.dumps(data["ocgOnly"], separators=(",", ":")) + "}\n")
+    print(f"rarities of {changed} printings updated")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--ygoprodeck", type=Path, required=True, help="cardinfo.php?misc=yes dump")
     parser.add_argument("--cardsets", type=Path, required=True, help="cardsets.php dump")
+    parser.add_argument("--rarities-only", action="store_true",
+                        help="only update the rarities of the cards products.json lists, nothing else")
     args = parser.parse_args()
+    if args.rarities_only:
+        cards = json.loads(args.ygoprodeck.read_text(encoding="utf-8"))["data"]
+        write_products(cards, json.loads(args.cardsets.read_text(encoding="utf-8")), rarities_only=True)
+        return
 
     pool = json.loads((RESOURCES / "pool.json").read_text(encoding="utf-8"))
     codes = set(pool["monsters"]) | set(pool["spellsTraps"])

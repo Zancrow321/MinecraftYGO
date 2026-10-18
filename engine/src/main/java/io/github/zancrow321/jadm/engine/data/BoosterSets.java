@@ -25,8 +25,56 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
     /** Cards in a classic pack: eight commons and one rare-or-better, as in the original boosters. */
     public static final int PACK_SIZE = 9;
 
+    /**
+     * A rarity as printed. The five {@link #SLOTS} are what pack slots roll; every other rarity is a finish within
+     * one of them (a Starlight Rare comes from the secret slot, a Gold Rare from the ultra slot), declared in order
+     * of worth so lists sort by it.
+     */
     public enum Rarity {
-        COMMON, RARE, SUPER, ULTRA, SECRET;
+        COMMON(0, "Common", "C", 1),
+        NORMAL_PARALLEL(0, "Normal Parallel Rare", "NPR", 1),
+        RARE(1, "Rare", "R", 1),
+        RARE_PARALLEL(1, "Rare Parallel Rare", "RPR", 1),
+        STARFOIL(1, "Starfoil Rare", "SFR", 1),
+        SHATTERFOIL(1, "Shatterfoil Rare", "SHR", 1),
+        MOSAIC(1, "Mosaic Rare", "MSR", 1),
+        SUPER(2, "Super Rare", "SR", 1),
+        SUPER_PARALLEL(2, "Super Parallel Rare", "SPR", 1),
+        ULTRA(3, "Ultra Rare", "UR", 1),
+        ULTRA_PARALLEL(3, "Ultra Parallel Rare", "UPR", 1),
+        PHARAOH(3, "Ultra Rare (Pharaoh's Rare)", "PhR", 1),
+        GOLD(3, "Gold Rare", "GR", 1),
+        PREMIUM_GOLD(3, "Premium Gold Rare", "PGR", 1),
+        PLATINUM(3, "Platinum Rare", "PlR", 1),
+        ULTIMATE(3, "Ultimate Rare", "UtR", 0.5),
+        SECRET(4, "Secret Rare", "ScR", 1),
+        ULTRA_SECRET(4, "Ultra Secret Rare", "UScR", 1),
+        PRISMATIC_SECRET(4, "Prismatic Secret Rare", "PScR", 1),
+        PLATINUM_SECRET(4, "Platinum Secret Rare", "PlScR", 1),
+        GOLD_SECRET(4, "Gold Secret Rare", "GScR", 1),
+        EXTRA_SECRET(4, "Extra Secret Rare", "EScR", 1),
+        GHOST(4, "Ghost Rare", "GhR", 0.25),
+        GHOST_GOLD(4, "Ghost/Gold Rare", "GGR", 0.25),
+        COLLECTORS(4, "Collector's Rare", "CR", 0.5),
+        QUARTER_CENTURY(4, "Quarter Century Secret Rare", "QCScR", 0.5),
+        GRAND_MASTER(4, "Grand Master Rare", "GMR", 0.25),
+        STARLIGHT(4, "Starlight Rare", "StR", 0.2),
+        TEN_THOUSAND_SECRET(4, "10000 Secret Rare", "10000ScR", 1);
+
+        /** The rarities pack slots roll, from plain to best. */
+        public static final List<Rarity> SLOTS = List.of(COMMON, RARE, SUPER, ULTRA, SECRET);
+
+        private final int slot;
+        private final String displayName;
+        private final String tag;
+        private final double weight;
+
+        Rarity(int slot, String displayName, String tag, double weight) {
+            this.slot = slot;
+            this.displayName = displayName;
+            this.tag = tag;
+            this.weight = weight;
+        }
 
         public static Rarity parse(String id) {
             return valueOf(id.toUpperCase(java.util.Locale.ROOT));
@@ -36,26 +84,93 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
             return name().toLowerCase(java.util.Locale.ROOT);
         }
 
-        /** The pack slot a rarity as printed (e.g. {@code Starlight Rare}) falls into. */
+        /** The pack slot it comes from: one of {@link #SLOTS}. */
+        public Rarity slot() {
+            return SLOTS.get(slot);
+        }
+
+        /** Its name as printed, e.g. {@code Starlight Rare}. */
+        public String displayName() {
+            return displayName;
+        }
+
+        /** Its usual short name, e.g. {@code StR}. */
+        public String tag() {
+            return tag;
+        }
+
+        /**
+         * How likely a card in this rarity is pulled from its slot, against a card in a plain rarity there: a set's
+         * Starlight Rares come up a fifth as often as its Secret Rares.
+         */
+        public double weight() {
+            return weight;
+        }
+
+        /** The rarity as printed, from its name in the card lists, e.g. {@code Duel Terminal Ultra Parallel Rare}. */
         public static Rarity ofPrinted(String printed) {
             String r = printed.toLowerCase(java.util.Locale.ROOT);
-            if (r.contains("short print") || r.contains("normal parallel")) {
+            if (r.contains("short print")) {
                 return COMMON;
             }
-            if (r.contains("secret") || r.contains("starlight") || r.contains("collector") || r.contains("ghost")
-                    || r.contains("grand master") || r.contains("quarter century")) {
-                return SECRET;
+            if (r.contains("10000")) {
+                return TEN_THOUSAND_SECRET;
             }
-            if (r.contains("ultra") || r.contains("ultimate") || r.contains("gold") || r.contains("platinum")) {
-                return ULTRA;
+            if (r.contains("starlight")) {
+                return STARLIGHT;
+            }
+            if (r.contains("quarter century")) {
+                return QUARTER_CENTURY;
+            }
+            if (r.contains("collector") || r.equals("cr")) {
+                return COLLECTORS;
+            }
+            if (r.contains("grand master")) {
+                return GRAND_MASTER;
+            }
+            if (r.contains("ghost")) {
+                return r.contains("gold") ? GHOST_GOLD : GHOST;
+            }
+            if (r.contains("secret")) {
+                return r.contains("extra") ? EXTRA_SECRET : r.contains("gold") ? GOLD_SECRET
+                        : r.contains("platinum") ? PLATINUM_SECRET : r.contains("prismatic") ? PRISMATIC_SECRET
+                        : r.contains("ultra") ? ULTRA_SECRET : SECRET;
+            }
+            if (r.contains("pharaoh")) {
+                return PHARAOH;
+            }
+            if (r.contains("gold")) {
+                return r.contains("premium") ? PREMIUM_GOLD : GOLD;
+            }
+            if (r.contains("platinum")) {
+                return PLATINUM;
+            }
+            if (r.contains("ultimate")) {
+                return ULTIMATE;
+            }
+            if (r.contains("ultra")) {
+                return r.contains("parallel") ? ULTRA_PARALLEL : ULTRA;
             }
             if (r.contains("super")) {
-                return SUPER;
+                return r.contains("parallel") ? SUPER_PARALLEL : SUPER;
             }
-            if (r.contains("rare") || r.contains("starfoil") || r.contains("shatterfoil")) {
-                return RARE;
+            // "Normal Rare Parallel Rare" is the parallel of a rare; "Normal Parallel Rare" the parallel of a common.
+            if (r.contains("rare parallel")) {
+                return RARE_PARALLEL;
             }
-            return COMMON;
+            if (r.contains("parallel")) {
+                return NORMAL_PARALLEL;
+            }
+            if (r.contains("starfoil")) {
+                return STARFOIL;
+            }
+            if (r.contains("shatterfoil")) {
+                return SHATTERFOIL;
+            }
+            if (r.contains("mosaic")) {
+                return MOSAIC;
+            }
+            return r.contains("rare") ? RARE : COMMON;
         }
     }
 
@@ -70,8 +185,8 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
     public record BoosterSet(String id, String code, String name, List<Card> cards, PackProfile profile) {
         public BoosterSet {
             Rarity base = BoosterSets.base(cards.stream().map(Card::rarity).toList());
-            cards = cards.stream().map(c -> c.rarity().compareTo(base) < 0 ? new Card(c.code(), base) : c).distinct()
-                    .toList();
+            cards = cards.stream().map(c -> c.rarity().slot().compareTo(base) < 0 ? new Card(c.code(), base) : c)
+                    .distinct().toList();
         }
 
         /** A set with the classic nine-card packs. */
@@ -79,50 +194,65 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
             this(id, code, name, cards, PackProfile.CLASSIC_CORE);
         }
 
-        public List<Card> of(Rarity rarity) {
-            return cards.stream().filter(c -> c.rarity() == rarity).toList();
+        /** Its cards that come from a slot, e.g. its Ultra, Gold and Ultimate Rares for {@link Rarity#ULTRA}. */
+        public List<Card> of(Rarity slot) {
+            return cards.stream().filter(c -> c.rarity().slot() == slot).toList();
         }
 
-        /** The rarity its plainest cards have: common, or rare for a set like Maze of Millennia. */
+        /** The slot its plainest cards come from: common, or rare for a set like Maze of Millennia. */
         public Rarity base() {
-            return cards.isEmpty() ? Rarity.COMMON : cards.stream().map(Card::rarity).min(Rarity::compareTo).get();
+            return cards.isEmpty() ? Rarity.COMMON
+                    : cards.stream().map(c -> c.rarity().slot()).min(Rarity::compareTo).get();
         }
 
         /**
          * Opens a pack as its {@link #profile} says: cards of the {@link #base} rarity, then each better slot rolled,
          * falling back to the next lower rarity the set has. A better slot only drops to the base rarity when the set
          * has nothing better, else it takes the next higher rarity: an all-foil set's few commons never fill its foil
-         * slots.
+         * slots. Within a slot, each card is drawn by its rarity's {@link Rarity#weight}.
          */
         public List<Card> open(RandomGenerator random) {
             Map<Rarity, List<Card>> byRarity = new EnumMap<>(Rarity.class);
-            for (Rarity r : Rarity.values()) {
+            for (Rarity r : Rarity.SLOTS) {
                 byRarity.put(r, of(r));
             }
             Rarity base = base();
             List<Card> pack = new ArrayList<>(profile.size());
             List<Card> plain = byRarity.get(base);
             for (int i = 0; i < profile.size() - profile.slots().size(); i++) {
-                pack.add(plain.get(random.nextInt(plain.size())));
+                pack.add(pick(plain, random));
             }
             for (PackProfile.Slot slot : profile.slots()) {
-                List<Card> pool = slotPool(byRarity, base, slot.roll(random));
-                pack.add(pool.get(random.nextInt(pool.size())));
+                pack.add(pick(slotPool(byRarity, base, slot.roll(random)), random));
             }
             return pack;
         }
 
+        /** A card of a pool, each as likely as its rarity's weight. */
+        private static Card pick(List<Card> pool, RandomGenerator random) {
+            double total = pool.stream().mapToDouble(c -> c.rarity().weight()).sum();
+            double r = random.nextDouble() * total;
+            for (Card c : pool) {
+                r -= c.rarity().weight();
+                if (r < 0) {
+                    return c;
+                }
+            }
+            return pool.get(pool.size() - 1);
+        }
+
         /** The cards a slot rolled as this rarity draws from, see {@link #open}. */
         private static List<Card> slotPool(Map<Rarity, List<Card>> byRarity, Rarity base, Rarity rolled) {
+            List<Rarity> slots = Rarity.SLOTS;
             if (rolled.compareTo(base) > 0) {
-                for (int i = rolled.ordinal(); i > base.ordinal(); i--) {
-                    if (!byRarity.get(Rarity.values()[i]).isEmpty()) {
-                        return byRarity.get(Rarity.values()[i]);
+                for (int i = slots.indexOf(rolled); i > slots.indexOf(base); i--) {
+                    if (!byRarity.get(slots.get(i)).isEmpty()) {
+                        return byRarity.get(slots.get(i));
                     }
                 }
-                for (int i = rolled.ordinal() + 1; i < Rarity.values().length; i++) {
-                    if (!byRarity.get(Rarity.values()[i]).isEmpty()) {
-                        return byRarity.get(Rarity.values()[i]);
+                for (int i = slots.indexOf(rolled) + 1; i < slots.size(); i++) {
+                    if (!byRarity.get(slots.get(i)).isEmpty()) {
+                        return byRarity.get(slots.get(i));
                     }
                 }
             }
@@ -131,13 +261,13 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
     }
 
     /**
-     * The lowest rarity that is more than a stray among these: at least a tenth of them. A set's packs are filled
-     * with it; Maze of Millennia lists one common among 84 rares or better, which made every pack's seven commons
-     * the same card.
+     * The lowest slot that is more than a stray among these rarities: at least a tenth of them. A set's packs are
+     * filled with it; Maze of Millennia lists one common among 84 rares or better, which made every pack's seven
+     * commons the same card.
      */
     public static Rarity base(List<Rarity> rarities) {
-        for (Rarity r : Rarity.values()) {
-            long n = rarities.stream().filter(x -> x == r).count();
+        for (Rarity r : Rarity.SLOTS) {
+            long n = rarities.stream().filter(x -> x.slot() == r).count();
             if (n > 0 && n * 10 >= rarities.size()) {
                 return r;
             }
@@ -164,8 +294,8 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
 
     /**
      * The booster products as sets, each with only the cards in the pool. A card printed in several rarities in
-     * one product is in the set once for each slot they fall into, its plainest one first: Phantom Nightmare's
-     * ultras also come as Quarter Century Secret Rares from the secret slot.
+     * one product is in the set once for each, its plainest one first: Phantom Nightmare's ultras also come as
+     * Quarter Century Secret Rares and Starlight Rares from the secret slot.
      */
     public static BoosterSets fromProducts(Products products, CardPool pool) {
         Map<String, BoosterSet> sets = new LinkedHashMap<>();

@@ -53,7 +53,7 @@ public final class PackOpenScreen extends Screen {
         ticks++;
         if (revealed() > before && minecraft != null && minecraft.player != null) {
             boolean last = revealed() == cards.size();
-            minecraft.player.playSound(last && rarity(cards.size() - 1).ordinal() >= Rarity.SUPER.ordinal()
+            minecraft.player.playSound(last && rarity(cards.size() - 1).slot().compareTo(Rarity.SUPER) >= 0
                     ? SoundEvents.PLAYER_LEVELUP : SoundEvents.BOOK_PAGE_TURN, 0.6f, last ? 1.2f : 1.0f);
         }
     }

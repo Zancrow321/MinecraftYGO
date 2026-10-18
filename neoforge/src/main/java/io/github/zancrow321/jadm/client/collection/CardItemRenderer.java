@@ -38,7 +38,7 @@ public final class CardItemRenderer extends BlockEntityWithoutLevelRenderer {
         quad(buffers.getBuffer(RenderType.entityCutout(CardGrid.CARD_BACK)), poses, m, -0.001f, true, light,
                 overlay);
         if (art != null) {
-            FoilEffect.drawItem(code, CardItem.rarity(stack), poses, buffers, HALF_WIDTH, HALF_HEIGHT, 0.002f,
+            FoilEffect.drawItem(code, CardItem.rarity(stack), poses, buffers, HALF_WIDTH, HALF_HEIGHT, 0.002f, light,
                     overlay);
         }
         poses.popPose();
