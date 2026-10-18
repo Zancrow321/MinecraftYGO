@@ -56,9 +56,12 @@ public final class TournamentOptions {
         bool("grandFinalReset", true, "Double elimination: if the losers' bracket champion wins the grand final, it "
                 + "is played again, since both have lost once.");
         text("ruleset", "server", "The rules: \"server\" (the server's ruleset setting) or \"auto\", \"mr1\", "
-                + "\"goat\", \"mr2\", \"mr3\", \"mr4\", \"modern\".", TournamentOptions::validRuleset);
-        text("banlist", "server", "The Forbidden & Limited List: \"server\", \"auto\", \"none\" or the name of a file "
-                + "in config/jadm/banlists/.", ANY);
+                + "\"goat\", \"mr2\", \"mr3\", \"mr4\", \"modern\", \"genesys\".", TournamentOptions::validRuleset);
+        text("banlist", "server", "The Forbidden & Limited List: \"server\", \"auto\", \"none\", an official list "
+                + "(\"tcg\", \"ocg\", \"traditional\", \"worlds\", \"master-duel\", \"genesys\", \"genesys-ocg\") or the "
+                + "name of a file in config/jadm/banlists/.", ANY);
+        integer("genesysPointCap", -1, -1, 10_000, "Genesys: the points a deck may cost; -1 keeps the server's "
+                + "genesysPointCap.");
         integer("startingLifePoints", 0, 0, 1_000_000, "Life points per duelist; 0 keeps the server's.");
         integer("turnTimeLimit", -1, -1, 3600, "Seconds per duelist and turn; -1 keeps the server's, 0 for none.");
         integer("maxTurns", 0, 0, 1000, "A game ends after this many turns and whoever has more life points wins it "

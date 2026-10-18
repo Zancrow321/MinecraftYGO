@@ -119,6 +119,8 @@
   "screen.jadm.deck_box": "Deck Box",
   "screen.jadm.deck_box.main": "Main deck: %s",
   "screen.jadm.deck_box.extra": "Extra deck: %s / 15",
+  "screen.jadm.deck_box.genesys": "Genesys: %s / %s points",
+  "tooltip.jadm.genesys_points": "Genesys: %s points",
   "screen.jadm.deck_box.clear": "Clear",
   "screen.jadm.deck_box.owned": "Search your cards",
   "screen.jadm.deck_box.no_cards": "No cards in your binders or inventory",

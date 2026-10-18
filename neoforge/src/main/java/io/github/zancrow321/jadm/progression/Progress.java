@@ -74,7 +74,7 @@ public final class Progress {
     public static void sync(ServerPlayer player) {
         PacketDistributor.sendToPlayer(player, new PoolModePayload(JadmData.poolMode().id(),
                 JadmData.progression().product(step(player)).id(), JadmServerConfig.LOCKED_IN_DECK.get(),
-                JadmServerConfig.BANLIST.get()));
+                JadmServerConfig.BANLIST.get(), JadmServerConfig.GENESYS_POINT_CAP.get()));
     }
 
     /**

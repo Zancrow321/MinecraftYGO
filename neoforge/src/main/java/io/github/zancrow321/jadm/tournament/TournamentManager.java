@@ -587,12 +587,16 @@ public final class TournamentManager {
     Ruleset ruleset(Tournament t) {
         String s = t.setting("ruleset");
         int step = effectiveStep(t);
-        return s.equalsIgnoreCase("server") ? JadmData.ruleset(step) : JadmData.ruleset(step, s);
+        String setting = s.equalsIgnoreCase("server") ? JadmData.rulesetSetting() : s;
+        // Sealed and Draft decks have no banlist, so a Genesys one doesn't pick the rules either.
+        return t.limited() ? JadmData.ruleset(step, setting) : JadmData.ruleset(step, setting, banlist(t, step));
     }
 
     static Banlist banlist(Tournament t, int step) {
         String s = t.setting("banlist");
-        return s.equalsIgnoreCase("server") ? JadmData.banlist(step) : JadmData.banlist(step, s);
+        Banlist banlist = s.equalsIgnoreCase("server") ? JadmData.banlist(step) : JadmData.banlist(step, s);
+        int cap = t.integer("genesysPointCap");
+        return cap >= 0 ? banlist.withPointCap(cap) : banlist;
     }
 
     // ---- Invitationals -------------------------------------------------------------------------------------------

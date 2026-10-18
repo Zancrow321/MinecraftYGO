@@ -31,20 +31,45 @@ public record TournamentDecks(List<Entry> decks) {
         }
 
         /**
-         * The deck under {@code banlist}: copies over a limit are dropped, and the main deck is filled back up to 40
-         * with more copies of what it already holds. {@code null} if that can't make it legal.
+         * The deck under {@code banlist}: copies over a limit are dropped (and under a Genesys list the costliest
+         * cards until it fits the point cap), and the main deck is filled back up to 40 with more copies of what it
+         * already holds. {@code null} if that can't make it legal.
          */
         public Deck legal(Banlist banlist, CardDatabase cards) {
             List<Integer> legalMain = withinLimits(main, banlist);
             List<Integer> legalExtra = withinLimits(extra, banlist);
+            withinPoints(legalMain, legalExtra, banlist);
             for (int i = 0; legalMain.size() < DeckRules.MAIN_MIN && i < legalMain.size(); i++) {
                 int code = legalMain.get(i);
-                if (legalMain.stream().filter(c -> c == code).count() < banlist.limit(code)) {
+                if (legalMain.stream().filter(c -> c == code).count() < banlist.limit(code)
+                        && banlist.points(code) == 0) {
                     legalMain.add(code);
                 }
             }
             Deck deck = new Deck(name + " (" + date.getYear() + ")", legalMain, legalExtra, List.of());
             return DeckRules.problems(deck, cards, banlist).isEmpty() ? deck : null;
+        }
+
+        /** Under a Genesys list, drops the costliest cards until the deck is within the point cap. */
+        private static void withinPoints(List<Integer> main, List<Integer> extra, Banlist banlist) {
+            if (!banlist.genesys()) {
+                return;
+            }
+            int points = DeckRules.points(new Deck("", main, extra, List.of()), banlist);
+            while (points > banlist.pointCap()) {
+                List<Integer> from = main;
+                int costliest = -1;
+                for (List<Integer> part : List.of(main, extra)) {
+                    for (int code : part) {
+                        if (costliest < 0 || banlist.points(code) > banlist.points(costliest)) {
+                            costliest = code;
+                            from = part;
+                        }
+                    }
+                }
+                from.remove(Integer.valueOf(costliest));
+                points -= banlist.points(costliest);
+            }
         }
 
         private static List<Integer> withinLimits(List<Integer> codes, Banlist banlist) {

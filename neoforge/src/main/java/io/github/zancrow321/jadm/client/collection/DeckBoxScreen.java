@@ -158,11 +158,17 @@ public final class DeckBoxScreen extends Screen {
         super.render(g, mouseX, mouseY, partialTick);
 
         g.drawString(font, box.getHoverName(), left + 8, top + 6, 0xFFFFFFFF, false);
-        g.drawString(font, Component.translatable("screen.jadm.deck_box.main", deck.main().size()), left + 8,
-                top + 26, 0xFFAAAAAA, false);
+        Component mainLabel = Component.translatable("screen.jadm.deck_box.main", deck.main().size());
+        g.drawString(font, mainLabel, left + 8, top + 26, 0xFFAAAAAA, false);
+        var banlist = JadmData.banlist(minecraft.player);
+        if (banlist.genesys()) {
+            int points = DeckRules.points(DeckBoxItem.toDeck(box), banlist);
+            g.drawString(font, Component.translatable("screen.jadm.deck_box.genesys", points, banlist.pointCap()),
+                    left + 16 + font.width(mainLabel), top + 26, points > banlist.pointCap() ? 0xFFFF7070 : 0xFFFFD040, false);
+        }
         g.drawString(font, Component.translatable("screen.jadm.deck_box.extra", deck.extra().size()),
                 left + 8, top + 175, 0xFFAAAAAA, false);
-        List<String> problems = DeckBoxItem.problems(box, minecraft.player, JadmData.banlist(minecraft.player));
+        List<String> problems = DeckBoxItem.problems(box, minecraft.player, banlist);
         Component status = problems.isEmpty()
                 ? Component.translatable("item.jadm.deck_box.legal")
                 : Component.literal(problems.get(0));
