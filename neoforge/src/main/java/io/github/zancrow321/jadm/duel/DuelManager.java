@@ -82,11 +82,12 @@ public final class DuelManager {
      * @param npc   the NPC duelist sitting in the bot seat, or {@code null}
      * @param split a Battle City tag duel, each partner on their own half of the team's zones
      * @param ranked a ranked 1v1 duel between two people, which moves their ratings
+     * @param arena  a duel on arena podiums, which nobody challenged: it has no host whose banlist counts
      */
     private record Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt,
-                          DuelistNpc npc, boolean split, boolean ranked) {
+                          DuelistNpc npc, boolean split, boolean ranked, boolean arena) {
         Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt, DuelistNpc npc) {
-            this(host, entrants, pending, ante, expiresAt, npc, false, false);
+            this(host, entrants, pending, ante, expiresAt, npc, false, false, false);
         }
     }
 
@@ -216,7 +217,7 @@ public final class DuelManager {
         entrants.stream().map(Entrant::player).filter(Objects::nonNull).filter(id -> !id.equals(host.getUUID()))
                 .forEach(pending::add);
         Invite invite = new Invite(host.getUUID(), List.copyOf(entrants), pending, ante,
-                server.getTickCount() + INVITE_TIMEOUT_TICKS, null, split, ranked);
+                server.getTickCount() + INVITE_TIMEOUT_TICKS, null, split, ranked, false);
         if (pending.isEmpty()) {
             launch(invite);
             return;
@@ -238,9 +239,23 @@ public final class DuelManager {
                     ? " Right-click them with your Duel Disk or click " : " Click ";
             target.sendSystemMessage(Component.literal(host.getScoreboardName() + " invites you: " + matchup
                     + (ante ? ". The winner takes a random card from the loser's deck box." : ".")
-                    + (ranked ? rankedNote(host, target) : "") + chips + how)
+                    + (ranked ? rankedNote(host, target) : "") + banlistNote(host, target) + chips + how)
                     .append(accept));
         }
+    }
+
+    /**
+     * " You play with Alex's banlist: Genesys, October 18, 2026 (yours is TCG, September 2026)." when the challenger
+     * plays with another list than the one invited, otherwise nothing.
+     */
+    private static String banlistNote(ServerPlayer host, ServerPlayer target) {
+        if (JadmData.banlistSetting(host).equalsIgnoreCase(JadmData.banlistSetting(target))) {
+            return "";
+        }
+        String theirs = JadmData.banlist(host).name();
+        String mine = JadmData.banlist(target).name();
+        return theirs.equals(mine) ? "" : " You play with " + host.getScoreboardName() + "'s banlist: " + theirs
+                + " (yours is " + mine + ").";
     }
 
     /** " Ranked: your rating 1180 (Silver) against their 1216 (Gold)." */
@@ -337,7 +352,7 @@ public final class DuelManager {
                 && RankedDuels.whyNot(server, first.getUUID(), second.getUUID()) == null;
         launch(new Invite(first.getUUID(), List.of(new Entrant(0, first.getUUID(), first.getScoreboardName()),
                 new Entrant(1, second.getUUID(), second.getScoreboardName())), Set.of(), false, 0, null, false,
-                ranked));
+                ranked, true));
     }
 
     /** Starts a tag duel between two pairs standing on the podiums of a free player-built arena. */
@@ -351,7 +366,8 @@ public final class DuelManager {
                 entrants.add(new Entrant(team, player.getUUID(), player.getScoreboardName()));
             }
         }
-        launch(new Invite(team0.get(0).getUUID(), List.copyOf(entrants), Set.of(), false, 0, null));
+        launch(new Invite(team0.get(0).getUUID(), List.copyOf(entrants), Set.of(), false, 0, null, false, false,
+                true));
     }
 
     /**
@@ -359,7 +375,7 @@ public final class DuelManager {
      * lent starter deck). Tells them nothing.
      */
     public static String deckProblem(ServerPlayer player) {
-        io.github.zancrow321.jadm.engine.data.Banlist banlist = JadmData.banlist(JadmData.step(player));
+        io.github.zancrow321.jadm.engine.data.Banlist banlist = JadmData.banlist(player);
         List<ItemStack> boxes = deckBoxes(player);
         for (ItemStack box : boxes) {
             if (DeckBoxItem.problems(box, player, banlist).isEmpty()) {
@@ -395,13 +411,14 @@ public final class DuelManager {
         }
         // In a progression world the duel is played under the rules and banlist of whoever is furthest along.
         int step = online.stream().mapToInt(JadmData::step).max().orElse(JadmData.step(null));
-        io.github.zancrow321.jadm.engine.data.Banlist banlist = JadmData.banlist(step);
+        io.github.zancrow321.jadm.engine.data.Banlist banlist = duelBanlist(online,
+                invite.arena() ? null : player(invite.host()), step);
         List<Deck> decks = new ArrayList<>();
         List<ItemStack> boxes = new ArrayList<>();
         int botIndex = 0;
         for (Entrant e : entrants) {
             if (e.player() == null) {
-                Deck npcDeck = invite.npc() != null ? invite.npc().deck(step)
+                Deck npcDeck = invite.npc() != null ? invite.npc().deck(step, banlist)
                         : Deck.bundled(BOT_DECKS.get(botIndex++ % BOT_DECKS.size()));
                 if (invite.npc() != null && !npcDeck.name().equals(invite.npc().duelistName())) {
                     // A tournament or structure deck: say which, so the player knows what they are up against.
@@ -442,8 +459,8 @@ public final class DuelManager {
                     .map(e -> e.name() + " (" + Ranking.get(server).rating(e.player()) + ")").toList()) + ".")
                     .withStyle(ChatFormatting.GOLD));
         }
-        if (start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step, null,
-                invite.ranked()) && entrants.size() == 2) {
+        if (start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step, banlist,
+                null, invite.ranked()) && entrants.size() == 2) {
             StarChips.get(server).begin(entrants.get(0).player(), entrants.get(1).player(), invite.npc() != null);
         }
     }
@@ -476,7 +493,7 @@ public final class DuelManager {
         }
         int step = online.stream().mapToInt(JadmData::step).max().orElse(JadmData.step(null));
         io.github.zancrow321.jadm.engine.data.Banlist banlist = setup.rules().banlist() != null
-                ? setup.rules().banlist() : JadmData.banlist(step);
+                ? setup.rules().banlist() : duelBanlist(online, null, step);
         List<Deck> decks = new ArrayList<>();
         for (MatchSetup.Seat seat : setup.seats()) {
             Deck deck = seat.deck();
@@ -501,7 +518,7 @@ public final class DuelManager {
                 setup.ranked(), winner -> told.accept(swapped && (winner == 0 || winner == 1) ? 1 - winner : winner));
         boolean ranked = setup.ranked() && online.size() == 2
                 && RankedDuels.whyNot(server, online.get(0).getUUID(), online.get(1).getUUID()) == null;
-        return start(entrants, decks, field, null, setup.npc(), false, step, unswapped, ranked) ? null
+        return start(entrants, decks, field, null, setup.npc(), false, step, banlist, unswapped, ranked) ? null
                 : "the duel engine isn't available";
     }
 
@@ -558,6 +575,22 @@ public final class DuelManager {
     }
 
     /**
+     * The banlist a duel is played with: the one all its people play with if they share one (their own lists from
+     * {@code /jadm banlist use <list> <player>} or the server's), otherwise the challenger's, and without a challenger
+     * (arena and organized duels) the server's.
+     *
+     * @param host the player who challenged the others, or {@code null}
+     */
+    private static io.github.zancrow321.jadm.engine.data.Banlist duelBanlist(List<ServerPlayer> people,
+                                                                              ServerPlayer host, int step) {
+        java.util.Set<String> settings = new java.util.HashSet<>();
+        people.forEach(p -> settings.add(JadmData.banlistSetting(p).strip().toLowerCase(java.util.Locale.ROOT)));
+        String setting = settings.size() == 1 ? settings.iterator().next()
+                : host != null ? JadmData.banlistSetting(host) : JadmData.banlistSetting();
+        return JadmData.banlist(step, setting);
+    }
+
+    /**
      * The first legal deck box a player carries (hands first, then the inventory). Tells the player when they carry
      * deck boxes but none is legal.
      *
@@ -610,11 +643,13 @@ public final class DuelManager {
     /**
      * @param anteBoxes each person's deck box to take the ante from, or {@code null} for a duel without an ante
      * @param step      the progression step whose rules the duel is played under
+     * @param banlist   the banlist the decks were checked against
      * @param match     the organized duel this is, with its own rules, or {@code null}
      * @return whether the duel started
      */
     private boolean start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes,
-                          DuelistNpc npc, boolean split, int step, MatchSetup match, boolean ranked) {
+                          DuelistNpc npc, boolean split, int step,
+                          io.github.zancrow321.jadm.engine.data.Banlist banlist, MatchSetup match, boolean ranked) {
         var random = server.overworld().getRandom();
         long[] seed = {random.nextLong(), random.nextLong(), random.nextLong(), random.nextLong() | 1};
         List<DuelTable.Seat> seats = new ArrayList<>();
@@ -626,7 +661,10 @@ public final class DuelManager {
                     e.player() == null ? new DuelistAi(random.nextLong(), JadmData.cards()) : null));
         }
         MatchSetup.Rules rules = match != null ? match.rules() : MatchSetup.Rules.SERVER;
-        Ruleset ruleset = rules.ruleset() != null ? rules.ruleset() : JadmData.ruleset(step);
+        Ruleset ruleset = rules.ruleset() != null ? rules.ruleset()
+                : JadmData.ruleset(step, JadmData.rulesetSetting(), banlist);
+        // Named at the start when it isn't the server's, such as a Genesys duel on a TCG server.
+        String banlistNote = banlist.name().equals(JadmData.banlist(step).name()) ? "" : " with " + banlist.name();
         int serverLifePoints = entrants.size() > 2 ? JadmServerConfig.TAG_STARTING_LIFE_POINTS.get()
                 : JadmServerConfig.STARTING_LIFE_POINTS.get();
         DuelSettings.Team team = new DuelSettings.Team(rules.lifePoints() > 0 ? rules.lifePoints()
@@ -688,7 +726,7 @@ public final class DuelManager {
                 PacketDistributor.sendToPlayer(player, field);
             }
             message(seat, Component.literal((split ? "Battle City duel! " : tag ? "Tag duel! " : "Duel! ") + matchup(entrants) + ", "
-                    + ruleset.displayName() + " rules. L opens the duel log, Esc the duel menu." + (tag ? " Partners take turns; you answer when it's yours." : "")
+                    + ruleset.displayName() + " rules" + banlistNote + ". L opens the duel log, Esc the duel menu." + (tag ? " Partners take turns; you answer when it's yours." : "")
                     + (split ? " Each partner plays on their own half of the field." : "")));
         }
         Component clanWar = io.github.zancrow321.jadm.clan.ClanWars.startNote(server, teamPeople(entrants, 0),

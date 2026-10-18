@@ -3,6 +3,7 @@ package io.github.zancrow321.jadm.banlist;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.JadmServerConfig;
@@ -14,6 +15,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -30,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -39,13 +42,16 @@ import java.util.stream.Stream;
 /**
  * {@code /jadm banlist}: which list the server plays with and the official ones it can pick; for operators
  * {@code update} (downloads the newest official lists and uses them at once), {@code reset} (back to the bundled
- * ones) and {@code use <list>} (sets the server's {@code banlist}).
+ * ones), {@code use <list>} (sets the server's {@code banlist}) and {@code use <list> <players>} (gives players their
+ * own list, like {@code /jadm progression set <date> <player>}; {@code use server <players>} takes it back).
  */
 public final class BanlistCommands {
     private static final String IGNIS = "https://raw.githubusercontent.com/ProjectIgnis/LFLists/master/";
     private static final String YAML_YUGI = "https://dawnbrandbots.github.io/yaml-yugi-limit-regulation/";
     /** A list naming fewer cards than this is taken for a broken download. */
     private static final int MIN_CARDS = 20;
+    /** {@code use server <player>}: the player plays with the server's list again. */
+    private static final String SERVER = "server";
 
     /** Where each official list comes from; keep in step with tools/carddata/build_banlists.py. */
     private record Source(String id, String name, String url, boolean lflist, boolean points) {
@@ -79,8 +85,11 @@ public final class BanlistCommands {
                         .executes(BanlistCommands::reset))
                 .then(Commands.literal("use").requires(source -> source.hasPermission(2))
                         .then(Commands.argument("list", StringArgumentType.string())
-                                .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(choices(), builder))
-                                .executes(BanlistCommands::use)));
+                                .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+                                        Stream.concat(Stream.of(SERVER), choices().stream()), builder))
+                                .executes(BanlistCommands::use)
+                                .then(Commands.argument("players", EntityArgument.players())
+                                        .executes(BanlistCommands::usePlayers))));
     }
 
     /** What the {@code banlist} setting can be: auto, none, the official lists and the files in config/jadm/banlists. */
@@ -101,11 +110,13 @@ public final class BanlistCommands {
 
     private static int show(CommandContext<CommandSourceStack> ctx) {
         CommandSourceStack source = ctx.getSource();
-        Banlist current = source.getEntity() instanceof ServerPlayer player ? JadmData.banlist(player)
-                : JadmData.banlist();
-        source.sendSuccess(() -> Component.literal("Banlist: " + current.name() + " (banlist = \""
-                + JadmServerConfig.BANLIST.get() + "\")" + (current.genesys() ? ", " + current.pointCap()
-                + " Genesys points per deck" : "")).withStyle(ChatFormatting.GOLD), false);
+        ServerPlayer self = source.getEntity() instanceof ServerPlayer player ? player : null;
+        Banlist current = self != null ? JadmData.banlist(self) : JadmData.banlist();
+        String own = self == null ? null : PlayerBanlists.get(source.getServer()).setting(self.getUUID());
+        source.sendSuccess(() -> Component.literal("Banlist: " + current.name() + (own != null
+                ? " (your own list, \"" + own + "\"; the server's is \"" + JadmServerConfig.BANLIST.get() + "\")"
+                : " (banlist = \"" + JadmServerConfig.BANLIST.get() + "\")") + (current.genesys() ? ", "
+                + current.pointCap() + " Genesys points per deck" : "")).withStyle(ChatFormatting.GOLD), false);
         OfficialBanlists downloaded = JadmData.downloaded();
         for (Source s : SOURCES) {
             String name = s.id().equals(OfficialBanlists.TCG) ? JadmData.banlists().latest().name()
@@ -115,15 +126,64 @@ public final class BanlistCommands {
                     + (fresh ? " (downloaded)" : " (bundled)")), false);
         }
         if (source.hasPermission(2)) {
+            Map<java.util.UUID, String> players = PlayerBanlists.get(source.getServer()).all();
+            if (!players.isEmpty()) {
+                List<String> named = new ArrayList<>();
+                players.forEach((id, setting) -> named.add(nameOf(source.getServer(), id) + ": " + setting));
+                named.sort(String.CASE_INSENSITIVE_ORDER);
+                source.sendSuccess(() -> Component.literal("Players with their own list: " + String.join(", ", named))
+                        .withStyle(ChatFormatting.AQUA), false);
+            }
             source.sendSuccess(() -> Component.literal("/" + Jadm.COMMAND + " banlist update fetches the newest lists, "
-                    + "/" + Jadm.COMMAND + " banlist use <list> picks one.").withStyle(ChatFormatting.GRAY), false);
+                    + "/" + Jadm.COMMAND + " banlist use <list> [player] picks one for the server or a player.")
+                    .withStyle(ChatFormatting.GRAY), false);
         }
         return 1;
+    }
+
+    private static String nameOf(MinecraftServer server, java.util.UUID id) {
+        ServerPlayer online = server.getPlayerList().getPlayer(id);
+        if (online != null) {
+            return online.getScoreboardName();
+        }
+        return server.getProfileCache() == null ? id.toString()
+                : server.getProfileCache().get(id).map(com.mojang.authlib.GameProfile::getName).orElse(id.toString());
+    }
+
+    /** Gives players their own banlist, or with "server" the server's again. */
+    private static int usePlayers(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        String list = StringArgumentType.getString(ctx, "list").strip().toLowerCase(java.util.Locale.ROOT);
+        CommandSourceStack source = ctx.getSource();
+        boolean server = list.equals(SERVER);
+        if (!server && choices().stream().noneMatch(c -> c.equalsIgnoreCase(list))) {
+            source.sendFailure(Component.literal("No banlist \"" + list + "\". Pick one of: " + SERVER + ", "
+                    + String.join(", ", choices())));
+            return 0;
+        }
+        Collection<ServerPlayer> players = EntityArgument.getPlayers(ctx, "players");
+        PlayerBanlists data = PlayerBanlists.get(source.getServer());
+        for (ServerPlayer player : players) {
+            data.set(player.getUUID(), server ? null : list);
+            Progress.sync(player);
+            Banlist now = JadmData.banlist(player);
+            player.sendSystemMessage(Component.literal((server ? "You play with the server's banlist again: "
+                    : "You now play with your own banlist: ") + now.name() + (now.genesys() ? " (" + now.pointCap()
+                    + " Genesys points per deck, no Link or Pendulum monsters)" : "") + ". Duels you start use it.")
+                    .withStyle(ChatFormatting.GOLD));
+            source.sendSuccess(() -> Component.literal(player.getScoreboardName() + " now plays with " + now.name()
+                    + (server ? " (the server's list)." : ".")).withStyle(ChatFormatting.GREEN), true);
+        }
+        return players.size();
     }
 
     private static int use(CommandContext<CommandSourceStack> ctx) {
         String list = StringArgumentType.getString(ctx, "list").strip();
         CommandSourceStack source = ctx.getSource();
+        if (list.equalsIgnoreCase(SERVER)) {
+            source.sendFailure(Component.literal("\"" + SERVER + "\" is for players: /" + Jadm.COMMAND
+                    + " banlist use " + SERVER + " <player> gives them the server's list again."));
+            return 0;
+        }
         if (!choices().stream().anyMatch(c -> c.equalsIgnoreCase(list))) {
             source.sendFailure(Component.literal("No banlist \"" + list + "\". Pick one of: "
                     + String.join(", ", choices())));
@@ -136,6 +196,12 @@ public final class BanlistCommands {
         source.sendSuccess(() -> Component.literal("The server now plays with " + now.name() + " ("
                 + JadmData.ruleset(Progress.worldStep()).displayName() + " rules).").withStyle(ChatFormatting.GREEN),
                 true);
+        int own = PlayerBanlists.get(source.getServer()).all().size();
+        if (own > 0) {
+            source.sendSuccess(() -> Component.literal(own + (own == 1 ? " player keeps" : " players keep")
+                    + " their own list (/" + Jadm.COMMAND + " banlist use " + SERVER + " <player> takes it back).")
+                    .withStyle(ChatFormatting.GRAY), false);
+        }
         return 1;
     }
 

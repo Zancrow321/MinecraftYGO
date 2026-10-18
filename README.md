@@ -136,6 +136,8 @@ In game:
   lists `tcg`, `ocg`, `traditional`, `worlds`, `master-duel`, `genesys` and `genesys-ocg` are built in;
   `/jadm banlist update` downloads the newest ones (into `config/jadm/official_banlists.json`) and
   `/jadm banlist reset` drops them again.
+  `/jadm banlist use <list> <player>` gives single players their own list (`use server <player>` takes it back); a
+  duel uses the list its duelists share, otherwise the challenger's (arena duels: the server's).
 - **Genesys:** `banlist = "genesys"` plays the Genesys format: card points instead of limits, at most
   `genesysPointCap` (100) per deck, no Link or Pendulum monsters, and with `ruleset = "auto"` the `genesys` ruleset
   (no Extra Monster Zones or Pendulum Zones). A custom Genesys list has `"points": {"<card code>": <points>}` and

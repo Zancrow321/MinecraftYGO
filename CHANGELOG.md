@@ -19,6 +19,11 @@
   and all-cards worlds. A list whose download fails keeps the one it had. The lists are kept in
   `config/jadm/official_banlists.json`; `/jadm banlist reset` goes back to the bundled ones. `/jadm banlist` shows
   which list the server plays with and what each official list is.
+- **A banlist per player:** `/jadm banlist use <list> <player>` gives players their own list, like
+  `/jadm progression set <date> <player>`, so a few can play Genesys while the server stays on the TCG list (`use server
+  <player>` takes it back). Their deck boxes, cards and NPC opponents follow it. A duel uses the list all its duelists
+  share; otherwise the challenger's, and the invitation names it ("You play with Alex's banlist: Genesys ..."). Arena
+  duels between players on different lists use the server's list, tournaments their own.
 - The bundled TCG history now ends with the September 2026 list.
 
 ### Duelist clans

@@ -272,14 +272,40 @@ public final class JadmData {
         return banlist(step(null));
     }
 
-    /** The banlist for a player: in a progression world the one of their step. */
+    /**
+     * The banlist for a player: their own list if an operator gave them one, otherwise the server's (in a progression
+     * world the one of their step).
+     */
     public static Banlist banlist(Player player) {
-        return banlist(step(player));
+        return banlist(step(player), banlistSetting(player));
     }
 
     /** The banlist at a progression step (any step outside a progression world). */
     public static Banlist banlist(int step) {
-        return banlist(step, JadmServerConfig.SPEC.isLoaded() ? JadmServerConfig.BANLIST.get() : joinedBanlist);
+        return banlist(step, banlistSetting());
+    }
+
+    /** The server's {@code banlist} setting, or on a client on another server the one that server sent. */
+    public static String banlistSetting() {
+        return JadmServerConfig.SPEC.isLoaded() ? JadmServerConfig.BANLIST.get() : joinedBanlist;
+    }
+
+    /**
+     * The {@code banlist} setting a player plays with: on the server their own ({@code /jadm banlist use <list>
+     * <player>}) or else the server's, on a client the one the server sent for them.
+     */
+    public static String banlistSetting(Player player) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            String own = io.github.zancrow321.jadm.banlist.PlayerBanlists.get(serverPlayer.server)
+                    .setting(serverPlayer.getUUID());
+            return own != null ? own : banlistSetting();
+        }
+        return player != null && joinedMode != null ? joinedBanlist : banlistSetting();
+    }
+
+    /** On a client, the {@code banlist} setting the server sent for the local player. */
+    public static String localBanlistSetting() {
+        return joinedMode != null ? joinedBanlist : banlistSetting();
     }
 
     /**
