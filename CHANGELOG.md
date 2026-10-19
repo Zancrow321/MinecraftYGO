@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Duels seen by everyone nearby
+- **Fixed:** players standing near a duel they aren't in saw nothing, which showed most in bot duels, where no
+  opponent stands there either. Now everyone within about 48 blocks of the field sees it in the world (monsters, cards,
+  effects; only what's public) while walking around freely. Right-click the field, or `/jadm watch` without a name, to
+  watch it up close; walking away or the duel ending takes the field away again.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

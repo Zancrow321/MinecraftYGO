@@ -117,7 +117,8 @@ public final class CardPreview {
      */
     public static void renderHud(GuiGraphics g, DeltaTracker delta) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.screen != null || mc.options.hideGui || ClientField.active()
+        if (mc.player == null || mc.screen != null || mc.options.hideGui
+                || ClientField.active() && !ClientField.nearby()
                 || !JadmClientConfig.CARD_PREVIEW.get()) {
             return;
         }

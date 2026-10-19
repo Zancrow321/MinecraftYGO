@@ -60,6 +60,10 @@ public final class DuelManager {
     private static final List<String> BOT_NAMES = List.of("Duel Bot", "Bandit Bot", "Rare Hunter Bot");
     /** How far in front of a player a duel against bots is projected (the field is about 16 blocks long). */
     private static final double BOT_FIELD_DISTANCE = 8;
+    /** How near a player has to stand to a duel's field (blocks from its centre) to see it in the world. */
+    private static final double NEARBY_RANGE = 48;
+    /** How long after their own duel (or the one they watched) ends a player is left to its result screen, in ticks. */
+    private static final int AFTER_DUEL_TICKS = 600;
 
     private static DuelManager instance;
 
@@ -68,6 +72,10 @@ public final class DuelManager {
     private final Map<UUID, Invite> invites = new HashMap<>();
     private final Map<UUID, ServerDuel> duelsByPlayer = new HashMap<>();
     private final Map<UUID, ServerDuel> duelsBySpectator = new HashMap<>();
+    /** Players standing near a duel they're not in, who see its field in the world (public cards only). */
+    private final Map<UUID, ServerDuel> duelsByOnlooker = new HashMap<>();
+    /** Players whose duel just ended, until when no other duel's field is shown to them (it would take theirs away). */
+    private final Map<UUID, Long> justDueled = new HashMap<>();
     private final List<ServerDuel> duels = new ArrayList<>();
     /** Where each dueling person stands (once they're on the ground); they are held there until the duel ends. */
     private final Map<UUID, Vec3> anchors = new HashMap<>();
@@ -676,6 +684,7 @@ public final class DuelManager {
                 continue;
             }
             duelsByPlayer.put(seat, duel);
+            duelsByOnlooker.remove(seat);
             ServerPlayer player = player(seat);
             if (player != null) {
                 if (player.onGround()) {
@@ -766,6 +775,19 @@ public final class DuelManager {
         watch(watcher, duel);
     }
 
+    /** {@code watcher} right-clicked the field of a duel they stand near (or typed /jadm watch): watch it. */
+    public void watchNearby(ServerPlayer watcher) {
+        ServerDuel duel = duelsByOnlooker.get(watcher.getUUID());
+        if (duel == null) {
+            duel = duelNear(watcher, null);
+        }
+        if (duel == null) {
+            watcher.sendSystemMessage(Component.literal("There is no duel nearby to watch."));
+            return;
+        }
+        watch(watcher, duel);
+    }
+
     /** {@code watcher} right-clicked an NPC duelist that is dueling: watch that duel. */
     public void watchNpc(ServerPlayer watcher, DuelistNpc npc) {
         duels.stream().filter(d -> d.npc() == npc).findFirst().ifPresent(duel -> watch(watcher, duel));
@@ -780,6 +802,7 @@ public final class DuelManager {
             return;
         }
         unwatch(watcher, false);
+        duelsByOnlooker.remove(watcher.getUUID());
         duel.spectators().add(watcher.getUUID());
         duelsBySpectator.put(watcher.getUUID(), duel);
         calmMobs(watcher);
@@ -832,6 +855,7 @@ public final class DuelManager {
 
     public void onLogout(ServerPlayer player) {
         unwatch(player, false);
+        duelsByOnlooker.remove(player.getUUID());
         invites.remove(player.getUUID());
         invites.values().removeIf(invite -> invite.host().equals(player.getUUID()));
         ServerDuel duel = duelsByPlayer.get(player.getUUID());
@@ -876,6 +900,76 @@ public final class DuelManager {
             }
         }
         DuelArena.tick(server, id -> duelsByPlayer.containsKey(id) && anchors.containsKey(id));
+        if (now % 10 == 0) {
+            updateOnlookers();
+        }
+    }
+
+    /**
+     * Shows each duel's field to the players standing near it, the way a hologram duel is seen by everyone around,
+     * and takes it away from those who walked off. Duelists and spectators have their own field already.
+     */
+    private void updateOnlookers() {
+        long now = server.getTickCount();
+        justDueled.values().removeIf(until -> until < now);
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            UUID id = player.getUUID();
+            ServerDuel seen = duelsByOnlooker.get(id);
+            boolean busy = duelsByPlayer.containsKey(id) || duelsBySpectator.containsKey(id)
+                    || justDueled.containsKey(id);
+            ServerDuel near = busy ? null : duelNear(player, seen);
+            if (near == seen) {
+                continue;
+            }
+            duelsByOnlooker.remove(id);
+            if (near != null) {
+                duelsByOnlooker.put(id, near);
+                PacketDistributor.sendToPlayer(player, near.field().nearby());
+                PacketDistributor.sendToPlayer(player,
+                        new DuelViewPayload(ViewCodec.encode(near.table().watchingNow())));
+                player.displayClientMessage(Component.literal(String.join(" vs ", near.table().names())
+                        + ": right-click the field to watch.").withStyle(ChatFormatting.GOLD), true);
+            } else if (!busy) {
+                PacketDistributor.sendToPlayer(player, DuelFieldPayload.none());
+            }
+        }
+    }
+
+    /** The running duel whose field {@code player} stands near, keeping to {@code current} while still near it. */
+    private ServerDuel duelNear(ServerPlayer player, ServerDuel current) {
+        if (current != null && duels.contains(current) && near(player, current)) {
+            return current;
+        }
+        for (ServerDuel duel : duels) {
+            if (near(player, duel)) {
+                return duel;
+            }
+        }
+        return null;
+    }
+
+    private boolean near(ServerPlayer player, ServerDuel duel) {
+        DuelFieldPayload field = duel.field();
+        if (!field.active() || player.level() != levelOf(duel)) {
+            return false;
+        }
+        double dx = player.getX() - field.x();
+        double dz = player.getZ() - field.z();
+        return dx * dx + dz * dz <= NEARBY_RANGE * NEARBY_RANGE && Math.abs(player.getY() - field.y()) <= NEARBY_RANGE;
+    }
+
+    /** The world a duel is held in: where its NPC or its people are, or {@code null} if nobody is there. */
+    private net.minecraft.world.level.Level levelOf(ServerDuel duel) {
+        if (duel.npc() != null) {
+            return duel.npc().level();
+        }
+        for (UUID seat : duel.seats()) {
+            ServerPlayer player = player(seat);
+            if (player != null) {
+                return player.level();
+            }
+        }
+        return null;
     }
 
     /** Counts down the waiting person's time for this turn; once it's gone, the stand-in bot chooses for them. */
@@ -956,6 +1050,12 @@ public final class DuelManager {
                     PacketDistributor.sendToPlayer(spectator, watched);
                 }
             }
+            duelsByOnlooker.forEach((id, seen) -> {
+                ServerPlayer onlooker = seen == duel ? player(id) : null;
+                if (onlooker != null) {
+                    PacketDistributor.sendToPlayer(onlooker, watched);
+                }
+            });
         }
         if (duel.table().finished()) {
             end(duel);
@@ -966,6 +1066,15 @@ public final class DuelManager {
         duels.remove(duel);
         // Spectators keep the field until they close the result screen.
         duel.spectators().forEach(duelsBySpectator::remove);
+        long quietUntil = server.getTickCount() + AFTER_DUEL_TICKS;
+        duel.spectators().forEach(id -> justDueled.put(id, quietUntil));
+        for (UUID seat : duel.seats()) {
+            if (seat != null) {
+                justDueled.put(seat, quietUntil);
+            }
+        }
+        // So do the players nearby, until it fades.
+        duelsByOnlooker.values().removeIf(seen -> seen == duel);
         for (UUID seat : duel.seats()) {
             if (seat != null) {
                 duelsByPlayer.remove(seat);

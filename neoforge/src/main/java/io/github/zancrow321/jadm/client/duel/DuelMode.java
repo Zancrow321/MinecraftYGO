@@ -96,7 +96,7 @@ public final class DuelMode {
     /** Enters and leaves duel mode with the field, and keeps the cursor layer open in between. */
     public static void clientTick() {
         Minecraft mc = Minecraft.getInstance();
-        boolean dueling = ClientField.active() && mc.player != null;
+        boolean dueling = ClientField.active() && !ClientField.nearby() && mc.player != null;
         if (dueling && !active) {
             enter(mc);
         } else if (!dueling && active) {

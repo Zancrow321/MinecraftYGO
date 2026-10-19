@@ -111,7 +111,10 @@ final class JadmCommands {
                     manager(ctx).forfeit(ctx.getSource().getPlayerOrException());
                     return 1;
                 }))
-                .then(Commands.literal("watch").then(Commands.argument("player", EntityArgument.player())
+                .then(Commands.literal("watch").executes(ctx -> {
+                            manager(ctx).watchNearby(ctx.getSource().getPlayerOrException());
+                            return 1;
+                        }).then(Commands.argument("player", EntityArgument.player())
                         .executes(ctx -> {
                             manager(ctx).watch(ctx.getSource().getPlayerOrException(),
                                     EntityArgument.getPlayer(ctx, "player"));
