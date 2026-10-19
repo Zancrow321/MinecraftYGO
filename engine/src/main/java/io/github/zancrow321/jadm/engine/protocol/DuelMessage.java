@@ -250,8 +250,20 @@ public sealed interface DuelMessage {
         }
     }
 
-    /** MSG_SUMMONING, MSG_SPSUMMONING (code 0 when face-down) or MSG_FLIPSUMMONING. */
-    record Summoning(int type, int code, Loc loc) implements DuelMessage {
+    /**
+     * MSG_SUMMONING, MSG_SPSUMMONING (code 0 when face-down) or MSG_FLIPSUMMONING.
+     *
+     * @param style how a Special Summon was done, a {@code SummonStyle} constant; the host works it out, the core
+     *              sends 0
+     */
+    record Summoning(int type, int code, Loc loc, int style) implements DuelMessage {
+        public Summoning(int type, int code, Loc loc) {
+            this(type, code, loc, 0);
+        }
+
+        public Summoning withStyle(int style) {
+            return new Summoning(type, code, loc, style);
+        }
     }
 
     /** MSG_SUMMONED, MSG_SPSUMMONED or MSG_FLIPSUMMONED. */

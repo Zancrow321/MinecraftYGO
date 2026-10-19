@@ -27,6 +27,7 @@ public final class DuelController implements AutoCloseable {
     private static final String[] BASE_SCRIPTS = {"constant.lua", "utility.lua"};
 
     private final OcgDuel duel;
+    private final SummonStyle.Tracker summonStyles;
     private DuelMessage.Prompt pendingPrompt;
     private DuelMessage.Win result;
     private int turn;
@@ -49,6 +50,7 @@ public final class DuelController implements AutoCloseable {
             throw new IllegalArgumentException("Need two teams with at least one deck each");
         }
         this.duel = OcgCore.get().createDuel(settings, cards, scripts, log);
+        this.summonStyles = new SummonStyle.Tracker(cards);
         try {
             for (String base : BASE_SCRIPTS) {
                 byte[] script = scripts.read(base);
@@ -139,7 +141,8 @@ public final class DuelController implements AutoCloseable {
         List<DuelMessage> messages = new ArrayList<>();
         while (true) {
             OcgDuel.Status status = duel.process();
-            for (DuelMessage message : MessageDecoder.decodeAll(duel.getMessage())) {
+            for (DuelMessage decoded : MessageDecoder.decodeAll(duel.getMessage())) {
+                DuelMessage message = summonStyles.annotate(decoded);
                 messages.add(message);
                 track(message);
             }
@@ -182,6 +185,7 @@ public final class DuelController implements AutoCloseable {
         if (pendingPrompt == null) {
             throw new IllegalStateException("No prompt is waiting for a response");
         }
+        summonStyles.responded(pendingPrompt, response);
         duel.setResponse(response);
     }
 

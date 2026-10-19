@@ -1,5 +1,6 @@
 package io.github.zancrow321.jadm.engine.text;
 
+import io.github.zancrow321.jadm.engine.duel.SummonStyle;
 import io.github.zancrow321.jadm.engine.protocol.CardRef;
 import io.github.zancrow321.jadm.engine.protocol.DuelMessage;
 import io.github.zancrow321.jadm.engine.protocol.DuelMessage.*;
@@ -44,7 +45,15 @@ public final class DuelLog {
             case Summoning m -> who(m.loc().controller()) + " " + switch (m.type()) {
                 case MessageType.SUMMONING -> "Normal Summoned ";
                 case MessageType.FLIPSUMMONING -> "Flip Summoned ";
-                default -> "Special Summoned ";
+                default -> switch (m.style()) {
+                    case SummonStyle.FUSION -> "Fusion Summoned ";
+                    case SummonStyle.SYNCHRO -> "Synchro Summoned ";
+                    case SummonStyle.XYZ -> "Xyz Summoned ";
+                    case SummonStyle.RITUAL -> "Ritual Summoned ";
+                    case SummonStyle.LINK -> "Link Summoned ";
+                    case SummonStyle.PENDULUM, SummonStyle.PENDULUM_MORE -> "Pendulum Summoned ";
+                    default -> "Special Summoned ";
+                };
             } + text.cardName(m.code());
             case DuelMessage.Set m -> who(m.loc().controller()) + " Set a card in the " + text.location(m.loc().location());
             case Chaining m -> who(m.loc().controller()) + " activated " + visibleName(m.code(), m.loc())
