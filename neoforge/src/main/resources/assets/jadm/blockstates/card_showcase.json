@@ -1,0 +1,57 @@
+{
+ "variants": {
+  "face=wall,facing=south": {
+   "model": "jadm:block/card_showcase"
+  },
+  "face=floor,facing=south": {
+   "model": "jadm:block/card_showcase",
+   "x": 90
+  },
+  "face=ceiling,facing=south": {
+   "model": "jadm:block/card_showcase",
+   "x": 270
+  },
+  "face=wall,facing=west": {
+   "model": "jadm:block/card_showcase",
+   "y": 90
+  },
+  "face=floor,facing=west": {
+   "model": "jadm:block/card_showcase",
+   "x": 90,
+   "y": 90
+  },
+  "face=ceiling,facing=west": {
+   "model": "jadm:block/card_showcase",
+   "x": 270,
+   "y": 90
+  },
+  "face=wall,facing=north": {
+   "model": "jadm:block/card_showcase",
+   "y": 180
+  },
+  "face=floor,facing=north": {
+   "model": "jadm:block/card_showcase",
+   "x": 90,
+   "y": 180
+  },
+  "face=ceiling,facing=north": {
+   "model": "jadm:block/card_showcase",
+   "x": 270,
+   "y": 180
+  },
+  "face=wall,facing=east": {
+   "model": "jadm:block/card_showcase",
+   "y": 270
+  },
+  "face=floor,facing=east": {
+   "model": "jadm:block/card_showcase",
+   "x": 90,
+   "y": 270
+  },
+  "face=ceiling,facing=east": {
+   "model": "jadm:block/card_showcase",
+   "x": 270,
+   "y": 270
+  }
+ }
+}

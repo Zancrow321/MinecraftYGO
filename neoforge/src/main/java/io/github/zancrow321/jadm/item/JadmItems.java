@@ -77,6 +77,10 @@ public final class JadmItems {
                         output.accept(DuelArena.KIT.get());
                         output.accept(DuelDome.KIT.get());
                         output.accept(io.github.zancrow321.jadm.ranking.RankingBoard.ITEM.get());
+                        output.accept(io.github.zancrow321.jadm.display.Displays.CARD_FRAME_ITEM.get());
+                        output.accept(io.github.zancrow321.jadm.display.Displays.SHOWCASE_ITEM.get());
+                        output.accept(io.github.zancrow321.jadm.display.Displays.TOPLOADER_STAND_ITEM.get());
+                        output.accept(io.github.zancrow321.jadm.display.Displays.PACK_DISPLAY_ITEM.get());
                         output.accept(DuelDome.CORE_ITEM.get());
                         output.accept(DuelDome.PLATFORM_ITEM.get());
                         output.accept(DUELIST_SPAWN_EGG.get());

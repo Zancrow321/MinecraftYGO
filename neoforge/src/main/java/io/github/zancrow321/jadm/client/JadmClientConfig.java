@@ -13,6 +13,7 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.BooleanValue CHOOSE_ZONE;
     public static final ModConfigSpec.BooleanValue SKIP_RESPONSES;
     public static final ModConfigSpec.BooleanValue CARD_PREVIEW;
+    public static final ModConfigSpec.BooleanValue DISPLAY_EFFECTS;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -47,6 +48,10 @@ public final class JadmClientConfig {
                         + "the binder and the deck box, where there is room for it, and of a card held in the hand in "
                         + "the top left corner.")
                 .define("cardPreview", true);
+        DISPLAY_EFFECTS = builder
+                .comment("Let shiny cards in collector displays (card frames, showcases, toploader stands) glow around "
+                        + "their edge and sparkle, the rarer the more, with a beam of light for Secret Rares and up.")
+                .define("displayEffects", true);
         SPEC = builder.build();
     }
 

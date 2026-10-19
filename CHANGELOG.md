@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+### Collector displays
+- **Four new decoration blocks** to show off a collection in your base, each showing its cards and products with their
+  real pictures and foil: the **Card Frame** (one card behind glass, on a wall or lying on a table, with a name
+  plate), the **Card Showcase** (nine cards in three rows behind glass; look at a card to see its name and rarity
+  float above it), the **Toploader Stand** (one card in a clear toploader on a little stand) and the **Pack Display**
+  (an open display box with three sealed booster packs, structure decks or tins). Crafted from wood, glass and quartz.
+- **Window with slots:** right-clicking a display opens its slots, which take only cards (or sealed products), one per
+  slot. Breaking it drops what it holds.
+- **Owner and lock:** whoever places a display owns it. New displays are locked, so only the owner and operators can
+  take things out or break it; the owner unlocks it with a button in its window (for a swap meet or a club's
+  showcase).
+- **Light:** the owner switches its light on in the window; the display then glows and its cards shine even in the
+  dark.
+- **Glow and sparkle:** shiny cards glow around their edge and sparkle, the rarer the more; Secret Rares and up send a
+  thin beam of light upward in their rarity's color. Off with the client setting `displayEffects`.
+- **Name plate:** the frame, the stand and the pack display show what they hold, or their own name from an anvil.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,
