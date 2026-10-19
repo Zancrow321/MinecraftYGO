@@ -258,7 +258,7 @@ final class SummonShow {
                 }
             }
             case SummonStyle.RITUAL -> {
-                double r = 2.3 * k;
+                double r = 2.8 * k;
                 if (t < 0.9f) {
                     for (int i = 0; i < 3; i++) {
                         double angle = (elapsed * 0.7 + i * 2.1);
@@ -368,7 +368,7 @@ final class SummonShow {
         double spin = time * 0.22;
         int[] colors = {FUSION_MAGENTA, FUSION_CYAN, FUSION_GOLD};
         if (open > 0) {
-            double radius = 2.3 * k * open;
+            double radius = 3.0 * k * open;
             for (int arm = 0; arm < 3; arm++) {
                 Vec3 previous = v;
                 for (int j = 1; j <= 14; j++) {
@@ -384,10 +384,10 @@ final class SummonShow {
             double drop = v.y - c.y;
             for (int i = 0; i < 6; i++) {
                 double h = i / 6.0;
-                ring(draw, vc, c.add(0, drop * h, 0), (0.4 + 1.6 * h) * k * open, 0.12 * k,
+                ring(draw, vc, c.add(0, drop * h, 0), (0.5 + 2.2 * h) * k * open, 0.16 * k,
                         spin * (2 - h) + i, glow(150 * open, colors[i % 3]));
             }
-            star(draw, vc, v, (0.5 + 0.1 * Math.sin(time * 0.9)) * k * open, glow(170 * open, 0xFFE0FF));
+            orb(draw, vc, v, (0.5 + 0.1 * Math.sin(time * 0.9)) * k * open, glow(170 * open, 0xFFE0FF));
         }
         // The materials come in on a spiral and melt into the centre.
         List<Vec3> from = materialPoints(a, c);
@@ -402,12 +402,12 @@ final class SummonShow {
             Vec3 at = lerp(start, v, in).add(Math.cos(angle) * r, 0, Math.sin(angle) * r);
             int color = colors[i % 3];
             cardOutline(draw, vc, at, angle, 1 - in * 0.6, glow(230 * (1 - in * 0.5), color));
-            star(draw, vc, at, 0.25 * k, glow(160, color));
+            orb(draw, vc, at, 0.25 * k, glow(160, color));
         }
         // They melt together in a white flash.
         if (p >= 0.42f && p < 0.62f) {
             float f = (p - 0.42f) / 0.2f;
-            star(draw, vc, v, (0.6 + 1.6 * f) * k, glow(240 * (1 - f), 0xFFFFFF));
+            orb(draw, vc, v, (0.6 + 1.6 * f) * k, glow(240 * (1 - f), 0xFFFFFF));
         }
         beamDown(draw, vc, v, c, p, 0.55f, 0.8f, 0.7 * k, 0xF0A0FF);
         shockwave(draw, vc, c, p, FUSION_MAGENTA);
@@ -429,9 +429,9 @@ final class SummonShow {
                 continue;
             }
             double h = bottom + (top - bottom) * i / Math.max(1, rings - 1);
-            double radius = (1.25 + 0.6 * burst) * k * grow;
+            double radius = (1.6 + 0.8 * burst) * k * grow;
             int alpha = (int) (220 * fade * grow);
-            ring(draw, vc, c.add(0, h * k, 0), radius, 0.16 * k, time * 0.12 * (i % 2 == 0 ? 1 : -1),
+            ring(draw, vc, c.add(0, h * k, 0), radius, 0.2 * k, time * 0.12 * (i % 2 == 0 ? 1 : -1),
                     glow(alpha, SYNCHRO_GREEN));
             ring(draw, vc, c.add(0, h * k + 0.01, 0), radius * 0.9, 0.06 * k, -time * 0.2, glow(alpha * 0.6, 0xC8FFD0));
         }
@@ -441,7 +441,7 @@ final class SummonShow {
         for (Vec3 start : from) {
             if (in < 1) {
                 Vec3 at = lerp(start, c.add(0, 0.6 * k, 0), in);
-                star(draw, vc, at, 0.35 * k, glow(200 * (1 - in), SYNCHRO_GREEN));
+                orb(draw, vc, at, 0.35 * k, glow(200 * (1 - in), SYNCHRO_GREEN));
             }
         }
         int stars = stars(a.event().code());
@@ -455,8 +455,8 @@ final class SummonShow {
             double h = 0.5 + (top + 0.6 - 0.5) * Math.min(1, f);
             Vec3 at = c.add(Math.cos(angle) * 0.45 * k, h * k, Math.sin(angle) * 0.45 * k);
             double alpha = f > 1 ? (1.1 - f) / 0.1 : 1;
-            star(draw, vc, at, 0.2 * k, glow(240 * alpha, 0xF4FFF0));
-            star(draw, vc, at, 0.42 * k, glow(120 * alpha, SYNCHRO_GREEN));
+            orb(draw, vc, at, 0.2 * k, glow(240 * alpha, 0xF4FFF0));
+            orb(draw, vc, at, 0.42 * k, glow(120 * alpha, SYNCHRO_GREEN));
             tube(draw, vc, at.add(0, -0.7 * k, 0), at, 0.07 * k, glow(110 * alpha, SYNCHRO_GREEN));
         }
         beamDown(draw, vc, c.add(0, (top + 0.8) * k, 0), c, p, REVEAL - 0.03f, 0.8f, 0.85 * k, 0xC0FFC8);
@@ -471,7 +471,7 @@ final class SummonShow {
         double spin = -time * 0.18;
         Vec3 g = c.add(0, 0.12 * k, 0);
         if (open > 0) {
-            double radius = 2.7 * k * open;
+            double radius = 3.4 * k * open;
             for (int arm = 0; arm < 2; arm++) {
                 Vec3 previous = g;
                 for (int j = 1; j <= 18; j++) {
@@ -492,7 +492,7 @@ final class SummonShow {
                 star(draw, vc, dot, (0.04 + 0.05 * twinkle) * k, glow(230 * open, 0xFFFFFF));
             }
             ring(draw, vc, g, radius, 0.1 * k, spin * 0.5, glow(120 * open, XYZ_VIOLET));
-            star(draw, vc, g.add(0, 0.1 * k, 0), (0.5 + 0.15 * Math.sin(time)) * k * open, glow(220 * open, 0xE8D0FF));
+            orb(draw, vc, g.add(0, 0.1 * k, 0), (0.5 + 0.15 * Math.sin(time)) * k * open, glow(220 * open, 0xE8D0FF));
         }
         // The materials rise as lights in their attribute's colour, then dive into the centre.
         List<Material> mats = materials(a);
@@ -512,8 +512,8 @@ final class SummonShow {
             } else {
                 continue;
             }
-            star(draw, vc, at, 0.38 * k, glow(230, color));
-            star(draw, vc, at, 0.2 * k, glow(240, 0xFFFFFF));
+            orb(draw, vc, at, 0.38 * k, glow(230, color));
+            orb(draw, vc, at, 0.2 * k, glow(240, 0xFFFFFF));
         }
         // The burst: a column of light out of the galaxy.
         if (p >= REVEAL - 0.08f && p < 0.85f) {
@@ -533,7 +533,7 @@ final class SummonShow {
         double drawn = smooth(p / 0.22);
         double fade = 1 - smooth((p - 0.8) / 0.2);
         double spin = time * 0.03;
-        double r = 2.3 * k;
+        double r = 2.8 * k;
         int red = glow(220 * fade, RITUAL_RED);
         int gold = glow(230 * fade, RITUAL_GOLD);
         arc(draw, vc, c, r, 0.14 * k, spin, drawn, red);
@@ -571,7 +571,7 @@ final class SummonShow {
             double height = (1.0 + 0.6 * flicker) * k * appear;
             tube(draw, vc, base, base.add(0, height, 0), 0.3 * k * flicker, glow(140 * fade, RITUAL_RED));
             tube(draw, vc, base, base.add(0, height * 0.7, 0), 0.12 * k, glow(230 * fade, 0xFFE890));
-            star(draw, vc, base.add(0, height * 0.35, 0), 0.32 * k * flicker, glow(160 * fade, 0xFF8020));
+            orb(draw, vc, base.add(0, height * 0.35, 0), 0.32 * k * flicker, glow(160 * fade, 0xFF8020));
         }
         // Tributes burn up and fall into the centre.
         List<Vec3> from = materialPoints(a, c);
@@ -579,8 +579,8 @@ final class SummonShow {
         for (Vec3 start : from) {
             if (in < 1) {
                 Vec3 at = lerp(start, c.add(0, 0.3 * k, 0), in).add(0, Math.sin(Math.PI * in) * 1.2 * k, 0);
-                star(draw, vc, at, 0.4 * k, glow(220 * (1 - in * 0.5), 0xFF7020));
-                star(draw, vc, at, 0.2 * k, glow(240, 0xFFE070));
+                orb(draw, vc, at, 0.4 * k, glow(220 * (1 - in * 0.5), 0xFF7020));
+                orb(draw, vc, at, 0.2 * k, glow(240, 0xFFE070));
             }
         }
         // The pillar of fire.
@@ -600,12 +600,14 @@ final class SummonShow {
         double k = scale();
         Vec3 portal = linkCenter(c);
         Vec3 right = ownerRight(a.event().player()).scale(k);
-        Vec3 up = new Vec3(0, k, 0);
+        // The circuit leans back like a book on a stand, so it faces the summoner looking down on the field.
+        Vec3 toward = ClientField.forward().normalize().scale(side(a.event().player()));
+        Vec3 up = new Vec3(0, 0.8, 0).add(toward.scale(-0.6)).normalize().scale(k);
         double open = smooth(p / 0.1) * (1 - smooth((p - 0.72) / 0.15));
         if (open <= 0) {
             return;
         }
-        double half = 0.95 * open;
+        double half = 1.25 * open;
         int frame = glow(220 * open, LINK_CYAN);
         Vec3 bl = portal.add(right.scale(-half)).add(up.scale(-half));
         Vec3 br = portal.add(right.scale(half)).add(up.scale(-half));
@@ -632,12 +634,12 @@ final class SummonShow {
             double on = has ? smooth((p - markerStart(order, lit.length)) / 0.04) : 0;
             Vec3 dir = right.scale(MARKER_DIRS[m][0]).add(up.scale(MARKER_DIRS[m][1]));
             Vec3 tip = portal.add(dir.scale((MARKER_DIRS[m][0] != 0 && MARKER_DIRS[m][1] != 0 ? 1.45 : 1.55)
-                    * open));
-            arrow(draw, vc, tip, dir.normalize().scale(k), right, up, 0.42 * open,
-                    glow(open * (70 + 170 * on), on > 0 ? LINK_RED : 0x802020));
+                    * open * 1.3));
+            arrow(draw, vc, tip, dir.normalize().scale(k), right, up, 0.55 * open,
+                    glow(open * (110 + 130 * on), on > 0 ? LINK_RED : 0x903030));
             if (on > 0) {
                 arrow(draw, vc, tip.subtract(dir.normalize().scale(0.08 * k)), dir.normalize().scale(k), right, up,
-                        0.22 * open, glow(240 * on * open, 0xFFFFFF));
+                        0.28 * open, glow(240 * on * open, 0xFFFFFF));
                 // Light shoots out of each arrow as it comes on.
                 double shoot = Math.min(1, (p - markerStart(order, lit.length)) / 0.1);
                 if (shoot < 1) {
@@ -653,12 +655,12 @@ final class SummonShow {
             if (in < 1) {
                 Vec3 at = lerp(start, portal, in);
                 tube(draw, vc, lerp(start, portal, Math.max(0, in - 0.3)), at, 0.06 * k, glow(180, LINK_CYAN));
-                star(draw, vc, at, 0.3 * k, glow(220 * (1 - in * 0.4), LINK_CYAN));
+                orb(draw, vc, at, 0.3 * k, glow(220 * (1 - in * 0.4), LINK_CYAN));
             }
         }
         if (p >= REVEAL - 0.08f && p < REVEAL + 0.15f) {
             float f = (p - (REVEAL - 0.08f)) / 0.23f;
-            star(draw, vc, portal, (0.4 + 1.4 * f) * k, glow(240 * (1 - f), 0xFFFFFF));
+            orb(draw, vc, portal, (0.4 + 1.4 * f) * k, glow(240 * (1 - f), 0xFFFFFF));
         }
         beamDown(draw, vc, portal, c, p, REVEAL - 0.02f, 0.78f, 0.6 * k, 0xFF8080);
         shockwave(draw, vc, c, p, LINK_RED);
@@ -675,8 +677,11 @@ final class SummonShow {
         double open = smooth(p / 0.08) * (1 - smooth((p - 0.72) / 0.15));
         Vec3 across = pend.right().subtract(pend.left());
         Vec3 dir = across.lengthSqr() < 1e-6 ? ClientField.right().normalize() : across.normalize();
-        Vec3 mid = lerp(pend.left(), pend.right(), 0.5);
-        double height = cap(6.2) * k;
+        // It hangs between the scales, a little toward the middle of the field so the summoner sees it swing.
+        Vec3 inward = ClientField.forward().normalize()
+                .scale(-side(a.event().player()) * (SPELL_ROW - MONSTER_ROW) * k);
+        Vec3 mid = lerp(pend.left(), pend.right(), 0.5).add(inward);
+        double height = cap(6.5) * k;
         Vec3 pivot = mid.add(0, height, 0);
         double length = height - 1.5 * k;
         double reach = Math.max(1, across.length() / 2 * 0.9);
@@ -706,18 +711,19 @@ final class SummonShow {
                 if (previous != null) {
                     int color = blend(SCALE_BLUE, SCALE_RED, i / (float) segments);
                     double portal = smooth((p - (REVEAL - 0.08)) / 0.08);
-                    tube(draw, vc, previous, point, (0.1 + 0.25 * portal) * k,
-                            glow((60 + 120 * trail + 60 * portal) * open, portal > 0.5 ? 0xFFFFFF : color));
-                    tube(draw, vc, previous, point, (0.3 + 0.4 * portal) * k, glow(70 * trail * open, color));
+                    tube(draw, vc, previous, point, (0.1 + 0.08 * portal) * k,
+                            glow((60 + 120 * trail + 50 * portal) * open, portal > 0.5 ? 0xFFF0FF : color));
+                    tube(draw, vc, previous, point, (0.3 + 0.15 * portal) * k, glow((50 + 40 * portal) * trail * open,
+                            color));
                 }
                 previous = point;
             }
             if (p < REVEAL + 0.05f) {
                 tube(draw, vc, pivot, bob, 0.05 * k, glow(220 * open, 0xFFE8A0));
                 int gem = blend(SCALE_BLUE, SCALE_RED, (float) ((Math.sin(angle) / Math.sin(amplitude) + 1) / 2));
-                star(draw, vc, bob, 0.55 * k, glow(220 * open, gem));
-                star(draw, vc, bob, 0.28 * k, glow(240 * open, 0xFFFFFF));
-                star(draw, vc, pivot, 0.18 * k, glow(200 * open, 0xFFE8A0));
+                orb(draw, vc, bob, 0.9 * k, glow(230 * open, gem));
+                orb(draw, vc, bob, 0.4 * k, glow(240 * open, 0xFFFFFF));
+                orb(draw, vc, pivot, 0.18 * k, glow(200 * open, 0xFFE8A0));
             }
         }
         // Each monster comes down in its own light, out of the middle of the arc.
@@ -747,8 +753,38 @@ final class SummonShow {
         }
         float f = (p - REVEAL) / (0.9f - REVEAL);
         double k = scale();
-        ring(draw, vc, c.add(0, 0.02, 0), (0.6 + 3.2 * f) * k, 0.3 * k * (1 - f), f * 2, glow(230 * (1 - f), rgb));
-        ring(draw, vc, c.add(0, 0.03, 0), (0.4 + 2.2 * f) * k, 0.12 * k, -f * 3, glow(200 * (1 - f), 0xFFFFFF));
+        ring(draw, vc, c.add(0, 0.02, 0), (0.6 + 4.4 * f) * k, 0.4 * k * (1 - f), f * 2, glow(230 * (1 - f), rgb));
+        ring(draw, vc, c.add(0, 0.03, 0), (0.4 + 3.0 * f) * k, 0.15 * k, -f * 3, glow(200 * (1 - f), 0xFFFFFF));
+    }
+
+    /** A soft ball of light: discs turned to the camera, brighter toward the middle. */
+    private static void orb(FieldRenderer.Draw draw, VertexConsumer vc, Vec3 c, double radius, int argb) {
+        if (radius <= 0 || (argb >>> 24) == 0) {
+            return;
+        }
+        Vec3 n = draw.cam().subtract(c);
+        if (n.lengthSqr() < 1e-6) {
+            return;
+        }
+        n = n.normalize();
+        Vec3 u = n.cross(new Vec3(0, 1, 0));
+        u = (u.lengthSqr() < 1e-4 ? n.cross(new Vec3(1, 0, 0)) : u).normalize();
+        Vec3 v = u.cross(n).normalize();
+        int alpha = argb >>> 24;
+        double[] sizes = {1.0, 0.62, 0.32};
+        double[] weights = {0.3, 0.45, 0.8};
+        int segments = 12;
+        for (int layer = 0; layer < sizes.length; layer++) {
+            int color = glow(alpha * weights[layer], argb & 0xFFFFFF);
+            double r = radius * sizes[layer];
+            for (int i = 0; i < segments; i++) {
+                double a0 = i * Math.PI * 2 / segments;
+                double a1 = (i + 1) * Math.PI * 2 / segments;
+                Vec3 p0 = c.add(u.scale(Math.cos(a0) * r)).add(v.scale(Math.sin(a0) * r));
+                Vec3 p1 = c.add(u.scale(Math.cos(a1) * r)).add(v.scale(Math.sin(a1) * r));
+                quad(draw, vc, c, p0, p1, c, color);
+            }
+        }
     }
 
     /** A flat ring lying on the field, drawn round to {@code drawn} (0 to 1) of the way. */
@@ -821,8 +857,8 @@ final class SummonShow {
         }
         if (out.isEmpty() && a.event().amount() != SummonStyle.LINK && a.event().amount() < SummonStyle.PENDULUM) {
             int player = a.event().player();
-            Vec3 hand = ClientField.toWorld(0, side(player) * (FieldLayout.halfLength() + 1), 1.5);
-            Vec3 across = ownerRight(player).scale(1.5);
+            Vec3 hand = ClientField.toWorld(0, side(player) * SPELL_ROW, 3.0);
+            Vec3 across = ownerRight(player).scale(2.5 * scale());
             out.add(hand.subtract(across));
             out.add(hand.add(across));
         }
@@ -841,11 +877,11 @@ final class SummonShow {
     }
 
     private static Vec3 fusionCenter(Vec3 c) {
-        return c.add(0, cap(3.4) * scale(), 0);
+        return c.add(0, cap(3.9) * scale(), 0);
     }
 
     private static Vec3 linkCenter(Vec3 c) {
-        return c.add(0, cap(3.6) * scale(), 0);
+        return c.add(0, cap(4.0) * scale(), 0);
     }
 
     /** {@code height} in field blocks, kept under a roof over the field. */
