@@ -36,6 +36,8 @@
         "- `{cmd} battlecity <partner> <opponent1> <opponent2>`: like a tag duel, but each partner plays on their own half of the team's zones.",
         "# During a duel",
         "You stand still and safe at your end of the field: nothing hurts you and mobs leave you alone. Surrender from the duel menu (Escape) or with `{cmd} forfeit`.",
+        "# Field Spells",
+        "A face-up Field Spell transforms its owner's half of the field: **Umi**, A Legendary Ocean and Umiiruka flood it with waves, **Yami** covers it in shadow, **Sogen** grows grass in the wind, Wasteland, Mountain, Forest, Gaia Power, Molten Destruction, Necrovalley, Rising Air Current, Luminous Spark and Mystic Plasma Zone each have their own ground. Other Field Spells tint the field in the colour of their attribute. With only one Field Spell out, it covers the whole field.",
         "# Watching",
         "Right-click someone who is dueling (NPCs too) or use `{cmd} watch <player>`. Spectators see the field, the life points and the log, but no hidden cards. Leave with Escape and \"Stop watching\" or `{cmd} unwatch`.",
         "# Wins and losses",
@@ -347,7 +349,8 @@
         "- `realProductImages` = {client:realProductImages}: booster packs, decks and tins show the real product, its picture downloaded the same way. `productImageUrl` says where from.",
         "- `chooseZone` = {client:chooseZone}: pick the zone yourself when playing a card from its menu.",
         "- `skipResponses` = {client:skipResponses}: pass every response you don't have to take (switch it in a duel with {key:duel_responses}).",
-        "- `cardPreview` = {client:cardPreview}: a big picture of the card under the mouse, with its text, left of the inventory, chests, the binder and the deck box, and of a card in your hand."
+        "- `cardPreview` = {client:cardPreview}: a big picture of the card under the mouse, with its text, left of the inventory, chests, the binder and the deck box, and of a card in your hand.",
+        "- `fieldSpellArena` = {client:fieldSpellArena}: face-up Field Spells transform the duel field."
       ]
     },
     {

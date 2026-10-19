@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Field Spell arena
+- **Field Spells transform the duel field** while they are face-up: the new ground spreads out of the Field Zone with a
+  glowing edge and draws back into it when the card leaves. Umi, A Legendary Ocean and Umiiruka flood the field with
+  rolling water, kelp, coral and spray; Yami covers it in creeping sculk, obsidian spires and shadow; Sogen grows grass
+  and flowers that bend in the wind; Wasteland, Mountain (snowy peaks), Forest, Gaia Power, Molten Destruction (lava,
+  basalt and fire), Necrovalley, Rising Air Current, Luminous Spark and Mystic Plasma Zone each have their own ground,
+  plants, particles and sounds.
+- **Each half shows its owner's Field Spell**; a single Field Spell covers the whole field. Other Field Spells tint the
+  field and send up sparks in the colour of the attribute their text is about.
+- Only the field and the ground around it change, not sky or fog. Client setting `fieldSpellArena` (on by default).
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

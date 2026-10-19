@@ -173,6 +173,7 @@ public final class FieldRenderer {
         Draw draw = new Draw(poses.last(), cam, buffers);
 
         FieldLayout.use(view.board().extraMonsterZones(), view.board().separatePendulumZones());
+        FieldSpellArena.render(draw, now, partial);
         drawMat(draw, now, partial);
         buffers.endBatch(RenderType.debugQuads());
 

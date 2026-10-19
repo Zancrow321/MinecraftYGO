@@ -36,6 +36,8 @@
         "- `{cmd} battlecity <partner> <opponent1> <opponent2>`: wie ein Tag-Duell, aber jeder Partner spielt auf seiner eigenen Hälfte der Zonen.",
         "# Während des Duells",
         "Du stehst still und sicher an deinem Ende des Felds: Nichts verletzt dich, und Monster lassen dich in Ruhe. Aufgeben geht im Duellmenü (Escape) oder mit `{cmd} forfeit`.",
+        "# Feldzauber",
+        "Ein offener Feldzauber verwandelt die Feldhälfte seines Besitzers: **Umi**, A Legendary Ocean und Umiiruka fluten sie mit Wellen, **Yami** hüllt sie in Schatten, auf **Sogen** wächst Gras im Wind, Wasteland, Mountain, Forest, Gaia Power, Molten Destruction, Necrovalley, Rising Air Current, Luminous Spark und Mystic Plasma Zone haben jeweils ihren eigenen Boden. Andere Feldzauber tönen das Feld in der Farbe ihres Attributs. Liegt nur ein Feldzauber, verwandelt er das ganze Feld.",
         "# Zuschauen",
         "Jemanden rechtsklicken, der sich gerade duelliert (auch NPCs), oder `{cmd} watch <player>`. Zuschauer sehen Feld, Lebenspunkte und Protokoll, aber keine verdeckten Karten. Mit Escape und \"Zuschauen beenden\" oder `{cmd} unwatch` gehst du wieder.",
         "# Siege und Niederlagen",
@@ -347,7 +349,8 @@
         "- `realProductImages` = {client:realProductImages}: Booster, Decks und Tins zeigen das echte Produkt, das Bild wird genauso heruntergeladen. `productImageUrl` sagt, woher.",
         "- `chooseZone` = {client:chooseZone}: die Zone selbst wählen, wenn du eine Karte über ihr Menü spielst.",
         "- `skipResponses` = {client:skipResponses}: jede Antwort auslassen, die du nicht nehmen musst (im Duell mit {key:duel_responses} umschalten).",
-        "- `cardPreview` = {client:cardPreview}: ein großes Bild der Karte unter der Maus mit ihrem Text, links neben Inventar, Truhen, Kartenordner und Deckbox, und einer Karte in deiner Hand."
+        "- `cardPreview` = {client:cardPreview}: ein großes Bild der Karte unter der Maus mit ihrem Text, links neben Inventar, Truhen, Kartenordner und Deckbox, und einer Karte in deiner Hand.",
+        "- `fieldSpellArena` = {client:fieldSpellArena}: offene Feldzauber verwandeln das Duellfeld."
       ]
     },
     {

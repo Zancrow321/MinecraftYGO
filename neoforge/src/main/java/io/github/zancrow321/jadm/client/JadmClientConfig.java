@@ -13,6 +13,7 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.BooleanValue CHOOSE_ZONE;
     public static final ModConfigSpec.BooleanValue SKIP_RESPONSES;
     public static final ModConfigSpec.BooleanValue CARD_PREVIEW;
+    public static final ModConfigSpec.BooleanValue FIELD_SPELL_ARENA;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -47,6 +48,10 @@ public final class JadmClientConfig {
                         + "the binder and the deck box, where there is room for it, and of a card held in the hand in "
                         + "the top left corner.")
                 .define("cardPreview", true);
+        FIELD_SPELL_ARENA = builder
+                .comment("Let face-up Field Spells transform the duel field: Umi floods it, Yami covers it in shadow, "
+                        + "Sogen grows grass, and so on. Each half shows its owner's Field Spell.")
+                .define("fieldSpellArena", true);
         SPEC = builder.build();
     }
 
