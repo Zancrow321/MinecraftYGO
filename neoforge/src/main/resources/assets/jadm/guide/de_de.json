@@ -347,7 +347,8 @@
         "- `realProductImages` = {client:realProductImages}: Booster, Decks und Tins zeigen das echte Produkt, das Bild wird genauso heruntergeladen. `productImageUrl` sagt, woher.",
         "- `chooseZone` = {client:chooseZone}: die Zone selbst wählen, wenn du eine Karte über ihr Menü spielst.",
         "- `skipResponses` = {client:skipResponses}: jede Antwort auslassen, die du nicht nehmen musst (im Duell mit {key:duel_responses} umschalten).",
-        "- `cardPreview` = {client:cardPreview}: ein großes Bild der Karte unter der Maus mit ihrem Text, links neben Inventar, Truhen, Kartenordner und Deckbox, und einer Karte in deiner Hand."
+        "- `cardPreview` = {client:cardPreview}: ein großes Bild der Karte unter der Maus mit ihrem Text, links neben Inventar, Truhen, Kartenordner und Deckbox, und einer Karte in deiner Hand.",
+        "- `aceCamera` = {client:aceCamera}: wird ein großes Monster beschworen, fährt die Kamera zwei Sekunden um es herum und sein Name erscheint groß. Es zählt jedes Monster ab Stufe `aceMinLevel` = {client:aceMinLevel}, mit mindestens `aceMinAttack` = {client:aceMinAttack} ATK (0: aus) oder aus dem Extra Deck (`aceExtraDeck` = {client:aceExtraDeck})."
       ]
     },
     {

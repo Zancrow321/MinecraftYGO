@@ -347,7 +347,8 @@
         "- `realProductImages` = {client:realProductImages}: booster packs, decks and tins show the real product, its picture downloaded the same way. `productImageUrl` says where from.",
         "- `chooseZone` = {client:chooseZone}: pick the zone yourself when playing a card from its menu.",
         "- `skipResponses` = {client:skipResponses}: pass every response you don't have to take (switch it in a duel with {key:duel_responses}).",
-        "- `cardPreview` = {client:cardPreview}: a big picture of the card under the mouse, with its text, left of the inventory, chests, the binder and the deck box, and of a card in your hand."
+        "- `cardPreview` = {client:cardPreview}: a big picture of the card under the mouse, with its text, left of the inventory, chests, the binder and the deck box, and of a card in your hand.",
+        "- `aceCamera` = {client:aceCamera}: when a big monster is summoned, the camera circles it for two seconds and its name shows big. Every monster of Level `aceMinLevel` = {client:aceMinLevel} or higher counts, with at least `aceMinAttack` = {client:aceMinAttack} ATK (0: off), or from the Extra Deck (`aceExtraDeck` = {client:aceExtraDeck})."
       ]
     },
     {

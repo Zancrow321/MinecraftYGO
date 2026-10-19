@@ -2,6 +2,7 @@ package io.github.zancrow321.jadm.client.duel;
 
 import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.client.ClientDuel;
+import io.github.zancrow321.jadm.client.field.AceCamera;
 import io.github.zancrow321.jadm.client.field.ClientField;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
@@ -59,6 +60,8 @@ public final class DuelMode {
     private static View view = View.TOP_DOWN;
     /** The player's own camera setting, put back when the duel is over. */
     private static CameraType previousCamera;
+    /** Whether the first-person view is detached for a moment so an ace shot can fly the camera around. */
+    private static boolean shotCamera;
 
     private DuelMode() {
     }
@@ -78,6 +81,7 @@ public final class DuelMode {
 
     public static void setView(View next) {
         view = next;
+        shotCamera = false;
         Minecraft mc = Minecraft.getInstance();
         if (active) {
             // The top-down camera is a detached camera moved into place, so the duelist is drawn too.
@@ -105,6 +109,11 @@ public final class DuelMode {
         if (active && mc.screen == null) {
             mc.setScreen(new DuelModeScreen());
         }
+        if (active && view == View.FIRST_PERSON && AceCamera.playing() != shotCamera) {
+            // An ace shot needs a detached camera to fly; the duelist's eyes come back once it is over.
+            shotCamera = !shotCamera;
+            mc.options.setCameraType(shotCamera ? CameraType.THIRD_PERSON_BACK : CameraType.FIRST_PERSON);
+        }
     }
 
     private static void enter(Minecraft mc) {
@@ -116,6 +125,7 @@ public final class DuelMode {
 
     private static void leave(Minecraft mc) {
         active = false;
+        shotCamera = false;
         if (previousCamera != null) {
             mc.options.setCameraType(previousCamera);
             previousCamera = null;
@@ -155,8 +165,20 @@ public final class DuelMode {
         return ClientDuel.view() == null || ClientDuel.view().you() == 0 ? forward : forward.reverse();
     }
 
-    private static boolean topDown() {
-        return active && view == View.TOP_DOWN && ClientField.active();
+    /** Whether duel mode places the camera itself: top-down, or flying an ace shot from the duelist's eyes. */
+    private static boolean placed() {
+        return active && (view == View.TOP_DOWN || shotCamera) && ClientField.active();
+    }
+
+    /** Where the camera is and what it looks at this frame, with an ace shot flying it around a monster. */
+    private static Vec3[] camera() {
+        if (view == View.TOP_DOWN) {
+            return AceCamera.camera(topDownPosition(), topDownTarget());
+        }
+        Minecraft mc = Minecraft.getInstance();
+        float partial = mc.getTimer().getGameTimeDeltaPartialTick(false);
+        Vec3 eye = mc.player.getEyePosition(partial);
+        return AceCamera.camera(eye, eye.add(mc.player.getViewVector(partial).scale(8)));
     }
 
     /** Where the top-down camera is: in place behind your end, or still sweeping in over the field at the start. */
@@ -187,10 +209,11 @@ public final class DuelMode {
 
     @SubscribeEvent
     public static void onCameraAngles(ViewportEvent.ComputeCameraAngles event) {
-        if (!topDown()) {
+        if (!placed()) {
             return;
         }
-        Vec3 look = topDownTarget().subtract(topDownPosition());
+        Vec3[] camera = camera();
+        Vec3 look = camera[1].subtract(camera[0]);
         event.setYaw((float) Math.toDegrees(Math.atan2(-look.x, look.z)));
         event.setPitch((float) Math.toDegrees(Math.atan2(-look.y, look.horizontalDistance())));
         event.setRoll(0);
@@ -199,11 +222,11 @@ public final class DuelMode {
     /** Fired while the camera is set up, after it took the duelist's position: moves it above the field instead. */
     @SubscribeEvent
     public static void onCameraDistance(CalculateDetachedCameraDistanceEvent event) {
-        if (!topDown()) {
+        if (!placed()) {
             return;
         }
         try {
-            SET_CAMERA_POSITION.invoke(event.getCamera(), topDownPosition());
+            SET_CAMERA_POSITION.invoke(event.getCamera(), camera()[0]);
             event.setDistance(0);
         } catch (ReflectiveOperationException e) {
             Jadm.LOGGER.error("Could not place the duel camera", e);
