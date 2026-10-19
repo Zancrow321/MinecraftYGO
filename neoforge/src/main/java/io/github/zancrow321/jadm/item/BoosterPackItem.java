@@ -95,7 +95,7 @@ public final class BoosterPackItem extends Item {
         stack.consume(1, player);
         level.playSound(null, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1, 0.8f);
         if (player instanceof ServerPlayer serverPlayer) {
-            PacketDistributor.sendToPlayer(serverPlayer, new PackOpenedPayload(set.name(), shown));
+            PacketDistributor.sendToPlayer(serverPlayer, new PackOpenedPayload(set.name(), set.code(), shown));
             io.github.zancrow321.jadm.cosmetics.PlayerCosmetics.openedPack(serverPlayer);
         }
         return InteractionResultHolder.consume(stack);

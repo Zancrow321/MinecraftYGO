@@ -13,6 +13,7 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.BooleanValue CHOOSE_ZONE;
     public static final ModConfigSpec.BooleanValue SKIP_RESPONSES;
     public static final ModConfigSpec.BooleanValue CARD_PREVIEW;
+    public static final ModConfigSpec.BooleanValue PACK_OPENING_SHOW;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -47,6 +48,11 @@ public final class JadmClientConfig {
                         + "the binder and the deck box, where there is room for it, and of a card held in the hand in "
                         + "the top left corner.")
                 .define("cardPreview", true);
+        PACK_OPENING_SHOW = builder
+                .comment("Open booster packs as a show: the pack tears open, the cards fan out face down and rare ones "
+                        + "announce themselves; click each card to turn it over. Off: the cards just turn over one "
+                        + "after the other. Space or a right click skips the show either way.")
+                .define("packOpeningShow", true);
         SPEC = builder.build();
     }
 
