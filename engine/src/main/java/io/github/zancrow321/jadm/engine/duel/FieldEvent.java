@@ -13,8 +13,9 @@ import static io.github.zancrow321.jadm.engine.OcgConstants.*;
  * @param code   the card involved, or 0 when the viewer may not know it
  * @param from   where it happened (the attacker for an attack)
  * @param to     the attack target or the card's destination, else {@link Loc#NONE}
- * @param amount life points for {@link Kind#DAMAGE} and {@link Kind#RECOVER}, the {@link SummonStyle} for
- *               {@link Kind#SUMMON}, else 0
+ * @param amount life points for {@link Kind#DAMAGE} and {@link Kind#RECOVER}; the {@link SummonStyle} for
+ *               {@link Kind#SUMMON}, and for a {@link Kind#LEAVE} of a summon's material the style of that summon;
+ *               else 0
  */
 public record FieldEvent(Kind kind, int code, Loc from, Loc to, int player, int amount) {
     /** {@code TURN} is a new turn of {@code player}; {@code PHASE} a new phase, its bits in {@code amount}. */
@@ -36,7 +37,7 @@ public record FieldEvent(Kind kind, int code, Loc from, Loc to, int player, int 
                     m.loc().controller(), 0);
             case DuelMessage.Move m when onField(m.from()) && !onField(m.to()) -> new FieldEvent(Kind.LEAVE,
                     public_(m.to()) || m.from().isFaceUp() || m.from().controller() == viewer ? m.code() : 0,
-                    m.from(), m.to(), m.from().controller(), 0);
+                    m.from(), m.to(), m.from().controller(), SummonStyle.material(m.reason()));
             case DuelMessage.LifePoints m when m.type() == MessageType.DAMAGE || m.type() == MessageType.PAY_LPCOST ->
                     new FieldEvent(Kind.DAMAGE, 0, Loc.NONE, Loc.NONE, m.player(), m.amount());
             case DuelMessage.LifePoints m when m.type() == MessageType.RECOVER ->

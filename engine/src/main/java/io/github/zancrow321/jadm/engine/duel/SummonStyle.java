@@ -70,12 +70,7 @@ public final class SummonStyle {
         /** @return {@code message}, with its style if it is a Special Summon */
         DuelMessage annotate(DuelMessage message) {
             switch (message) {
-                case DuelMessage.Move m when (m.reason() & REASON_MATERIAL) != 0 -> {
-                    int style = materialStyle(m.reason());
-                    if (style != NONE) {
-                        materials = style;
-                    }
-                }
+                case DuelMessage.Move m when material(m.reason()) != NONE -> materials = material(m.reason());
                 case DuelMessage.Summoning m when m.type() == MessageType.SPSUMMONING -> {
                     int style = style(m.code());
                     materials = NONE;
@@ -112,24 +107,28 @@ public final class SummonStyle {
             }
             return NONE;
         }
+    }
 
-        private static int materialStyle(int reason) {
-            if ((reason & REASON_FUSION) != 0) {
-                return FUSION;
-            }
-            if ((reason & REASON_SYNCHRO) != 0) {
-                return SYNCHRO;
-            }
-            if ((reason & REASON_XYZ) != 0) {
-                return XYZ;
-            }
-            if ((reason & REASON_LINK) != 0) {
-                return LINK;
-            }
-            if ((reason & REASON_RITUAL) != 0) {
-                return RITUAL;
-            }
+    /** @return the style of the summon a card moved with {@code reason} is a material for, or {@link #NONE} */
+    public static int material(int reason) {
+        if ((reason & REASON_MATERIAL) == 0) {
             return NONE;
         }
+        if ((reason & REASON_FUSION) != 0) {
+            return FUSION;
+        }
+        if ((reason & REASON_SYNCHRO) != 0) {
+            return SYNCHRO;
+        }
+        if ((reason & REASON_XYZ) != 0) {
+            return XYZ;
+        }
+        if ((reason & REASON_LINK) != 0) {
+            return LINK;
+        }
+        if ((reason & REASON_RITUAL) != 0) {
+            return RITUAL;
+        }
+        return NONE;
     }
 }

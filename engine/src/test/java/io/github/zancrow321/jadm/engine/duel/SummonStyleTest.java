@@ -86,6 +86,18 @@ class SummonStyleTest {
         }
     }
 
+    /** Move reasons as the core sends them for the materials in the scenarios above, and for other moves. */
+    @Test
+    void materialsNameTheirSummon() {
+        assertEquals(SummonStyle.FUSION, SummonStyle.material(0x40048));
+        assertEquals(SummonStyle.SYNCHRO, SummonStyle.material(0x80008));
+        assertEquals(SummonStyle.XYZ, SummonStyle.material(0x200008));
+        assertEquals(SummonStyle.RITUAL, SummonStyle.material(0x10004A));
+        assertEquals(SummonStyle.LINK, SummonStyle.material(0x10000008));
+        assertEquals(SummonStyle.NONE, SummonStyle.material(0x400)); // a spell going to the Graveyard after use
+        assertEquals(SummonStyle.NONE, SummonStyle.material(0x800)); // the summoned monster itself
+    }
+
     /** Plays {@code s}'s action on the first Main Phase and returns the styles of the Special Summons it made. */
     static List<Integer> run(Scenario s) throws Exception {
         List<Integer> styles = new ArrayList<>();
