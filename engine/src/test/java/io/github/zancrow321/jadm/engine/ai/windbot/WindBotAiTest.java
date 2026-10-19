@@ -14,11 +14,17 @@ import io.github.zancrow321.jadm.engine.data.CardPool;
 import io.github.zancrow321.jadm.engine.data.Deck;
 import io.github.zancrow321.jadm.engine.data.DeckBuilder;
 import io.github.zancrow321.jadm.engine.data.PoolMode;
+import io.github.zancrow321.jadm.engine.duel.Board;
 import io.github.zancrow321.jadm.engine.duel.DuelTable;
+import io.github.zancrow321.jadm.engine.protocol.DuelMessage;
 import io.github.zancrow321.jadm.engine.text.DuelText;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Deque;
 import java.util.List;
 import java.util.function.IntFunction;
 
@@ -48,26 +54,31 @@ class WindBotAiTest {
         int answered = 0;
         int fallbacks = 0;
         int retries = 0;
+        List<String> crashes = new ArrayList<>();
         for (int i = 0; i < duels; i++) {
             boolean first = i % 2 == 0;
             Deck[] pair = decks.apply(i);
             WindBotAi bot = new WindBotAi(i, CARDS, STYLES[i % STYLES.length], mistakes, pair[0].main());
-            Responder opponent = other.apply(i);
-            Responder[] bots = first ? new Responder[]{bot, opponent} : new Responder[]{opponent, bot};
-            Deck[] seated = first ? pair : new Deck[]{pair[1], pair[0]};
-            try (DuelTable table = new DuelTable(TEXT, new BundledScripts(),
-                    DuelSettings.standard(new long[]{i + 11, 3, 5, 7}, mode), seated[0], seated[1],
-                    List.of("A", "B"), bots, (t, m) -> { })) {
-                table.start();
-                for (int pumps = 0; !table.finished(); pumps++) {
-                    if (pumps > 10_000) {
-                        fail("duel " + i + " did not finish");
-                    }
-                    table.pump();
-                }
-                if (table.winner() == (first ? 0 : 1)) {
+            Recorder us = new Recorder(bot);
+            Recorder them = new Recorder(other.apply(i));
+            try {
+                int winner = duel(i, mode, first, pair, us, them);
+                if (winner == (first ? 0 : 1)) {
                     wins++;
                 }
+            } catch (Error e) {
+                // A crash inside the native core: say where, and whether the same duel crashes without WindBot.
+                String control;
+                try {
+                    duel(i, mode, first, pair, new DuelistAi(i, CARDS), other.apply(i));
+                    control = "finishes";
+                } catch (Error again) {
+                    control = "crashes too: " + again.getMessage();
+                }
+                crashes.add("duel " + i + " (" + STYLES[i % STYLES.length] + ") crashed: " + e.getMessage()
+                        + "\n  WindBot's last answers: " + us.last()
+                        + "\n  opponent's last answers: " + them.last()
+                        + "\n  the same duel with DuelistAi in WindBot's seat " + control);
             }
             answered += bot.answered();
             fallbacks += bot.fallbacks();
@@ -77,7 +88,56 @@ class WindBotAiTest {
                 bot.lastError().printStackTrace(System.out);
             }
         }
+        assertTrue(crashes.isEmpty(), String.join("\n", crashes));
         return new Result(wins, answered, fallbacks, retries);
+    }
+
+    /** Plays one duel to the end and returns the winning seat. */
+    private static int duel(int i, long mode, boolean first, Deck[] pair, Responder us, Responder them) {
+        Responder[] bots = first ? new Responder[]{us, them} : new Responder[]{them, us};
+        Deck[] seated = first ? pair : new Deck[]{pair[1], pair[0]};
+        try (DuelTable table = new DuelTable(TEXT, new BundledScripts(),
+                DuelSettings.standard(new long[]{i + 11, 3, 5, 7}, mode), seated[0], seated[1],
+                List.of("A", "B"), bots, (t, m) -> { })) {
+            table.start();
+            for (int pumps = 0; !table.finished(); pumps++) {
+                if (pumps > 10_000) {
+                    fail("duel " + i + " did not finish");
+                }
+                table.pump();
+            }
+            return table.winner();
+        }
+    }
+
+    /** Passes everything on to a bot and keeps its last few prompts and answers, for crash reports. */
+    private static final class Recorder implements Responder {
+        private final Responder bot;
+        private final Deque<String> recent = new ArrayDeque<>();
+
+        Recorder(Responder bot) {
+            this.bot = bot;
+        }
+
+        @Override
+        public byte[] respond(DuelMessage.Prompt prompt, Board board, int attempt) {
+            byte[] answer = bot.respond(prompt, board, attempt);
+            String line = "turn " + board.turn() + " " + prompt + " -> " + Arrays.toString(answer);
+            recent.addLast(line.length() > 400 ? line.substring(0, 400) + "..." : line);
+            if (recent.size() > 4) {
+                recent.removeFirst();
+            }
+            return answer;
+        }
+
+        @Override
+        public void observe(int team, DuelMessage message) {
+            bot.observe(team, message);
+        }
+
+        String last() {
+            return String.join("\n    ", recent);
+        }
     }
 
     private static Deck[] starters(int i) {
