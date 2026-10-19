@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### WindBot AI
+- **New duel AI:** NPC duelists, tournament bots, bot seats (`/jadm duel bot`, tag and Battle City bots) and the
+  stand-in for a player whose turn time ran out now play with WindBot, the bot of YGOPro, ported to Java with the
+  executor from Astra that plays any deck. It follows the chain, knows what is left in its deck, plays the classic
+  staples by name (Pot of Greed, Mirror Force, Book of Moon, Monster Reborn...) and everything else with WindBot's
+  generic rules. Anything it can't answer falls back to the older AI.
+- **Four play styles:** balanced, aggressive (summons and attacks a lot, trades monsters of equal strength, sets
+  only traps), defensive (sets monsters and shows only strong ones) and control (spends removal and takes monsters
+  freely). With `[ai] npcStyle = "random"` (the default) each NPC duelist keeps a style of its own.
+- **Beginner slips:** `[ai] npcMistakes` (default 0.3) is how often an NPC lets an optional response or an attack
+  go by; `botMistakes` (default 0) does the same for bots. `[ai] engine = "classic"` brings back the older AI.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

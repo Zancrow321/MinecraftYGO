@@ -4,11 +4,11 @@ import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.JadmServerConfig;
 import io.github.zancrow321.jadm.arena.DuelArena;
+import io.github.zancrow321.jadm.duel.DuelBots;
 import io.github.zancrow321.jadm.duel.DuelManager;
 import io.github.zancrow321.jadm.duel.MatchSetup;
 import io.github.zancrow321.jadm.engine.DuelSettings;
 import io.github.zancrow321.jadm.engine.Ruleset;
-import io.github.zancrow321.jadm.engine.ai.DuelistAi;
 import io.github.zancrow321.jadm.engine.data.Banlist;
 import io.github.zancrow321.jadm.engine.data.BundledScripts;
 import io.github.zancrow321.jadm.engine.data.Deck;
@@ -1018,8 +1018,9 @@ public final class TournamentManager {
         int[] order = live.first == 1 ? new int[]{m.b, m.a} : new int[]{m.a, m.b};
         for (int i = 0; i < 2; i++) {
             Tournament.Entrant e = t.entrants.get(order[i]);
-            seats.add(new DuelTable.Seat(i, e.name, new DuelistAi(random.nextLong(), JadmData.cards())));
-            decks.add(new Deck(e.name, e.main, e.extra, List.of()));
+            Deck deck = new Deck(e.name, e.main, e.extra, List.of());
+            seats.add(new DuelTable.Seat(i, e.name, DuelBots.bot(random.nextLong(), deck)));
+            decks.add(deck);
         }
         int lp = t.integer("startingLifePoints") > 0 ? t.integer("startingLifePoints")
                 : JadmServerConfig.STARTING_LIFE_POINTS.get();

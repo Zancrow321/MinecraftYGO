@@ -247,6 +247,32 @@ public final class JadmServerConfig {
                     + "treasury with Duel Points and fight clan wars, which move the clans' ratings in the clan "
                     + "ranking. /jadm clan opens the clan window.").push("clans"));
 
+    public static final ModConfigSpec.ConfigValue<String> AI_ENGINE = BUILDER.pop().push("ai")
+            .comment("Who plays for NPC duelists, tournament bots, bot seats (/jadm duel bot) and players who ran out "
+                    + "of time: \"windbot\" (WindBot with the play styles from Astra) or \"classic\" (the mod's "
+                    + "older rule-of-thumb duelist).")
+            .define("engine", "windbot", v -> "windbot".equals(v) || "classic".equals(v));
+
+    public static final ModConfigSpec.ConfigValue<String> AI_NPC_STYLE = BUILDER
+            .comment("How NPC duelists play: \"balanced\", \"aggressive\" (summons and attacks a lot, sets few "
+                    + "spells), \"defensive\" (sets monsters, shows only strong ones), \"control\" (spends removal "
+                    + "freely) or \"random\" (each NPC duelist keeps a style of its own).")
+            .define("npcStyle", "random", JadmServerConfig::isStyle);
+
+    public static final ModConfigSpec.DoubleValue AI_NPC_MISTAKES = BUILDER
+            .comment("How often (0 to 1) NPC duelists let a chance to respond or an attack go by, as a beginner "
+                    + "would; 0 always plays the best it knows.")
+            .defineInRange("npcMistakes", 0.3, 0.0, 1.0);
+
+    public static final ModConfigSpec.ConfigValue<String> AI_BOT_STYLE = BUILDER
+            .comment("How tournament bots, bot seats and the stand-in for players out of time play (same choices "
+                    + "as npcStyle).")
+            .define("botStyle", "balanced", JadmServerConfig::isStyle);
+
+    public static final ModConfigSpec.DoubleValue AI_BOT_MISTAKES = BUILDER
+            .comment("How often (0 to 1) those bots let a chance go by; the stand-in for a player never does.")
+            .defineInRange("botMistakes", 0.0, 0.0, 1.0);
+
     static {
         BUILDER.pop();
     }
@@ -338,6 +364,11 @@ public final class JadmServerConfig {
     }
 
     public static final ModConfigSpec SPEC = BUILDER.build();
+
+    private static boolean isStyle(Object value) {
+        return value instanceof String s && (s.equals("random") || s.equals("balanced") || s.equals("aggressive")
+                || s.equals("defensive") || s.equals("control"));
+    }
 
     private JadmServerConfig() {
     }
