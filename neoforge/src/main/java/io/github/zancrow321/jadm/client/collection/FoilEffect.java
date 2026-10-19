@@ -45,7 +45,8 @@ import java.util.Map;
  * card, a Ghost Rare's pale silver artwork... A glare sweeps over the foil now and then.
  * <p>
  * The looks are data, in {@code assets/jadm/foil/looks.json}: layers of foil textures over parts of the card,
- * added (black adds nothing) or multiplied (to color white parts, which adding light can't). The textures come from
+ * added (black adds nothing) or multiplied (to color white parts, which adding light can't). A name's foil colors its
+ * letters alone, through a mask made from the card image ({@link CardArt#letters}). The textures come from
  * {@code tools/textures/make_foil_textures.py}; {@code tools/textures/preview_foils.py} draws the looks as the game
  * does.
  */
@@ -76,15 +77,21 @@ public final class FoilEffect {
         /** A narrow glare passes over the box every few seconds. */
         SHEEN,
         /** The middle of the texture, as one color over the whole box. */
-        FLAT
+        FLAT,
+        /** Only on letters: the colors of the rainbow along the name, drifting. */
+        RAINBOW
     }
+
+    /** How many strips a name's letters are drawn in, so a glare or the rainbow can run along it. */
+    private static final int LETTER_STRIPS = 24;
 
     /**
      * One layer of foil: a texture over parts of the card, tinted, added or multiplied. A ghost layer instead draws
-     * the card's {@link CardArt#ghost} image over its boxes.
+     * the card's {@link CardArt#ghost} image over its boxes; a letters layer colors the lettering in its box (the
+     * name) through the card's {@link CardArt#letters} mask.
      */
     private record Layer(ResourceLocation texture, List<Box> boxes, int color, Mode mode, float strength,
-                         boolean ghost) {
+                         boolean ghost, boolean letters) {
         boolean multiply() {
             return strength > 0;
         }
@@ -138,13 +145,15 @@ public final class FoilEffect {
 
     private static Layer layer(JsonObject json, JsonObject o, boolean pendulum) {
         if (o.has("ghost")) {
-            return new Layer(null, boxes(json, o.get("ghost"), pendulum), 0xFFFFFF, Mode.FLAT, 0, true);
+            return new Layer(null, boxes(json, o.get("ghost"), pendulum), 0xFFFFFF, Mode.FLAT, 0, true, false);
         }
         float strength = "multiply".equals(o.has("blend") ? o.get("blend").getAsString() : "add")
                 ? o.get("strength").getAsFloat() : 0;
-        return new Layer(texture(o.get("texture").getAsString()), boxes(json, o.get("on"), pendulum),
+        boolean letters = o.has("letters");
+        return new Layer(letters ? null : texture(o.get("texture").getAsString()),
+                boxes(json, o.get(letters ? "letters" : "on"), pendulum),
                 Integer.parseInt(o.get("color").getAsString(), 16),
-                Mode.valueOf(o.get("mode").getAsString().toUpperCase(Locale.ROOT)), strength, false);
+                Mode.valueOf(o.get("mode").getAsString().toUpperCase(Locale.ROOT)), strength, false, letters);
     }
 
     /** The boxes a layer covers, by name, with groups such as {@code metal} spelled out. */
@@ -181,41 +190,90 @@ public final class FoilEffect {
     }
 
     /**
-     * The texture coordinates of a point on the card, at card fractions {@code fx, fy}. A glare is a narrow band
-     * that moves diagonally and passes every few seconds; the foil patterns drift slowly. A ghost layer shows the
-     * matching point of the card's ghost image.
+     * The texture coordinates of a point on the card, at card fractions {@code fx, fy}, in {@code box}. A glare is a
+     * narrow band that moves diagonally and passes every few seconds; the foil patterns drift slowly. A ghost layer
+     * shows the matching point of the card's ghost image, a letters layer that of the box's lettering mask.
      */
-    private static float u(Layer layer, float fx, float fy, float t) {
+    private static float u(Layer layer, Box box, float fx, float fy, float t) {
         if (layer.ghost()) {
             return fx;
         }
+        if (layer.letters()) {
+            return (fx - box.left()) / (box.right() - box.left());
+        }
         return switch (layer.mode()) {
-            case FLAT -> 0.5f;
+            case FLAT, RAINBOW -> 0.5f;
             case SHEEN -> fx * 0.25f + fy * 0.12f - t * 0.15f;
             case PATTERN -> fx * 1.2f + t * 0.03f;
         };
     }
 
-    private static float v(Layer layer, float fx, float fy, float t) {
+    private static float v(Layer layer, Box box, float fx, float fy, float t) {
         if (layer.ghost()) {
             return fy;
         }
+        if (layer.letters()) {
+            return (fy - box.top()) / (box.bottom() - box.top());
+        }
         return switch (layer.mode()) {
-            case FLAT, SHEEN -> 0.5f;
+            case FLAT, SHEEN, RAINBOW -> 0.5f;
             case PATTERN -> fy * 1.2f * 1.46f - t * 0.02f;
         };
     }
 
-    /** The vertex color of a layer: its tint, scaled by its strength when multiplied. */
-    private static int color(Layer layer) {
-        if (!layer.multiply()) {
-            return 0xFF000000 | layer.color();
+    /**
+     * The vertex color of a layer at card fractions {@code fx, fy}: its tint, scaled by its strength when multiplied.
+     * On letters, which have no foil texture of their own, the glare and the rainbow are worked out here instead,
+     * as the sheen texture and a hue that turns along the name.
+     */
+    private static int color(Layer layer, float fx, float fy, float t) {
+        float r = ((layer.color() >> 16) & 0xFF) / 255f;
+        float g = ((layer.color() >> 8) & 0xFF) / 255f;
+        float b = (layer.color() & 0xFF) / 255f;
+        if (layer.letters() && layer.mode() == Mode.SHEEN) {
+            float u = fx * 0.25f + fy * 0.12f - t * 0.15f;
+            float d = Math.abs((u - (float) Math.floor(u)) * 512 - 256) / 20;
+            float glare = d < 1 ? (float) Math.pow(Math.cos(d * Math.PI / 2), 2) : 0;
+            r *= glare;
+            g *= glare;
+            b *= glare;
+        } else if (layer.letters() && layer.mode() == Mode.RAINBOW) {
+            float hue = fx * 2 + t * 0.2f;
+            int rgb = java.awt.Color.HSBtoRGB(hue - (float) Math.floor(hue), 0.6f, 1);
+            r *= ((rgb >> 16) & 0xFF) / 255f;
+            g *= ((rgb >> 8) & 0xFF) / 255f;
+            b *= (rgb & 0xFF) / 255f;
         }
-        int a = Math.round(layer.strength() * 255);
-        int r = ((layer.color() >> 16) & 0xFF) * a / 255;
-        int g = ((layer.color() >> 8) & 0xFF) * a / 255;
-        int b = (layer.color() & 0xFF) * a / 255;
-        return a << 24 | r << 16 | g << 8 | b;
+        float a = layer.multiply() ? layer.strength() : 1;
+        return Math.round(a * 255) << 24 | Math.round(r * a * 255) << 16 | Math.round(g * a * 255) << 8
+                | Math.round(b * a * 255);
+    }
+
+    /** The texture a layer draws: its foil, or the card's ghost image or lettering; {@code null} if not ready. */
+    private static ResourceLocation texture(Layer layer, int code) {
+        if (layer.ghost()) {
+            CardArt.Texture ghost = CardArt.ghost(code);
+            return ghost == null ? null : ghost.location();
+        }
+        if (layer.letters()) {
+            Box box = layer.boxes().getFirst();
+            CardArt.Texture letters = CardArt.letters(code, box.left(), box.top(), box.right(), box.bottom());
+            return letters == null ? null : letters.location();
+        }
+        return layer.texture();
+    }
+
+    /**
+     * The left and right edges of the strips a box is drawn in: one strip, or on letters several, so their color can
+     * change along the name.
+     */
+    private static float[] strips(Layer layer, Box box) {
+        int n = layer.letters() ? LETTER_STRIPS : 1;
+        float[] xs = new float[n + 1];
+        for (int i = 0; i <= n; i++) {
+            xs[i] = box.left() + (box.right() - box.left()) * i / n;
+        }
+        return xs;
     }
 
     private static void multiplyBlend() {
@@ -241,13 +299,11 @@ public final class FoilEffect {
         Matrix4f m = g.pose().last().pose();
         RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         for (Layer layer : layers) {
-            ResourceLocation texture = layer.texture();
+            ResourceLocation texture = texture(layer, code);
+            if (texture == null) {
+                continue;
+            }
             if (layer.ghost()) {
-                CardArt.Texture ghost = CardArt.ghost(code);
-                if (ghost == null) {
-                    continue;
-                }
-                texture = ghost.location();
                 RenderSystem.disableBlend();
             } else if (layer.multiply()) {
                 multiplyBlend();
@@ -259,11 +315,15 @@ public final class FoilEffect {
             BufferBuilder b = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS,
                     DefaultVertexFormat.POSITION_TEX_COLOR);
             for (Box box : layer.boxes()) {
-                float[][] corners = {{box.left(), box.top()}, {box.left(), box.bottom()},
-                        {box.right(), box.bottom()}, {box.right(), box.top()}};
-                for (float[] c : corners) {
-                    b.addVertex(m, x + c[0] * w, y + c[1] * h, 0).setUv(u(layer, c[0], c[1], t),
-                            v(layer, c[0], c[1], t)).setColor(color(layer));
+                float[] xs = strips(layer, box);
+                for (int i = 0; i + 1 < xs.length; i++) {
+                    float[][] corners = {{xs[i], box.top()}, {xs[i], box.bottom()},
+                            {xs[i + 1], box.bottom()}, {xs[i + 1], box.top()}};
+                    for (float[] c : corners) {
+                        b.addVertex(m, x + c[0] * w, y + c[1] * h, 0).setUv(u(layer, box, c[0], c[1], t),
+                                v(layer, box, c[0], c[1], t)).setColor(layer.ghost() ? 0xFFFFFFFF
+                                : color(layer, c[0], c[1], t));
+                    }
                 }
             }
             BufferUploader.drawWithShader(b.buildOrThrow());
@@ -280,29 +340,34 @@ public final class FoilEffect {
         float t = time();
         Matrix4f m = poses.last().pose();
         for (Layer layer : layers(code, rarity)) {
+            ResourceLocation texture = texture(layer, code);
+            if (texture == null) {
+                continue;
+            }
             VertexConsumer vc;
             float depth = z;
             if (layer.ghost()) {
-                CardArt.Texture ghost = CardArt.ghost(code);
-                if (ghost == null) {
-                    continue;
-                }
-                vc = buffers.getBuffer(RenderType.entityCutout(ghost.location()));
+                vc = buffers.getBuffer(RenderType.entityCutout(texture));
                 // Between the card's front and its foil.
                 depth = z * 0.75f;
             } else {
                 // Eyes are drawn at full brightness, like the foil catching the light; added, or multiplied in.
-                vc = buffers.getBuffer(RenderType.EYES.apply(layer.texture(),
+                vc = buffers.getBuffer(RenderType.EYES.apply(texture,
                         layer.multiply() ? MULTIPLY : RenderStateShard.ADDITIVE_TRANSPARENCY));
             }
             for (Box box : layer.boxes()) {
-                float[][] corners = {{box.left(), box.bottom()}, {box.right(), box.bottom()},
-                        {box.right(), box.top()}, {box.left(), box.top()}};
-                for (float[] c : corners) {
-                    vc.addVertex(m, -halfWidth + c[0] * 2 * halfWidth, halfHeight - c[1] * 2 * halfHeight, depth)
-                            .setColor(layer.ghost() ? 0xFFFFFFFF : color(layer))
-                            .setUv(u(layer, c[0], c[1], t), v(layer, c[0], c[1], t)).setOverlay(overlay)
-                            .setLight(layer.ghost() ? light : 0xF000F0).setNormal(poses.last(), 0, 0, 1);
+                float[] xs = strips(layer, box);
+                for (int i = 0; i + 1 < xs.length; i++) {
+                    float[][] corners = {{xs[i], box.bottom()}, {xs[i + 1], box.bottom()},
+                            {xs[i + 1], box.top()}, {xs[i], box.top()}};
+                    for (float[] c : corners) {
+                        vc.addVertex(m, -halfWidth + c[0] * 2 * halfWidth, halfHeight - c[1] * 2 * halfHeight,
+                                        depth)
+                                .setColor(layer.ghost() ? 0xFFFFFFFF : color(layer, c[0], c[1], t))
+                                .setUv(u(layer, box, c[0], c[1], t), v(layer, box, c[0], c[1], t))
+                                .setOverlay(overlay).setLight(layer.ghost() ? light : 0xF000F0)
+                                .setNormal(poses.last(), 0, 0, 1);
+                    }
                 }
             }
         }

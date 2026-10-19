@@ -36,10 +36,16 @@ public final class CardArt {
     private static final Map<Integer, CompletableFuture<Texture>> ART = new ConcurrentHashMap<>();
     private static final Map<Integer, CompletableFuture<Texture>> HOLOGRAMS = new ConcurrentHashMap<>();
     private static final Map<Integer, CompletableFuture<Texture>> GHOSTS = new ConcurrentHashMap<>();
+    private static final Map<Integer, CompletableFuture<Texture>> LETTERS = new ConcurrentHashMap<>();
+    /** The part of a card that {@link #letters} looks at: its name, as fractions of the card image. */
+    private static volatile float[] lettersBox = {0, 0, 1, 1};
 
-    /** The kinds of art: the whole card, its artwork as a hologram, and the whole card as a Ghost Rare shows it. */
+    /**
+     * The kinds of art: the whole card, its artwork as a hologram, the whole card as a Ghost Rare shows it, and the
+     * lettering of its name.
+     */
     private enum Kind {
-        CARD, HOLOGRAM, GHOST
+        CARD, HOLOGRAM, GHOST, LETTERS
     }
 
     /** A loaded artwork texture and its size in pixels (the size depends on the image source). */
@@ -60,6 +66,19 @@ public final class CardArt {
      */
     public static Texture ghost(int code) {
         return ready(code, GHOSTS, Kind.GHOST);
+    }
+
+    /**
+     * @return where the card's name is lettered, as a mask over the box {@code left, top, right, bottom} (fractions of
+     *         the card image): white and opaque on the letters, clear elsewhere, its colors premultiplied by its alpha
+     *         so foil can color the letters alone; or {@code null} until it's ready (and starts loading it). The box
+     *         is the same for every card; the first call's box is used.
+     */
+    public static Texture letters(int code, float left, float top, float right, float bottom) {
+        if (LETTERS.isEmpty()) {
+            lettersBox = new float[]{left, top, right, bottom};
+        }
+        return ready(code, LETTERS, Kind.LETTERS);
     }
 
     /**
@@ -102,7 +121,7 @@ public final class CardArt {
         Path dir = cropped ? cacheDir().resolveSibling("card_art_cropped") : cacheDir();
         Path file = dir.resolve(code + ".jpg");
         CompletableFuture<byte[]> bytes;
-        if (kind == Kind.GHOST) {
+        if (kind == Kind.GHOST || kind == Kind.LETTERS) {
             // Made from the card's own image once that is cached, so the two never download it at once.
             bytes = ART.computeIfAbsent(code, c -> load(c, Kind.CARD)).thenApplyAsync(texture -> read(file));
         } else if (Files.isRegularFile(file)) {
@@ -126,12 +145,14 @@ public final class CardArt {
                     case CARD -> decode(data);
                     case HOLOGRAM -> holographic(decode(data));
                     case GHOST -> ghostly(decode(data));
+                    case LETTERS -> letters(decode(data), lettersBox);
                 })
                 .thenCompose(image -> CompletableFuture.supplyAsync(() -> {
                     ResourceLocation location = ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID, switch (kind) {
                         case CARD -> "card_art/";
                         case HOLOGRAM -> "card_hologram/";
                         case GHOST -> "card_ghost/";
+                        case LETTERS -> "card_letters/";
                     } + code);
                     Minecraft.getInstance().getTextureManager().register(location, new DynamicTexture(image));
                     return new Texture(location, image.getWidth(), image.getHeight());
@@ -142,6 +163,7 @@ public final class CardArt {
                             case CARD -> "art";
                             case HOLOGRAM -> "hologram art";
                             case GHOST -> "ghost art";
+                            case LETTERS -> "name lettering";
                         }, code, error.toString());
                     }
                 });
@@ -197,6 +219,40 @@ public final class CardArt {
             }
         }
         return image;
+    }
+
+    /**
+     * Finds the lettering in a box of a card: pixels much brighter or darker than the box's middle brightness, so dark
+     * names on light frames and white names on dark ones alike. Returns the mask as a new image the size of the box.
+     */
+    private static NativeImage letters(NativeImage card, float[] box) {
+        int x0 = Math.round(box[0] * card.getWidth());
+        int y0 = Math.round(box[1] * card.getHeight());
+        int w = Math.max(1, Math.round(box[2] * card.getWidth()) - x0);
+        int h = Math.max(1, Math.round(box[3] * card.getHeight()) - y0);
+        int[] lum = new int[w * h];
+        int[] histogram = new int[256];
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                int abgr = card.getPixelRGBA(x0 + x, y0 + y);
+                int l = Math.min(255, (int) ((abgr & 0xFF) * 0.299 + ((abgr >> 8) & 0xFF) * 0.587
+                        + ((abgr >> 16) & 0xFF) * 0.114));
+                lum[y * w + x] = l;
+                histogram[l]++;
+            }
+        }
+        int median = 0;
+        for (int seen = 0; seen + histogram[median] <= lum.length / 2 && median < 255; median++) {
+            seen += histogram[median];
+        }
+        NativeImage mask = new NativeImage(w, h, false);
+        for (int i = 0; i < lum.length; i++) {
+            double m = Math.clamp((Math.abs(lum[i] - median) / 255.0 - 0.15) / 0.2, 0, 1);
+            int v = (int) Math.round(m * 255);
+            mask.setPixelRGBA(i % w, i / w, v << 24 | v << 16 | v << 8 | v);
+        }
+        card.close();
+        return mask;
     }
 
     static byte[] read(Path file) {

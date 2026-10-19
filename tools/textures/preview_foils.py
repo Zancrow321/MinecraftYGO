@@ -65,10 +65,49 @@ def ghost_art(a):
     return np.stack([v * 0.93, v * 0.97, v * 1.04], axis=-1).clip(0, 1)
 
 
+def letters(a):
+    """As CardArt.letters: how much each pixel is lettering, by how far it is from the box's middle brightness."""
+    lum = a[..., 0] * 0.299 + a[..., 1] * 0.587 + a[..., 2] * 0.114
+    return np.clip((np.abs(lum - np.median(lum)) - 0.15) / 0.2, 0, 1)
+
+
+def sheen_glare(fx, fy, t):
+    """The sheen texture as FoilEffect computes it along a name: a soft band that passes every few seconds."""
+    d = np.abs((fx * 0.25 + fy * 0.12 - t * 0.15) % 1 * 512 - 256) / 20
+    return np.where(d < 1, np.cos(np.minimum(d, 1) * np.pi / 2) ** 2, 0)
+
+
+def rainbow_hue(fx, t):
+    """FoilEffect's rainbow along a name: the hue turns along it and drifts."""
+    h = (fx * 2 + t * 0.2) % 1 * 6
+    # HSB with saturation 0.6 and full brightness, as java.awt.Color.HSBtoRGB.
+    c = lambda n: 1 - 0.6 * np.clip(np.minimum((n + h) % 6, 4 - (n + h) % 6), 0, 1)
+    return np.stack([c(5), c(3), c(1)], axis=-1)
+
+
 def render(card_image, rarity, width=220, t=2.6):
     h = round(width * card_image.height / card_image.width)
     out = np.asarray(card_image.convert("RGB").resize((width, h), Image.LANCZOS), dtype=np.float32) / 255
+    card = out.copy()
     for layer in layers(rarity):
+        if "letters" in layer:
+            color = np.array([int(layer["color"][i:i + 2], 16) for i in (0, 2, 4)], dtype=np.float32) / 255
+            for b in boxes(layer["letters"]):
+                x0, y0, x1, y1 = round(b[0] * width), round(b[1] * h), round(b[2] * width), round(b[3] * h)
+                m = letters(card[y0:y1, x0:x1])[..., None]
+                ys, xs = np.mgrid[y0:y1, x0:x1]
+                fx, fy = (xs + 0.5) / width, (ys + 0.5) / h
+                if layer["mode"] == "sheen":
+                    foil = sheen_glare(fx, fy, t)[..., None] * color
+                elif layer["mode"] == "rainbow":
+                    foil = rainbow_hue(fx, t) * color
+                else:
+                    foil = np.broadcast_to(color, m.shape[:2] + (3,))
+                if layer.get("blend") == "multiply":
+                    out[y0:y1, x0:x1] *= 1 - layer["strength"] * m * (1 - foil)
+                else:
+                    out[y0:y1, x0:x1] += m * foil
+            continue
         if "ghost" in layer:
             for b in boxes(layer["ghost"]):
                 x0, y0, x1, y1 = round(b[0] * width), round(b[1] * h), round(b[2] * width), round(b[3] * h)

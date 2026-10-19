@@ -12,8 +12,9 @@
   about one in five of a set's secrets, a Ghost Rare one in four, Ultimate and Collector's Rares one in two.
 - **A foil look per rarity:** foils are drawn in layers that can also tint the card (gold and platinum frames, rainbow
   Starlight cards) and show the artwork pale silver (Ghost Rares). They show in the inventory, the binder, the card
-  preview, pack opening and on cards held in hand. The looks are data in `assets/jadm/foil/looks.json`, so a resource
-  pack can change them.
+  preview, pack opening and on cards held in hand. A silver, gold or rainbow name colors only its letters, so the
+  name box keeps its own color. The looks are data in `assets/jadm/foil/looks.json`, so a resource pack can change
+  them.
 - Cards sell back to the machine shop for more when their finish is rarer.
 
 ### Packs of sets without commons, and missing Ultra Rares
