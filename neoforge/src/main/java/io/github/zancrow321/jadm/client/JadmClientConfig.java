@@ -13,6 +13,7 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.BooleanValue CHOOSE_ZONE;
     public static final ModConfigSpec.BooleanValue SKIP_RESPONSES;
     public static final ModConfigSpec.BooleanValue CARD_PREVIEW;
+    public static final ModConfigSpec.BooleanValue FINISHER_CAMERA;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -47,6 +48,10 @@ public final class JadmClientConfig {
                         + "the binder and the deck box, where there is room for it, and of a card held in the hand in "
                         + "the top left corner.")
                 .define("cardPreview", true);
+        FINISHER_CAMERA = builder
+                .comment("When the final blow of a duel plays in slow motion, swing the camera round to whoever it "
+                        + "hits. Off, the camera stays where it is.")
+                .define("finisherCamera", true);
         SPEC = builder.build();
     }
 

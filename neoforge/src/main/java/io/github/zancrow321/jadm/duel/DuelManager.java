@@ -989,6 +989,17 @@ public final class DuelManager {
         DuelArena.release(riders);
         int winner = duel.table().winner();
         boolean decided = winner == 0 || winner == 1;
+        if (decided && duel.table().finished()) {
+            List<Entity> winners = new ArrayList<>();
+            List<Entity> losers = new ArrayList<>();
+            for (int seat = 0; seat < duel.seats().length; seat++) {
+                Entity who = duel.seats()[seat] != null ? player(duel.seats()[seat]) : duel.npc();
+                if (who != null) {
+                    (duel.table().seats().get(seat).team() == winner ? winners : losers).add(who);
+                }
+            }
+            VictoryFireworks.celebrate(server, duel.field(), winners, losers);
+        }
         Map<UUID, List<String>> rewards = new HashMap<>();
         Map<UUID, String> records = new HashMap<>();
         Set<UUID> gifted = new HashSet<>();

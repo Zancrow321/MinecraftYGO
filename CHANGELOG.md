@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### Destruction and finisher
+- **Shattering cards:** a destroyed monster, spell or trap trembles, flashes and bursts into glowing shards cut from
+  its own picture (the monster's artwork, the card, or its sleeve when it was set), which fly out, spin and settle on
+  the mat before they fade.
+- **Cards fly where they go:** every card that leaves the field flies in an arc to the Graveyard, the banished pile,
+  the Deck, the Extra Deck or its owner's hand, instead of only fading out. Cards hit by something like Raigeki stay
+  on the field until their turn comes, then break almost at once.
+- **Final blow in slow motion:** the attack that ends a duel plays three times slower (an attack declared before the
+  last response hits again as it lands), with film bars, a white flash, a shaking camera and a heavy boom. The camera
+  rides in behind the attacker toward whoever it hits; turn that off with the client setting `finisherCamera`.
+- **Victory fireworks** over the winner's half of the field, in the colors of the winners' clans (gold and white
+  without one). Everyone nearby sees them; at the duel itself they go up once the final blow has played, before the
+  result screen. Under a roof they burst below it.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

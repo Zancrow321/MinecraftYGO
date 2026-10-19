@@ -347,7 +347,8 @@
         "- `realProductImages` = {client:realProductImages}: booster packs, decks and tins show the real product, its picture downloaded the same way. `productImageUrl` says where from.",
         "- `chooseZone` = {client:chooseZone}: pick the zone yourself when playing a card from its menu.",
         "- `skipResponses` = {client:skipResponses}: pass every response you don't have to take (switch it in a duel with {key:duel_responses}).",
-        "- `cardPreview` = {client:cardPreview}: a big picture of the card under the mouse, with its text, left of the inventory, chests, the binder and the deck box, and of a card in your hand."
+        "- `cardPreview` = {client:cardPreview}: a big picture of the card under the mouse, with its text, left of the inventory, chests, the binder and the deck box, and of a card in your hand.",
+        "- `finisherCamera` = {client:finisherCamera}: swing the camera round to whoever takes the final blow of a duel while it plays in slow motion."
       ]
     },
     {
@@ -355,6 +356,7 @@
       "icon": "minecraft:spyglass",
       "text": [
         "- Monsters without a 3D model stand on the field as a hologram of their artwork. A resource pack can give any monster a model.",
+        "- Destroyed cards shatter into shards of their picture, and every card that leaves the field flies to where it goes. The blow that ends a duel plays in slow motion, and the winner gets fireworks over their half (in their clan's color).",
         "- Card art needs an internet connection the first time a card is shown; after that it comes from your computer.",
         "- Can't put a card in your deck? It is from a set that is still locked, or the banlist limits it. The deck box tells you which.",
         "- An ante duel's cards are safe: a crash or restart gives them back, and a winner who logged off gets them on the next login.",

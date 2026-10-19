@@ -3,6 +3,7 @@ package io.github.zancrow321.jadm.client.duel;
 import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.client.ClientDuel;
 import io.github.zancrow321.jadm.client.field.ClientField;
+import io.github.zancrow321.jadm.client.field.Finale;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -176,13 +177,13 @@ public final class DuelMode {
             // Under a roof the camera stays inside the arena.
             up = Math.min(up, ClientField.ceiling() - 0.4);
         }
-        return ClientField.center().add(turned).add(0, up, 0);
+        return Finale.cameraPosition(ClientField.center().add(turned).add(0, up, 0));
     }
 
     /** What the top-down camera looks at: the middle of the field while it sweeps in, then nearer your end. */
     private static Vec3 topDownTarget() {
-        return ClientField.center().subtract(towardOpponent().scale(CAMERA_AIM * ClientField.size()
-                * DuelStaging.sweep()));
+        return Finale.cameraTarget(ClientField.center().subtract(towardOpponent().scale(CAMERA_AIM
+                * ClientField.size() * DuelStaging.sweep())));
     }
 
     @SubscribeEvent

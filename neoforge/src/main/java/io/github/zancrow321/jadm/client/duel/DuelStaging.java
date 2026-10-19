@@ -2,6 +2,7 @@ package io.github.zancrow321.jadm.client.duel;
 
 import io.github.zancrow321.jadm.client.ClientDuel;
 import io.github.zancrow321.jadm.client.field.ClientField;
+import io.github.zancrow321.jadm.client.field.Finale;
 import io.github.zancrow321.jadm.engine.duel.DuelView;
 import io.github.zancrow321.jadm.network.DuelResultPayload;
 import net.minecraft.client.Minecraft;
@@ -100,7 +101,8 @@ public final class DuelStaging {
         if (settledAt < 0 && ClientField.idle()) {
             settledAt = ClientField.tick();
         }
-        return settledAt >= 0 && ClientField.tick() >= settledAt + RESULT_DELAY;
+        return settledAt >= 0 && ClientField.tick() >= settledAt + RESULT_DELAY
+                + Finale.resultHold();
     }
 
     /** Closes the result screen: the field goes and duel mode ends. */

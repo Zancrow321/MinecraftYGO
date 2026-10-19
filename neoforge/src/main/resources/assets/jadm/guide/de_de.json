@@ -347,7 +347,8 @@
         "- `realProductImages` = {client:realProductImages}: Booster, Decks und Tins zeigen das echte Produkt, das Bild wird genauso heruntergeladen. `productImageUrl` sagt, woher.",
         "- `chooseZone` = {client:chooseZone}: die Zone selbst wählen, wenn du eine Karte über ihr Menü spielst.",
         "- `skipResponses` = {client:skipResponses}: jede Antwort auslassen, die du nicht nehmen musst (im Duell mit {key:duel_responses} umschalten).",
-        "- `cardPreview` = {client:cardPreview}: ein großes Bild der Karte unter der Maus mit ihrem Text, links neben Inventar, Truhen, Kartenordner und Deckbox, und einer Karte in deiner Hand."
+        "- `cardPreview` = {client:cardPreview}: ein großes Bild der Karte unter der Maus mit ihrem Text, links neben Inventar, Truhen, Kartenordner und Deckbox, und einer Karte in deiner Hand.",
+        "- `finisherCamera` = {client:finisherCamera}: die Kamera schwenkt auf den, der den letzten Treffer eines Duells abbekommt, während er in Zeitlupe läuft."
       ]
     },
     {
@@ -355,6 +356,7 @@
       "icon": "minecraft:spyglass",
       "text": [
         "- Monster ohne 3D-Modell stehen als Hologramm ihres Kartenbilds auf dem Feld. Ein Ressourcenpaket kann jedem Monster ein Modell geben.",
+        "- Zerstörte Karten zerspringen in Splitter ihres Bildes, und jede Karte, die das Feld verlässt, fliegt sichtbar dorthin, wo sie hingeht. Der letzte Treffer eines Duells läuft in Zeitlupe, und der Sieger bekommt ein Feuerwerk über seiner Feldhälfte (in seiner Clan-Farbe).",
         "- Kartenbilder brauchen beim ersten Anzeigen eine Internetverbindung, danach kommen sie von deinem Rechner.",
         "- Eine Karte passt nicht ins Deck? Sie stammt aus einem noch gesperrten Set, oder die Bannliste begrenzt sie. Die Deckbox sagt dir, welche.",
         "- Die Karten eines Ante-Duells sind sicher: Ein Absturz oder Neustart gibt sie zurück, und ein Sieger, der offline ist, bekommt sie beim nächsten Einloggen.",
