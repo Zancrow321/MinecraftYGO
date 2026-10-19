@@ -230,6 +230,12 @@ public final class ClientField {
         long start = Math.max(queueFree, tick);
         for (FieldEvent event : view.events()) {
             int actor = actor(event, view);
+            // A later monster of a Pendulum Summon comes down with the first one, if its show is still on.
+            long joined = SummonShow.joins(event, tick);
+            if (joined >= 0) {
+                animations.add(new FieldAnimation(event, joined, FieldAnimation.duration(event), actor));
+                continue;
+            }
             if (actor != 0 && event.player() != view.you()
                     && (event.kind() == FieldEvent.Kind.ACTIVATE || event.kind() == FieldEvent.Kind.SUMMON)) {
                 // The opponent's card is shown big first, then its effect plays.

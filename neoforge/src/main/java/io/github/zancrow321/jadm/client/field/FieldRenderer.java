@@ -74,6 +74,7 @@ public final class FieldRenderer {
     static void reset() {
         proxies.clear();
         started.clear();
+        SummonShow.reset();
     }
 
     // ------------------------------------------------------------------ ticking: proxies, particles, sounds
@@ -88,11 +89,15 @@ public final class FieldRenderer {
             }
             if (a.started(now) && !a.finished(now)) {
                 SignatureEffects.tick(a, (int) (now - a.start()));
+                SummonShow.tick(a, (int) (now - a.start()));
             }
         }
     }
 
     private static void onStart(FieldAnimation a) {
+        if (SummonShow.start(a)) {
+            return; // a summon show, or one of its materials, plays its own start
+        }
         FieldEvent e = a.event();
         Slot slot = e.from() != null && !e.from().isNone() ? slot(e.from()) : null;
         Vec3 at = slot != null ? ClientField.toWorld(slot.x(), slot.z(), 0.5) : null;
@@ -507,6 +512,9 @@ public final class FieldRenderer {
                 continue;
             }
             SignatureEffects.draw(draw, vc, a, now, partial);
+            if (SummonShow.draw(draw, vc, a, now, partial)) {
+                continue;
+            }
             float p = a.progress(now, partial);
             FieldEvent e = a.event();
             Slot s = e.from() == null || e.from().isNone() ? null : slot(e.from());
@@ -563,7 +571,7 @@ public final class FieldRenderer {
                         if (!summon.started(now)) {
                             continue; // appears when its summon plays
                         }
-                        float p = summon.progress(now, partial);
+                        float p = SummonShow.appearance(summon, now, partial);
                         grow = Mth.clamp((p - 0.15f) / 0.5f, 0, 1);
                     }
                     MonsterEntity proxy = proxy(player * 16 + seq, card.code());
