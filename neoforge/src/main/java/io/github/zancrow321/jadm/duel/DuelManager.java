@@ -949,7 +949,10 @@ public final class DuelManager {
         Map<Integer, DuelView> views;
         try {
             views = action.get();
-        } catch (RuntimeException e) {
+        } catch (VirtualMachineError e) {
+            throw e;
+        } catch (RuntimeException | Error e) {
+            // Error covers a crash inside the native core ("Invalid memory access"): end this duel, not the server.
             Jadm.LOGGER.error("Duel crashed", e);
             for (UUID seat : duel.seats()) {
                 message(seat, Component.literal("The duel ended because of an error."));
@@ -1128,7 +1131,13 @@ public final class DuelManager {
                         rank == null ? "" : rank.line(), rank == null ? 0 : rank.color()));
             }
         }
-        duel.table().close();
+        try {
+            duel.table().close();
+        } catch (VirtualMachineError e) {
+            throw e;
+        } catch (RuntimeException | Error e) {
+            Jadm.LOGGER.error("Could not free a crashed duel", e);
+        }
         if (duel.match() != null) {
             duel.match().onEnd().accept(duel.table().finished() ? winner : -1);
         }

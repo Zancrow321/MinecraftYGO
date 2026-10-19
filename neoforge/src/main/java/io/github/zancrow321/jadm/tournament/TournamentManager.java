@@ -1033,7 +1033,10 @@ public final class TournamentManager {
             botGames.put(m.id, new BotGame(table, t));
             live.phase = Tournament.Live.DUELING;
             live.since = now();
-        } catch (UnsatisfiedLinkError | RuntimeException e) {
+        } catch (VirtualMachineError e) {
+            throw e;
+        } catch (RuntimeException | Error e) {
+            // Error covers a missing native library and a crash inside the core.
             Jadm.LOGGER.warn("NPC tournament game couldn't be played, flipping a coin", e);
             t.bracket.reportGame(m.id, random.nextInt(2));
             if (m.decided()) {
@@ -1060,11 +1063,20 @@ public final class TournamentManager {
                     continue;
                 }
                 winner = table.winner();
-            } catch (RuntimeException e) {
+            } catch (VirtualMachineError e) {
+                throw e;
+            } catch (RuntimeException | Error e) {
+                // Error covers a crash inside the native core ("Invalid memory access").
                 Jadm.LOGGER.warn("NPC tournament game broke off, flipping a coin", e);
                 winner = new Random().nextInt(2);
             }
-            table.close();
+            try {
+                table.close();
+            } catch (VirtualMachineError e) {
+                throw e;
+            } catch (RuntimeException | Error e) {
+                Jadm.LOGGER.error("Could not free a crashed NPC tournament game", e);
+            }
             botGames.remove(entry.getKey());
             Bracket.Match m = t.bracket.match(entry.getKey());
             Tournament.Live live = t.live.get(entry.getKey());

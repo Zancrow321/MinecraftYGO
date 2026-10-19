@@ -13,6 +13,9 @@
   freely). With `[ai] npcStyle = "random"` (the default) each NPC duelist keeps a style of its own.
 - **Beginner slips:** `[ai] npcMistakes` (default 0.3) is how often an NPC lets an optional response or an attack
   go by; `botMistakes` (default 0) does the same for bots. `[ai] engine = "classic"` brings back the older AI.
+- **Fix:** a crash inside the duel core (seen on Windows) now ends only that duel with "The duel ended because of an
+  error." instead of taking the whole server or singleplayer world down; an NPC tournament game that crashes is
+  decided by a coin flip.
 
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
