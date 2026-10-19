@@ -61,7 +61,7 @@ def sample(t, u, v, blur):
 def ghost_art(a):
     """As CardArt.ghost: the colors gone, a pale silver image."""
     lum = a[..., 0] * 0.299 + a[..., 1] * 0.587 + a[..., 2] * 0.114
-    v = 0.30 + 0.70 * lum ** 0.85
+    v = 0.16 + 0.84 * lum ** 0.95
     return np.stack([v * 0.93, v * 0.97, v * 1.04], axis=-1).clip(0, 1)
 
 

@@ -189,7 +189,7 @@ public final class CardArt {
                 int abgr = image.getPixelRGBA(x, y);
                 double lum = ((abgr & 0xFF) * 0.299 + ((abgr >> 8) & 0xFF) * 0.587 + ((abgr >> 16) & 0xFF) * 0.114)
                         / 255;
-                double v = 0.30 + 0.70 * Math.pow(lum, 0.85);
+                double v = 0.16 + 0.84 * Math.pow(lum, 0.95);
                 int r = (int) Math.min(255, v * 0.93 * 255);
                 int g = (int) Math.min(255, v * 0.97 * 255);
                 int b = (int) Math.min(255, v * 1.04 * 255);

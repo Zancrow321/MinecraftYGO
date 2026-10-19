@@ -59,7 +59,7 @@
       {"ghost": "art"},
       {"texture": "ghost", "on": "art", "color": "384048", "mode": "pattern"},
       {"texture": "holo", "on": "art", "color": "303030", "mode": "pattern"},
-      {"texture": "sheen", "on": "art", "color": "F0F0F0", "mode": "sheen"}
+      {"texture": "sheen", "on": "art", "color": "A8A8B0", "mode": "sheen"}
     ],
     "parallel": [
       {"texture": "parallel_tint", "on": "card", "color": "FFFFFF", "mode": "pattern", "blend": "multiply", "strength": 0.4},

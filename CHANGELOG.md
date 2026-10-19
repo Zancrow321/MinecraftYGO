@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### All official rarities
+- **29 rarities instead of five:** besides Common, Rare, Super, Ultra and Secret Rare, cards now come as Normal and
+  Rare Parallel, Starfoil, Shatterfoil, Mosaic, Super and Ultra Parallel, Pharaoh's, Gold, Premium Gold, Platinum,
+  Ultimate, Ultra Secret, Prismatic, Platinum, Gold and Extra Secret, Ghost, Ghost/Gold, Collector's, Quarter Century
+  Secret, Grand Master, Starlight and 10000 Secret Rare. Each has its own tag (UR, PScR, StR...) and name in tooltips.
+- **Every printed rarity can be pulled:** a pack rolls the slot (common, rare, super, ultra, secret) as before, then
+  one of the rarities the set really has in that slot. The rare finishes are rarer within their slot: a Starlight Rare
+  about one in five of a set's secrets, a Ghost Rare one in four, Ultimate and Collector's Rares one in two.
+- **A foil look per rarity:** foils are drawn in layers that can also tint the card (gold and platinum frames, rainbow
+  Starlight cards) and show the artwork pale silver (Ghost Rares). They show in the inventory, the binder, the card
+  preview, pack opening and on cards held in hand. The looks are data in `assets/jadm/foil/looks.json`, so a resource
+  pack can change them.
+- Cards sell back to the machine shop for more when their finish is rarer.
+
 ### Packs of sets without commons, and missing Ultra Rares
 - **Ultra Rares were missing:** YGOPRODeck lists many cards in several rarities per set, and the first one listed
   counted. Phantom Nightmare, Legacy of Destruction, The Infinite Forbidden, Rage of the Abyss, Supreme Darkness,
