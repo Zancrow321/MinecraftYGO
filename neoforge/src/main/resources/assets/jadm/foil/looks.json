@@ -11,7 +11,14 @@
     "card_border": [[0.033, 0.023, 0.967, 0.045], [0.033, 0.955, 0.967, 0.977], [0.033, 0.023, 0.063, 0.977],
       [0.937, 0.023, 0.967, 0.977]],
     "frame": ["art_border", "card_border"],
-    "metal": ["art_border", "card_border", "stars", "attribute"]
+    "frame_area": [
+      [0.033, 0.023, 0.967, 0.171],
+      [0.033, 0.171, 0.103, 0.741], [0.897, 0.171, 0.967, 0.741],
+      [0.103, 0.713, 0.897, 0.741],
+      [0.033, 0.741, 0.06, 0.938], [0.94, 0.741, 0.967, 0.938],
+      [0.033, 0.938, 0.967, 0.977]
+    ],
+    "metal": ["frame_area", "art_border"]
   },
   "pendulum_boxes": {
     "art": [[0.066, 0.18, 0.934, 0.63]]
@@ -35,24 +42,18 @@
       {"texture": "brushed", "on": "metal", "color": "907028", "mode": "pattern"},
       {"texture": "sheen", "on": "metal", "color": "F4D470", "mode": "flat", "blend": "multiply", "strength": 0.9},
       {"texture": "sheen", "on": "metal", "color": "FFE080", "mode": "sheen"},
-      {"letters": "name", "color": "906820", "mode": "flat"},
-      {"letters": "name", "color": "F4D070", "mode": "flat", "blend": "multiply", "strength": 0.7},
       {"letters": "name", "color": "FFE080", "mode": "sheen"}
     ],
     "premium_gold": [
       {"texture": "dots", "on": "metal", "color": "907028", "mode": "pattern"},
       {"texture": "sheen", "on": "metal", "color": "F4D470", "mode": "flat", "blend": "multiply", "strength": 0.9},
       {"texture": "sheen", "on": "metal", "color": "FFE080", "mode": "sheen"},
-      {"letters": "name", "color": "906820", "mode": "flat"},
-      {"letters": "name", "color": "F4D070", "mode": "flat", "blend": "multiply", "strength": 0.7},
       {"letters": "name", "color": "FFE080", "mode": "sheen"}
     ],
     "platinum": [
       {"texture": "brushed", "on": "metal", "color": "808890", "mode": "pattern"},
       {"texture": "sheen", "on": "metal", "color": "D8E0F0", "mode": "flat", "blend": "multiply", "strength": 0.9},
       {"texture": "sheen", "on": "metal", "color": "FFFFFF", "mode": "sheen"},
-      {"letters": "name", "color": "8890A0", "mode": "flat"},
-      {"letters": "name", "color": "D8E0F0", "mode": "flat", "blend": "multiply", "strength": 0.5},
       {"letters": "name", "color": "FFFFFF", "mode": "sheen"}
     ],
     "holo_art": [
