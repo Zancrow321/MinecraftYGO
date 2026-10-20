@@ -205,6 +205,14 @@ public final class DuelTable implements AutoCloseable {
         return finished() || prompt == null ? -1 : activeSeat(prompt.player());
     }
 
+    /**
+     * What everyone sees before {@link #start}: the decks in place and nothing drawn yet, for while the winner of the
+     * coin toss chooses whether to go first.
+     */
+    public Map<Integer, DuelView> waiting() {
+        return views(null);
+    }
+
     /** Runs the duel up to the first person's prompt. */
     public Map<Integer, DuelView> start() {
         return run(duel.advance());

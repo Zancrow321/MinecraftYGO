@@ -50,6 +50,10 @@ public final class ClientDuel {
             DuelUi.reset();
             DuelStaging.reset();
         }
+        if (DuelStaging.takeTrade()) {
+            // The winner of the coin toss chose to go second: this view is from the other end of the field.
+            ClientField.tradeEnds();
+        }
         for (FieldEvent event : next.events()) {
             Trigger t = trigger(event, next); // before the field takes in the new board
             if (t != null) {

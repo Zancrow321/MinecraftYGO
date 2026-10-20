@@ -23,6 +23,7 @@ import io.github.zancrow321.jadm.item.DeckBoxItem;
 import io.github.zancrow321.jadm.item.JadmComponents;
 import io.github.zancrow321.jadm.item.JadmItems;
 import io.github.zancrow321.jadm.network.DuelClockPayload;
+import io.github.zancrow321.jadm.network.DuelCoinPayload;
 import io.github.zancrow321.jadm.network.DuelFieldPayload;
 import io.github.zancrow321.jadm.network.DuelResultPayload;
 import io.github.zancrow321.jadm.network.DuelistStatePayload;
@@ -68,6 +69,11 @@ public final class DuelManager {
     private static final List<String> BOT_NAMES = List.of("Duel Bot", "Bandit Bot", "Rare Hunter Bot");
     /** How far in front of a player a duel against bots is projected (the field is about 16 blocks long). */
     private static final double BOT_FIELD_DISTANCE = 8;
+    /**
+     * How long the winner of the coin toss has to choose before they go first, counted from the duel's start: the
+     * disk unfolding and the start show take about 8 seconds, then 30 to choose.
+     */
+    private static final int COIN_SECONDS = 38;
 
     private static DuelManager instance;
 
@@ -108,10 +114,23 @@ public final class DuelManager {
      * @param ranked whether it moves the two people's ratings
      * @param info   what the duel events tell other mods and scripts about it
      * @param decks the deck of each seat
+     * @param coin the coin toss whose winner is still choosing whether to go first, or {@code null} once the duel runs
      */
     private record ServerDuel(DuelTable table, UUID[] seats, DuelFieldPayload field, UUID ante, DuelistNpc npc,
                               Set<UUID> spectators, Clock clock, MatchSetup match, boolean ranked, DuelInfo info,
-                              List<Deck> decks) {
+                              List<Deck> decks, Coin coin) {
+    }
+
+    /**
+     * A coin toss a person won. Their team sits as team 0 (OCG-Core lets team 0 go first) and the duel engine waits
+     * until they choose; going second builds the duel again with the teams traded.
+     *
+     * @param chooser  who chooses, the first person of the winning team
+     * @param deadline the server tick from which they go first without having chosen
+     * @param table    builds the duel for the seats given
+     */
+    private record Coin(UUID chooser, String name, long deadline,
+                        java.util.function.Function<List<DuelTable.Seat>, DuelTable> table) {
     }
 
     /**
@@ -491,7 +510,7 @@ public final class DuelManager {
                     .withStyle(ChatFormatting.GOLD));
         }
         if (start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step, banlist,
-                null, invite.ranked()) == null && entrants.size() == 2) {
+                null, invite.ranked(), true) == null && entrants.size() == 2) {
             StarChips.get(server).begin(entrants.get(0).player(), entrants.get(1).player(), invite.npc() != null);
         }
     }
@@ -549,7 +568,8 @@ public final class DuelManager {
                 setup.ranked(), winner -> told.accept(swapped && (winner == 0 || winner == 1) ? 1 - winner : winner));
         boolean ranked = setup.ranked() && online.size() == 2
                 && RankedDuels.whyNot(server, online.get(0).getUUID(), online.get(1).getUUID()) == null;
-        return start(entrants, decks, field, null, setup.npc(), false, step, banlist, unswapped, ranked);
+        return start(entrants, decks, field, null, setup.npc(), false, step, banlist, unswapped, ranked,
+                setup.firstTeam() < 0);
     }
 
     /** The same field seen from the other end: team 0 gets the far side. */
@@ -677,9 +697,11 @@ public final class DuelManager {
      * @param match     the organized duel this is, with its own rules, or {@code null}
      * @return why it didn't start, or {@code null} once it has
      */
+    /** @param coinToss whether a coin toss put team 0 first, so its first person may choose to go second */
     private String start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes,
                          DuelistNpc npc, boolean split, int step,
-                         io.github.zancrow321.jadm.engine.data.Banlist banlist, MatchSetup match, boolean ranked) {
+                         io.github.zancrow321.jadm.engine.data.Banlist banlist, MatchSetup match, boolean ranked,
+                         boolean coinToss) {
         var random = server.overworld().getRandom();
         long[] seed = {random.nextLong(), random.nextLong(), random.nextLong(), random.nextLong() | 1};
         List<DuelTable.Seat> seats = new ArrayList<>();
@@ -708,11 +730,13 @@ public final class DuelManager {
             releaseArena(entrants, npc);
             return starting.getCancelMessage();
         }
+        DuelSettings settings = new DuelSettings(seed, ruleset.flags(), team, team);
+        java.util.function.Function<List<DuelTable.Seat>, DuelTable> build = sitting -> new DuelTable(JadmData.text(),
+                new BundledScripts(), settings, sitting, decks,
+                (type, message) -> Jadm.LOGGER.debug("[ocgcore {}] {}", type, message)).splitField(split);
         DuelTable table;
         try {
-            table = new DuelTable(JadmData.text(), new BundledScripts(),
-                    new DuelSettings(seed, ruleset.flags(), team, team), seats, decks,
-                    (type, message) -> Jadm.LOGGER.debug("[ocgcore {}] {}", type, message));
+            table = build.apply(seats);
         } catch (UnsatisfiedLinkError | RuntimeException e) {
             Jadm.LOGGER.error("Could not start a duel", e);
             broadcast(entrants, Component.literal("The duel engine isn't available on this server."));
@@ -720,7 +744,6 @@ public final class DuelManager {
             return "the duel engine isn't available";
         }
         UUID ante = anteBoxes == null ? null : takeAnte(entrants, anteBoxes, random);
-        table.splitField(split);
         if (split) {
             // One sleeve per duelist, in seat order within each team, for their own half of the field.
             List<String> sleeves = new ArrayList<>();
@@ -736,8 +759,12 @@ public final class DuelManager {
         } else {
             field = field.withLayout(false, List.of(sleeveOf(entrants, 0, npc), sleeveOf(entrants, 1, npc)));
         }
+        Entrant winner = !coinToss ? null
+                : entrants.stream().filter(e -> e.team() == 0 && e.player() != null).findFirst().orElse(null);
+        Coin coin = winner == null ? null : new Coin(winner.player(), winner.name(),
+                server.getTickCount() + COIN_SECONDS * 20L, build);
         ServerDuel duel = new ServerDuel(table, people, field, ante, npc, new HashSet<>(),
-                new Clock(random.nextLong()), match, ranked, info, List.copyOf(decks));
+                new Clock(random.nextLong()), match, ranked, info, List.copyOf(decks), coin);
         duels.add(duel);
         if (npc != null) {
             npc.setDueling(true);
@@ -769,7 +796,19 @@ public final class DuelManager {
         if (clanWar != null) {
             broadcast(entrants, clanWar);
         }
-        run(duel, table::start);
+        if (coin == null) {
+            run(duel, table::start);
+            return null;
+        }
+        // The field comes up with the decks in place; the duel starts once the winner of the coin toss has chosen.
+        run(duel, table::waiting);
+        for (UUID seat : people) {
+            ServerPlayer player = player(seat);
+            if (player != null) {
+                PacketDistributor.sendToPlayer(player, new DuelCoinPayload(coin.name(), seat.equals(coin.chooser()),
+                        COIN_SECONDS, false, false));
+            }
+        }
         return null;
     }
 
@@ -782,7 +821,64 @@ public final class DuelManager {
         DuelArena.release(riders);
     }
 
-    /** The people (and {@code null} for each bot) on {@code team}. */
+    /** The winner of the coin toss chose: their team goes {@code first}, or second. */
+    public void chooseOrder(ServerPlayer player, boolean first) {
+        ServerDuel duel = duelsByPlayer.get(player.getUUID());
+        if (duel != null && duel.coin() != null && duel.coin().chooser().equals(player.getUUID())) {
+            decide(duel, first);
+        }
+    }
+
+    /** Settles the order and starts the duel; going second rebuilds it with the teams traded. */
+    private void decide(ServerDuel duel, boolean first) {
+        Coin coin = duel.coin();
+        ServerDuel next = new ServerDuel(duel.table(), duel.seats(), duel.field(), duel.ante(), duel.npc(),
+                duel.spectators(), duel.clock(), duel.match(), duel.ranked(), duel.info(), duel.decks(), null);
+        if (!first) {
+            List<DuelTable.Seat> traded = duel.table().seats().stream()
+                    .map(s -> new DuelTable.Seat(1 - s.team(), s.name(), s.bot())).toList();
+            try {
+                DuelTable table = coin.table().apply(traded);
+                duel.table().close();
+                next = new ServerDuel(table, duel.seats(), duel.field().endsTraded(), duel.ante(), duel.npc(),
+                        duel.spectators(), duel.clock(), duel.match() == null ? null : duel.match().endsTraded(),
+                        duel.ranked(), tradedEnds(duel.info()), duel.decks(), null);
+            } catch (UnsatisfiedLinkError | RuntimeException e) {
+                Jadm.LOGGER.error("Could not rebuild the duel for going second", e);
+                first = true;
+            }
+        }
+        duels.set(duels.indexOf(duel), next);
+        for (UUID seat : duel.seats()) {
+            if (seat != null) {
+                duelsByPlayer.put(seat, next);
+                ServerPlayer player = player(seat);
+                if (player != null) {
+                    PacketDistributor.sendToPlayer(player, new DuelCoinPayload(coin.name(),
+                            seat.equals(coin.chooser()), 0, true, !first));
+                }
+                message(seat, Component.literal((seat.equals(coin.chooser()) ? "You" : coin.name()) + " chose to go "
+                        + (first ? "first." : "second.")));
+            }
+        }
+        for (UUID id : duel.spectators()) {
+            duelsBySpectator.put(id, next);
+            ServerPlayer spectator = player(id);
+            if (spectator != null) {
+                PacketDistributor.sendToPlayer(spectator, new DuelCoinPayload(coin.name(), false, 0, true, !first));
+            }
+        }
+        run(next, next.table()::start);
+    }
+
+    /** The same duel with the teams traded, for a coin toss winner who went second. */
+    private static DuelInfo tradedEnds(DuelInfo info) {
+        return new DuelInfo(info.server(), info.duelists().stream()
+                .map(d -> new DuelInfo.Duelist(1 - d.team(), d.player(), d.name())).toList(), info.npc(),
+                info.ranked(), info.ante(), info.tournament(), info.battleCity(), info.lifePoints());
+    }
+
+        /** The people (and {@code null} for each bot) on {@code team}. */
     private static List<UUID> teamPeople(List<Entrant> entrants, int team) {
         List<UUID> out = new ArrayList<>();
         for (Entrant e : entrants) {
@@ -926,6 +1022,12 @@ public final class DuelManager {
         long now = server.getTickCount();
         invites.values().removeIf(invite -> invite.expiresAt() < now);
         for (ServerDuel duel : List.copyOf(duels)) {
+            if (duel.coin() != null) {
+                if (now >= duel.coin().deadline()) {
+                    decide(duel, true);
+                }
+                continue;
+            }
             run(duel, duel.table()::pump);
             MatchSetup.Rules rules = duel.match() != null ? duel.match().rules() : MatchSetup.Rules.SERVER;
             int limit = (rules.turnTimeLimit() >= 0 ? rules.turnTimeLimit() : JadmServerConfig.TURN_TIME_LIMIT.get())

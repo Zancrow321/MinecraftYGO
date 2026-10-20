@@ -89,6 +89,34 @@ public final class ClientField {
         FieldRenderer.reset();
     }
 
+    /**
+     * The two teams traded ends before the duel began (the winner of the coin toss chose to go second): the field is
+     * seen from the other end now, with the sleeves swapped, and the start show goes on as it was.
+     */
+    public static void tradeEnds() {
+        if (center == null) {
+            return;
+        }
+        forward = forward.reverse();
+        right = new Vec3(-forward.z, 0, forward.x);
+        int half = split ? 2 : 1;
+        if (sleeves.size() >= 2 * half) {
+            List<ResourceLocation> traded = new ArrayList<>(sleeves.subList(half, 2 * half));
+            traded.addAll(sleeves.subList(0, half));
+            traded.addAll(sleeves.subList(2 * half, sleeves.size()));
+            sleeves.clear();
+            sleeves.addAll(traded);
+        }
+        animations.clear();
+        lastBoard = null;
+        FieldRenderer.reset();
+    }
+
+    /** Queued effects wait at least {@code ticks} from now, so the start show can finish first. */
+    public static void holdQueue(int ticks) {
+        queueFree = Math.max(queueFree, tick + ticks);
+    }
+
     public static void clear() {
         center = null;
         hovered = null;
