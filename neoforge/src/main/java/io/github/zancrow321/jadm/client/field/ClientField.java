@@ -258,7 +258,8 @@ public final class ClientField {
     /** Called for each new view: queues its events. */
     public static void onView(DuelView view) {
         long start = Math.max(queueFree, tick);
-        for (FieldEvent event : view.events()) {
+        for (Finale.Step step : Finale.plan(view)) {
+            FieldEvent event = step.event();
             int actor = actor(event, view);
             // A later monster of a Pendulum Summon comes down with the first one, if its show is still on.
             long joined = SummonShow.joins(event, tick);
@@ -275,8 +276,17 @@ public final class ClientField {
                         ? " activates " : " summons ") + JadmData.text().cardName(actor), start);
                 start += DuelStaging.BANNER_TICKS;
             }
-            animations.add(new FieldAnimation(event, start, FieldAnimation.duration(event), actor));
-            start += ace ? AceCamera.queue(event, view, start) : FieldAnimation.spacing(event);
+            // The blow that ends the duel plays in slow motion.
+            int duration = FieldAnimation.duration(event);
+            duration = step.slow() ? Finale.slowDuration(event, duration) : duration;
+            FieldAnimation animation = new FieldAnimation(event, start, duration, actor);
+            animations.add(animation);
+            if (step.slow()) {
+                Finale.slowed(animation);
+            }
+            int spacing = FieldAnimation.spacing(event);
+            start += ace ? AceCamera.queue(event, view, start)
+                    : step.slow() ? Finale.slowSpacing(event, spacing) : spacing;
         }
         lastBoard = view.board();
         queueFree = start;
@@ -297,6 +307,7 @@ public final class ClientField {
 
     public static void clientTick() {
         tick++;
+        Finale.clientTick();
         animations.removeIf(a -> a.finished(tick));
         if (endsAt >= 0 && tick >= endsAt && !DuelStaging.holdsField()) {
             clear();

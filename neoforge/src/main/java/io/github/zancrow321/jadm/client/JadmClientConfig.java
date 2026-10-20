@@ -21,6 +21,7 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.IntValue ACE_MIN_ATTACK;
     public static final ModConfigSpec.BooleanValue ACE_EXTRA_DECK;
     public static final ModConfigSpec.BooleanValue LONG_SUMMON_SHOWS;
+    public static final ModConfigSpec.BooleanValue FINISHER_CAMERA;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -87,6 +88,10 @@ public final class JadmClientConfig {
                 .comment("Play the full show (about 2.5 seconds) for a Fusion, Synchro, Xyz, Ritual, Link or Pendulum "
                         + "Summon in a duel. Off, the shows are shorter (1.5 seconds), for decks that summon a lot.")
                 .define("longSummonShows", true);
+        FINISHER_CAMERA = builder
+                .comment("When the final blow of a duel plays in slow motion, swing the camera round to whoever it "
+                        + "hits. Off, the camera stays where it is.")
+                .define("finisherCamera", true);
         SPEC = builder.build();
     }
 

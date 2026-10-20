@@ -83,8 +83,13 @@ final class SummonShow {
     }
 
     private static boolean material(FieldEvent e) {
-        return e.kind() == FieldEvent.Kind.LEAVE && e.amount() >= SummonStyle.FUSION
-                && e.amount() <= SummonStyle.LINK;
+        int style = materialStyle(e);
+        return style >= SummonStyle.FUSION && style <= SummonStyle.LINK;
+    }
+
+    /** The summon a card leaving the field went into as a material, from the move's reason bits. */
+    private static int materialStyle(FieldEvent e) {
+        return e.kind() == FieldEvent.Kind.LEAVE ? SummonStyle.material(e.amount()) : SummonStyle.NONE;
     }
 
     /** How long a show plays: long by default, short with {@code longSummonShows} off. */
@@ -145,9 +150,9 @@ final class SummonShow {
             Vec3 at = zone(e.from(), 1.0);
             if (at != null) {
                 recent.removeIf(m -> ClientField.tick() - m.tick() > MATERIAL_TICKS);
-                recent.add(new Material(e.player(), e.amount(), at, e.code(), ClientField.tick()));
+                recent.add(new Material(e.player(), materialStyle(e), at, e.code(), ClientField.tick()));
                 burst(ParticleTypes.END_ROD, at, 20, 0.5, 0.2);
-                burst(materialParticle(e.amount()), at, 25, 0.6, 0.3);
+                burst(materialParticle(materialStyle(e)), at, 25, 0.6, 0.3);
                 sound(SoundEvents.AMETHYST_BLOCK_CHIME, at, 1.6f);
             }
             return true;

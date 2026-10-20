@@ -15,12 +15,18 @@ public record FieldAnimation(FieldEvent event, long start, int duration, int act
         if (SummonShow.plays(event)) {
             return SummonShow.duration();
         }
+        if (event.kind() == FieldEvent.Kind.LEAVE) {
+            return Finale.leaveDuration(event);
+        }
         return event.kind() == FieldEvent.Kind.ACTIVATE ? SignatureEffects.activateDuration(event.code())
                 : duration(event.kind());
     }
 
     /** How long the queue waits after {@code event} before the next one starts. */
     public static int spacing(FieldEvent event) {
+        if (event.kind() == FieldEvent.Kind.LEAVE) {
+            return Finale.leaveSpacing(event);
+        }
         return event.kind() == FieldEvent.Kind.ACTIVATE || SummonShow.plays(event) ? duration(event)
                 : spacing(event.kind());
     }

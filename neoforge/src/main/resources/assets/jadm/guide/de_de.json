@@ -405,7 +405,8 @@
         "- `fieldSpellArena` = {client:fieldSpellArena}: offene Feldzauber verwandeln das Duellfeld.",
         "- `displayEffects` = {client:displayEffects}: glänzende Karten in Sammler-Vitrinen leuchten und funkeln, ab Secret Rare mit Lichtstrahl.",
         "- `aceCamera` = {client:aceCamera}: wird ein großes Monster beschworen, fährt die Kamera zwei Sekunden um es herum und sein Name erscheint groß. Es zählt jedes Monster ab Stufe `aceMinLevel` = {client:aceMinLevel}, mit mindestens `aceMinAttack` = {client:aceMinAttack} ATK (0: aus) oder aus dem Extra Deck (`aceExtraDeck` = {client:aceExtraDeck}).",
-        "- `longSummonShows` = {client:longSummonShows}: die ganze Show (etwa 2,5 Sekunden) bei Fusions-, Synchro-, Xyz-, Ritual-, Link- und Pendelbeschwörungen; aus: 1,5 Sekunden."
+        "- `longSummonShows` = {client:longSummonShows}: die ganze Show (etwa 2,5 Sekunden) bei Fusions-, Synchro-, Xyz-, Ritual-, Link- und Pendelbeschwörungen; aus: 1,5 Sekunden.",
+        "- `finisherCamera` = {client:finisherCamera}: die Kamera schwenkt auf den, der den letzten Treffer eines Duells abbekommt, während er in Zeitlupe läuft."
       ]
     },
     {
@@ -413,6 +414,7 @@
       "icon": "minecraft:spyglass",
       "text": [
         "- Monster ohne 3D-Modell stehen als Hologramm ihres Kartenbilds auf dem Feld. Ein Ressourcenpaket kann jedem Monster ein Modell geben.",
+        "- Zerstörte Karten zerspringen in Splitter ihres Bildes, und jede Karte, die das Feld verlässt, fliegt sichtbar dorthin, wo sie hingeht. Der letzte Treffer eines Duells läuft in Zeitlupe, und der Sieger bekommt ein Feuerwerk über seiner Feldhälfte (in seiner Clan-Farbe).",
         "- Kartenbilder brauchen beim ersten Anzeigen eine Internetverbindung, danach kommen sie von deinem Rechner.",
         "- Eine Karte passt nicht ins Deck? Sie stammt aus einem noch gesperrten Set, oder die Bannliste begrenzt sie. Die Deckbox sagt dir, welche.",
         "- Die Karten eines Ante-Duells sind sicher: Ein Absturz oder Neustart gibt sie zurück, und ein Sieger, der offline ist, bekommt sie beim nächsten Einloggen.",

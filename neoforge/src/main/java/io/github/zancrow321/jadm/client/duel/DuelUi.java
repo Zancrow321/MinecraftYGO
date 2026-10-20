@@ -6,6 +6,7 @@ import io.github.zancrow321.jadm.client.ClientDuel;
 import io.github.zancrow321.jadm.client.JadmClientConfig;
 import io.github.zancrow321.jadm.client.field.AceCamera;
 import io.github.zancrow321.jadm.client.field.ClientField;
+import io.github.zancrow321.jadm.client.field.Finale;
 import io.github.zancrow321.jadm.client.field.DuelHud;
 import io.github.zancrow321.jadm.client.field.FieldLayout;
 import io.github.zancrow321.jadm.client.field.FieldRenderer;
@@ -423,6 +424,7 @@ public final class DuelUi {
         cardPanel(g, font, w, h);
         DuelFeedback.render(g, font, w, h);
         DuelStaging.renderBanners(g, font, w, h);
+        Finale.renderHud(g, w, h);
         if (phaseTip != null) {
             g.renderTooltip(font, Component.literal(phaseTip), mx, my);
         }

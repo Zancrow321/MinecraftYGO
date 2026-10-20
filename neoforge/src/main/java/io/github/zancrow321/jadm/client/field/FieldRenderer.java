@@ -75,6 +75,7 @@ public final class FieldRenderer {
         proxies.clear();
         started.clear();
         SummonShow.reset();
+        Finale.reset();
     }
 
     // ------------------------------------------------------------------ ticking: proxies, particles, sounds
@@ -92,6 +93,7 @@ public final class FieldRenderer {
                 SummonShow.tick(a, (int) (now - a.start()));
             }
         }
+        Finale.tick();
     }
 
     private static void onStart(FieldAnimation a) {
@@ -101,6 +103,9 @@ public final class FieldRenderer {
         FieldEvent e = a.event();
         Slot slot = e.from() != null && !e.from().isNone() ? slot(e.from()) : null;
         Vec3 at = slot != null ? ClientField.toWorld(slot.x(), slot.z(), 0.5) : null;
+        Finale.onStart(a);
+        // The final blow sounds slowed down too.
+        float slow = Finale.slow(a) ? 0.55f : 1;
         switch (e.kind()) {
             case SUMMON -> {
                 if (at != null) {
@@ -115,17 +120,18 @@ public final class FieldRenderer {
             }
             case ATTACK -> {
                 if (at != null) {
-                    sound(SoundEvents.PLAYER_ATTACK_SWEEP, at, 0.8f);
+                    sound(SoundEvents.PLAYER_ATTACK_SWEEP, at, 0.8f * slow);
                 }
             }
             case LEAVE -> {
-                if (at != null) {
+                // A destroyed card breaks a moment later, with its own sound (Finale).
+                if (at != null && !Finale.breaks(e)) {
                     burst(new BlockParticleOption(ParticleTypes.BLOCK,
                             Blocks.LIGHT_BLUE_STAINED_GLASS.defaultBlockState()), at.add(0, 0.5, 0), 60, 0.7, 0.2);
                     sound(SoundEvents.GLASS_BREAK, at, 1.0f);
                 }
             }
-            case DAMAGE -> sound(SoundEvents.PLAYER_HURT, sideCenter(e.player()), 0.9f);
+            case DAMAGE -> sound(SoundEvents.PLAYER_HURT, sideCenter(e.player()), 0.9f * slow);
             case RECOVER -> sound(SoundEvents.AMETHYST_BLOCK_CHIME, sideCenter(e.player()), 1.3f);
             default -> {
             }
@@ -534,6 +540,7 @@ public final class FieldRenderer {
                 }
             }
         }
+        Finale.draw(draw, now, partial);
     }
 
     private static void beam(Draw draw, VertexConsumer vc, Slot s, double height, double radius, int alpha) {
@@ -587,12 +594,28 @@ public final class FieldRenderer {
             }
             for (FieldAnimation a : ClientField.animations()) {
                 FieldEvent e = a.event();
-                if (e.kind() != FieldEvent.Kind.LEAVE || !a.started(now) || e.code() == 0
+                if (e.kind() != FieldEvent.Kind.LEAVE || e.code() == 0
                         || (e.from().location() & LOCATION_MZONE) == 0) {
                     continue;
                 }
                 CardPool.Model model = JadmData.model(e.code());
                 float p = a.progress(now, partial);
+                Vec3 lift = new Vec3(0, p * 1.5, 0);
+                boolean breaking = Finale.breaks(e);
+                boolean waiting = !a.started(now);
+                if (waiting) {
+                    // Still on the field until its turn in the queue comes (say, while Raigeki strikes), and still
+                    // attacking if the battle is what destroys it.
+                    p = 0;
+                    lift = lunge(e.from(), now, partial);
+                } else if (breaking) {
+                    // Whole and trembling until it shatters (Finale draws the shards), then gone.
+                    if (Finale.shattered(a, now)) {
+                        continue;
+                    }
+                    p = 0;
+                    lift = Finale.tremble(a, now);
+                }
                 if (model == null) {
                     if (e.from().isFaceUp()) {
                         Holograms.drawGhost(draw, e, p, now);
@@ -601,10 +624,11 @@ public final class FieldRenderer {
                 }
                 MonsterEntity ghost = proxy(1000 + e.from().controller() * 16 + e.from().sequence(), e.code());
                 ghost.alpha = 1 - p;
-                ghost.tint = 0xA0E8FF;
-                ghost.attack = -1;
-                drawModel(draw, poses, dispatcher, ghost, model, e.from().controller(), e.from().sequence(), false,
-                        1 - p * 0.5f, new Vec3(0, p * 1.5, 0), now, partial);
+                ghost.tint = waiting ? 0xFFFFFF : breaking ? (now % 2 == 0 ? 0xFF6060 : 0xFFFFFF) : 0xA0E8FF;
+                FieldAnimation attack = waiting ? ClientField.pending(FieldEvent.Kind.ATTACK, e.from()) : null;
+                ghost.attack = attack != null && attack.started(now) ? attack.progress(now, partial) : -1;
+                drawModel(draw, poses, dispatcher, ghost, model, e.from().controller(), e.from().sequence(),
+                        waiting && (e.from().position() & POS_DEFENSE) != 0, 1 - p * 0.5f, lift, now, partial);
             }
         } finally {
             dispatcher.setRenderShadow(true);

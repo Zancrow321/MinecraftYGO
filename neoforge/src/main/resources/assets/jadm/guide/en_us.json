@@ -405,7 +405,8 @@
         "- `fieldSpellArena` = {client:fieldSpellArena}: face-up Field Spells transform the duel field.",
         "- `displayEffects` = {client:displayEffects}: shiny cards in collector displays glow and sparkle, with a beam for Secret Rares and up.",
         "- `aceCamera` = {client:aceCamera}: when a big monster is summoned, the camera circles it for two seconds and its name shows big. Every monster of Level `aceMinLevel` = {client:aceMinLevel} or higher counts, with at least `aceMinAttack` = {client:aceMinAttack} ATK (0: off), or from the Extra Deck (`aceExtraDeck` = {client:aceExtraDeck}).",
-        "- `longSummonShows` = {client:longSummonShows}: the full show (about 2.5 seconds) for a Fusion, Synchro, Xyz, Ritual, Link or Pendulum Summon; off, 1.5 seconds."
+        "- `longSummonShows` = {client:longSummonShows}: the full show (about 2.5 seconds) for a Fusion, Synchro, Xyz, Ritual, Link or Pendulum Summon; off, 1.5 seconds.",
+        "- `finisherCamera` = {client:finisherCamera}: swing the camera round to whoever takes the final blow of a duel while it plays in slow motion."
       ]
     },
     {
@@ -413,6 +414,7 @@
       "icon": "minecraft:spyglass",
       "text": [
         "- Monsters without a 3D model stand on the field as a hologram of their artwork. A resource pack can give any monster a model.",
+        "- Destroyed cards shatter into shards of their picture, and every card that leaves the field flies to where it goes. The blow that ends a duel plays in slow motion, and the winner gets fireworks over their half (in their clan's color).",
         "- Card art needs an internet connection the first time a card is shown; after that it comes from your computer.",
         "- Can't put a card in your deck? It is from a set that is still locked, or the banlist limits it. The deck box tells you which.",
         "- An ante duel's cards are safe: a crash or restart gives them back, and a winner who logged off gets them on the next login.",

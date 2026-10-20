@@ -29,6 +29,9 @@ public final class JadmNetwork {
                 (payload, context) -> context.enqueueWork(() -> DiskClient.receive(payload)));
         registrar.playToClient(DuelResultPayload.TYPE, DuelResultPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientDuel.result(payload)));
+        registrar.playToClient(VictoryFireworksPayload.TYPE, VictoryFireworksPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> io.github.zancrow321.jadm.client.field.Finale
+                        .fireworks(payload)));
         registrar.playToClient(DuelClockPayload.TYPE, DuelClockPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientDuel.clock(payload.ticksLeft())));
         registrar.playToClient(DuelCoinPayload.TYPE, DuelCoinPayload.STREAM_CODEC,
