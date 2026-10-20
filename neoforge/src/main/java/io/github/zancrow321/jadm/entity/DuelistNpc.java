@@ -139,6 +139,11 @@ public final class DuelistNpc extends PathfinderMob {
         return deckFor(duelistName(), deckSeed, step, banlist);
     }
 
+    /** What this duelist's deck (and, with the WindBot AI, its play style) is picked from. */
+    public long deckSeed() {
+        return deckSeed;
+    }
+
     /** The deck a duelist with this name and deck seed plays at a progression step, see {@link #deck(int)}. */
     public static Deck deckFor(String name, long deckSeed, int step, Banlist banlist) {
         PoolMode mode = JadmData.poolMode();

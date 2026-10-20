@@ -105,6 +105,8 @@ public final class DuelTable implements AutoCloseable {
     private int forfeitWinner = -1;
     private DuelMessage.Win result;
     private boolean splitField;
+    /** Responders that are not seated yet follow the duel, each for a team, e.g. stand-ins for players. */
+    private final List<Map.Entry<Integer, Responder>> observers = new ArrayList<>();
 
     /** A 1v1 duel. @param bots a responder per seat, {@code null} for a person */
     public DuelTable(DuelText text, ScriptProvider scripts, DuelSettings settings, Deck deck0, Deck deck1,
@@ -147,6 +149,12 @@ public final class DuelTable implements AutoCloseable {
     }
 
     /** In a split field, which partner (0 or 1) owns zone column {@code seq}, or -1 if it is shared. */
+    /** Lets {@code responder} follow the duel as {@code team} sees it, before it ever has to answer for them. */
+    public DuelTable addObserver(int team, Responder responder) {
+        observers.add(Map.entry(team, responder));
+        return this;
+    }
+
     public static int zoneOwner(int seq) {
         return seq <= 1 ? 0 : seq == 3 || seq == 4 ? 1 : -1;
     }
@@ -355,6 +363,14 @@ public final class DuelTable implements AutoCloseable {
         Board board = duel.board();
         long latestHint = 0;
         for (DuelMessage message : step.messages()) {
+            for (Seat seat : seats) {
+                if (seat.bot() != null) {
+                    observe(seat.bot(), seat.team(), message);
+                }
+            }
+            for (Map.Entry<Integer, Responder> observer : observers) {
+                observe(observer.getValue(), observer.getKey(), message);
+            }
             if (message instanceof DuelMessage.Hint h && h.hintType() == MessageType.HINT_SELECTMSG) {
                 latestHint = h.data();
             }
@@ -435,6 +451,13 @@ public final class DuelTable implements AutoCloseable {
                     tallies.get(1 - m.player()).damageDealt += m.amount();
             default -> {
             }
+        }
+    }
+
+    private static void observe(Responder responder, int team, DuelMessage message) {
+        DuelMessage seen = MessageCensor.forTeam(message, team);
+        if (seen != null) {
+            responder.observe(team, seen);
         }
     }
 

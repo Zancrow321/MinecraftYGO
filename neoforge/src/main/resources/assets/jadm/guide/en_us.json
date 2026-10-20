@@ -264,7 +264,7 @@
         "",
         "Right-click one to duel it. Beat it and it won't duel you again for {server:results.npcs.rematchMinutes} minutes. NPCs can't be hurt while dueling.",
         "",
-        "They play with a computer opponent that summons its strongest monsters, brings out Synchro, Xyz and Link monsters, only attacks when it wins the fight and saves its traps for your turn. A **Duelist Spawn Egg** is in the creative tab."
+        "They play with WindBot, the well-known AI from YGOPro, in one of four styles: balanced, aggressive (summons and attacks a lot), defensive (sets monsters, shows only strong ones) or control (spends removal freely). Each NPC keeps its style, and like beginners they now and then let a response or an attack go by. A **Duelist Spawn Egg** is in the creative tab."
       ]
     },
     {
@@ -352,6 +352,7 @@
         "- `turnTimeLimit` = {server:turnTimeLimit}: seconds per person and turn, 0 for none. Afterwards the computer plays the rest of the turn.",
         "- `starterDecksWithoutDeckBox` = {server:starterDecksWithoutDeckBox}: players without a legal deck box duel with a starter deck.",
         "- `packsIntoBinder` = {server:packsIntoBinder}: cards from opened packs, tins and decks go straight into the binder you carry.",
+        "- `[ai] engine` = {server:ai.engine}: windbot or classic (the older AI). `npcStyle` = {server:ai.npcStyle} and `npcMistakes` = {server:ai.npcMistakes} for NPC duelists, `botStyle` = {server:ai.botStyle} and `botMistakes` = {server:ai.botMistakes} for tournament bots, bot seats and the stand-in for players out of time. Styles: balanced, aggressive, defensive, control or random; mistakes: 0 to 1.",
         "- `[pool] mode` = {server:pool.mode}: progression, modeled or all.",
         "- `[progression] scope` = {server:progression.scope}: one progress for the server, or one per player.",
         "- `[progression] startProduct` = {server:progression.startProduct}: where new worlds or players start.",

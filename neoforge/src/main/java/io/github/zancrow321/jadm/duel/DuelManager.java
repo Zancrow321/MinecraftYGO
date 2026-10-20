@@ -12,7 +12,7 @@ import io.github.zancrow321.jadm.cosmetics.Cosmetics;
 import io.github.zancrow321.jadm.cosmetics.PlayerCosmetics;
 import io.github.zancrow321.jadm.engine.DuelSettings;
 import io.github.zancrow321.jadm.engine.Ruleset;
-import io.github.zancrow321.jadm.engine.ai.DuelistAi;
+import io.github.zancrow321.jadm.engine.ai.Responder;
 import io.github.zancrow321.jadm.engine.data.BundledScripts;
 import io.github.zancrow321.jadm.engine.data.Deck;
 import io.github.zancrow321.jadm.engine.duel.DuelTable;
@@ -134,18 +134,32 @@ public final class DuelManager {
     }
 
     /**
-     * The turn time limit: ticks each seat spent choosing this turn, and the bot that chooses for whoever ran out.
+     * The turn time limit: ticks each seat spent choosing this turn, and the bots that choose for whoever ran out.
      */
     private static final class Clock {
-        final DuelistAi standIn;
+        /** Per person's seat; each follows the duel from the start, so it knows what happened when it steps in. */
+        final Map<Integer, Responder> standIns = new HashMap<>();
+        final long seed;
         final Map<Integer, Integer> used = new HashMap<>();
         final Set<Integer> outOfTime = new HashSet<>();
         int turn;
         /** Answers the stand-in gave for the current prompt that weren't allowed. */
         int refused;
 
-        Clock(long seed) {
-            standIn = new DuelistAi(seed, JadmData.cards());
+        Clock(long seed, DuelTable table, List<Deck> decks) {
+            this.seed = seed;
+            boolean tag = table.seats().size() > 2;
+            for (int seat = 0; seat < table.seats().size(); seat++) {
+                if (!table.isBot(seat)) {
+                    Responder standIn = DuelBots.standIn(seed + seat, tag ? null : decks.get(seat));
+                    standIns.put(seat, standIn);
+                    table.addObserver(table.seats().get(seat).team(), standIn);
+                }
+            }
+        }
+
+        Responder standIn(int seat) {
+            return standIns.computeIfAbsent(seat, s -> DuelBots.standIn(seed + s, null));
         }
     }
 
@@ -709,8 +723,10 @@ public final class DuelManager {
         for (int i = 0; i < entrants.size(); i++) {
             Entrant e = entrants.get(i);
             people[i] = e.player();
-            seats.add(new DuelTable.Seat(e.team(), e.name(),
-                    e.player() == null ? new DuelistAi(random.nextLong(), JadmData.cards()) : null));
+            Deck own = entrants.size() > 2 ? null : decks.get(i);
+            Responder bot = e.player() == null ? npc != null ? DuelBots.npc(random.nextLong(), npc.deckSeed(), own)
+                    : DuelBots.bot(random.nextLong(), own) : null;
+            seats.add(new DuelTable.Seat(e.team(), e.name(), bot));
         }
         MatchSetup.Rules rules = match != null ? match.rules() : MatchSetup.Rules.SERVER;
         Ruleset ruleset = rules.ruleset() != null ? rules.ruleset()
@@ -764,7 +780,7 @@ public final class DuelManager {
         Coin coin = winner == null ? null : new Coin(winner.player(), winner.name(),
                 server.getTickCount() + COIN_SECONDS * 20L, build);
         ServerDuel duel = new ServerDuel(table, people, field, ante, npc, new HashSet<>(),
-                new Clock(random.nextLong()), match, ranked, info, List.copyOf(decks), coin);
+                new Clock(random.nextLong(), table, decks), match, ranked, info, List.copyOf(decks), coin);
         duels.add(duel);
         if (npc != null) {
             npc.setDueling(true);
@@ -841,7 +857,7 @@ public final class DuelManager {
                 DuelTable table = coin.table().apply(traded);
                 duel.table().close();
                 next = new ServerDuel(table, duel.seats(), duel.field().endsTraded(), duel.ante(), duel.npc(),
-                        duel.spectators(), duel.clock(), duel.match() == null ? null : duel.match().endsTraded(),
+                        duel.spectators(), new Clock(duel.clock().seed, table, duel.decks()), duel.match() == null ? null : duel.match().endsTraded(),
                         duel.ranked(), tradedEnds(duel.info()), duel.decks(), null);
             } catch (UnsatisfiedLinkError | RuntimeException e) {
                 Jadm.LOGGER.error("Could not rebuild the duel for going second", e);
@@ -1091,7 +1107,7 @@ public final class DuelManager {
             }
         }
         run(duel, () -> {
-            Map<Integer, DuelView> views = table.timeOut(seat, clock.standIn, clock.refused);
+            Map<Integer, DuelView> views = table.timeOut(seat, clock.standIn(seat), clock.refused);
             DuelView own = views.get(seat);
             boolean refused = own != null && own.prompt() != null && own.log().contains(DuelTable.RETRY_LINE);
             clock.refused = refused ? clock.refused + 1 : 0;
@@ -1117,7 +1133,10 @@ public final class DuelManager {
         Map<Integer, DuelView> views;
         try {
             views = action.get();
-        } catch (RuntimeException e) {
+        } catch (VirtualMachineError e) {
+            throw e;
+        } catch (RuntimeException | Error e) {
+            // Error covers a crash inside the native core ("Invalid memory access"): end this duel, not the server.
             Jadm.LOGGER.error("Duel crashed", e);
             for (UUID seat : duel.seats()) {
                 message(seat, Component.literal("The duel ended because of an error."));
@@ -1309,7 +1328,13 @@ public final class DuelManager {
                         rank == null ? "" : rank.line(), rank == null ? 0 : rank.color()));
             }
         }
-        duel.table().close();
+        try {
+            duel.table().close();
+        } catch (VirtualMachineError e) {
+            throw e;
+        } catch (RuntimeException | Error e) {
+            Jadm.LOGGER.error("Could not free a crashed duel", e);
+        }
         if (duel.match() != null) {
             duel.match().onEnd().accept(duel.table().finished() ? winner : -1);
         }

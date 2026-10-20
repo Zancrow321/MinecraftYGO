@@ -192,9 +192,11 @@ In game:
   starter or structure deck that is out, or a random deck from the card pool with an Extra Deck of what the pool
   offers, favoring cards with a 3D model. The NPC says which deck it plays. Right-click one to duel it; beat it and
   it gives you a booster pack, then won't duel you again for a Minecraft day (`[results.npcs]`). They can't be hurt while dueling. A
-  **Duelist Spawn Egg** is in the creative tab. NPCs and the `bot` seats play with a heuristic AI that summons its
-  strongest monsters, brings out a Synchro, Xyz or Link monster when that beats what it has, Pendulum Summons,
-  only attacks when it wins the fight and saves its traps for your turn. Tournament decks live in
+  **Duelist Spawn Egg** is in the creative tab. NPCs, the `bot` seats, tournament bots and the stand-in for
+  players out of time play with WindBot (ported from YGOPro's bot, with the Astra executor that plays any deck) in one
+  of four styles: balanced, aggressive, defensive or control. Each NPC keeps its style, and NPCs now and then let a
+  response or an attack go by like beginners. `[ai]` in the server config picks the styles (`npcStyle`, `botStyle`),
+  how often they slip (`npcMistakes`, `botMistakes`) and `engine = "classic"` for the older heuristic AI. Tournament decks live in
   `engine/src/main/resources/jadm/tournament_decks.json`, listed by card name with the date they were
   played.
 - **Tournaments:** single elimination, double elimination (with a losers' bracket and a grand final reset), Swiss
@@ -329,6 +331,8 @@ becomes an Xyz material, and `LOCATION_EMZONE` and `LOCATION_PZONE` reach the Ex
   [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). Placed on the arm, given straps, a glowing layer,
   recolored skins and a standby pose with deploy/fold animations. Not for commercial use; the rest of the mod stays
   GPL-3.0. The notice ships as `assets/jadm/DuelDisk-LICENSE.md`.
+- Duel AI: a Java port of [WindBot](https://github.com/IceYGO/windbot), MIT, © 2015-2017 IceYGO, with the Astra
+  executor; the license ships as `assets/jadm/WindBot-LICENSE.md`.
 - Monster models: MIT, © iconmaster ([YGOMCModels](https://github.com/iconmaster5326/YGOMCModels)); the license ships as `assets/jadm/YGOMCModels-LICENSE.md`.
 - Card data and scripts: BabelCDB and CardScripts by Project Ignis (AGPL-3.0).
 - Historical Forbidden & Limited Lists: gathered by DawnbrandBots'

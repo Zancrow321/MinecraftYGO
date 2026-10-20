@@ -264,7 +264,7 @@
         "",
         "Rechtsklick auf einen startet ein Duell. Besiegst du ihn, duelliert er dich {server:results.npcs.rematchMinutes} Minuten lang nicht mehr. Während eines Duells sind NPCs unverwundbar.",
         "",
-        "Sie spielen mit einem Computer-Gegner, der seine stärksten Monster beschwört, Synchro-, Xyz- und Link-Monster holt, nur angreift, wenn er den Kampf gewinnt, und seine Fallen für deinen Zug aufhebt. Ein **Duellant-Spawn-Ei** liegt im Kreativ-Tab."
+        "Sie spielen mit WindBot, der bekannten KI aus YGOPro, und einem von vier Spielstilen: ausgewogen, aggressiv (beschwört und greift viel an), defensiv (setzt Monster, zeigt nur starke) oder Kontrolle (räumt mit Entfernern ab). Jeder NPC behält seinen Stil, und wie Anfänger lassen sie manchmal eine Antwort oder einen Angriff aus. Ein **Duellant-Spawn-Ei** liegt im Kreativ-Tab."
       ]
     },
     {
@@ -352,6 +352,7 @@
         "- `turnTimeLimit` = {server:turnTimeLimit}: Sekunden pro Person und Zug, 0 für keine Grenze. Danach spielt der Computer den Zug zu Ende.",
         "- `starterDecksWithoutDeckBox` = {server:starterDecksWithoutDeckBox}: Spieler ohne legale Deckbox duellieren sich mit einem Starter-Deck.",
         "- `packsIntoBinder` = {server:packsIntoBinder}: Karten aus geöffneten Packs, Tins und Decks landen direkt im Kartenordner, den du dabei hast.",
+        "- `[ai] engine` = {server:ai.engine}: windbot oder classic (die ältere KI). `npcStyle` = {server:ai.npcStyle} und `npcMistakes` = {server:ai.npcMistakes} für NPC-Duellanten, `botStyle` = {server:ai.botStyle} und `botMistakes` = {server:ai.botMistakes} für Turnier-Bots, Bot-Plätze und die Vertretung bei abgelaufener Zeit. Stile: balanced, aggressive, defensive, control oder random; Fehler: 0 bis 1.",
         "- `[pool] mode` = {server:pool.mode}: progression, modeled oder all.",
         "- `[progression] scope` = {server:progression.scope}: ein Fortschritt für den Server oder einer pro Spieler.",
         "- `[progression] startProduct` = {server:progression.startProduct}: wo neue Welten oder Spieler beginnen.",
