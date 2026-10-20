@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.9 (2026-10-20)
+
+### Progression unlocks by itself
+- **A new set every 3 Minecraft days:** in a progression world the next set now unlocks on its own, so single player
+  worlds no longer stay on Legend of Blue Eyes White Dragon. `[progression] daysPerSet` sets the days (as F3 counts
+  them, so sleeping counts); 0 brings back unlocking only with `/jadm progression`. The days count from when a world
+  first runs this version (per player with `scope = "player"`: from a player's first day). The usual chat message
+  says which set, rules and banlist are new, and `/jadm progression status` shows the days left.
+
 ## 1.2.8 (2026-10-20)
 
 ### Pack opening show
@@ -291,13 +300,6 @@
   on server start.
 - The mod brings its author's own deck and gives it to him the same way on every server; `bundledJoinDecks = false`
   in the server config turns that off.
-
-### Progression unlocks by itself
-- **A new set every 3 Minecraft days:** in a progression world the next set now unlocks on its own, so single player
-  worlds no longer stay on Legend of Blue Eyes White Dragon. `[progression] daysPerSet` sets the days (as F3 counts
-  them, so sleeping counts); 0 brings back unlocking only with `/jadm progression`. The days count from when a world
-  first runs this version (per player with `scope = "player"`: from a player's first day). The usual chat message
-  says which set, rules and banlist are new, and `/jadm progression status` shows the days left.
 
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
