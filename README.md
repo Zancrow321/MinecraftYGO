@@ -15,7 +15,7 @@ the engine behind EDOPro, running on the server. Monster models come from
 | `native/build.sh`, `native/build.ps1` | Build OCG-Core for the host into `engine/src/main/resources/natives/<platform>/`. |
 | `tools/models/import_models.py` | Converts YGOMCModels to GeckoLib assets, maps each model to its card and writes the era pool (`pool.json`). |
 | `tools/carddata/build_carddata.py` | Bundles card data, Lua scripts and system strings for every official card. Run it after `import_models.py`. |
-| `tools/carddata/build_banlists.py` | Writes every TCG Forbidden & Limited List since 1999 with its date (`banlists.json`). |
+| `tools/carddata/build_banlists.py` | Writes every TCG Forbidden & Limited List since 1999 with its date (`banlists.json`), the other official lists and Genesys points (`official_banlists.json`) and Konami's card ids (`konami_ids.json`). |
 | `tools/carddata/build_collection.py` | Picks the booster sets of the modeled pool, lists every TCG product in release order (`products.json`) and writes the era banlist. |
 | `tools/textures/make_collection_textures.py` | Draws the pack, binder, deck box, Card Shop and Card Trader textures. |
 | `tools/textures/make_guide_book.py` | Draws the handbook's item texture and the open book its screen is drawn on. |
@@ -132,7 +132,16 @@ In game:
   `mode = "all"` and the May 2000 OCG list for the modeled pool (which a server can still replace with
   `config/jadm/banlist.json`). `"none"` turns it off, and any other value names a file in
   `config/jadm/banlists/`, e.g. `banlist = "goat"` for `goat.json`, in the format of the bundled
-  `engine/src/main/resources/jadm/banlist.json` (`"limits": {"<card code>": <copies allowed>}`).
+  `engine/src/main/resources/jadm/banlist.json` (`"limits": {"<card code>": <copies allowed>}`). The official
+  lists `tcg`, `ocg`, `traditional`, `worlds`, `master-duel`, `genesys` and `genesys-ocg` are built in;
+  `/jadm banlist update` downloads the newest ones (into `config/jadm/official_banlists.json`) and
+  `/jadm banlist reset` drops them again.
+  `/jadm banlist use <list> <player>` gives single players their own list (`use server <player>` takes it back); a
+  duel uses the list its duelists share, otherwise the challenger's (arena duels: the server's).
+- **Genesys:** `banlist = "genesys"` plays the Genesys format: card points instead of limits, at most
+  `genesysPointCap` (100) per deck, no Link or Pendulum monsters, and with `ruleset = "auto"` the `genesys` ruleset
+  (no Extra Monster Zones or Pendulum Zones). A custom Genesys list has `"points": {"<card code>": <points>}` and
+  `"pointCap"`.
 - **Ante:** `/jadm duel <player> ante`, or sneak while right-clicking with the disk. Each duelist puts up a random
   card from their deck box and the winner takes both. The cards are held by the server until the duel ends (a
   crash or restart returns them), and a winner who logged off gets them on their next login. Servers can turn
@@ -279,11 +288,14 @@ python3 tools/carddata/build_collection.py --ygoprodeck ygoprodeck.json --cardse
 
 A set joins the modeled pool's boosters when at least 60% of its cards are in that pool.
 
-The banlist history comes from yaml-yugi-limit-regulation:
+The banlist history and the Master Duel and Genesys lists come from yaml-yugi-limit-regulation, the newest TCG,
+OCG, Traditional and Worlds lists from Project Ignis:
 
 ```sh
 git clone --depth 1 https://github.com/DawnbrandBots/yaml-yugi-limit-regulation
-python3 tools/carddata/build_banlists.py --lists yaml-yugi-limit-regulation --ygoprodeck ygoprodeck.json
+git clone --depth 1 https://github.com/ProjectIgnis/LFLists
+python3 tools/carddata/build_banlists.py --lists yaml-yugi-limit-regulation --lflists LFLists \
+    --ygoprodeck ygoprodeck.json
 ```
 
 ## Updating the duel disk model

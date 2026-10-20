@@ -35,15 +35,24 @@ public final class JadmServerConfig {
             .comment("The rules duels are played under: \"auto\" (the rules of the newest unlocked cards in a "
                     + "progression world, Master Rule 1 for the modeled pool, today's for all cards), \"mr1\" "
                     + "(original, as the cards were printed), \"goat\" (the 2005 TCG format), \"mr2\", \"mr3\", "
-                    + "\"mr4\" or \"modern\" (today's Master Rule).")
+                    + "\"mr4\", \"modern\" (today's Master Rule) or \"genesys\" (today's rules without Extra Monster or "
+                    + "Pendulum Zones; \"auto\" picks it when the banlist is a Genesys list).")
             .define("ruleset", "auto");
 
     public static final ModConfigSpec.ConfigValue<String> BANLIST = BUILDER
             .comment("The Forbidden & Limited List: \"auto\" (the TCG list of the time in a progression world, the "
-                    + "May 2000 list for the modeled pool, today's for all cards), \"none\", or the name of a file in "
-                    + "config/jadm/banlists/ without .json, e.g. \"goat\" for goat.json: "
-                    + "{\"name\": \"...\", \"limits\": {\"<passcode>\": <copies>}}.")
+                    + "May 2000 list for the modeled pool, today's for all cards), \"none\", an official list "
+                    + "(\"tcg\", \"ocg\", \"traditional\", \"worlds\", \"master-duel\", or \"genesys\" and \"genesys-ocg\" "
+                    + "for the Genesys format: points instead of limits, no Link or Pendulum monsters; "
+                    + "/jadm banlist update fetches the newest), or the name of a file in config/jadm/banlists/ "
+                    + "without .json, e.g. \"goat\" for goat.json: {\"name\": \"...\", \"limits\": {\"<passcode>\": "
+                    + "<copies>}} (a Genesys list has \"points\": {\"<passcode>\": <points>} and \"pointCap\").")
             .define("banlist", "auto");
+
+    public static final ModConfigSpec.IntValue GENESYS_POINT_CAP = BUILDER
+            .comment("Genesys: how many points a deck's cards (main, extra and side deck together) may cost. 100 is "
+                    + "the standard; events also play with other caps.")
+            .defineInRange("genesysPointCap", 100, 0, 10_000);
 
     public static final ModConfigSpec.IntValue STARTING_LIFE_POINTS = BUILDER
             .comment("Life points each duelist starts with in a 1v1 duel; tag duels use tagStartingLifePoints.")

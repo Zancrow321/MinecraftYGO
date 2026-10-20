@@ -118,6 +118,7 @@ public final class CardGrid {
 
     void render(GuiGraphics g, Font font, int mouseX, int mouseY) {
         int start = page * columns * rows;
+        var banlist = JadmData.banlist(net.minecraft.client.Minecraft.getInstance().player);
         for (int i = 0; i < columns * rows && start + i < entries.size(); i++) {
             Entry e = entries.get(start + i);
             int cx = x + (i % columns) * (cardWidth + 4);
@@ -136,6 +137,16 @@ public final class CardGrid {
                 g.fill(cx + cardWidth - font.width(n) - 3, cy + cardHeight - 10, cx + cardWidth, cy + cardHeight,
                         0xC0000000);
                 g.drawString(font, n, cx + cardWidth - font.width(n) - 1, cy + cardHeight - 9, 0xFFFFFFFF, false);
+            }
+            int points = banlist.points(e.code());
+            if (points > 0) {
+                // Genesys points in the top left corner.
+                String p = String.valueOf(points);
+                g.pose().pushPose();
+                g.pose().translate(0, 0, 30);
+                g.fill(cx, cy, cx + font.width(p) + 3, cy + 10, 0xD0603000);
+                g.drawString(font, p, cx + 2, cy + 1, 0xFFFFD040, false);
+                g.pose().popPose();
             }
         }
         Entry hovered = at(mouseX, mouseY);
@@ -278,6 +289,10 @@ public final class CardGrid {
         Component art = CardItem.artLine(code);
         if (art != null) {
             lines.add(art);
+        }
+        int points = JadmData.banlist(net.minecraft.client.Minecraft.getInstance().player).points(code);
+        if (points > 0) {
+            lines.add(Component.translatable("tooltip.jadm.genesys_points", points).withStyle(ChatFormatting.GOLD));
         }
         if (!text) {
             if (action != null) {

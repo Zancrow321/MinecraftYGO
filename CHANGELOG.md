@@ -87,6 +87,30 @@
 - A card revealed from the Deck and then added to the hand is named in the opponent's log ("Alex added X to their
   hand") instead of "a card".
 
+### Genesys format and official banlists
+- **Genesys:** `banlist = "genesys"` (or `/jadm banlist use genesys`) plays the Genesys format with Konami's current
+  point list: no Forbidden & Limited List, but a deck's cards (main, extra and side deck together) may cost at most
+  `genesysPointCap` points (100, the standard), and Link and Pendulum monsters aren't allowed. Duels then use the new
+  `genesys` ruleset: today's rules on the original field, without Extra Monster Zones or Pendulum Zones
+  (`ruleset = "auto"` picks it by itself). `genesys-ocg` is the OCG's point list. The deck box shows the deck's
+  points next to the main deck count, cards show their points in the top left corner and in the tooltip, and NPC
+  decks stay within the cap. Tournaments can set `banlist` to `genesys` and their own `genesysPointCap`.
+- **More official lists:** `banlist` can also be `tcg` (the newest TCG list), `ocg`, `traditional`, `worlds` or
+  `master-duel`. A file in `config/jadm/banlists/` of the same name still wins. A custom Genesys list is a file with
+  `"points"` and `"pointCap"`.
+- **`/jadm banlist update`** (operators) downloads the newest official lists (TCG, OCG, Traditional and Worlds from
+  Project Ignis, Master Duel and the Genesys points from Konami via yaml-yugi-limit-regulation) and uses them at once,
+  without a restart; players' deck boxes get them too. A newer TCG list also becomes the current list in progression
+  and all-cards worlds. A list whose download fails keeps the one it had. The lists are kept in
+  `config/jadm/official_banlists.json`; `/jadm banlist reset` goes back to the bundled ones. `/jadm banlist` shows
+  which list the server plays with and what each official list is.
+- **A banlist per player:** `/jadm banlist use <list> <player>` gives players their own list, like
+  `/jadm progression set <date> <player>`, so a few can play Genesys while the server stays on the TCG list (`use server
+  <player>` takes it back). Their deck boxes, cards and NPC opponents follow it. A duel uses the list all its duelists
+  share; otherwise the challenger's, and the invitation names it ("You play with Alex's banlist: Genesys ..."). Arena
+  duels between players on different lists use the server's list, tournaments their own.
+- The bundled TCG history now ends with the September 2026 list.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

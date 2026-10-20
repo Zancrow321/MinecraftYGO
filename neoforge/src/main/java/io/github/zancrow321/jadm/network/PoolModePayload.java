@@ -9,10 +9,10 @@ import net.minecraft.resources.ResourceLocation;
 
 /**
  * Server to client on login and whenever the player's progress changes: the server's pool mode (e.g. {@code all}),
- * the player's newest unlocked product, whether locked cards stay out of decks and the banlist setting, so binders
- * and deck boxes on the client match the cards the server plays with.
+ * the player's newest unlocked product, whether locked cards stay out of decks, the banlist setting and the Genesys
+ * point cap, so binders and deck boxes on the client match the cards the server plays with.
  */
-public record PoolModePayload(String mode, String product, boolean lockedInDeck, String banlist)
+public record PoolModePayload(String mode, String product, boolean lockedInDeck, String banlist, int genesysPointCap)
         implements CustomPacketPayload {
     public static final Type<PoolModePayload> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID, "pool_mode"));
@@ -20,7 +20,8 @@ public record PoolModePayload(String mode, String product, boolean lockedInDeck,
             StreamCodec.composite(ByteBufCodecs.STRING_UTF8, PoolModePayload::mode,
                     ByteBufCodecs.STRING_UTF8, PoolModePayload::product,
                     ByteBufCodecs.BOOL, PoolModePayload::lockedInDeck,
-                    ByteBufCodecs.STRING_UTF8, PoolModePayload::banlist, PoolModePayload::new);
+                    ByteBufCodecs.STRING_UTF8, PoolModePayload::banlist,
+                    ByteBufCodecs.VAR_INT, PoolModePayload::genesysPointCap, PoolModePayload::new);
 
     @Override
     public Type<? extends CustomPacketPayload> type() {

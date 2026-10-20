@@ -46,6 +46,16 @@ public record Banlists(List<Dated> lists) {
         return lists.get(lists.size() - 1).banlist();
     }
 
+    /** This history with a list that took effect after its newest one added at the end; else unchanged. */
+    public Banlists withNewer(Dated newer) {
+        if (!newer.date().isAfter(lists.get(lists.size() - 1).date())) {
+            return this;
+        }
+        List<Dated> out = new ArrayList<>(lists);
+        out.add(newer);
+        return new Banlists(out);
+    }
+
     public static Banlists loadBundled() {
         try (InputStream in = Banlists.class.getResourceAsStream(RESOURCE)) {
             if (in == null) {

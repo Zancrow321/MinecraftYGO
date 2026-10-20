@@ -127,8 +127,10 @@ public final class TournamentCommands {
             case "npcMatches" -> List.of("play", "coinflip");
             case "deckMode" -> List.of("constructed", "sealed", "draft");
             case "limitedPacks" -> List.of("pack 5", "pack:LOB 5", "pack:LOB 3; pack:MRD 2");
-            case "ruleset" -> List.of("server", "auto", "mr1", "goat", "mr2", "mr3", "mr4", "modern");
-            case "banlist" -> List.of("server", "auto", "none");
+            case "ruleset" -> List.of("server", "auto", "mr1", "goat", "mr2", "mr3", "mr4", "modern", "genesys");
+            case "banlist" -> List.of("server", "auto", "none", "tcg", "ocg", "traditional", "worlds", "master-duel",
+                    "genesys", "genesys-ocg");
+            case "genesysPointCap" -> List.of("-1", "100", "200");
             case "entryFeeCurrency" -> List.of("currency", "points", "minecraft:emerald");
             case "bestOf" -> List.of("1", "3", "5");
             case "topCut" -> List.of("0", "4", "8", "16");

@@ -112,7 +112,7 @@ public final class DeckBuilder {
 
     /**
      * Adds {@code count} cards from {@code from}, one copy each at first and more on later passes, within the
-     * banlist. Cards with a model come first more often.
+     * banlist (and its point cap). Cards with a model come first more often.
      */
     private static void draw(List<Integer> from, int count, Random random, CardPool pool, Banlist banlist,
                              Map<Integer, Integer> copies, List<Integer> into) {
@@ -130,11 +130,24 @@ public final class DeckBuilder {
                     break;
                 }
                 int limit = Math.min(banlist.limit(code), pass == 0 ? 1 : pass + 1);
-                if (copies.getOrDefault(code, 0) < limit) {
+                if (copies.getOrDefault(code, 0) < limit && withinPoints(code, banlist, copies)) {
                     copies.merge(code, 1, Integer::sum);
                     into.add(code);
                 }
             }
         }
+    }
+
+    /** Whether one more copy of a card keeps the deck within a Genesys point cap. */
+    private static boolean withinPoints(int code, Banlist banlist, Map<Integer, Integer> copies) {
+        int cost = banlist.points(code);
+        if (cost == 0) {
+            return true;
+        }
+        int spent = 0;
+        for (Map.Entry<Integer, Integer> e : copies.entrySet()) {
+            spent += banlist.points(e.getKey()) * e.getValue();
+        }
+        return spent + cost <= banlist.pointCap();
     }
 }

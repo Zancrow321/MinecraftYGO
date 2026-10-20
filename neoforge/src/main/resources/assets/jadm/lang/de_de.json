@@ -128,6 +128,8 @@
   "screen.jadm.deck_box": "Deckbox",
   "screen.jadm.deck_box.main": "Main Deck: %s",
   "screen.jadm.deck_box.extra": "Extra Deck: %s / 15",
+  "screen.jadm.deck_box.genesys": "Genesys: %s / %s Punkte",
+  "tooltip.jadm.genesys_points": "Genesys: %s Punkte",
   "screen.jadm.deck_box.clear": "Leeren",
   "screen.jadm.deck_box.owned": "Karten suchen",
   "screen.jadm.deck_box.no_cards": "Keine Karten in Ordnern oder Inventar",

@@ -95,4 +95,6 @@ public final class OcgConstants {
     /** Master Rule 5: current rules. */
     public static final long DUEL_MODE_MR5 = DUEL_PZONE | DUEL_EMZONE | DUEL_FSX_MMZONE
             | DUEL_TRAP_MONSTERS_NOT_USE_ZONE | DUEL_TRIGGER_ONLY_IN_LOCATION;
+    /** Genesys: today's rules on the original field, without Extra Monster Zones or Pendulum Zones. */
+    public static final long DUEL_MODE_GENESYS = DUEL_TRAP_MONSTERS_NOT_USE_ZONE | DUEL_TRIGGER_ONLY_IN_LOCATION;
 }

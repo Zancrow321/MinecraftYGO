@@ -38,6 +38,9 @@ public final class JadmNetwork {
         registrar.playToClient(PoolModePayload.TYPE, PoolModePayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> io.github.zancrow321.jadm.JadmData
                         .joined(payload)));
+        registrar.playToClient(OfficialBanlistsPayload.TYPE, OfficialBanlistsPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> io.github.zancrow321.jadm.JadmData
+                        .joinedOfficial(payload.json())));
         registrar.playToServer(SelectCosmeticPayload.TYPE, SelectCosmeticPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer player) {
