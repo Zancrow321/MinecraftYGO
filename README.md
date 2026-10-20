@@ -116,18 +116,22 @@ In game:
   under it. Export copies the deck as a YDK list (the format of YGOPro, EDOPro and most deck builders) and Import
   replaces it with the YDK list in the clipboard, built from the cards you own and saying which ones were missing.
 - **Progression** (the default `[pool] mode = "progression"`): a new world starts with Legend of Blue Eyes White
-  Dragon, and operators unlock the TCG products in release order. Every TCG product with new cards is a step; reprint
+  Dragon and unlocks the TCG products in release order: the next one by itself every 3 Minecraft days
+  (`[progression] daysPerSet`, counted from when the world first runs with it; sleeping through a night counts),
+  or whenever an operator unlocks it. Every TCG product with new cards is a step; reprint
   packs come along with the next one. Cards from sets that are still locked show a padlock in binders and can't go in
   a deck (`[cards] lockedInDeck`). Duels follow the newest unlocked cards: Master Rule 1 until the first Xyz set, 2
   until the first Pendulum set, 3 until the first Link set, 4 until April 2020, then 5, with the TCG Forbidden &
   Limited List of the time. When two players at different steps duel, the one further along sets the rules; an NPC
   follows the player it duels.
-  - `/jadm progression status` shows the current set, rules, banlist and the next set.
+  - `/jadm progression status` shows the current set, rules, banlist and the next set with the days until it unlocks.
   - `/jadm progression next [count]` unlocks the next set (or several), `/jadm progression until <code or date>`
     everything up to `MRL` or `2005-03-01`, `/jadm progression set <code or date>` also goes back.
   - `/jadm progression list [page]` lists the sets in order with what is unlocked.
   - `[progression] scope = "player"` gives each player their own progress (`/jadm progression next <player>`),
-    `startProduct` sets where worlds or players start and `announce` the chat messages.
+    `startProduct` sets where worlds or players start and `announce` the chat messages. Per player, the days count
+    from a player's first day on the server and keep counting while they are away. `daysPerSet = 0` leaves unlocking
+    to operators.
 - **Banlist:** `banlist = "auto"` (the default) is the TCG list of the time in a progression world, today's list with
   `mode = "all"` and the May 2000 OCG list for the modeled pool (which a server can still replace with
   `config/jadm/banlist.json`). `"none"` turns it off, and any other value names a file in

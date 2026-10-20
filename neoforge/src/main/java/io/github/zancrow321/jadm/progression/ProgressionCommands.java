@@ -106,7 +106,8 @@ public final class ProgressionCommands {
     }
 
     private static int status(CommandContext<CommandSourceStack> ctx, ServerPlayer player) {
-        for (Component line : Progress.status(stepOf(player), player == null ? "World" : player.getScoreboardName())) {
+        for (Component line : Progress.status(stepOf(player), player == null ? "World" : player.getScoreboardName(),
+                Progress.daysLeft(ctx.getSource().getServer(), player))) {
             ctx.getSource().sendSuccess(() -> line, false);
         }
         return 1;
