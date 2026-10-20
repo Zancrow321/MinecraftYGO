@@ -62,6 +62,15 @@
   binders the first one in the inventory takes them; without one the cards land in the inventory as before. Draft and
   Sealed packs are unchanged. Turn it off with `packsIntoBinder` in the server config.
 
+### Revealed cards in the duel log
+- When an effect reveals cards (Lilith, Lady of Lament showing 3 Normal Traps from the Deck, the Enneacraft monsters
+  revealing themselves from the hand, any "reveal" cost), the duel log now names them for both duelists: "You revealed
+  X, Y, Z from your Deck to Steve" and "Alex revealed X, Y, Z from their Deck to you". Before, only the player shown
+  the cards got a line, and the revealing player got none. Spectators see how many cards were revealed.
+- Revealing the top of a Deck ("excavate") is named for everyone, not just the Deck's owner.
+- A card revealed from the Deck and then added to the hand is named in the opponent's log ("Alex added X to their
+  hand") instead of "a card".
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,
