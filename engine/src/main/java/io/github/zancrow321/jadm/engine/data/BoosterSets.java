@@ -63,11 +63,15 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
     }
 
     /**
+     * @param cards   its cards, a card once for each rarity it comes in; one listed below the set's {@link #base}
+     *                rarity (a stray common in an all-rare set) counts as that rarity
      * @param profile how its packs are made
      */
     public record BoosterSet(String id, String code, String name, List<Card> cards, PackProfile profile) {
         public BoosterSet {
-            cards = List.copyOf(cards);
+            Rarity base = BoosterSets.base(cards.stream().map(Card::rarity).toList());
+            cards = cards.stream().map(c -> c.rarity().compareTo(base) < 0 ? new Card(c.code(), base) : c).distinct()
+                    .toList();
         }
 
         /** A set with the classic nine-card packs. */
@@ -79,32 +83,39 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
             return cards.stream().filter(c -> c.rarity() == rarity).toList();
         }
 
+        /** The rarity its plainest cards have: common, or rare for a set like Maze of Millennia. */
+        public Rarity base() {
+            return cards.isEmpty() ? Rarity.COMMON : cards.stream().map(Card::rarity).min(Rarity::compareTo).get();
+        }
+
         /**
-         * Opens a pack as its {@link #profile} says: commons, then each better slot rolled, falling back to the next
-         * lower rarity the set has. A slot above common only drops to the commons when the set has nothing better,
-         * else it takes the next higher rarity: an all-foil set's few commons never fill its foil slots.
+         * Opens a pack as its {@link #profile} says: cards of the {@link #base} rarity, then each better slot rolled,
+         * falling back to the next lower rarity the set has. A better slot only drops to the base rarity when the set
+         * has nothing better, else it takes the next higher rarity: an all-foil set's few commons never fill its foil
+         * slots.
          */
         public List<Card> open(RandomGenerator random) {
             Map<Rarity, List<Card>> byRarity = new EnumMap<>(Rarity.class);
             for (Rarity r : Rarity.values()) {
                 byRarity.put(r, of(r));
             }
+            Rarity base = base();
             List<Card> pack = new ArrayList<>(profile.size());
-            List<Card> commons = byRarity.get(Rarity.COMMON).isEmpty() ? cards : byRarity.get(Rarity.COMMON);
+            List<Card> plain = byRarity.get(base);
             for (int i = 0; i < profile.size() - profile.slots().size(); i++) {
-                pack.add(commons.get(random.nextInt(commons.size())));
+                pack.add(plain.get(random.nextInt(plain.size())));
             }
             for (PackProfile.Slot slot : profile.slots()) {
-                List<Card> pool = slotPool(byRarity, slot.roll(random));
+                List<Card> pool = slotPool(byRarity, base, slot.roll(random));
                 pack.add(pool.get(random.nextInt(pool.size())));
             }
             return pack;
         }
 
         /** The cards a slot rolled as this rarity draws from, see {@link #open}. */
-        private List<Card> slotPool(Map<Rarity, List<Card>> byRarity, Rarity rolled) {
-            if (rolled != Rarity.COMMON) {
-                for (int i = rolled.ordinal(); i > Rarity.COMMON.ordinal(); i--) {
+        private static List<Card> slotPool(Map<Rarity, List<Card>> byRarity, Rarity base, Rarity rolled) {
+            if (rolled.compareTo(base) > 0) {
+                for (int i = rolled.ordinal(); i > base.ordinal(); i--) {
                     if (!byRarity.get(Rarity.values()[i]).isEmpty()) {
                         return byRarity.get(Rarity.values()[i]);
                     }
@@ -115,8 +126,23 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
                     }
                 }
             }
-            return byRarity.get(Rarity.COMMON).isEmpty() ? cards : byRarity.get(Rarity.COMMON);
+            return byRarity.get(base);
         }
+    }
+
+    /**
+     * The lowest rarity that is more than a stray among these: at least a tenth of them. A set's packs are filled
+     * with it; Maze of Millennia lists one common among 84 rares or better, which made every pack's seven commons
+     * the same card.
+     */
+    public static Rarity base(List<Rarity> rarities) {
+        for (Rarity r : Rarity.values()) {
+            long n = rarities.stream().filter(x -> x == r).count();
+            if (n > 0 && n * 10 >= rarities.size()) {
+                return r;
+            }
+        }
+        return Rarity.COMMON;
     }
 
     public BoosterSets {
@@ -138,7 +164,8 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
 
     /**
      * The booster products as sets, each with only the cards in the pool. A card printed in several rarities in
-     * one product gets the first one listed.
+     * one product is in the set once for each slot they fall into, its plainest one first: Phantom Nightmare's
+     * ultras also come as Quarter Century Secret Rares from the secret slot.
      */
     public static BoosterSets fromProducts(Products products, CardPool pool) {
         Map<String, BoosterSet> sets = new LinkedHashMap<>();
@@ -147,7 +174,10 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
                 continue;
             }
             List<Card> cards = product.cards().stream().filter(p -> pool.contains(p.code()))
-                    .map(p -> new Card(p.code(), Rarity.ofPrinted(p.rarity()))).toList();
+                    .flatMap(p -> java.util.stream.Stream.concat(java.util.stream.Stream.of(p.rarity()),
+                                    p.better().stream())
+                            .map(Rarity::ofPrinted).distinct().map(r -> new Card(p.code(), r)))
+                    .toList();
             if (!cards.isEmpty()) {
                 sets.put(product.id(), new BoosterSet(product.id(), product.code(), product.name(), cards,
                         PackProfile.of(product)));

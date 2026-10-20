@@ -18,8 +18,9 @@ are in the pool are written. Server owners can replace it with config/jadm/banli
 
 products.json lists every TCG product YGOPRODeck knows that has a release date and at least one bundled card,
 oldest first: its id, set code, name, date, a rough kind (booster, deck, tin, promo, special), every card with
-its rarity as printed, and the cards it is the first TCG product for ("new"). Cards are listed by their original
-passcode, never an alternate artwork's. Reprint-only products have an
+its plainest rarity as printed (and the better ones it is also printed in, for the pack slots), and the cards it is
+the first TCG product for ("new"). Cards are listed by their original passcode, never an alternate artwork's.
+Reprint-only products have an
 empty "new". Cards never printed in the TCG are listed under "ocgOnly" with their OCG release date.
 
     curl -o ygoprodeck.json "https://db.ygoprodeck.com/api/v7/cardinfo.php?misc=yes"
@@ -70,6 +71,20 @@ def printed_rarity(rarity):
     return rarity if REAL_RARITY.search(rarity) else None
 
 
+def slot(rarity):
+    """The pack slot a printed rarity falls into, 0 (common) to 4 (secret), as BoosterSets.Rarity.ofPrinted."""
+    r = rarity.lower()
+    if "short print" in r or "normal parallel" in r:
+        return 0
+    if any(w in r for w in ("secret", "starlight", "collector", "ghost", "grand master", "quarter century")):
+        return 4
+    if any(w in r for w in ("ultra", "ultimate", "gold", "platinum")):
+        return 3
+    if "super" in r:
+        return 2
+    return 1 if any(w in r for w in ("rare", "starfoil", "shatterfoil")) else 0
+
+
 def kind(name, code, size):
     """A rough product kind from its name; pack formats per kind come later (M11d)."""
     lower = name.lower()
@@ -88,6 +103,15 @@ def kind(name, code, size):
     return "special"
 
 
+def listing(code, rarities):
+    """A card of a product: [code, rarity], with [the better rarities it is also printed in] when there are any."""
+    better = []
+    for r in rarities[1:]:
+        if slot(r) > slot(rarities[0]) and slot(r) not in [slot(b) for b in better]:
+            better.append(r)
+    return [code, rarities[0], better] if better else [code, rarities[0]]
+
+
 def write_products(cards, cardsets):
     bundled = {}
     for line in (RESOURCES / "cards.json").read_text(encoding="utf-8").splitlines():
@@ -96,7 +120,7 @@ def write_products(cards, cardsets):
             card = json.loads(line)
             bundled[card["code"]] = card
     dates = {s["set_name"]: s.get("tcg_date") for s in cardsets}
-    contents = defaultdict(dict)  # set name -> code -> rarity as printed (the first real one listed)
+    contents = defaultdict(dict)  # set name -> code -> its rarities as printed (the real ones, in listed order)
     codes = {}
     ocg_dates = {}
     for card in cards:
@@ -115,16 +139,20 @@ def write_products(cards, cardsets):
             name = printing["set_name"]
             if dates.get(name):
                 rarity = printed_rarity(printing["set_rarity"])
-                if contents[name].get(code) is None:
-                    contents[name][code] = rarity
+                rarities = contents[name].setdefault(code, [])
+                if rarity and rarity not in rarities:
+                    rarities.append(rarity)
                 codes.setdefault(name, printing["set_code"].split("-")[0])
-    # A card listed with a note only gets the product's most usual rarity: the commons of a deck, the foils of an
-    # all-foil set.
+    # A card is listed with its plainest rarity, the one it is pulled as in its usual slot (Phantom Nightmare's ultras
+    # are also Quarter Century Secret Rares, and listing that one first left the set without ultras); its better
+    # printings follow as variants. A card listed with only a note gets the product's most usual rarity: the commons
+    # of a deck, the foils of an all-foil set.
     for name, members in contents.items():
-        usual = Counter(r for r in members.values() if r).most_common(1)
-        for code, rarity in members.items():
-            if rarity is None:
-                members[code] = usual[0][0] if usual else "Common"
+        usual = Counter(min(r, key=slot) for r in members.values() if r).most_common(1)
+        for code, rarities in members.items():
+            if not rarities:
+                rarities.append(usual[0][0] if usual else "Common")
+            rarities.sort(key=slot)
     order = sorted(contents, key=lambda n: (dates[n], n))
     seen = set()
     ids = set()
@@ -138,7 +166,7 @@ def write_products(cards, cardsets):
         ids.add(pid)
         products.append({"id": pid, "code": codes[name], "name": html.unescape(name), "date": dates[name],
                          "kind": kind(name, codes[name], len(contents[name])),
-                         "cards": [[c, r] for c, r in sorted(contents[name].items())], "new": new})
+                         "cards": [listing(c, r) for c, r in sorted(contents[name].items())], "new": new})
     # Cards that never came out in the TCG unlock with their OCG date; alternate artworks follow their original.
     ocg_only = sorted([c, ocg_dates[c]] for c in bundled if c not in seen and c in ocg_dates)
     undated = [c for c, card in bundled.items() if c not in seen and c not in ocg_dates

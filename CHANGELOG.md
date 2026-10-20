@@ -14,6 +14,22 @@
   top card, for the bottom of the Deck the last click goes to the very bottom), each picked card shows its number,
   and Confirm puts them back that way. "Keep order" leaves them as they are.
 
+### Packs of sets without commons, and missing Ultra Rares
+- **Ultra Rares were missing:** YGOPRODeck lists many cards in several rarities per set, and the first one listed
+  counted. Phantom Nightmare, Legacy of Destruction, The Infinite Forbidden, Rage of the Abyss, Supreme Darkness,
+  Alliance Insight, Doom of Dimensions, Burst Protocol, Blazing Dominion, Duelist Nexus and Age of Overlord listed every
+  Ultra Rare as its Quarter Century Secret Rare first, so their packs never held an Ultra Rare; Toon Chaos, King's
+  Court, Maze of Memories, Justice Hunters and others were short of them too. A card now counts as its plainest
+  printing and also comes in each better one from that slot: an Ultra Rare from the ultra slot, its Quarter Century
+  Secret Rare from the secret slot. The Set Collection Book names every rarity a card was printed in.
+- **Fixed:** a Maze of Millennia or Justice Hunters pack held the same card seven times. These sets list a single
+  common among their rares, and all seven common slots rolled it. A set's plain slots now take its base rarity (rare
+  for these), and a stray lower listing counts as that rarity.
+- **Real pack formats:** sets without commons open as seven cards, six rares and a foil (the Maze sets, Toon Chaos,
+  King's Court, Justice Hunters...), or five cards, four Super Rares and a Secret Rare (The Secret Forces, Hidden
+  Summoners, Fists of the Gadgets...). Before, their "common" slots drew from the whole set. Both cost a premium pack
+  in the card shop.
+
 ### Product contents fixes
 - **Legendary Decks boxes give every card:** Legendary 5D's Decks, Dragon, Hero, Arc-V and Modern Decks 2026 hold
   three decks, but opening one gave only 15 extra deck monsters, so Black Rose Dragon and others were missing. A sealed

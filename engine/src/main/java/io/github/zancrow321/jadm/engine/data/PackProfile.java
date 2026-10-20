@@ -38,11 +38,17 @@ public record PackProfile(String name, int size, List<Slot> slots) {
     public static final Slot FOIL = new Slot(1 / 12.0, 1 / 6.0, 1 - 1 / 12.0 - 1 / 6.0);
     /** All-foil sets: mostly ultra, secret 1 in 4. */
     public static final Slot PREMIUM = new Slot(1 / 4.0, 3 / 4.0, 0);
+    /** Always a secret rare. */
+    public static final Slot SECRET = new Slot(1, 0, 0);
 
     /** Nine cards, eight of them common: the core boosters until mid-2014, and the modeled pool's sets. */
     public static final PackProfile CLASSIC_CORE = new PackProfile("core", 9, List.of(CLASSIC));
     /** Nine cards from Duelist Alliance on: seven commons, a rare and a super, ultra or secret. */
     public static final PackProfile MODERN_CORE = new PackProfile("core", 9, List.of(RARE, FOIL));
+    /** Seven cards, six rares and a foil: the sets without commons, such as Maze of Millennia or Justice Hunters. */
+    public static final PackProfile RARE_ONLY = new PackProfile("rare", 7, List.of(FOIL));
+    /** Five cards, four supers and a secret: The Secret Forces, Hidden Summoners, Fists of the Gadgets... */
+    public static final PackProfile SUPER_SECRET = new PackProfile("super", 5, List.of(SECRET));
     /** The day the core boosters went to a rare and a foil per pack (Duelist Alliance). */
     public static final LocalDate MODERN_FROM = LocalDate.of(2014, 8, 14);
 
@@ -59,6 +65,11 @@ public record PackProfile(String name, int size, List<Slot> slots) {
                     + "|dimension of chaos: special|high-speed riders|mega pack|ancient guardians"
                     + "|dark saviors|soul fusion|brothers of legend|valiant smashers|genesis impact|legendary duelists");
 
+    /** Whether its packs are the pricier sort below a core booster: all foil, or no commons. */
+    public boolean premium() {
+        return slots.size() > 1 || equals(RARE_ONLY) || equals(SUPER_SECRET);
+    }
+
     /** The pack format of a product. */
     public static PackProfile of(Products.Product product) {
         String name = product.name().toLowerCase(Locale.ROOT);
@@ -72,6 +83,17 @@ public record PackProfile(String name, int size, List<Slot> slots) {
             return new PackProfile("battle", 5, List.of(CLASSIC));
         }
         boolean modern = !product.date().isBefore(MODERN_FROM);
+        if (product.kind() == Products.Kind.BOOSTER && !MINI.matcher(name).find()) {
+            List<BoosterSets.Rarity> rarities = product.cards().stream()
+                    .map(p -> BoosterSets.Rarity.ofPrinted(p.rarity())).toList();
+            BoosterSets.Rarity base = BoosterSets.base(rarities);
+            if (base == BoosterSets.Rarity.RARE && modern) {
+                return RARE_ONLY;
+            }
+            if (base == BoosterSets.Rarity.SUPER && rarities.contains(BoosterSets.Rarity.SECRET)) {
+                return SUPER_SECRET;
+            }
+        }
         // Smaller sets (Duelist Packs, Hidden Arsenal, Duel Terminal, Legendary Duelists...) come in packs of five.
         if (product.kind() != Products.Kind.BOOSTER || MINI.matcher(name).find()) {
             return new PackProfile("mini", 5, List.of(modern ? FOIL : CLASSIC));
