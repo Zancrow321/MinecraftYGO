@@ -238,6 +238,12 @@
   effects; only what's public) while walking around freely. Right-click the field, or `/jadm watch` without a name, to
   watch it up close; walking away or the duel ending takes the field away again.
 
+### Field Zone no longer hidden behind the card panel
+- In duel mode the top-down camera keeps the field between the panels on the left (life points, card panel) and the
+  phase buttons on the right. Before, the field sat a little to the left, so on 16:10, 4:3 or other narrower screens
+  (and at big GUI scales) your Field Zone was partly or fully under the card panel, and hovering a Field Spell there
+  didn't show it in the panel. On screens too narrow for the whole field the camera moves back until it fits.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,
