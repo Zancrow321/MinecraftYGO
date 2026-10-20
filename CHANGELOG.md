@@ -56,6 +56,12 @@
 - The mod brings its author's own deck and gives it to him the same way on every server; `bundledJoinDecks = false`
   in the server config turns that off.
 
+### Pulled cards go into your binder
+- Carry a binder and the cards of an opened booster pack go straight into it (with their rarity) instead of the
+  inventory; the pack window says so. A tin's promo card does too, as structure decks already did. With several
+  binders the first one in the inventory takes them; without one the cards land in the inventory as before. Draft and
+  Sealed packs are unchanged. Turn it off with `packsIntoBinder` in the server config.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

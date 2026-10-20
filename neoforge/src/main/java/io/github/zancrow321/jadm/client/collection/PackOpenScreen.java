@@ -21,17 +21,24 @@ public final class PackOpenScreen extends Screen {
     private final List<JadmComponents.CardStack> cards;
     /** The screen to go on to once this one is closed, or {@code null} */
     private final Screen next;
+    /** Whether the cards went straight into the player's binder. */
+    private final boolean intoBinder;
     private int ticks;
 
-    public PackOpenScreen(String setName, List<JadmComponents.CardStack> cards) {
-        this(setName, cards, null);
+    public PackOpenScreen(String setName, List<JadmComponents.CardStack> cards, boolean intoBinder) {
+        this(setName, cards, null, intoBinder);
     }
 
     /** A pack of several opened one after the other, e.g. the packs of a Sealed tournament. */
     public PackOpenScreen(String setName, List<JadmComponents.CardStack> cards, Screen next) {
+        this(setName, cards, next, false);
+    }
+
+    private PackOpenScreen(String setName, List<JadmComponents.CardStack> cards, Screen next, boolean intoBinder) {
         super(Component.literal(setName));
         this.cards = cards;
         this.next = next;
+        this.intoBinder = intoBinder;
     }
 
     @Override
@@ -107,8 +114,12 @@ public final class PackOpenScreen extends Screen {
             }
         }
         if (revealed == n) {
+            if (intoBinder) {
+                g.drawCenteredString(font, Component.translatable("screen.jadm.pack.binder"), width / 2,
+                        y0 + cardHeight + 32, 0xFF55FF55);
+            }
             g.drawCenteredString(font, Component.translatable("screen.jadm.pack.close"), width / 2,
-                    y0 + cardHeight + 32, 0xFFAAAAAA);
+                    y0 + cardHeight + (intoBinder ? 44 : 32), 0xFFAAAAAA);
         }
         if (hovered >= 0) {
             g.renderComponentTooltip(font, CardGrid.tooltip(cards.get(hovered).code(), null), mouseX, mouseY);

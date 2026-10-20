@@ -18,6 +18,11 @@ public final class JadmServerConfig {
             .comment("Give the decks that come with the mod for particular players (the mod author's) on their "
                     + "first join. Decks in config/jadm/join_decks/ are given either way.")
             .define("bundledJoinDecks", true);
+    public static final ModConfigSpec.BooleanValue PACKS_INTO_BINDER = BUILDER
+            .comment("Cards from opened booster packs, a tin's promo card and the cards of structure and starter decks "
+                    + "go straight into the first binder the player carries. Off, or without a binder, they go into "
+                    + "the inventory.")
+            .define("packsIntoBinder", true);
 
     /** Bumped when a release changes defaults that older config files should pick up, see {@link #migrate}. */
     private static final int VERSION = 2;
