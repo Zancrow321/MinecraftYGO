@@ -3,6 +3,9 @@ package io.github.zancrow321.jadm.duel;
 import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.JadmServerConfig;
+import io.github.zancrow321.jadm.api.event.DuelEndEvent;
+import io.github.zancrow321.jadm.api.event.DuelInfo;
+import io.github.zancrow321.jadm.api.event.DuelStartEvent;
 import io.github.zancrow321.jadm.arena.DuelArena;
 import io.github.zancrow321.jadm.cosmetics.Cosmetics;
 import io.github.zancrow321.jadm.cosmetics.PlayerCosmetics;
@@ -36,6 +39,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -98,9 +102,10 @@ public final class DuelManager {
      * @param npc the NPC duelist playing the bot seat, or {@code null}
      * @param match the organized duel (a tournament game) this is, or {@code null}
      * @param ranked whether it moves the two people's ratings
+     * @param info   what the duel events tell other mods and scripts about it
      */
     private record ServerDuel(DuelTable table, UUID[] seats, DuelFieldPayload field, UUID ante, DuelistNpc npc,
-                              Set<UUID> spectators, Clock clock, MatchSetup match, boolean ranked) {
+                              Set<UUID> spectators, Clock clock, MatchSetup match, boolean ranked, DuelInfo info) {
     }
 
     /**
@@ -460,7 +465,7 @@ public final class DuelManager {
                     .withStyle(ChatFormatting.GOLD));
         }
         if (start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step, banlist,
-                null, invite.ranked()) && entrants.size() == 2) {
+                null, invite.ranked()) == null && entrants.size() == 2) {
             StarChips.get(server).begin(entrants.get(0).player(), entrants.get(1).player(), invite.npc() != null);
         }
     }
@@ -518,8 +523,7 @@ public final class DuelManager {
                 setup.ranked(), winner -> told.accept(swapped && (winner == 0 || winner == 1) ? 1 - winner : winner));
         boolean ranked = setup.ranked() && online.size() == 2
                 && RankedDuels.whyNot(server, online.get(0).getUUID(), online.get(1).getUUID()) == null;
-        return start(entrants, decks, field, null, setup.npc(), false, step, banlist, unswapped, ranked) ? null
-                : "the duel engine isn't available";
+        return start(entrants, decks, field, null, setup.npc(), false, step, banlist, unswapped, ranked);
     }
 
     /** The same field seen from the other end: team 0 gets the far side. */
@@ -645,11 +649,11 @@ public final class DuelManager {
      * @param step      the progression step whose rules the duel is played under
      * @param banlist   the banlist the decks were checked against
      * @param match     the organized duel this is, with its own rules, or {@code null}
-     * @return whether the duel started
+     * @return why it didn't start, or {@code null} once it has
      */
-    private boolean start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes,
-                          DuelistNpc npc, boolean split, int step,
-                          io.github.zancrow321.jadm.engine.data.Banlist banlist, MatchSetup match, boolean ranked) {
+    private String start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes,
+                         DuelistNpc npc, boolean split, int step,
+                         io.github.zancrow321.jadm.engine.data.Banlist banlist, MatchSetup match, boolean ranked) {
         var random = server.overworld().getRandom();
         long[] seed = {random.nextLong(), random.nextLong(), random.nextLong(), random.nextLong() | 1};
         List<DuelTable.Seat> seats = new ArrayList<>();
@@ -667,8 +671,17 @@ public final class DuelManager {
         String banlistNote = banlist.name().equals(JadmData.banlist(step).name()) ? "" : " with " + banlist.name();
         int serverLifePoints = entrants.size() > 2 ? JadmServerConfig.TAG_STARTING_LIFE_POINTS.get()
                 : JadmServerConfig.STARTING_LIFE_POINTS.get();
-        DuelSettings.Team team = new DuelSettings.Team(rules.lifePoints() > 0 ? rules.lifePoints()
-                : serverLifePoints, 5, 1);
+        int lifePoints = rules.lifePoints() > 0 ? rules.lifePoints() : serverLifePoints;
+        DuelSettings.Team team = new DuelSettings.Team(lifePoints, 5, 1);
+        DuelInfo info = new DuelInfo(server, entrants.stream()
+                .map(e -> new DuelInfo.Duelist(e.team(), e.player(), e.name())).toList(), npc, ranked,
+                anteBoxes != null, match != null, split, lifePoints);
+        DuelStartEvent starting = NeoForge.EVENT_BUS.post(new DuelStartEvent(info));
+        if (starting.isCanceled()) {
+            broadcast(entrants, Component.literal(starting.getCancelMessage()).withStyle(ChatFormatting.RED));
+            releaseArena(entrants, npc);
+            return starting.getCancelMessage();
+        }
         DuelTable table;
         try {
             table = new DuelTable(JadmData.text(), new BundledScripts(),
@@ -677,12 +690,8 @@ public final class DuelManager {
         } catch (UnsatisfiedLinkError | RuntimeException e) {
             Jadm.LOGGER.error("Could not start a duel", e);
             broadcast(entrants, Component.literal("The duel engine isn't available on this server."));
-            List<UUID> riders = new ArrayList<>(entrants.stream().map(Entrant::player).filter(Objects::nonNull).toList());
-            if (npc != null) {
-                riders.add(npc.getUUID());
-            }
-            DuelArena.release(riders);
-            return false;
+            releaseArena(entrants, npc);
+            return "the duel engine isn't available";
         }
         UUID ante = anteBoxes == null ? null : takeAnte(entrants, anteBoxes, random);
         table.splitField(split);
@@ -702,7 +711,7 @@ public final class DuelManager {
             field = field.withLayout(false, List.of(sleeveOf(entrants, 0, npc), sleeveOf(entrants, 1, npc)));
         }
         ServerDuel duel = new ServerDuel(table, people, field, ante, npc, new HashSet<>(),
-                new Clock(random.nextLong()), match, ranked);
+                new Clock(random.nextLong()), match, ranked, info);
         duels.add(duel);
         if (npc != null) {
             npc.setDueling(true);
@@ -735,7 +744,16 @@ public final class DuelManager {
             broadcast(entrants, clanWar);
         }
         run(duel, table::start);
-        return true;
+        return null;
+    }
+
+    /** Frees the arena a duel that won't start had claimed. */
+    private static void releaseArena(List<Entrant> entrants, DuelistNpc npc) {
+        List<UUID> riders = new ArrayList<>(entrants.stream().map(Entrant::player).filter(Objects::nonNull).toList());
+        if (npc != null) {
+            riders.add(npc.getUUID());
+        }
+        DuelArena.release(riders);
     }
 
     /** The people (and {@code null} for each bot) on {@code team}. */
@@ -1139,6 +1157,10 @@ public final class DuelManager {
             }
             escrow.settle(server, duel.ante(), payTo);
         }
+        DuelEndEvent ended = NeoForge.EVENT_BUS.post(new DuelEndEvent(duel.info(),
+                duel.table().finished() ? winner : -1, duel.table().finished(), duel.table().turn(),
+                new int[]{duel.table().lifePoints(0), duel.table().lifePoints(1)}));
+        rewards.forEach((id, lines) -> lines.addAll(ended.notes(id)));
         for (int seat = 0; seat < duel.seats().length; seat++) {
             ServerPlayer player = player(duel.seats()[seat]);
             if (player != null) {

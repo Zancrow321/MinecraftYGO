@@ -148,6 +148,13 @@
   can be, the winner's bonus, announcements, and the arena battle's size, call time and no-show time.
 - Operators: `/jadm clan admin disband|rating|treasury|endwar <tag>` and `/jadm clan admin season confirm`.
 
+### KubeJS scripting
+- With [KubeJS](https://modrinth.com/mod/kubejs) installed, server scripts can react to the mod: `JadmEvents.duelStart`
+  (cancel a duel), `duelEnd` (winners, losers, life points, extra lines on the result screen), `packOpened` (change
+  the pulled cards), `tournamentEnd`, `rankChanged` and `setCompleted`. `Jadm` helpers make cards and packs, read card
+  data and give or take Duel Points. See [docs/kubejs.md](docs/kubejs.md).
+- The same events are NeoForge events for other mods (`io.github.zancrow321.jadm.api.event`).
+
 ### Tag duel life points
 - Tag and Battle City duels (2v2) have their own starting life points, `tagStartingLifePoints` in
   `serverconfig/jadm-server.toml`, 16000 by default. 1v1 duels keep `startingLifePoints` (8000). A tournament that

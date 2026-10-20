@@ -43,6 +43,19 @@ repositories {
         url = 'https://maven.architectury.dev/'
         content { includeGroup 'dev.architectury' }
     }
+    maven {
+        name = 'KubeJS'
+        url = 'https://maven.latvian.dev/releases'
+        content {
+            includeGroup 'dev.latvian.mods'
+            includeGroup 'dev.latvian.apps'
+        }
+    }
+    maven {
+        name = 'JitPack (KubeJS\'s gif library)'
+        url = 'https://jitpack.io'
+        content { includeGroup 'com.github.rtyley' }
+    }
 }
 
 dependencies {
@@ -67,6 +80,13 @@ dependencies {
         runtimeOnly "dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}"
         runtimeOnly "dev.ftb.mods:ftb-library-neoforge:${ftb_library_version}"
         runtimeOnly "dev.architectury:architectury-neoforge:${architectury_version}"
+    }
+    // Optional: KubeJS scripts can listen to duels (JadmEvents) and use the Jadm helpers. Only compiled against;
+    // dev runs include it with -Pkubejs.
+    compileOnly "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
+    compileOnly "dev.latvian.mods:rhino:${rhino_version}"
+    if (project.hasProperty('kubejs')) {
+        runtimeOnly "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
     }
 }
 
@@ -140,6 +160,7 @@ var generateModMetadata = tasks.register('generateModMetadata', ProcessResources
             mod_description        : mod_description,
             geckolib_version_range : geckolib_version_range,
             curios_version_range   : curios_version_range,
+            kubejs_version_range   : kubejs_version_range,
     ]
     inputs.properties replaceProperties
     expand replaceProperties
