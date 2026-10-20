@@ -115,6 +115,7 @@ public final class BoosterPackItem extends Item {
             PacketDistributor.sendToPlayer(serverPlayer, new PackOpenedPayload(set.name(), shown,
                     !binder.isEmpty()));
             io.github.zancrow321.jadm.cosmetics.PlayerCosmetics.openedPack(serverPlayer);
+            io.github.zancrow321.jadm.quest.Quests.packOpened(serverPlayer);
         }
         return InteractionResultHolder.consume(stack);
     }

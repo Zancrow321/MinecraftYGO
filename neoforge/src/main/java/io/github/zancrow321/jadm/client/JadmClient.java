@@ -68,6 +68,10 @@ public final class JadmClient {
     /** Opens the ranking window. */
     public static final KeyMapping RANKING = new KeyMapping("key.jadm.ranking",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_J, "key.categories.jadm");
+    /** Opens the quest window. */
+    public static final KeyMapping QUESTS = new KeyMapping("key.jadm.quests",
+            net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_U, "key.categories.jadm");
     /** Opens the admin menu, for operators. */
     public static final KeyMapping CLAN = new KeyMapping("key.jadm.clan",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, "key.categories.jadm");
@@ -246,6 +250,7 @@ public final class JadmClient {
             event.register(ADMIN);
             event.register(RANKING);
             event.register(CLAN);
+            event.register(QUESTS);
         }
     }
 
@@ -322,6 +327,11 @@ public final class JadmClient {
         while (CLAN.consumeClick()) {
             if (mc.screen == null && mc.player != null) {
                 mc.player.connection.sendCommand(Jadm.COMMAND + " clan");
+            }
+        }
+        while (QUESTS.consumeClick()) {
+            if (mc.screen == null && mc.player != null) {
+                mc.player.connection.sendCommand(Jadm.COMMAND + " quests");
             }
         }
         while (ADMIN.consumeClick()) {

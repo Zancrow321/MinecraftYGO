@@ -102,6 +102,7 @@ public final class Jadm {
                 io.github.zancrow321.jadm.clan.ClanCommands.onLogin(player);
                 io.github.zancrow321.jadm.clan.ClanParties.onLogin(player);
                 io.github.zancrow321.jadm.bounty.Bounties.login(player);
+                io.github.zancrow321.jadm.quest.Quests.onLogin(player);
             }
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {
@@ -178,6 +179,7 @@ public final class Jadm {
     private void onServerStarting(ServerStartingEvent event) {
         JadmServerConfig.migrate();
         JadmData.reloadDownloaded();
+        io.github.zancrow321.jadm.quest.QuestPool.load();
         Progress.started(event.getServer());
         io.github.zancrow321.jadm.collection.JoinDecks.prepare();
         // Duels run on the server, so load the engine there and fail loudly but harmlessly if it's unavailable.
