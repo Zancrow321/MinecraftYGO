@@ -7,6 +7,7 @@ import io.github.zancrow321.jadm.api.event.DuelEndEvent;
 import io.github.zancrow321.jadm.api.event.DuelInfo;
 import io.github.zancrow321.jadm.api.event.DuelStartEvent;
 import io.github.zancrow321.jadm.arena.DuelArena;
+import io.github.zancrow321.jadm.bounty.Bounties;
 import io.github.zancrow321.jadm.cosmetics.Cosmetics;
 import io.github.zancrow321.jadm.cosmetics.PlayerCosmetics;
 import io.github.zancrow321.jadm.engine.DuelSettings;
@@ -26,6 +27,7 @@ import io.github.zancrow321.jadm.network.DuelFieldPayload;
 import io.github.zancrow321.jadm.network.DuelResultPayload;
 import io.github.zancrow321.jadm.network.DuelistStatePayload;
 import io.github.zancrow321.jadm.network.DuelViewPayload;
+import io.github.zancrow321.jadm.points.Points;
 import io.github.zancrow321.jadm.ranking.RankedDuels;
 import io.github.zancrow321.jadm.ranking.Ranking;
 import io.github.zancrow321.jadm.ranking.Tiers;
@@ -144,7 +146,11 @@ public final class DuelManager {
     }
 
     public boolean inDuel(ServerPlayer player) {
-        return duelsByPlayer.containsKey(player.getUUID());
+        return inDuel(player.getUUID());
+    }
+
+    public boolean inDuel(UUID player) {
+        return duelsByPlayer.containsKey(player);
     }
 
     /** Invites {@code target} to a 1v1 duel, with an ante if {@code ante} and the server allows it. */
@@ -244,7 +250,7 @@ public final class DuelManager {
                     ? " Right-click them with your Duel Disk or click " : " Click ";
             target.sendSystemMessage(Component.literal(host.getScoreboardName() + " invites you: " + matchup
                     + (ante ? ". The winner takes a random card from the loser's deck box." : ".")
-                    + (ranked ? rankedNote(host, target) : "") + banlistNote(host, target) + chips + how)
+                    + (ranked ? rankedNote(host, target) : "") + banlistNote(host, target) + chips + bountyNote(entrants) + how)
                     .append(accept));
         }
     }
@@ -261,6 +267,22 @@ public final class DuelManager {
         String mine = JadmData.banlist(target).name();
         return theirs.equals(mine) ? "" : " You play with " + host.getScoreboardName() + "'s banlist: " + theirs
                 + " (yours is " + mine + ").";
+    }
+
+    /** " Bounty on Kaiba: 1,200 DP." for everyone in the duel with a bounty on them. */
+    private String bountyNote(List<Entrant> entrants) {
+        if (!JadmServerConfig.BOUNTY.enabled.get()) {
+            return "";
+        }
+        StringBuilder note = new StringBuilder();
+        Bounties bounties = Bounties.get(server);
+        for (Entrant entrant : entrants) {
+            long total = entrant.player() == null ? 0 : bounties.total(entrant.player());
+            if (total > 0) {
+                note.append(" Bounty on ").append(entrant.name()).append(": ").append(Points.format(total)).append(".");
+            }
+        }
+        return note.toString();
     }
 
     /** " Ranked: your rating 1180 (Silver) against their 1216 (Gold)." */
@@ -1113,6 +1135,10 @@ public final class DuelManager {
                         }
                     });
         }
+        if (decided && duel.table().finished() && !againstNpc && JadmServerConfig.BOUNTY.enabled.get()
+                && duel.table().turn() >= JadmServerConfig.BOUNTY.minTurns.get()) {
+            claimBounties(duel, winner, rewards);
+        }
         if (againstNpc && duel.match() != null) {
             // An NPC standing in for a tournament duelist only came to show; it hands out nothing.
             duel.npc().setDueling(false);
@@ -1175,6 +1201,40 @@ public final class DuelManager {
         duel.table().close();
         if (duel.match() != null) {
             duel.match().onEnd().accept(duel.table().finished() ? winner : -1);
+        }
+    }
+
+    /** The winners of a duel between people collect the bounties on the people they beat. */
+    private void claimBounties(ServerDuel duel, int winner, Map<UUID, List<String>> rewards) {
+        int losers = 1 - winner;
+        if (!opponentsArePeople(duel, losers)) {
+            return;
+        }
+        List<UUID> winners = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        for (int seat = 0; seat < duel.seats().length; seat++) {
+            if (duel.table().seats().get(seat).team() == winner) {
+                winners.add(duel.seats()[seat]);
+                names.add(duel.table().seats().get(seat).name());
+            }
+        }
+        Bounties bounties = Bounties.get(server);
+        for (int seat = 0; seat < duel.seats().length; seat++) {
+            UUID loser = duel.seats()[seat];
+            if (loser == null || duel.table().seats().get(seat).team() != losers) {
+                continue;
+            }
+            long total = bounties.total(loser);
+            for (Bounties.Claim claim : bounties.claim(server, loser, winners, names)) {
+                if (rewards.containsKey(claim.winner())) {
+                    rewards.get(claim.winner()).add("Bounty collected: " + Points.format(claim.amount()) + " (on "
+                            + claim.target() + ")");
+                }
+            }
+            if (total > 0 && rewards.containsKey(loser)) {
+                rewards.get(loser).add("The bounty of " + Points.format(total) + " on you went to "
+                        + String.join(" & ", names));
+            }
         }
     }
 
