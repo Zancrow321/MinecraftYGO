@@ -1,6 +1,305 @@
 # Changelog
 
-## Unreleased
+## 1.2.9 (2026-10-20)
+
+### Progression unlocks by itself
+- **A new set every 3 Minecraft days:** in a progression world the next set now unlocks on its own, so single player
+  worlds no longer stay on Legend of Blue Eyes White Dragon. `[progression] daysPerSet` sets the days (as F3 counts
+  them, so sleeping counts); 0 brings back unlocking only with `/jadm progression`. The days count from when a world
+  first runs this version (per player with `scope = "player"`: from a player's first day). The usual chat message
+  says which set, rules and banlist are new, and `/jadm progression status` shows the days left.
+
+## 1.2.8 (2026-10-20)
+
+### Pack opening show
+- **Packs open as a show:** the pack flies in, spinning, with light rays behind it. Click it and it tears open in 3D:
+  the top rips off with sparks, the rest drops away, and the cards fly out into a fan, face down.
+- **Rare cards announce themselves face down:** they glow in their rarity's color, the better ones throw sparks and
+  ultra cards shine with rays; a Secret Rare or better stands in a beam of light and twitches now and then, in rainbow
+  colors for the rarest (Starlight, Ghost, Collector's, Quarter Century...).
+- **Turn each card over with a click:** the rarer the card, the bigger the reveal: it charges up, flips with a lift,
+  then sparks, shock waves, a flash, the screen shaking and its rarity in big letters ("SECRET RARE!"); a Secret Rare
+  or better rains confetti. Each rarity has its own sounds. "Reveal all" turns the rest over one after the other,
+  Space or a right click skips straight to all cards face up. Once all are up they line up in rows with their
+  rarities, and their texts show on hover.
+- The pack is the real product's picture (with `realProductImages` on), also for the packs of a Sealed tournament.
+- Client option `packOpeningShow` (default on) turns the show off: the cards just turn over in rows.
+
+### All official rarities
+- **29 rarities instead of five:** besides Common, Rare, Super, Ultra and Secret Rare, cards now come as Normal and
+  Rare Parallel, Starfoil, Shatterfoil, Mosaic, Super and Ultra Parallel, Pharaoh's, Gold, Premium Gold, Platinum,
+  Ultimate, Ultra Secret, Prismatic, Platinum, Gold and Extra Secret, Ghost, Ghost/Gold, Collector's, Quarter Century
+  Secret, Grand Master, Starlight and 10000 Secret Rare. Each has its own tag (UR, PScR, StR...) and name in tooltips.
+- **Every printed rarity can be pulled:** a pack rolls the slot (common, rare, super, ultra, secret) as before, then
+  one of the rarities the set really has in that slot. The rare finishes are rarer within their slot: a Starlight Rare
+  about one in five of a set's secrets, a Ghost Rare one in four, Ultimate and Collector's Rares one in two.
+- **A foil look per rarity:** foils are drawn in layers that can also tint the card (gold and platinum frames, rainbow
+  Starlight cards) and show the artwork pale silver (Ghost Rares). They show in the inventory, the binder, the card
+  preview, pack opening and on cards held in hand. A silver, gold or rainbow name colors only its letters, so the
+  name box keeps its own color. The looks are data in `assets/jadm/foil/looks.json`, so a resource pack can change
+  them.
+- Cards sell back to the machine shop for more when their finish is rarer.
+
+### Summon shows
+- **Every kind of summon has its own show**, for every card and for both duelists: **Fusion** opens a swirl of
+  colours the materials spiral into and melt together; **Synchro** stacks green rings over the zone and the monster's
+  stars fly up through them; **Xyz** spreads a galaxy on the zone that the materials dive into as lights before it
+  bursts upward; **Ritual** draws a burning summoning circle with flames at its points and a pillar of fire; **Link**
+  raises the Link circuit, whose arrows light up one after another; **Pendulum** swings a pendulum over the two
+  scales, and every monster of the Pendulum Summon comes down out of its arc together. The monster appears as the show
+  ends, with its own sounds and particles.
+- Only real summons get a show: a Fusion Monster brought back by Monster Reborn appears as before. The duel log says
+  which kind it was ("Fusion Summoned Dark Paladin").
+- The shows last about 2.5 seconds; the client setting `longSummonShows = false` makes them 1.5 seconds. The server
+  works out the kind of summon, so it needs the new version too.
+
+### Ace camera
+- **Ace shot:** when a big monster is summoned, yours or the opponent's, the camera leaves its place, circles the
+  monster's model or hologram while it rises, and its name slams in big with its stars and ATK/DEF between black bars,
+  like a summon in Master Duel. Then the camera flies back. It plays in the top-down view and in first person, for
+  duelists and spectators, and like every duel animation it isn't skipped.
+- **Which monsters:** Level 7 or higher, any Fusion, Synchro, Xyz or Link Monster, or 2500 ATK or more. Client settings
+  `aceCamera` (on/off), `aceMinLevel`, `aceMinAttack` (0 turns that rule off) and `aceExtraDeck` in
+  `config/jadm-client.toml`.
+- An opponent's ace no longer gets the "summons" banner first: its shot already shows its name.
+
+### Destruction and finisher
+- **Shattering cards:** a destroyed monster, spell or trap trembles, flashes and bursts into glowing shards cut from
+  its own picture (the monster's artwork, the card, or its sleeve when it was set), which fly out, spin and settle on
+  the mat before they fade.
+- **Cards fly where they go:** every card that leaves the field flies in an arc to the Graveyard, the banished pile,
+  the Deck, the Extra Deck or its owner's hand, instead of only fading out. Cards hit by something like Raigeki stay
+  on the field until their turn comes, then break almost at once.
+- **Final blow in slow motion:** the attack that ends a duel plays three times slower (an attack declared before the
+  last response hits again as it lands), with film bars, a white flash, a shaking camera and a heavy boom. The camera
+  rides in behind the attacker toward whoever it hits; turn that off with the client setting `finisherCamera`.
+- **Victory fireworks** over the winner's half of the field, in the colors of the winners' clans (gold and white
+  without one). Everyone nearby sees them; at the duel itself they go up once the final blow has played, before the
+  result screen. Under a roof they burst below it.
+
+### Field Spell arena
+- **Field Spells transform the duel field** while they are face-up: the new ground spreads out of the Field Zone with a
+  glowing edge and draws back into it when the card leaves. Umi, A Legendary Ocean and Umiiruka flood the field with
+  rolling water, kelp, coral and spray; Yami covers it in creeping sculk, obsidian spires and shadow; Sogen grows grass
+  and flowers that bend in the wind; Wasteland, Mountain (snowy peaks), Forest, Gaia Power, Molten Destruction (lava,
+  basalt and fire), Necrovalley, Rising Air Current, Luminous Spark and Mystic Plasma Zone each have their own ground,
+  plants, particles and sounds.
+- **Each half shows its owner's Field Spell**; a single Field Spell covers the whole field. Other Field Spells tint the
+  field and send up sparks in the colour of the attribute their text is about.
+- Only the field and the ground around it change, not sky or fog. Client setting `fieldSpellArena` (on by default).
+
+### Collector displays
+- **Four new decoration blocks** to show off a collection in your base, each showing its cards and products with their
+  real pictures and foil: the **Card Frame** (one card behind glass, on a wall or lying on a table, with a name
+  plate), the **Card Showcase** (nine cards in three rows behind glass; look at a card to see its name and rarity
+  float above it), the **Toploader Stand** (one card in a clear toploader on a little stand) and the **Pack Display**
+  (an open display box with three sealed booster packs, structure decks or tins). Crafted from wood, glass and quartz.
+- **Window with slots:** right-clicking a display opens its slots, which take only cards (or sealed products), one per
+  slot. Breaking it drops what it holds.
+- **Owner and lock:** whoever places a display owns it. New displays are locked, so only the owner and operators can
+  take things out or break it; the owner unlocks it with a button in its window (for a swap meet or a club's
+  showcase).
+- **Light:** the owner switches its light on in the window; the display then glows and its cards shine even in the
+  dark.
+- **Glow and sparkle:** shiny cards glow around their edge and sparkle, the rarer the more; Secret Rares and up send a
+  thin beam of light upward in their rarity's color. Off with the client setting `displayEffects`.
+- **Name plate:** the frame, the stand and the pack display show what they hold, or their own name from an anvil.
+
+### WindBot AI
+- **New duel AI:** NPC duelists, tournament bots, bot seats (`/jadm duel bot`, tag and Battle City bots) and the
+  stand-in for a player whose turn time ran out now play with WindBot, the bot of YGOPro, ported to Java with the
+  executor from Astra that plays any deck. It follows the chain, knows what is left in its deck, plays the classic
+  staples by name (Pot of Greed, Mirror Force, Book of Moon, Monster Reborn...) and everything else with WindBot's
+  generic rules. Anything it can't answer falls back to the older AI.
+- **Four play styles:** balanced, aggressive (summons and attacks a lot, trades monsters of equal strength, sets
+  only traps), defensive (sets monsters and shows only strong ones) and control (spends removal and takes monsters
+  freely). With `[ai] npcStyle = "random"` (the default) each NPC duelist keeps a style of its own.
+- **Beginner slips:** `[ai] npcMistakes` (default 0.3) is how often an NPC lets an optional response or an attack
+  go by; `botMistakes` (default 0) does the same for bots. `[ai] engine = "classic"` brings back the older AI.
+- **Fix:** a crash inside the duel core (seen on Windows) now ends only that duel with "The duel ended because of an
+  error." instead of taking the whole server or singleplayer world down; an NPC tournament game that crashes is
+  decided by a coin flip.
+
+### Go first or second
+- **The winner of the coin toss chooses:** when the coin lands for you, **Go First** and **Go Second** buttons show
+  under it instead of "You go first!". Your opponent sees that you are choosing. Without a choice in about 30 seconds
+  you go first. Works for every duel decided by a coin toss: invitations, arena duels, NPCs and bots, tag duels (the
+  winning team's first duelist chooses), tournament game 1 and clan bouts. An NPC or bot that wins the toss still
+  simply goes first, and a tournament's later games keep "the loser goes first".
+
+### Duels seen by everyone nearby
+- **Fixed:** players standing near a duel they aren't in saw nothing, which showed most in bot duels, where no
+  opponent stands there either. Now everyone within about 48 blocks of the field sees it in the world (monsters, cards,
+  effects; only what's public) while walking around freely. Right-click the field, or `/jadm watch` without a name, to
+  watch it up close; walking away or the duel ending takes the field away again.
+
+### Champion Packs
+- **Champion Pack: Game One to Game Eight** (CP01-CP08) can be opened now: 3-card packs like the Tournament Packs,
+  sold in the shop and unlocked with their release date. They were filed as promos before because their names
+  contain "Game".
+
+### Field Zone no longer hidden behind the card panel
+- In duel mode the top-down camera keeps the field between the panels on the left (life points, card panel) and the
+  phase buttons on the right. Before, the field sat a little to the left, so on 16:10, 4:3 or other narrower screens
+  (and at big GUI scales) your Field Zone was partly or fully under the card panel, and hovering a Field Spell there
+  didn't show it in the panel. On screens too narrow for the whole field the camera moves back until it fits.
+
+## 1.2.7 (2026-10-18)
+
+### Genesys format and official banlists
+- **Genesys:** `banlist = "genesys"` (or `/jadm banlist use genesys`) plays the Genesys format with Konami's current
+  point list: no Forbidden & Limited List, but a deck's cards (main, extra and side deck together) may cost at most
+  `genesysPointCap` points (100, the standard), and Link and Pendulum monsters aren't allowed. Duels then use the new
+  `genesys` ruleset: today's rules on the original field, without Extra Monster Zones or Pendulum Zones
+  (`ruleset = "auto"` picks it by itself). `genesys-ocg` is the OCG's point list. The deck box shows the deck's
+  points next to the main deck count, cards show their points in the top left corner and in the tooltip, and NPC
+  decks stay within the cap. Tournaments can set `banlist` to `genesys` and their own `genesysPointCap`.
+- **More official lists:** `banlist` can also be `tcg` (the newest TCG list), `ocg`, `traditional`, `worlds` or
+  `master-duel`. A file in `config/jadm/banlists/` of the same name still wins. A custom Genesys list is a file with
+  `"points"` and `"pointCap"`.
+- **`/jadm banlist update`** (operators) downloads the newest official lists (TCG, OCG, Traditional and Worlds from
+  Project Ignis, Master Duel and the Genesys points from Konami via yaml-yugi-limit-regulation) and uses them at once,
+  without a restart; players' deck boxes get them too. A newer TCG list also becomes the current list in progression
+  and all-cards worlds. A list whose download fails keeps the one it had. The lists are kept in
+  `config/jadm/official_banlists.json`; `/jadm banlist reset` goes back to the bundled ones. `/jadm banlist` shows
+  which list the server plays with and what each official list is.
+- **A banlist per player:** `/jadm banlist use <list> <player>` gives players their own list, like
+  `/jadm progression set <date> <player>`, so a few can play Genesys while the server stays on the TCG list (`use server
+  <player>` takes it back). Their deck boxes, cards and NPC opponents follow it. A duel uses the list all its duelists
+  share; otherwise the challenger's, and the invitation names it ("You play with Alex's banlist: Genesys ..."). Arena
+  duels between players on different lists use the server's list, tournaments their own.
+- The bundled TCG history now ends with the September 2026 list.
+
+### Daily and weekly quests
+- **Quests:** every player gets 3 daily and 2 weekly quests, such as "Win 2 duels with a Dragon deck", "Fusion
+  Summon 2 monsters", "Deal 10000 damage", "Beat another player" or "Take part in a tournament". They bring Duel
+  Points and booster packs (or emeralds, experience and any other item, as the server likes).
+- **Quest window** with the key U or `/jadm quests`: progress bars, the reward of each quest, a time until new
+  quests come, **Claim** / **Claim all**, and **Reroll** to swap an unfinished quest for another (once a day).
+  A pop-up in the corner shows when a quest moves on; chat says when one is done, with a button for the window.
+  Rewards you forget to claim are handed out when the quests are replaced.
+- Quests count duel wins and finished duels (filtered by opponent: players, NPC duelists or bots; ranked;
+  tournament; a deck theme by monster type, attribute, name or a card in the deck; life points left; turns),
+  summons by kind (Normal, Special, Fusion, Ritual, Synchro, Xyz, Pendulum, Link), damage dealt, activated Spells,
+  Traps or effects, opened booster packs, finished trades and tournament places.
+- **Free to set up:** the quests live in `config/jadm/quests.json`, written with a starting pool of 38 quests
+  (English and German titles) on first start. Add, change or remove quests, their goals, weights and rewards, then
+  `/jadm quests reload`. Quests for Synchro, Xyz, Pendulum and Link only come once those cards are out in a
+  progression world (`unlockedBy`).
+- New `[quests]` server settings: `enabled`, `daily`, `weekly`, `sameForEveryone` (everyone gets the same quests,
+  no rerolls), `rerollsPerDay`, `resetHour`, `weeklyResetDay`, `minTurns` (duels count once they reach turn 3, so
+  forfeiting right away doesn't play quests off), `botDuels` and `announceWeekly`.
+- Operators: `/jadm quests list`, `/jadm quests reset <player>` and `/jadm quests complete <player> <quest>`.
+- The Duelist's Handbook explains quests in "Shops and Duel Points", with the key, commands and settings.
+
+### Bounties
+- `/jadm bounty place <player> <amount>` puts Duel Points on someone's head. The DP are taken right away (plus a
+  10% fee by default) and kept until someone collects them. Bounties from several players on the same player add
+  up; nobody can put one on themselves.
+- Whoever beats that player in a duel collects the whole bounty, shown on the result screen and announced in chat; a
+  winning tag team shares it. Only duels between people count (no bots or NPCs), and the duel has to reach turn 3,
+  so a player can't hand their own bounty to a friend by giving up at once.
+- `/jadm bounty` lists the biggest bounties, `/jadm bounty <player>` who put up what. The player list (Tab) shows the
+  bounty after each name, a duel invitation names the bounty on the opponent, and a player with a bounty is told on
+  login.
+- `/jadm bounty withdraw <player>` takes your part back (not while that player is dueling; the fee stays paid).
+  Operators call a bounty off with `/jadm bounty clear <player>`, which pays everyone back.
+- New `[bounty]` server settings: `enabled`, `minAmount` (100), `feePercent` (10), `minTurns` (3), `withdraw`,
+  `announce` and `showInTabList`. The Duelist's Handbook explains it under Shops and Duel Points.
+
+### Pulled cards go into your binder
+- Carry a binder and the cards of an opened booster pack go straight into it (with their rarity) instead of the
+  inventory; the pack window says so. A tin's promo card does too, as structure decks already did. With several
+  binders the first one in the inventory takes them; without one the cards land in the inventory as before. Draft and
+  Sealed packs are unchanged. Turn it off with `packsIntoBinder` in the server config.
+
+### Revealed cards in the duel log
+- When an effect reveals cards (Lilith, Lady of Lament showing 3 Normal Traps from the Deck, the Enneacraft monsters
+  revealing themselves from the hand, any "reveal" cost), the duel log now names them for both duelists: "You revealed
+  X, Y, Z from your Deck to Steve" and "Alex revealed X, Y, Z from their Deck to you". Before, only the player shown
+  the cards got a line, and the revealing player got none. Spectators see how many cards were revealed.
+- Revealing the top of a Deck ("excavate") is named for everyone, not just the Deck's owner.
+- A card revealed from the Deck and then added to the hand is named in the opponent's log ("Alex added X to their
+  hand") instead of "a card".
+
+### Packs of sets without commons, and missing Ultra Rares
+- **Ultra Rares were missing:** YGOPRODeck lists many cards in several rarities per set, and the first one listed
+  counted. Phantom Nightmare, Legacy of Destruction, The Infinite Forbidden, Rage of the Abyss, Supreme Darkness,
+  Alliance Insight, Doom of Dimensions, Burst Protocol, Blazing Dominion, Duelist Nexus and Age of Overlord listed every
+  Ultra Rare as its Quarter Century Secret Rare first, so their packs never held an Ultra Rare; Toon Chaos, King's
+  Court, Maze of Memories, Justice Hunters and others were short of them too. A card now counts as its plainest
+  printing and also comes in each better one from that slot: an Ultra Rare from the ultra slot, its Quarter Century
+  Secret Rare from the secret slot. The Set Collection Book names every rarity a card was printed in.
+- **Fixed:** a Maze of Millennia or Justice Hunters pack held the same card seven times. These sets list a single
+  common among their rares, and all seven common slots rolled it. A set's plain slots now take its base rarity (rare
+  for these), and a stray lower listing counts as that rarity.
+- **Real pack formats:** sets without commons open as seven cards, six rares and a foil (the Maze sets, Toon Chaos,
+  King's Court, Justice Hunters...), or five cards, four Super Rares and a Secret Rare (The Secret Forces, Hidden
+  Summoners, Fists of the Gadgets...). Before, their "common" slots drew from the whole set. Both cost a premium pack
+  in the card shop.
+
+### KubeJS scripting
+- With [KubeJS](https://modrinth.com/mod/kubejs) installed, server scripts can react to the mod: `JadmEvents.duelStart`
+  (cancel a duel), `duelEnd` (winners, losers, life points, extra lines on the result screen), `packOpened` (change
+  the pulled cards), `tournamentEnd`, `rankChanged` and `setCompleted`. `Jadm` helpers make cards and packs, read card
+  data and give or take Duel Points. See [docs/kubejs.md](docs/kubejs.md).
+- The same events are NeoForge events for other mods (`io.github.zancrow321.jadm.api.event`).
+
+## 1.2.6 (2026-10-15)
+
+### Detaching Xyz materials
+- **You pick which materials to detach:** a cost like "detach 1 material" opens a window with the monster's materials
+  as cards instead of taking the first one, and effects that detach 2 or more work again (clicking the Xyz monster
+  only ever picked the same first material). The opponent's materials show their pictures too.
+
+### Putting cards back on the Deck in any order
+- Effects that let you look at the top (or bottom) cards of a Deck and put them back in any order, like Spellbook
+  Organization, Card Advance or Goddess Skuld's Oracle, used to keep the old order: the duel only offered
+  "Keep the current order". Now a window shows the cards; click them in their new order (the first click becomes the
+  top card, for the bottom of the Deck the last click goes to the very bottom), each picked card shows its number,
+  and Confirm puts them back that way. "Keep order" leaves them as they are.
+
+### Product contents fixes
+- **Legendary Decks boxes give every card:** Legendary 5D's Decks, Dragon, Hero, Arc-V and Modern Decks 2026 hold
+  three decks, but opening one gave only 15 extra deck monsters, so Black Rose Dragon and others were missing. A sealed
+  deck now gives its whole extra deck; a deck box made from a deck still keeps to 15.
+- **Rarity Collection 5 packs:** YGOPRODeck lists some cards with a note instead of a rarity ("2", "3", "New",
+  "force-SMW"...), which counted as common. In the all-foil Rarity Collection 5 that made Maliss <P> White Rabbit its
+  only common, and most foil slots fell back to it. Those notes now get the product's usual rarity (194 cards in 15
+  products), and a foil slot only drops to a common when the set has no better rarity at all.
+- "Legendary 5D&apos;s Decks" is now shown as "Legendary 5D's Decks".
+
+### Alternate artworks
+- **Alt arts:** 145 alternate artworks of 113 cards (Dark Magician, Blue-Eyes White Dragon, Red-Eyes Black Dragon,
+  Monster Reborn...) can now be pulled. A card from a pack or tin that has other artworks comes as one of them with
+  the chance in `[cards] altArtChance` (default 0.2, so one in five; 0 turns them off), each artwork as likely.
+- An alt art shows its own picture everywhere: in the inventory, binder, deck box, pack opening ("Alt Art!"), card
+  panel and as a hologram in the duel. A gold **ALT** sits in its corner and the tooltip says "Alternate Art 2 of 8".
+- It plays exactly like the original (same model and effects in the duel) and counts as the same card: at most three
+  of a card and its alt arts together in a deck (or what the banlist allows), one card in the Set Collection Book.
+- The admin menu lists each card's alt arts right after it.
+- Products now hold every card in its original artwork. Before, about 30 cards (Dark Magician, Red-Eyes Black
+  Dragon, Monster Reborn...) always came in one alternate artwork, because the card list named them that way.
+
+### Shop window in the mod's style
+- **DP shops** (card trader, Card Vending Machine, Shop Stands) are now a card shop instead of a plain list: wares
+  as tiles with the real product pictures (cards as their card, other items blown up), price badges in DP, stock in
+  the corner and sold-out tiles greyed out. Click a tile to see it large on the right with its set code, year, stock
+  and price, then **Buy** once or **Buy N×** as often as you can afford (double-click, Enter and Shift work too).
+  What the shop buys from you is on its own **Sell** tab (Tab key). The balance counts down as you pay, with the
+  amount rising from it, and a card's big preview shows left of the window.
+- **Shop search:** just start typing in a DP shop; every word has to be in the name, set code or kind (booster,
+  deck, tin), and cards are also found by their text, attribute and type, like in the binder.
+- **Shop Stand** owner window in the same dark-and-gold look instead of a vanilla chest.
+
+### Decks for particular players
+- **Join decks:** a YDK deck list in `config/jadm/join_decks/<uuid>/` (or `config/jadm/join_decks/<uuid>.ydk`) becomes a
+  deck box holding those cards, given to the player with that UUID the next time they join, once per world. The deck
+  box is named after the file, a file added later is given on the next join, and unknown passcodes are left out and
+  named in chat. `/jadm joindecks give <player>` (operators) gives them all again. The folder and a README are created
+  on server start.
+- The mod brings its author's own deck and gives it to him the same way on every server; `bundledJoinDecks = false`
+  in the server config turns that off.
 
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
@@ -9,6 +308,8 @@
 - **Clan tag everywhere:** every clan becomes a vanilla scoreboard team, so each member's `[TAG]` stands in the clan's
   color in front of their name in chat, in the player list (Tab) and above their head, and chat mods that show teams
   show it too. Turn it off with `[clans] showTag`.
+- **Clan color in the window:** the leader's **Color** button in the clan window shows the 15 clan colors as
+  squares; a click recolors the tag and name (same as `/jadm clan color <color>`).
 - **FTB Teams:** with FTB Teams installed, every clan is also an FTB Teams party with the same members, leader
   (owner), officers, name, color, motto and open/closed, so FTB Chunks claims, FTB Quests progress and team chat count
   for the whole clan. Changes on either side carry over: joining, leaving, kicks, a new owner, promotions and party

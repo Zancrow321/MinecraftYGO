@@ -44,6 +44,8 @@ final class JadmCommands {
                 .then(io.github.zancrow321.jadm.duel.StatsCommands.build())
                 .then(io.github.zancrow321.jadm.ranking.RankCommands.build())
                 .then(io.github.zancrow321.jadm.clan.ClanCommands.build())
+                .then(io.github.zancrow321.jadm.banlist.BanlistCommands.build())
+                .then(io.github.zancrow321.jadm.quest.QuestCommands.build())
                 .then(Commands.literal("duel")
                         .then(Commands.literal("bot").executes(ctx -> {
                             ServerPlayer player = ctx.getSource().getPlayerOrException();
@@ -98,7 +100,9 @@ final class JadmCommands {
                 }))
                 .then(io.github.zancrow321.jadm.points.PointsCommands.build())
                 .then(io.github.zancrow321.jadm.trade.Trades.command())
+                .then(io.github.zancrow321.jadm.bounty.BountyCommands.build())
                 .then(io.github.zancrow321.jadm.admin.AdminMenu.command())
+                .then(io.github.zancrow321.jadm.collection.JoinDecks.command())
                 .then(Commands.literal("cosmetics").executes(ctx -> {
                     PlayerCosmetics.open(ctx.getSource().getPlayerOrException());
                     return 1;
@@ -111,7 +115,10 @@ final class JadmCommands {
                     manager(ctx).forfeit(ctx.getSource().getPlayerOrException());
                     return 1;
                 }))
-                .then(Commands.literal("watch").then(Commands.argument("player", EntityArgument.player())
+                .then(Commands.literal("watch").executes(ctx -> {
+                            manager(ctx).watchNearby(ctx.getSource().getPlayerOrException());
+                            return 1;
+                        }).then(Commands.argument("player", EntityArgument.player())
                         .executes(ctx -> {
                             manager(ctx).watch(ctx.getSource().getPlayerOrException(),
                                     EntityArgument.getPlayer(ctx, "player"));

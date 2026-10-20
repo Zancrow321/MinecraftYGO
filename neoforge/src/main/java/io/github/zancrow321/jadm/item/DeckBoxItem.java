@@ -45,7 +45,7 @@ public final class DeckBoxItem extends Item {
 
     /** What keeps the deck from being played, for the local player on a client (empty if legal). */
     public static List<String> problems(ItemStack stack) {
-        return problems(stack, null, JadmData.banlist());
+        return problems(stack, null, JadmData.banlist(JadmData.step(null), JadmData.localBanlistSetting()));
     }
 
     /**

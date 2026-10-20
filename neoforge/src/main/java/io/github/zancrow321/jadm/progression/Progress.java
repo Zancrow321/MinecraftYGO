@@ -74,7 +74,7 @@ public final class Progress {
     public static void sync(ServerPlayer player) {
         PacketDistributor.sendToPlayer(player, new PoolModePayload(JadmData.poolMode().id(),
                 JadmData.progression().product(step(player)).id(), JadmServerConfig.LOCKED_IN_DECK.get(),
-                JadmServerConfig.BANLIST.get()));
+                JadmData.banlistSetting(player), JadmServerConfig.GENESYS_POINT_CAP.get()));
     }
 
     /**
@@ -105,6 +105,64 @@ public final class Progress {
         Products.Product product = progression.product(to);
         return Component.literal((player == null ? "The world" : player.getScoreboardName()) + " is now at "
                 + describe(product) + ".");
+    }
+
+    /** Minecraft days the overworld has seen, as the F3 screen counts them. */
+    private static long today(MinecraftServer s) {
+        return s.overworld().getDayTime() / 24000L;
+    }
+
+    /** Whether sets unlock by themselves as the days go by. */
+    private static boolean daily() {
+        return JadmServerConfig.SPEC.isLoaded() && JadmServerConfig.DAYS_PER_SET.get() > 0
+                && JadmData.poolMode() == PoolMode.PROGRESSION;
+    }
+
+    /** Unlocks the next set for the world, or per player for each player online, once enough days have passed. */
+    public static void tick(MinecraftServer s) {
+        if (s.getTickCount() % 20 != 0 || !daily()) {
+            return;
+        }
+        ProgressionData data = ProgressionData.get(s);
+        long today = today(s);
+        if (!perPlayer()) {
+            Long since = data.worldDay();
+            // The first time, and after the time was set back, the wait starts today.
+            if (since == null || today < since) {
+                data.worldDay(today);
+            } else if (today - since >= JadmServerConfig.DAYS_PER_SET.get()) {
+                int sets = (int) ((today - since) / JadmServerConfig.DAYS_PER_SET.get());
+                data.worldDay(since + (long) sets * JadmServerConfig.DAYS_PER_SET.get());
+                if (worldStep() < JadmData.progression().last()) {
+                    move(s, null, JadmData.progression().next(worldStep(), sets));
+                }
+            }
+            return;
+        }
+        for (ServerPlayer player : s.getPlayerList().getPlayers()) {
+            Long since = data.playerDay(player.getUUID());
+            if (since == null || today < since) {
+                data.playerDay(player.getUUID(), today);
+            } else if (today - since >= JadmServerConfig.DAYS_PER_SET.get()) {
+                int sets = (int) ((today - since) / JadmServerConfig.DAYS_PER_SET.get());
+                data.playerDay(player.getUUID(), since + (long) sets * JadmServerConfig.DAYS_PER_SET.get());
+                if (step(player) < JadmData.progression().last()) {
+                    move(s, player, JadmData.progression().next(step(player), sets));
+                }
+            }
+        }
+    }
+
+    /** @return the days until the next set unlocks by itself, or -1 if sets don't unlock by themselves */
+    static long daysLeft(MinecraftServer s, ServerPlayer player) {
+        if (s == null || !daily()) {
+            return -1;
+        }
+        ProgressionData data = ProgressionData.get(s);
+        Long since = player == null ? data.worldDay() : data.playerDay(player.getUUID());
+        int days = JadmServerConfig.DAYS_PER_SET.get();
+        long today = today(s);
+        return since == null || today < since ? days : Math.max(1, since + days - today);
     }
 
     /** What changes going from one step to another: new sets, rules and banlist. */
@@ -153,7 +211,7 @@ public final class Progress {
     }
 
     /** The status lines of {@code /jadm progression status}. */
-    static List<Component> status(int step, String who) {
+    static List<Component> status(int step, String who, long daysLeft) {
         Progression progression = JadmData.progression();
         Products.Product product = progression.product(step);
         List<Component> lines = new ArrayList<>();
@@ -169,7 +227,8 @@ public final class Progress {
                 + " cards").withStyle(ChatFormatting.GRAY));
         List<Products.Product> next = progression.upcoming(step, 1);
         lines.add(Component.literal(next.isEmpty() ? "Every set is unlocked."
-                : "Next: " + describe(next.get(0)) + ", " + next.get(0).newCards().size() + " new cards")
+                : "Next: " + describe(next.get(0)) + ", " + next.get(0).newCards().size() + " new cards"
+                        + (daysLeft < 0 ? "" : ", in " + daysLeft + (daysLeft == 1 ? " day" : " days")))
                 .withStyle(ChatFormatting.GRAY));
         return lines;
     }

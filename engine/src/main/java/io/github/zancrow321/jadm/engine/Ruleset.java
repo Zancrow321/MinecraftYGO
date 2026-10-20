@@ -4,7 +4,8 @@ import java.util.Locale;
 
 /**
  * The rule sets a server can pick. They change how the engine resolves turns, chains and summons, and which extra
- * deck monsters can be summoned at all (Master Rule 1 has no Xyz, 2 no Pendulum, 3 no Link).
+ * deck monsters can be summoned at all (Master Rule 1 has no Xyz, 2 no Pendulum, 3 no Link, Genesys neither
+ * Pendulum nor Link).
  */
 public enum Ruleset {
     /** Master Rule 1, as the cards were printed: the first player draws, ignition effects work the old way. */
@@ -18,7 +19,9 @@ public enum Ruleset {
     /** Master Rule 4 (2017): Link monsters and the Extra Monster Zones. */
     MR4("Master Rule 4", OcgConstants.DUEL_MODE_MR4),
     /** Today's Master Rule. */
-    MODERN("Modern (Master Rule 2020)", OcgConstants.DUEL_MODE_MR5);
+    MODERN("Modern (Master Rule 2020)", OcgConstants.DUEL_MODE_MR5),
+    /** Genesys (2025): today's rules on the original field, no Extra Monster Zones and no Pendulum Zones. */
+    GENESYS("Genesys", OcgConstants.DUEL_MODE_GENESYS);
 
     private final String displayName;
     private final long flags;

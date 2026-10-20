@@ -80,6 +80,15 @@ public final class CardDatabase implements CardDataProvider {
         return cards.values();
     }
 
+    /**
+     * @return the original card's passcode for an alternate artwork (see {@link CardPool#alternateArtOf}), otherwise
+     *         the code itself; decks and the banlist count the two as one card
+     */
+    public int original(int code) {
+        CardInfo card = cards.get(code);
+        return card == null ? code : CardPool.alternateArtOf(card);
+    }
+
     public String name(int code) {
         CardInfo card = cards.get(code);
         return card == null ? "#" + code : card.name();

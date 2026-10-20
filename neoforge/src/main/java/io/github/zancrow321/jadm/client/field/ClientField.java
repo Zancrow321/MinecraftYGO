@@ -57,6 +57,8 @@ public final class ClientField {
     private static final List<ResourceLocation> sleeves = new ArrayList<>();
     private static boolean split;
     private static boolean watching;
+    /** Only standing near someone else's duel: the field shows in the world, but this client isn't at the duel. */
+    private static boolean nearby;
 
     private ClientField() {
     }
@@ -70,6 +72,7 @@ public final class ClientField {
         ClientDuel.forget(); // a new duel: its first view is on its way
         split = payload.layout().split();
         watching = payload.layout().watching();
+        nearby = payload.layout().nearby();
         size = payload.layout().size() > 0 ? payload.layout().size() : 1;
         ceiling = payload.layout().ceiling();
         outline = payload.layout().outline();
@@ -79,6 +82,7 @@ public final class ClientField {
         right = new Vec3(-forward.z, 0, forward.x);
         endsAt = -1;
         animations.clear();
+        AceCamera.reset();
         lastBoard = null;
         // Wait for the duel disk to unfold, then grow the field; queued effects start once it is full size.
         revealAt = tick + DiskClient.deployTicks();
@@ -89,10 +93,39 @@ public final class ClientField {
         FieldRenderer.reset();
     }
 
+    /**
+     * The two teams traded ends before the duel began (the winner of the coin toss chose to go second): the field is
+     * seen from the other end now, with the sleeves swapped, and the start show goes on as it was.
+     */
+    public static void tradeEnds() {
+        if (center == null) {
+            return;
+        }
+        forward = forward.reverse();
+        right = new Vec3(-forward.z, 0, forward.x);
+        int half = split ? 2 : 1;
+        if (sleeves.size() >= 2 * half) {
+            List<ResourceLocation> traded = new ArrayList<>(sleeves.subList(half, 2 * half));
+            traded.addAll(sleeves.subList(0, half));
+            traded.addAll(sleeves.subList(2 * half, sleeves.size()));
+            sleeves.clear();
+            sleeves.addAll(traded);
+        }
+        animations.clear();
+        lastBoard = null;
+        FieldRenderer.reset();
+    }
+
+    /** Queued effects wait at least {@code ticks} from now, so the start show can finish first. */
+    public static void holdQueue(int ticks) {
+        queueFree = Math.max(queueFree, tick + ticks);
+    }
+
     public static void clear() {
         center = null;
         hovered = null;
         animations.clear();
+        AceCamera.reset();
         lastBoard = null;
         FieldRenderer.reset();
     }
@@ -153,6 +186,11 @@ public final class ClientField {
     /** Whether this client is only watching the duel. */
     public static boolean watching() {
         return watching;
+    }
+
+    /** Whether this client only sees the field in passing, standing near a duel it isn't at. */
+    public static boolean nearby() {
+        return nearby;
     }
 
     /** When the field starts growing (and the duel's start plays), as a {@link #tick()}. */
@@ -228,17 +266,35 @@ public final class ClientField {
     /** Called for each new view: queues its events. */
     public static void onView(DuelView view) {
         long start = Math.max(queueFree, tick);
-        for (FieldEvent event : view.events()) {
+        for (Finale.Step step : Finale.plan(view)) {
+            FieldEvent event = step.event();
             int actor = actor(event, view);
-            if (actor != 0 && event.player() != view.you()
+            // A later monster of a Pendulum Summon comes down with the first one, if its show is still on.
+            long joined = SummonShow.joins(event, tick);
+            if (joined >= 0) {
+                animations.add(new FieldAnimation(event, joined, FieldAnimation.duration(event), actor));
+                continue;
+            }
+            boolean ace = event.kind() == FieldEvent.Kind.SUMMON && AceCamera.ace(actor);
+            // An ace's shot shows its name big already, so it needs no banner first.
+            if (actor != 0 && !ace && event.player() != view.you()
                     && (event.kind() == FieldEvent.Kind.ACTIVATE || event.kind() == FieldEvent.Kind.SUMMON)) {
                 // The opponent's card is shown big first, then its effect plays.
                 DuelStaging.banner(actor, view.names().get(event.player()) + (event.kind() == FieldEvent.Kind.ACTIVATE
                         ? " activates " : " summons ") + JadmData.text().cardName(actor), start);
                 start += DuelStaging.BANNER_TICKS;
             }
-            animations.add(new FieldAnimation(event, start, FieldAnimation.duration(event), actor));
-            start += FieldAnimation.spacing(event);
+            // The blow that ends the duel plays in slow motion.
+            int duration = FieldAnimation.duration(event);
+            duration = step.slow() ? Finale.slowDuration(event, duration) : duration;
+            FieldAnimation animation = new FieldAnimation(event, start, duration, actor);
+            animations.add(animation);
+            if (step.slow()) {
+                Finale.slowed(animation);
+            }
+            int spacing = FieldAnimation.spacing(event);
+            start += ace ? AceCamera.queue(event, view, start)
+                    : step.slow() ? Finale.slowSpacing(event, spacing) : spacing;
         }
         lastBoard = view.board();
         queueFree = start;
@@ -259,8 +315,9 @@ public final class ClientField {
 
     public static void clientTick() {
         tick++;
+        Finale.clientTick();
         animations.removeIf(a -> a.finished(tick));
-        if (endsAt >= 0 && tick >= endsAt && !DuelStaging.holdsField()) {
+        if (endsAt >= 0 && tick >= endsAt && (nearby || !DuelStaging.holdsField())) {
             clear();
             return;
         }
@@ -268,6 +325,7 @@ public final class ClientField {
             return;
         }
         FieldRenderer.tickEffects();
+        AceCamera.tick();
         if (!DuelMode.active()) {
             hovered = lookedAtZone();
         }
@@ -314,13 +372,18 @@ public final class ClientField {
         if (!active() || hovered == null) {
             return false;
         }
+        if (nearby) {
+            Minecraft.getInstance().player.connection.sendCommand("jadm watch");
+            return true;
+        }
         clickAt(hovered);
         return true;
     }
 
     /**
      * Picks {@code zone} for the current prompt: answers if exactly one choice is about it, toggles it in a
-     * multi-select, or offers the choices about it in a menu.
+     * multi-select, or offers the choices about it in a menu. Xyz materials share their monster's zone, so a click
+     * there never picks one; they are picked in the card window.
      */
     public static void clickAt(Loc zone) {
         PromptView prompt = ClientDuel.prompt();
@@ -330,7 +393,8 @@ public final class ClientField {
         if (prompt.multi() != null) {
             PromptView.MultiSelect multi = prompt.multi();
             for (int i = 0; i < multi.locs().size(); i++) {
-                if (FieldLayout.sameZone(multi.locs().get(i), zone)) {
+                Loc at = multi.locs().get(i);
+                if (at != null && !at.isOverlay() && FieldLayout.sameZone(at, zone)) {
                     ClientDuel.toggle(i);
                     List<Integer> selected = ClientDuel.selected();
                     if (selected.size() == multi.max() && multi.canConfirm(selected)) {
@@ -352,7 +416,7 @@ public final class ClientField {
     public static List<PromptView.Choice> choicesAt(PromptView prompt, Loc zone) {
         List<PromptView.Choice> out = new ArrayList<>();
         for (PromptView.Choice choice : prompt.choices()) {
-            if (FieldLayout.sameZone(choice.at(), zone)) {
+            if (choice.at() != null && !choice.at().isOverlay() && FieldLayout.sameZone(choice.at(), zone)) {
                 out.add(choice);
             }
         }

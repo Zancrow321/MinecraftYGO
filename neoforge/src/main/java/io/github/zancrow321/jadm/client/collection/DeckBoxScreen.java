@@ -158,11 +158,17 @@ public final class DeckBoxScreen extends Screen {
         super.render(g, mouseX, mouseY, partialTick);
 
         g.drawString(font, box.getHoverName(), left + 8, top + 6, 0xFFFFFFFF, false);
-        g.drawString(font, Component.translatable("screen.jadm.deck_box.main", deck.main().size()), left + 8,
-                top + 26, 0xFFAAAAAA, false);
+        Component mainLabel = Component.translatable("screen.jadm.deck_box.main", deck.main().size());
+        g.drawString(font, mainLabel, left + 8, top + 26, 0xFFAAAAAA, false);
+        var banlist = JadmData.banlist(minecraft.player);
+        if (banlist.genesys()) {
+            int points = DeckRules.points(DeckBoxItem.toDeck(box), banlist);
+            g.drawString(font, Component.translatable("screen.jadm.deck_box.genesys", points, banlist.pointCap()),
+                    left + 16 + font.width(mainLabel), top + 26, points > banlist.pointCap() ? 0xFFFF7070 : 0xFFFFD040, false);
+        }
         g.drawString(font, Component.translatable("screen.jadm.deck_box.extra", deck.extra().size()),
                 left + 8, top + 175, 0xFFAAAAAA, false);
-        List<String> problems = DeckBoxItem.problems(box, minecraft.player, JadmData.banlist(minecraft.player));
+        List<String> problems = DeckBoxItem.problems(box, minecraft.player, banlist);
         Component status = problems.isEmpty()
                 ? Component.translatable("item.jadm.deck_box.legal")
                 : Component.literal(problems.get(0));
@@ -284,13 +290,14 @@ public final class DeckBoxScreen extends Screen {
                 continue;
             }
             boolean toExtra = DeckRules.isExtra(JadmData.cards().card(have));
-            if (!playable.test(have) || copies.getOrDefault(have, 0) >= banlist.limit(have)
+            if (!playable.test(have) || copies.getOrDefault(base(have), 0)
+                    >= Math.min(banlist.limit(have), banlist.limit(base(have)))
                     || (toExtra ? extra >= DeckRules.EXTRA_MAX : main >= DeckRules.MAIN_MAX)) {
                 refused.add(CardGrid.name(have));
                 continue;
             }
             available.merge(have, -1, Integer::sum);
-            copies.merge(have, 1, Integer::sum);
+            copies.merge(base(have), 1, Integer::sum);
             if (toExtra) {
                 extra++;
             } else {
@@ -335,8 +342,7 @@ public final class DeckBoxScreen extends Screen {
 
     /** The original printing's code: alternate arts carry it as their alias. */
     private static int base(int code) {
-        var card = JadmData.cards().card(code);
-        return card == null || card.data().alias() == 0 ? code : card.data().alias();
+        return JadmData.original(code);
     }
 
     private List<Component> withLock(int code, List<Component> tooltip) {

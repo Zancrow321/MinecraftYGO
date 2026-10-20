@@ -14,6 +14,16 @@ public final class JadmServerConfig {
             .comment("Players without a legal deck box duel with a starter deck instead of being turned away.")
             .define("starterDecksWithoutDeckBox", true);
 
+    public static final ModConfigSpec.BooleanValue BUNDLED_JOIN_DECKS = BUILDER
+            .comment("Give the decks that come with the mod for particular players (the mod author's) on their "
+                    + "first join. Decks in config/jadm/join_decks/ are given either way.")
+            .define("bundledJoinDecks", true);
+    public static final ModConfigSpec.BooleanValue PACKS_INTO_BINDER = BUILDER
+            .comment("Cards from opened booster packs, a tin's promo card and the cards of structure and starter decks "
+                    + "go straight into the first binder the player carries. Off, or without a binder, they go into "
+                    + "the inventory.")
+            .define("packsIntoBinder", true);
+
     /** Bumped when a release changes defaults that older config files should pick up, see {@link #migrate}. */
     private static final int VERSION = 2;
 
@@ -25,15 +35,24 @@ public final class JadmServerConfig {
             .comment("The rules duels are played under: \"auto\" (the rules of the newest unlocked cards in a "
                     + "progression world, Master Rule 1 for the modeled pool, today's for all cards), \"mr1\" "
                     + "(original, as the cards were printed), \"goat\" (the 2005 TCG format), \"mr2\", \"mr3\", "
-                    + "\"mr4\" or \"modern\" (today's Master Rule).")
+                    + "\"mr4\", \"modern\" (today's Master Rule) or \"genesys\" (today's rules without Extra Monster or "
+                    + "Pendulum Zones; \"auto\" picks it when the banlist is a Genesys list).")
             .define("ruleset", "auto");
 
     public static final ModConfigSpec.ConfigValue<String> BANLIST = BUILDER
             .comment("The Forbidden & Limited List: \"auto\" (the TCG list of the time in a progression world, the "
-                    + "May 2000 list for the modeled pool, today's for all cards), \"none\", or the name of a file in "
-                    + "config/jadm/banlists/ without .json, e.g. \"goat\" for goat.json: "
-                    + "{\"name\": \"...\", \"limits\": {\"<passcode>\": <copies>}}.")
+                    + "May 2000 list for the modeled pool, today's for all cards), \"none\", an official list "
+                    + "(\"tcg\", \"ocg\", \"traditional\", \"worlds\", \"master-duel\", or \"genesys\" and \"genesys-ocg\" "
+                    + "for the Genesys format: points instead of limits, no Link or Pendulum monsters; "
+                    + "/jadm banlist update fetches the newest), or the name of a file in config/jadm/banlists/ "
+                    + "without .json, e.g. \"goat\" for goat.json: {\"name\": \"...\", \"limits\": {\"<passcode>\": "
+                    + "<copies>}} (a Genesys list has \"points\": {\"<passcode>\": <points>} and \"pointCap\").")
             .define("banlist", "auto");
+
+    public static final ModConfigSpec.IntValue GENESYS_POINT_CAP = BUILDER
+            .comment("Genesys: how many points a deck's cards (main, extra and side deck together) may cost. 100 is "
+                    + "the standard; events also play with other caps.")
+            .defineInRange("genesysPointCap", 100, 0, 10_000);
 
     public static final ModConfigSpec.IntValue STARTING_LIFE_POINTS = BUILDER
             .comment("Life points each duelist starts with in a 1v1 duel; tag duels use tagStartingLifePoints.")
@@ -74,10 +93,22 @@ public final class JadmServerConfig {
             .comment("Say in chat when new sets, rules or banlists are unlocked.")
             .define("announce", true);
 
+    public static final ModConfigSpec.IntValue DAYS_PER_SET = BUILDER
+            .comment("Minecraft days (as the F3 screen counts them, so sleeping through a night counts) after which "
+                    + "the next set unlocks by itself, counted from when a world (or, per player, a player) starts "
+                    + "with it. 0 means only operators unlock sets with /jadm progression.")
+            .defineInRange("daysPerSet", 3, 0, 10000);
+
     public static final ModConfigSpec.BooleanValue LOCKED_IN_DECK = BUILDER.pop().push("cards")
             .comment("In a progression world, cards from sets that are still locked can't go in a deck (they still "
                     + "count in the binder, with a lock).")
             .define("lockedInDeck", true);
+
+    public static final ModConfigSpec.DoubleValue ALT_ART_CHANCE = BUILDER
+            .comment("The chance that a card pulled from a pack or tin comes as one of its alternate artworks, if it "
+                    + "has any (Dark Magician, Blue-Eyes White Dragon, ...). An alt art plays and counts as the "
+                    + "original card. 0 turns them off, 1 makes every such card an alt art.")
+            .defineInRange("altArtChance", io.github.zancrow321.jadm.engine.data.AltArts.DEFAULT_CHANCE, 0.0, 1.0);
 
     public static final ModConfigSpec.ConfigValue<String> SHOP_CURRENCY = BUILDER.pop().push("shop")
             .comment("What the shops take: \"points\" for Duel Points, a balance each player has (see "
@@ -247,8 +278,92 @@ public final class JadmServerConfig {
                     + "treasury with Duel Points and fight clan wars, which move the clans' ratings in the clan "
                     + "ranking. /jadm clan opens the clan window.").push("clans"));
 
+    /** Bounties on players, in {@code [bounty]}. */
+    public static final Bounty BOUNTY = new Bounty(BUILDER.pop()
+            .comment("Bounties: players put Duel Points on someone's head with /jadm bounty place <player> <amount>, and "
+                    + "whoever beats that player in a duel between people (no bots or NPCs) collects them. Bounties "
+                    + "on the same player add up. Needs the [shop] currency to be points.").push("bounty"));
+    public static final Quests QUESTS = new Quests(BUILDER.pop()
+            .comment("Daily and weekly quests (\"Win 3 duels with a Dragon deck\") that bring Duel Points, packs and "
+                    + "more. Which quests there are and what they bring is in config/jadm/quests.json (written with a "
+                    + "starting pool on first start; /jadm quests reload reads it again). Players see theirs with the "
+                    + "key U or /jadm quests.").push("quests"));
+
+    public static final ModConfigSpec.ConfigValue<String> AI_ENGINE = BUILDER.pop().push("ai")
+            .comment("Who plays for NPC duelists, tournament bots, bot seats (/jadm duel bot) and players who ran out "
+                    + "of time: \"windbot\" (WindBot with the play styles from Astra) or \"classic\" (the mod's "
+                    + "older rule-of-thumb duelist).")
+            .define("engine", "windbot", v -> "windbot".equals(v) || "classic".equals(v));
+
+    public static final ModConfigSpec.ConfigValue<String> AI_NPC_STYLE = BUILDER
+            .comment("How NPC duelists play: \"balanced\", \"aggressive\" (summons and attacks a lot, sets few "
+                    + "spells), \"defensive\" (sets monsters, shows only strong ones), \"control\" (spends removal "
+                    + "freely) or \"random\" (each NPC duelist keeps a style of its own).")
+            .define("npcStyle", "random", JadmServerConfig::isStyle);
+
+    public static final ModConfigSpec.DoubleValue AI_NPC_MISTAKES = BUILDER
+            .comment("How often (0 to 1) NPC duelists let a chance to respond or an attack go by, as a beginner "
+                    + "would; 0 always plays the best it knows.")
+            .defineInRange("npcMistakes", 0.3, 0.0, 1.0);
+
+    public static final ModConfigSpec.ConfigValue<String> AI_BOT_STYLE = BUILDER
+            .comment("How tournament bots, bot seats and the stand-in for players out of time play (same choices "
+                    + "as npcStyle).")
+            .define("botStyle", "balanced", JadmServerConfig::isStyle);
+
+    public static final ModConfigSpec.DoubleValue AI_BOT_MISTAKES = BUILDER
+            .comment("How often (0 to 1) those bots let a chance go by; the stand-in for a player never does.")
+            .defineInRange("botMistakes", 0.0, 0.0, 1.0);
+
     static {
         BUILDER.pop();
+    }
+
+    /** The daily and weekly quests' settings; the quests themselves are in config/jadm/quests.json. */
+    public static final class Quests {
+        public final ModConfigSpec.BooleanValue enabled;
+        public final ModConfigSpec.IntValue daily;
+        public final ModConfigSpec.IntValue weekly;
+        public final ModConfigSpec.BooleanValue sameForEveryone;
+        public final ModConfigSpec.IntValue rerollsPerDay;
+        public final ModConfigSpec.IntValue resetHour;
+        public final ModConfigSpec.ConfigValue<String> weeklyResetDay;
+        public final ModConfigSpec.IntValue minTurns;
+        public final ModConfigSpec.BooleanValue botDuels;
+        public final ModConfigSpec.BooleanValue announceWeekly;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private Quests(ModConfigSpec.Builder builder) {
+            enabled = builder.comment("Players get quests and progress counts. Off, nothing is counted and the quest "
+                    + "window says so.").define("enabled", true);
+            daily = builder.comment("Daily quests each player has at once.").defineInRange("daily", 3, 0, 10);
+            weekly = builder.comment("Weekly quests each player has at once.").defineInRange("weekly", 2, 0, 10);
+            sameForEveryone = builder.comment("Everyone gets the same quests (\"today everyone duels with "
+                    + "Dragons\"), and there is no rerolling. Off, each player draws their own.")
+                    .define("sameForEveryone", false);
+            rerollsPerDay = builder.comment("How many unfinished quests a player can swap for another each day "
+                    + "(without sameForEveryone).").defineInRange("rerollsPerDay", 1, 0, 10);
+            resetHour = builder.comment("The hour of the server's clock (0-23) when new daily quests come.")
+                    .defineInRange("resetHour", 0, 0, 23);
+            weeklyResetDay = builder.comment("The day new weekly quests come, at resetHour: monday ... sunday.")
+                    .define("weeklyResetDay", "monday", v -> v instanceof String s && day(s) != null);
+            minTurns = builder.comment("A duel counts for quests only if it reached this turn, so forfeiting right "
+                    + "away doesn't play quests off.").defineInRange("minTurns", 3, 1, 100);
+            botDuels = builder.comment("Duels against bots (/jadm duel bot) count for quests. NPC duelists in the "
+                    + "world always do.").define("botDuels", true);
+            announceWeekly = builder.comment("Tell everyone in chat when a player finishes a weekly quest.")
+                    .define("announceWeekly", false);
+        }
+
+        /** The weekday a {@code weeklyResetDay} value names, or {@code null}. */
+        public static java.time.DayOfWeek day(String name) {
+            for (java.time.DayOfWeek day : java.time.DayOfWeek.values()) {
+                if (day.name().equalsIgnoreCase(name.strip())) {
+                    return day;
+                }
+            }
+            return null;
+        }
     }
 
     /** Booster packs, Duel Points, emeralds and experience points for the winners and the losers of a duel. */
@@ -339,6 +454,11 @@ public final class JadmServerConfig {
 
     public static final ModConfigSpec SPEC = BUILDER.build();
 
+    private static boolean isStyle(Object value) {
+        return value instanceof String s && (s.equals("random") || s.equals("balanced") || s.equals("aggressive")
+                || s.equals("defensive") || s.equals("control"));
+    }
+
     private JadmServerConfig() {
     }
 
@@ -378,7 +498,8 @@ public final class JadmServerConfig {
         private Prices(ModConfigSpec.Builder builder) {
             corePack = builder.comment("A 9-card core booster pack of a set.")
                     .defineInRange("corePack", 4, 0, 64);
-            premiumPack = builder.comment("A pack of an all-foil set (Dragons of Legend, Premium Gold...).")
+            premiumPack = builder.comment("A pack of an all-foil set (Dragons of Legend, Premium Gold...) or of a set "
+                    + "without commons (Maze of Millennia, The Secret Forces...).")
                     .defineInRange("premiumPack", 6, 0, 64);
             smallPack = builder.comment("A smaller pack: tournament packs (3 cards), mini boosters such as Duelist "
                     + "Packs and battle packs (5 cards).").defineInRange("smallPack", 3, 0, 64);
@@ -495,6 +616,36 @@ public final class JadmServerConfig {
                     .defineInRange("requestSeconds", 60, 5, 3600);
             rightClick = builder.comment("Sneaking and right-clicking another player with a card, binder or deck box "
                     + "in your hand asks them to trade.").define("rightClick", true);
+        }
+    }
+
+    /** The settings of bounties. */
+    public static final class Bounty {
+        public final ModConfigSpec.BooleanValue enabled;
+        public final ModConfigSpec.IntValue minAmount;
+        public final ModConfigSpec.IntValue feePercent;
+        public final ModConfigSpec.IntValue minTurns;
+        public final ModConfigSpec.BooleanValue withdraw;
+        public final ModConfigSpec.BooleanValue announce;
+        public final ModConfigSpec.BooleanValue showInTabList;
+
+        /** Defines the settings in the section {@code builder} just entered. */
+        private Bounty(ModConfigSpec.Builder builder) {
+            enabled = builder.comment("Players can put up bounties and collect them. Off, bounties already put up "
+                    + "stay as they are.").define("enabled", true);
+            minAmount = builder.comment("The smallest bounty a player can put up, in Duel Points.")
+                    .defineInRange("minAmount", 100, 1, 1_000_000);
+            feePercent = builder.comment("A fee on top of a bounty, in percent of it, which is gone for good (so a "
+                    + "bounty of 1000 costs 1100 with 10). 0 for no fee.").defineInRange("feePercent", 10, 0, 100);
+            minTurns = builder.comment("A duel has to reach this turn for the winner to collect a bounty, so a "
+                    + "player can't hand their own bounty to a friend by giving up right away. 1 counts every duel.")
+                    .defineInRange("minTurns", 3, 1, 100);
+            withdraw = builder.comment("Whoever put up a bounty can take it back (not while that player is in a "
+                    + "duel); the fee isn't paid back.").define("withdraw", true);
+            announce = builder.comment("Tell everyone in chat when a bounty is raised and when it is collected.")
+                    .define("announce", true);
+            showInTabList = builder.comment("Show the bounty after a player's name in the player list (Tab).")
+                    .define("showInTabList", true);
         }
     }
 

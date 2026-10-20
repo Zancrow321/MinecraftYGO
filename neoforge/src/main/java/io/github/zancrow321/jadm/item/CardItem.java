@@ -52,24 +52,26 @@ public final class CardItem extends Item {
         }
     }
 
+    /** The color of a rarity's name: that of its slot, yellow for the gold foils. */
     public static ChatFormatting color(Rarity rarity) {
         return switch (rarity) {
+            case GOLD, PREMIUM_GOLD, GOLD_SECRET, GHOST_GOLD, GRAND_MASTER -> ChatFormatting.YELLOW;
+            default -> slotColor(rarity.slot());
+        };
+    }
+
+    private static ChatFormatting slotColor(Rarity slot) {
+        return switch (slot) {
             case COMMON -> ChatFormatting.WHITE;
             case RARE -> ChatFormatting.AQUA;
             case SUPER -> ChatFormatting.GOLD;
             case ULTRA -> ChatFormatting.LIGHT_PURPLE;
-            case SECRET -> ChatFormatting.RED;
+            default -> ChatFormatting.RED;
         };
     }
 
     public static String rarityName(Rarity rarity) {
-        return switch (rarity) {
-            case COMMON -> "Common";
-            case RARE -> "Rare";
-            case SUPER -> "Super Rare";
-            case ULTRA -> "Ultra Rare";
-            case SECRET -> "Secret Rare";
-        };
+        return rarity.displayName();
     }
 
     @Override
@@ -84,7 +86,7 @@ public final class CardItem extends Item {
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        return rarity(stack).ordinal() >= Rarity.SUPER.ordinal();
+        return rarity(stack).slot().compareTo(Rarity.SUPER) >= 0;
     }
 
     @Override
@@ -102,6 +104,10 @@ public final class CardItem extends Item {
         if (rarity != Rarity.COMMON) {
             tooltip.add(Component.literal(rarityName(rarity)).withStyle(color(rarity)));
         }
+        Component art = artLine(code);
+        if (art != null) {
+            tooltip.add(art);
+        }
         if (preview) {
             return;
         }
@@ -114,6 +120,25 @@ public final class CardItem extends Item {
         }
     }
 
+    /** "Alternate Art 2 of 8" for an alternate artwork, {@code null} for the original. */
+    public static Component artLine(int code) {
+        if (!JadmData.isAltArt(code)) {
+            return null;
+        }
+        int number = JadmData.altArts().number(JadmData.cards(), code);
+        return (number > 0 ? Component.translatable("item.jadm.card.alt_art", number,
+                JadmData.altArts().count(JadmData.cards(), code))
+                : Component.translatable("item.jadm.card.alt_art.short")).withStyle(ChatFormatting.GOLD);
+    }
+
+    /** German names of the attributes, by bit (EARTH, WATER, FIRE, WIND, LIGHT, DARK, DIVINE). */
+    public static final String[] ATTRIBUTES_DE = {"Erde", "Wasser", "Feuer", "Wind", "Licht", "Finsternis",
+            "Göttlich"};
+    /** German names of the monster types, by bit, as on German cards. */
+    public static final String[] RACES_DE = {"Krieger", "Hexer", "Fee", "Unterweltler", "Zombie", "Maschine", "Aqua",
+            "Pyro", "Fels", "Geflügeltes Ungeheuer", "Pflanze", "Insekt", "Donner", "Drache", "Ungeheuer",
+            "Ungeheuer-Krieger", "Dinosaurier", "Fisch", "Seeschlange", "Reptil", "Psi", "Göttliches Ungeheuer",
+            "Schöpfergott", "Wyrm", "Cyberse", "Illusion"};
     /** "DARK Spellcaster · Level 7 · ATK 2500 / DEF 2100", or "Spell Card" / "Trap Card". */
     public static String typeLine(CardInfo card) {
         if (card.is(OcgConstants.TYPE_SPELL)) {

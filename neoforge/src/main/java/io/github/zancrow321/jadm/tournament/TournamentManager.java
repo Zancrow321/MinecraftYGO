@@ -3,12 +3,13 @@ package io.github.zancrow321.jadm.tournament;
 import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.JadmServerConfig;
+import io.github.zancrow321.jadm.api.event.TournamentEndEvent;
 import io.github.zancrow321.jadm.arena.DuelArena;
+import io.github.zancrow321.jadm.duel.DuelBots;
 import io.github.zancrow321.jadm.duel.DuelManager;
 import io.github.zancrow321.jadm.duel.MatchSetup;
 import io.github.zancrow321.jadm.engine.DuelSettings;
 import io.github.zancrow321.jadm.engine.Ruleset;
-import io.github.zancrow321.jadm.engine.ai.DuelistAi;
 import io.github.zancrow321.jadm.engine.data.Banlist;
 import io.github.zancrow321.jadm.engine.data.BundledScripts;
 import io.github.zancrow321.jadm.engine.data.Deck;
@@ -39,6 +40,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.time.LocalDateTime;
@@ -587,12 +589,16 @@ public final class TournamentManager {
     Ruleset ruleset(Tournament t) {
         String s = t.setting("ruleset");
         int step = effectiveStep(t);
-        return s.equalsIgnoreCase("server") ? JadmData.ruleset(step) : JadmData.ruleset(step, s);
+        String setting = s.equalsIgnoreCase("server") ? JadmData.rulesetSetting() : s;
+        // Sealed and Draft decks have no banlist, so a Genesys one doesn't pick the rules either.
+        return t.limited() ? JadmData.ruleset(step, setting) : JadmData.ruleset(step, setting, banlist(t, step));
     }
 
     static Banlist banlist(Tournament t, int step) {
         String s = t.setting("banlist");
-        return s.equalsIgnoreCase("server") ? JadmData.banlist(step) : JadmData.banlist(step, s);
+        Banlist banlist = s.equalsIgnoreCase("server") ? JadmData.banlist(step) : JadmData.banlist(step, s);
+        int cap = t.integer("genesysPointCap");
+        return cap >= 0 ? banlist.withPointCap(cap) : banlist;
     }
 
     // ---- Invitationals -------------------------------------------------------------------------------------------
@@ -1018,8 +1024,9 @@ public final class TournamentManager {
         int[] order = live.first == 1 ? new int[]{m.b, m.a} : new int[]{m.a, m.b};
         for (int i = 0; i < 2; i++) {
             Tournament.Entrant e = t.entrants.get(order[i]);
-            seats.add(new DuelTable.Seat(i, e.name, new DuelistAi(random.nextLong(), JadmData.cards())));
-            decks.add(new Deck(e.name, e.main, e.extra, List.of()));
+            Deck deck = new Deck(e.name, e.main, e.extra, List.of());
+            seats.add(new DuelTable.Seat(i, e.name, DuelBots.bot(random.nextLong(), deck)));
+            decks.add(deck);
         }
         int lp = t.integer("startingLifePoints") > 0 ? t.integer("startingLifePoints")
                 : JadmServerConfig.STARTING_LIFE_POINTS.get();
@@ -1032,7 +1039,10 @@ public final class TournamentManager {
             botGames.put(m.id, new BotGame(table, t));
             live.phase = Tournament.Live.DUELING;
             live.since = now();
-        } catch (UnsatisfiedLinkError | RuntimeException e) {
+        } catch (VirtualMachineError e) {
+            throw e;
+        } catch (RuntimeException | Error e) {
+            // Error covers a missing native library and a crash inside the core.
             Jadm.LOGGER.warn("NPC tournament game couldn't be played, flipping a coin", e);
             t.bracket.reportGame(m.id, random.nextInt(2));
             if (m.decided()) {
@@ -1059,11 +1069,20 @@ public final class TournamentManager {
                     continue;
                 }
                 winner = table.winner();
-            } catch (RuntimeException e) {
+            } catch (VirtualMachineError e) {
+                throw e;
+            } catch (RuntimeException | Error e) {
+                // Error covers a crash inside the native core ("Invalid memory access").
                 Jadm.LOGGER.warn("NPC tournament game broke off, flipping a coin", e);
                 winner = new Random().nextInt(2);
             }
-            table.close();
+            try {
+                table.close();
+            } catch (VirtualMachineError e) {
+                throw e;
+            } catch (RuntimeException | Error e) {
+                Jadm.LOGGER.error("Could not free a crashed NPC tournament game", e);
+            }
             botGames.remove(entry.getKey());
             Bracket.Match m = t.bracket.match(entry.getKey());
             Tournament.Live live = t.live.get(entry.getKey());
@@ -1185,9 +1204,13 @@ public final class TournamentManager {
                 player.sendSystemMessage(Component.literal("You finished " + ordinal(p.place()) + " in \"" + t.name
                         + "\"" + (got.isEmpty() ? "." : ": " + String.join(", ", got) + "."))
                         .withStyle(ChatFormatting.GOLD));
+                io.github.zancrow321.jadm.quest.Quests.tournamentFinished(player, p.place());
             }
         }
         limited.handOut(t);
+        NeoForge.EVENT_BUS.post(new TournamentEndEvent(server, t.name, t.setting("format"), places.stream()
+                .map(p -> new TournamentEndEvent.Placement(t.entrants.get(p.entrant()).player,
+                        t.entrants.get(p.entrant()).name, p.place())).toList()));
         t.news("Finished: " + podium);
         announce(t, Component.literal("\"" + t.name + "\" is over! " + podium + ".").withStyle(ChatFormatting.GOLD)
                 .append(" ").append(button("[Results]", "/jadm tournament", "Open the tournament window")));

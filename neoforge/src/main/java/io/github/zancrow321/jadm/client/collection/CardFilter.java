@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  * The filters of the binder and the deck box (card type, attribute, level) and how they are sorted. Each is a button
  * that steps through its choices. The search box looks through the card text too, see {@link #matches}.
  */
-final class CardFilter implements IntPredicate {
+public final class CardFilter implements IntPredicate {
     enum Kind { ALL, MONSTER, SPELL, TRAP, EXTRA }
 
     enum Sort { NAME, ATK, DEF, LEVEL }
@@ -133,7 +133,7 @@ final class CardFilter implements IntPredicate {
      * one phrase ("destroy all"). Attributes and types also go by their German names ("drache", "finsternis",
      * "schnellzauber"), since the card data is English.
      */
-    static boolean matches(int code, String query) {
+    public static boolean matches(int code, String query) {
         String q = query.strip().toLowerCase(Locale.ROOT);
         if (q.isEmpty()) {
             return true;
@@ -149,20 +149,22 @@ final class CardFilter implements IntPredicate {
         return true;
     }
 
+    /** The words of a search, lower case, a phrase in quotes counting as one word. */
+    public static java.util.List<String> terms(String query) {
+        java.util.List<String> words = new java.util.ArrayList<>();
+        Matcher term = TERM.matcher(query.strip().toLowerCase(Locale.ROOT));
+        while (term.find()) {
+            words.add(term.group(1) != null ? term.group(1) : term.group(2));
+        }
+        return words;
+    }
+
     /** A word of a search, or a phrase in quotes. */
     private static final Pattern TERM = Pattern.compile("\"([^\"]*)\"?|(\\S+)");
 
     /** What {@link #matches} looks through, lower case, one per card. */
     private static final Map<Integer, String> SEARCH_TEXT = new HashMap<>();
 
-    /** German names of the attributes, by bit (EARTH, WATER, FIRE, WIND, LIGHT, DARK, DIVINE). */
-    private static final String[] ATTRIBUTES_DE = {"Erde", "Wasser", "Feuer", "Wind", "Licht", "Finsternis",
-            "Göttlich"};
-    /** German names of the monster types, by bit, as on German cards. */
-    private static final String[] RACES_DE = {"Krieger", "Hexer", "Fee", "Unterweltler", "Zombie", "Maschine", "Aqua",
-            "Pyro", "Fels", "Geflügeltes Ungeheuer", "Pflanze", "Insekt", "Donner", "Drache", "Ungeheuer",
-            "Ungeheuer-Krieger", "Dinosaurier", "Fisch", "Seeschlange", "Reptil", "Psi", "Göttliches Ungeheuer",
-            "Schöpfergott", "Wyrm", "Cyberse", "Illusion"};
     /** German names of the card type bits (monster, spell, trap, ..., link), as on German cards. */
     private static final String[] TYPES_DE = {"Monster", "Zauber", "Falle", "", "Normal", "Effekt", "Fusion", "Ritual",
             "Fallenmonster", "Spirit", "Union", "Zwilling", "Empfänger", "Synchro", "Spielmarke", "", "Schnellzauber",
@@ -187,12 +189,12 @@ final class CardFilter implements IntPredicate {
         if (card.is(OcgConstants.TYPE_MONSTER)) {
             s.append(' ').append(CardItem.typeLine(card));
             int attribute = Integer.numberOfTrailingZeros(Math.max(1, data.attribute()));
-            if (attribute < ATTRIBUTES_DE.length) {
-                s.append(' ').append(ATTRIBUTES_DE[attribute]);
+            if (attribute < CardItem.ATTRIBUTES_DE.length) {
+                s.append(' ').append(CardItem.ATTRIBUTES_DE[attribute]);
             }
             int race = Long.numberOfTrailingZeros(Math.max(1, data.race()));
-            if (race < RACES_DE.length) {
-                s.append(' ').append(RACES_DE[race]);
+            if (race < CardItem.RACES_DE.length) {
+                s.append(' ').append(CardItem.RACES_DE[race]);
             }
             s.append(card.is(OcgConstants.TYPE_XYZ) ? " Rang " : " Stufe ").append(level(card));
         }

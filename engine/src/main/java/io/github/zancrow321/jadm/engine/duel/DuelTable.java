@@ -15,6 +15,7 @@ import io.github.zancrow321.jadm.engine.text.DuelLog;
 import io.github.zancrow321.jadm.engine.text.DuelText;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +42,40 @@ public final class DuelTable implements AutoCloseable {
     public record Seat(int team, String name, Responder bot) {
     }
 
+    /**
+     * What one team did in the duel so far (daily quests count from it). Summons list the monsters' passcodes; damage
+     * is what the other team lost to damage, not to paid costs.
+     */
+    public static final class Tally {
+        private final List<Integer> normalSummons = new ArrayList<>();
+        private final List<Integer> flipSummons = new ArrayList<>();
+        private final List<Integer> specialSummons = new ArrayList<>();
+        private final List<Integer> activations = new ArrayList<>();
+        private int damageDealt;
+
+        /** Normal and Tribute Summons. */
+        public List<Integer> normalSummons() {
+            return Collections.unmodifiableList(normalSummons);
+        }
+
+        public List<Integer> flipSummons() {
+            return Collections.unmodifiableList(flipSummons);
+        }
+
+        public List<Integer> specialSummons() {
+            return Collections.unmodifiableList(specialSummons);
+        }
+
+        /** Every card effect the team activated, spells and traps included. */
+        public List<Integer> activations() {
+            return Collections.unmodifiableList(activations);
+        }
+
+        public int damageDealt() {
+            return damageDealt;
+        }
+    }
+
     /** The log line a person gets when their answer wasn't allowed and they're asked again. */
     public static final String RETRY_LINE = "That choice isn't allowed, try again";
 
@@ -63,12 +98,15 @@ public final class DuelTable implements AutoCloseable {
      * a pick among them right after shows what they are. See {@link #revealKey}.
      */
     private final List<Set<String>> revealed = List.of(new HashSet<>(), new HashSet<>());
+    private final List<Tally> tallies = List.of(new Tally(), new Tally());
     private long hint;
     private int botRetries;
     private String forfeitResult;
     private int forfeitWinner = -1;
     private DuelMessage.Win result;
     private boolean splitField;
+    /** Responders that are not seated yet follow the duel, each for a team, e.g. stand-ins for players. */
+    private final List<Map.Entry<Integer, Responder>> observers = new ArrayList<>();
 
     /** A 1v1 duel. @param bots a responder per seat, {@code null} for a person */
     public DuelTable(DuelText text, ScriptProvider scripts, DuelSettings settings, Deck deck0, Deck deck1,
@@ -111,6 +149,12 @@ public final class DuelTable implements AutoCloseable {
     }
 
     /** In a split field, which partner (0 or 1) owns zone column {@code seq}, or -1 if it is shared. */
+    /** Lets {@code responder} follow the duel as {@code team} sees it, before it ever has to answer for them. */
+    public DuelTable addObserver(int team, Responder responder) {
+        observers.add(Map.entry(team, responder));
+        return this;
+    }
+
     public static int zoneOwner(int seq) {
         return seq <= 1 ? 0 : seq == 3 || seq == 4 ? 1 : -1;
     }
@@ -169,6 +213,14 @@ public final class DuelTable implements AutoCloseable {
         return finished() || prompt == null ? -1 : activeSeat(prompt.player());
     }
 
+    /**
+     * What everyone sees before {@link #start}: the decks in place and nothing drawn yet, for while the winner of the
+     * coin toss chooses whether to go first.
+     */
+    public Map<Integer, DuelView> waiting() {
+        return views(null);
+    }
+
     /** Runs the duel up to the first person's prompt. */
     public Map<Integer, DuelView> start() {
         return run(duel.advance());
@@ -195,6 +247,11 @@ public final class DuelTable implements AutoCloseable {
     /** What a spectator who just sat down sees: the board as it is, with nothing that happened before. */
     public DuelView watchingNow() {
         return new DuelView(0, names, duel.board().viewedBy(-1, false), List.of(), List.of(), null, 0, null);
+    }
+
+    /** What {@code team} (0 or 1) did in the duel so far. */
+    public Tally tally(int team) {
+        return tallies.get(team);
     }
 
     /** The current turn number, 1 for the first turn. */
@@ -306,6 +363,14 @@ public final class DuelTable implements AutoCloseable {
         Board board = duel.board();
         long latestHint = 0;
         for (DuelMessage message : step.messages()) {
+            for (Seat seat : seats) {
+                if (seat.bot() != null) {
+                    observe(seat.bot(), seat.team(), message);
+                }
+            }
+            for (Map.Entry<Integer, Responder> observer : observers) {
+                observe(observer.getValue(), observer.getKey(), message);
+            }
             if (message instanceof DuelMessage.Hint h && h.hintType() == MessageType.HINT_SELECTMSG) {
                 latestHint = h.data();
             }
@@ -318,6 +383,7 @@ public final class DuelTable implements AutoCloseable {
             if (message instanceof DuelMessage.NewTurn) {
                 revealed.forEach(Set::clear);
             }
+            count(message);
             if (message instanceof DuelMessage.ConfirmCards confirm && confirm.player() >= 0 && confirm.player() < 2) {
                 // Shown cards go to the player named; the top of a deck is shown to both.
                 for (int team = 0; team < 2; team++) {
@@ -342,7 +408,8 @@ public final class DuelTable implements AutoCloseable {
             if (watched != null) {
                 spectatorEvents.add(watched);
             }
-            String watchedLine = new DuelLog(text, names, -1, loc -> faceUpCodeAt(board, loc)).describe(message);
+            String watchedLine = new DuelLog(text, names, -1, loc -> faceUpCodeAt(board, loc), card -> false)
+                    .describe(message);
             if (watchedLine != null && !(message instanceof DuelMessage.Retry)) {
                 spectatorLog.add(watchedLine);
             }
@@ -360,11 +427,37 @@ public final class DuelTable implements AutoCloseable {
                 if (event != null) {
                     pendingEvents.get(viewer).add(event);
                 }
-                String line = new DuelLog(text, names, as, loc -> faceUpCodeAt(board, loc)).describe(message);
+                Set<String> seen = revealed.get(as);
+                String line = new DuelLog(text, names, as, loc -> faceUpCodeAt(board, loc),
+                        card -> seen.contains(revealKey(card))).describe(message);
                 if (line != null) {
                     pendingLog.get(viewer).add(line);
                 }
             }
+        }
+    }
+
+    private void count(DuelMessage message) {
+        switch (message) {
+            case DuelMessage.Summoning m when m.loc().controller() == 0 || m.loc().controller() == 1 -> {
+                Tally tally = tallies.get(m.loc().controller());
+                (m.type() == MessageType.SPSUMMONING ? tally.specialSummons
+                        : m.type() == MessageType.FLIPSUMMONING ? tally.flipSummons : tally.normalSummons)
+                        .add(m.code());
+            }
+            case DuelMessage.Chaining m when m.loc().controller() == 0 || m.loc().controller() == 1 ->
+                    tallies.get(m.loc().controller()).activations.add(m.code());
+            case DuelMessage.LifePoints m when m.type() == MessageType.DAMAGE && (m.player() == 0 || m.player() == 1) ->
+                    tallies.get(1 - m.player()).damageDealt += m.amount();
+            default -> {
+            }
+        }
+    }
+
+    private static void observe(Responder responder, int team, DuelMessage message) {
+        DuelMessage seen = MessageCensor.forTeam(message, team);
+        if (seen != null) {
+            responder.observe(team, seen);
         }
     }
 

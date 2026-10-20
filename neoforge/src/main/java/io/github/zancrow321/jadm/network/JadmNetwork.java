@@ -29,8 +29,14 @@ public final class JadmNetwork {
                 (payload, context) -> context.enqueueWork(() -> DiskClient.receive(payload)));
         registrar.playToClient(DuelResultPayload.TYPE, DuelResultPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientDuel.result(payload)));
+        registrar.playToClient(VictoryFireworksPayload.TYPE, VictoryFireworksPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> io.github.zancrow321.jadm.client.field.Finale
+                        .fireworks(payload)));
         registrar.playToClient(DuelClockPayload.TYPE, DuelClockPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientDuel.clock(payload.ticksLeft())));
+        registrar.playToClient(DuelCoinPayload.TYPE, DuelCoinPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> io.github.zancrow321.jadm.client.duel.DuelStaging
+                        .coin(payload)));
         registrar.playToClient(PackOpenedPayload.TYPE, PackOpenedPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.packOpened(payload)));
         registrar.playToClient(CosmeticsPayload.TYPE, CosmeticsPayload.STREAM_CODEC,
@@ -38,6 +44,9 @@ public final class JadmNetwork {
         registrar.playToClient(PoolModePayload.TYPE, PoolModePayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> io.github.zancrow321.jadm.JadmData
                         .joined(payload)));
+        registrar.playToClient(OfficialBanlistsPayload.TYPE, OfficialBanlistsPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> io.github.zancrow321.jadm.JadmData
+                        .joinedOfficial(payload.json())));
         registrar.playToServer(SelectCosmeticPayload.TYPE, SelectCosmeticPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer player) {
@@ -117,12 +126,26 @@ public final class JadmNetwork {
                         io.github.zancrow321.jadm.collection.SetCollection.handle(player, payload);
                     }
                 }));
+        registrar.playToClient(QuestPayload.TYPE, QuestPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.quests(payload)));
+        registrar.playToServer(QuestActionPayload.TYPE, QuestActionPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        io.github.zancrow321.jadm.quest.Quests.handle(player, payload);
+                    }
+                }));
         registrar.playToClient(ArenaCoreOpenPayload.TYPE, ArenaCoreOpenPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.arenaCore(payload.pos())));
         registrar.playToServer(ArenaCoreSettingsPayload.TYPE, ArenaCoreSettingsPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> {
                     if (context.player() instanceof ServerPlayer player) {
                         io.github.zancrow321.jadm.arena.BuiltArena.settings(player, payload);
+                    }
+                }));
+        registrar.playToServer(DuelOrderPayload.TYPE, DuelOrderPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        DuelManager.get(player.server).chooseOrder(player, payload.first());
                     }
                 }));
         registrar.playToServer(DuelResponsePayload.TYPE, DuelResponsePayload.STREAM_CODEC,

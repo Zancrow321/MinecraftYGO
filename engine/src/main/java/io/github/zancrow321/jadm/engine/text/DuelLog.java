@@ -1,5 +1,6 @@
 package io.github.zancrow321.jadm.engine.text;
 
+import io.github.zancrow321.jadm.engine.duel.SummonStyle;
 import io.github.zancrow321.jadm.engine.protocol.CardRef;
 import io.github.zancrow321.jadm.engine.protocol.DuelMessage;
 import io.github.zancrow321.jadm.engine.protocol.DuelMessage.*;
@@ -8,6 +9,7 @@ import io.github.zancrow321.jadm.engine.protocol.MessageType;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static io.github.zancrow321.jadm.engine.OcgConstants.*;
 
@@ -20,17 +22,22 @@ public final class DuelLog {
     private final List<String> names;
     private final int viewer;
     private final Function<Loc, Integer> codeAt;
+    private final Predicate<CardRef> shown;
 
     /**
      * @param names  display names of player 0 and player 1
      * @param viewer whose log this is (0 or 1), or -1 for a spectator
      * @param codeAt looks up the card currently at a face-up location, for messages that only carry locations
+     * @param shown  whether this viewer was shown that card earlier this turn, so a card revealed from the Deck is
+     *               named again when it is added to the hand
      */
-    public DuelLog(DuelText text, List<String> names, int viewer, Function<Loc, Integer> codeAt) {
+    public DuelLog(DuelText text, List<String> names, int viewer, Function<Loc, Integer> codeAt,
+                   Predicate<CardRef> shown) {
         this.text = text;
         this.names = names;
         this.viewer = viewer;
         this.codeAt = codeAt;
+        this.shown = shown;
     }
 
     /** @return the commentary line, or {@code null} if the message isn't worth a line */
@@ -44,7 +51,15 @@ public final class DuelLog {
             case Summoning m -> who(m.loc().controller()) + " " + switch (m.type()) {
                 case MessageType.SUMMONING -> "Normal Summoned ";
                 case MessageType.FLIPSUMMONING -> "Flip Summoned ";
-                default -> "Special Summoned ";
+                default -> switch (m.style()) {
+                    case SummonStyle.FUSION -> "Fusion Summoned ";
+                    case SummonStyle.SYNCHRO -> "Synchro Summoned ";
+                    case SummonStyle.XYZ -> "Xyz Summoned ";
+                    case SummonStyle.RITUAL -> "Ritual Summoned ";
+                    case SummonStyle.LINK -> "Link Summoned ";
+                    case SummonStyle.PENDULUM, SummonStyle.PENDULUM_MORE -> "Pendulum Summoned ";
+                    default -> "Special Summoned ";
+                };
             } + text.cardName(m.code());
             case DuelMessage.Set m -> who(m.loc().controller()) + " Set a card in the " + text.location(m.loc().location());
             case Chaining m -> who(m.loc().controller()) + " activated " + visibleName(m.code(), m.loc())
@@ -61,8 +76,7 @@ public final class DuelLog {
             case LifePoints m when m.type() == MessageType.DAMAGE -> who(m.player()) + " took " + m.amount() + " damage";
             case LifePoints m when m.type() == MessageType.RECOVER -> who(m.player()) + " gained " + m.amount() + " LP";
             case LifePoints m when m.type() == MessageType.PAY_LPCOST -> who(m.player()) + " paid " + m.amount() + " LP";
-            case ConfirmCards m when m.player() == viewer -> "Revealed to you: " + names(m.cards().stream()
-                    .map(CardRef::code).toList());
+            case ConfirmCards m -> confirm(m);
             case ShuffleDeck m -> who(m.player()) + " shuffled " + (m.player() == viewer ? "your" : "their") + " Deck";
             case Toss m -> who(m.player()) + (m.type() == MessageType.TOSS_COIN ? " tossed a coin: " : " rolled: ")
                     + m.results().stream().map(r -> m.type() == MessageType.TOSS_COIN ? (r == 1 ? "heads" : "tails")
@@ -79,8 +93,11 @@ public final class DuelLog {
         String name = visibleName(m.code(), to.isNone() ? from : to);
         int dest = to.location();
         if (from.location() == LOCATION_DECK && dest == LOCATION_HAND) {
-            return to.controller() == viewer ? "You added " + text.cardName(m.code()) + " to your hand"
-                    : who(to.controller()) + " added a card to their hand";
+            if (to.controller() == viewer) {
+                return "You added " + text.cardName(m.code()) + " to your hand";
+            }
+            boolean seen = m.code() != 0 && shown.test(new CardRef(m.code(), from));
+            return who(to.controller()) + " added " + (seen ? text.cardName(m.code()) : "a card") + " to their hand";
         }
         if (dest == LOCATION_GRAVE) {
             boolean destroyed = (m.reason() & 0x1) != 0;
@@ -96,6 +113,43 @@ public final class DuelLog {
             return name + " returned to the Deck";
         }
         return null;
+    }
+
+    /**
+     * A reveal. The top of a Deck is shown to everyone. Other cards are shown to the player named, and their owner
+     * knows them anyway; anyone else only learns how many.
+     */
+    private String confirm(ConfirmCards m) {
+        List<CardRef> cards = m.cards();
+        if (cards.isEmpty()) {
+            return null;
+        }
+        List<Integer> codes = cards.stream().map(CardRef::code).toList();
+        if (m.type() != MessageType.CONFIRM_CARDS) {
+            String pile = m.type() == MessageType.CONFIRM_DECKTOP ? "Deck" : "Extra Deck";
+            return who(m.player()) + " revealed the top " + (cards.size() == 1 ? "card" : cards.size() + " cards")
+                    + " of " + (m.player() == viewer ? "your " : "their ") + pile + ": " + names(codes);
+        }
+        int owner = cards.getFirst().loc().controller();
+        boolean sameOwner = cards.stream().allMatch(c -> c.loc().controller() == owner);
+        int location = cards.getFirst().loc().location() & 0x7F;
+        boolean sameLocation = cards.stream().allMatch(c -> (c.loc().location() & 0x7F) == location);
+        boolean visible = codes.stream().noneMatch(code -> code == 0) && (viewer == m.player()
+                || (viewer >= 0 && cards.stream().allMatch(c -> c.loc().controller() == viewer)));
+        String what = visible ? names(codes) : plural(cards.size(), "card");
+        if (sameOwner && sameLocation && (location == LOCATION_HAND || location == LOCATION_DECK
+                || location == LOCATION_EXTRA)) {
+            what += " from " + (owner == viewer ? "your " : "their ") + text.location(location);
+        }
+        if (!sameOwner) {
+            return (viewer == m.player() ? "You were shown " : "Revealed to " + who(m.player()) + ": ") + what;
+        }
+        if (owner == m.player()) {
+            // A player looking at their own hidden cards.
+            return who(owner) + " looked at " + what;
+        }
+        String to = m.player() == viewer ? "you" : names.get(m.player());
+        return who(owner) + " revealed " + what + " to " + to;
     }
 
     /** The card's name if this viewer may see it at {@code loc}, else "a card". */

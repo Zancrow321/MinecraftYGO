@@ -13,6 +13,15 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.BooleanValue CHOOSE_ZONE;
     public static final ModConfigSpec.BooleanValue SKIP_RESPONSES;
     public static final ModConfigSpec.BooleanValue CARD_PREVIEW;
+    public static final ModConfigSpec.BooleanValue PACK_OPENING_SHOW;
+    public static final ModConfigSpec.BooleanValue FIELD_SPELL_ARENA;
+    public static final ModConfigSpec.BooleanValue DISPLAY_EFFECTS;
+    public static final ModConfigSpec.BooleanValue ACE_CAMERA;
+    public static final ModConfigSpec.IntValue ACE_MIN_LEVEL;
+    public static final ModConfigSpec.IntValue ACE_MIN_ATTACK;
+    public static final ModConfigSpec.BooleanValue ACE_EXTRA_DECK;
+    public static final ModConfigSpec.BooleanValue LONG_SUMMON_SHOWS;
+    public static final ModConfigSpec.BooleanValue FINISHER_CAMERA;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -47,6 +56,42 @@ public final class JadmClientConfig {
                         + "the binder and the deck box, where there is room for it, and of a card held in the hand in "
                         + "the top left corner.")
                 .define("cardPreview", true);
+        PACK_OPENING_SHOW = builder
+                .comment("Open booster packs as a show: the pack tears open, the cards fan out face down and rare ones "
+                        + "announce themselves; click each card to turn it over. Off: the cards just turn over one "
+                        + "after the other. Space or a right click skips the show either way.")
+                .define("packOpeningShow", true);
+        FIELD_SPELL_ARENA = builder
+                .comment("Let face-up Field Spells transform the duel field: Umi floods it, Yami covers it in shadow, "
+                        + "Sogen grows grass, and so on. Each half shows its owner's Field Spell.")
+                .define("fieldSpellArena", true);
+        DISPLAY_EFFECTS = builder
+                .comment("Let shiny cards in collector displays (card frames, showcases, toploader stands) glow around "
+                        + "their edge and sparkle, the rarer the more, with a beam of light for Secret Rares and up.")
+                .define("displayEffects", true);
+        ACE_CAMERA = builder
+                .comment("In a duel, when a big monster is summoned (yours or the opponent's), the camera circles it for "
+                        + "two seconds and its name shows big, like a summon in Master Duel. Which monsters count is set "
+                        + "below; a monster counts if any one of them fits.")
+                .define("aceCamera", true);
+        ACE_MIN_LEVEL = builder
+                .comment("Monsters of this Level or higher get the ace shot (Ranks and Link ratings don't count as "
+                        + "Levels).")
+                .defineInRange("aceMinLevel", 7, 1, 13);
+        ACE_MIN_ATTACK = builder
+                .comment("Monsters with at least this much printed ATK get the ace shot. 0 turns this rule off.")
+                .defineInRange("aceMinAttack", 2500, 0, 100000);
+        ACE_EXTRA_DECK = builder
+                .comment("Every Fusion, Synchro, Xyz and Link Monster gets the ace shot.")
+                .define("aceExtraDeck", true);
+        LONG_SUMMON_SHOWS = builder
+                .comment("Play the full show (about 2.5 seconds) for a Fusion, Synchro, Xyz, Ritual, Link or Pendulum "
+                        + "Summon in a duel. Off, the shows are shorter (1.5 seconds), for decks that summon a lot.")
+                .define("longSummonShows", true);
+        FINISHER_CAMERA = builder
+                .comment("When the final blow of a duel plays in slow motion, swing the camera round to whoever it "
+                        + "hits. Off, the camera stays where it is.")
+                .define("finisherCamera", true);
         SPEC = builder.build();
     }
 

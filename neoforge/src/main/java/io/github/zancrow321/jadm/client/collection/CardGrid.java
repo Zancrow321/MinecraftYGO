@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * A paged grid of card thumbnails with copy counts, used by the binder and deck box screens.
  */
-final class CardGrid {
+public final class CardGrid {
     static final ResourceLocation CARD_BACK =
             ResourceLocation.fromNamespaceAndPath(Jadm.MOD_ID, "textures/field/card_back.png");
     static final ResourceLocation CARD_BLANK =
@@ -118,6 +118,7 @@ final class CardGrid {
 
     void render(GuiGraphics g, Font font, int mouseX, int mouseY) {
         int start = page * columns * rows;
+        var banlist = JadmData.banlist(net.minecraft.client.Minecraft.getInstance().player);
         for (int i = 0; i < columns * rows && start + i < entries.size(); i++) {
             Entry e = entries.get(start + i);
             int cx = x + (i % columns) * (cardWidth + 4);
@@ -136,6 +137,16 @@ final class CardGrid {
                 g.fill(cx + cardWidth - font.width(n) - 3, cy + cardHeight - 10, cx + cardWidth, cy + cardHeight,
                         0xC0000000);
                 g.drawString(font, n, cx + cardWidth - font.width(n) - 1, cy + cardHeight - 9, 0xFFFFFFFF, false);
+            }
+            int points = banlist.points(e.code());
+            if (points > 0) {
+                // Genesys points in the top left corner.
+                String p = String.valueOf(points);
+                g.pose().pushPose();
+                g.pose().translate(0, 0, 30);
+                g.fill(cx, cy, cx + font.width(p) + 3, cy + 10, 0xD0603000);
+                g.drawString(font, p, cx + 2, cy + 1, 0xFFFFD040, false);
+                g.pose().popPose();
             }
         }
         Entry hovered = at(mouseX, mouseY);
@@ -157,12 +168,13 @@ final class CardGrid {
     }
 
     /** Draws a card with its foil, and a foil card's rarity in the bottom left corner. */
-    static void drawCard(GuiGraphics g, Font font, int code, Rarity rarity, int x, int y, int w, int h) {
+    public static void drawCard(GuiGraphics g, Font font, int code, Rarity rarity, int x, int y, int w, int h) {
         CardArt.Texture art = CardArt.get(code);
         if (art != null) {
             g.blit(art.location(), x, y, w, h, 0, 0, art.width(), art.height(), art.width(), art.height());
             FoilEffect.drawGui(g, code, rarity, x, y, w, h);
             drawRarityTag(g, font, rarity, x, y, w, h);
+            drawAltTag(g, font, code, x, y, w, h);
             return;
         }
         g.blit(CARD_BLANK, x, y, w, h, 0, 0, 68, 100, 68, 100);
@@ -176,22 +188,38 @@ final class CardGrid {
         }
         g.pose().popPose();
         drawRarityTag(g, font, rarity, x, y, w, h);
+        drawAltTag(g, font, code, x, y, w, h);
+    }
+
+    /** "ALT" in the bottom right corner of an alternate artwork, across from the rarity. At half size on small cards. */
+    static void drawAltTag(GuiGraphics g, Font font, int code, int x, int y, int w, int h) {
+        if (!JadmData.isAltArt(code)) {
+            return;
+        }
+        String tag = "ALT";
+        float scale = w < 60 ? 0.5f : 1f;
+        int tw = Math.round(font.width(tag) * scale);
+        int th = Math.round(8 * scale);
+        int right = x + w - 1;
+        int bottom = y + h - 1;
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 10);
+        g.fill(right - tw - 2, bottom - th - 2, right, bottom, 0xD0000000);
+        g.pose().translate(right - tw - 1, bottom - th - 1, 0);
+        g.pose().scale(scale, scale, 1);
+        g.drawString(font, tag, 0, 0, 0xFFFFC040, false);
+        g.pose().popPose();
     }
 
     /**
-     * The short rarity of a foil card (R, SR, UR, ScR) in its bottom left corner, over the passcode, where it hides
-     * nothing that matters. At half size on small cards.
+     * The short rarity of a foil card (R, SR, UR, ScR, StR, GhR...) in its bottom left corner, over the passcode,
+     * where it hides nothing that matters. At half size on small cards.
      */
     static void drawRarityTag(GuiGraphics g, Font font, Rarity rarity, int x, int y, int w, int h) {
         if (rarity == Rarity.COMMON) {
             return;
         }
-        String tag = switch (rarity) {
-            case RARE -> "R";
-            case SUPER -> "SR";
-            case ULTRA -> "UR";
-            default -> "ScR";
-        };
+        String tag = rarity.tag();
         Integer color = CardItem.color(rarity).getColor();
         float scale = w < 60 ? 0.5f : 1f;
         int tw = Math.round(font.width(tag) * scale);
@@ -253,6 +281,14 @@ final class CardGrid {
             return lines;
         }
         lines.add(Component.literal(card.name()).withStyle(ChatFormatting.WHITE));
+        Component art = CardItem.artLine(code);
+        if (art != null) {
+            lines.add(art);
+        }
+        int points = JadmData.banlist(net.minecraft.client.Minecraft.getInstance().player).points(code);
+        if (points > 0) {
+            lines.add(Component.translatable("tooltip.jadm.genesys_points", points).withStyle(ChatFormatting.GOLD));
+        }
         if (!text) {
             if (action != null) {
                 lines.add(Component.literal(action).withStyle(ChatFormatting.YELLOW));

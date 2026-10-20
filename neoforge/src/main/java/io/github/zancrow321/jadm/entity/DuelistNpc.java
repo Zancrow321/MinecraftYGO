@@ -131,7 +131,17 @@ public final class DuelistNpc extends PathfinderMob {
      * they all build their own.
      */
     public Deck deck(int step) {
-        return deckFor(duelistName(), deckSeed, step, JadmData.banlist(step));
+        return deck(step, JadmData.banlist(step));
+    }
+
+    /** This duelist's deck for a duel played with {@code banlist}, such as a challenger's own Genesys list. */
+    public Deck deck(int step, Banlist banlist) {
+        return deckFor(duelistName(), deckSeed, step, banlist);
+    }
+
+    /** What this duelist's deck (and, with the WindBot AI, its play style) is picked from. */
+    public long deckSeed() {
+        return deckSeed;
     }
 
     /** The deck a duelist with this name and deck seed plays at a progression step, see {@link #deck(int)}. */

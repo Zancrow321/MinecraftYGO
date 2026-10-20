@@ -12,13 +12,23 @@ import io.github.zancrow321.jadm.engine.duel.FieldEvent;
 public record FieldAnimation(FieldEvent event, long start, int duration, int actor) {
     /** How long {@code event} plays: some spells with a signature effect take longer than the rest. */
     public static int duration(FieldEvent event) {
+        if (SummonShow.plays(event)) {
+            return SummonShow.duration();
+        }
+        if (event.kind() == FieldEvent.Kind.LEAVE) {
+            return Finale.leaveDuration(event);
+        }
         return event.kind() == FieldEvent.Kind.ACTIVATE ? SignatureEffects.activateDuration(event.code())
                 : duration(event.kind());
     }
 
     /** How long the queue waits after {@code event} before the next one starts. */
     public static int spacing(FieldEvent event) {
-        return event.kind() == FieldEvent.Kind.ACTIVATE ? duration(event) : spacing(event.kind());
+        if (event.kind() == FieldEvent.Kind.LEAVE) {
+            return Finale.leaveSpacing(event);
+        }
+        return event.kind() == FieldEvent.Kind.ACTIVATE || SummonShow.plays(event) ? duration(event)
+                : spacing(event.kind());
     }
 
     /** How long each kind of event plays, and so how long the next one waits, in ticks. */

@@ -448,6 +448,7 @@ public final class SetBookScreen extends Screen {
         for (Products.Printing printing : product.cards()) {
             if (SetBook.original(printing.code()) == code) {
                 rarities.add(printing.rarity());
+                rarities.addAll(printing.better());
             }
         }
         return String.join(", ", rarities);

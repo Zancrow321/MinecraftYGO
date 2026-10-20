@@ -496,6 +496,7 @@ final class Limited {
                 }
                 v.packs.add(e.pool.subList(at, at + size));
                 v.packNames.add(setName(id));
+                v.packCodes.add(set.code());
                 at += size;
             }
         }

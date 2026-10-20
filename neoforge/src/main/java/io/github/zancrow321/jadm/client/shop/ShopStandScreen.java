@@ -6,21 +6,25 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 
 /**
- * The owner's Shop Stand window: a large chest with the rows named on the left (wares, prices, stock, till), the two
- * sample rows tinted, and a hint on an empty sample slot. With points as the currency the price row shows each
- * price in points, and clicking one opens a box to type it in.
+ * The owner's Shop Stand window, in the mod's dark and gold: six rows of slots named on the left (wares, prices,
+ * stock, till), the two sample rows tinted, and a hint on an empty sample slot. With points as the currency the price
+ * row shows each price in points, and clicking one opens a box to type it in.
  */
 public final class ShopStandScreen extends AbstractContainerScreen<ShopStandMenu> {
-    private static final ResourceLocation CHEST = ResourceLocation.withDefaultNamespace(
-            "textures/gui/container/generic_54.png");
+    private static final int GOLD = 0xFFFFD040;
+    private static final int DIM = 0xFF8FA4B8;
+    private static final int PANEL = 0xF0181820;
+    private static final int EDGE = 0xFFC0A040;
+    private static final int SLOT = 0x60000000;
+    private static final int SLOT_EDGE = 0xFF44445A;
     private static final int ROWS = 6;
 
     /** The box a price in points is typed in, while one is; and its column. */
@@ -150,12 +154,26 @@ public final class ShopStandScreen extends AbstractContainerScreen<ShopStandMenu
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        graphics.blit(CHEST, leftPos, topPos, 0, 0, imageWidth, ROWS * 18 + 17);
-        graphics.blit(CHEST, leftPos, topPos + ROWS * 18 + 17, 0, 126, imageWidth, 96);
-        // Tint the sample rows: the wares gold, the prices green.
-        graphics.fill(leftPos + 7, topPos + 17, leftPos + 169, topPos + 35, 0x40FFC000);
-        graphics.fill(leftPos + 7, topPos + 35, leftPos + 169, topPos + 53, 0x4040FF40);
-        graphics.fill(leftPos + 7, topPos + 107, leftPos + 169, topPos + 125, 0x40FFD040);
+        graphics.fill(leftPos, topPos, leftPos + imageWidth, topPos + imageHeight, PANEL);
+        graphics.renderOutline(leftPos, topPos, imageWidth, imageHeight, EDGE);
+        graphics.fill(leftPos + 7, topPos + ROWS * 18 + 22, leftPos + imageWidth - 7, topPos + ROWS * 18 + 23,
+                0x60C0A040);
+        // Tint the sample rows (the wares gold, the prices green) and the till.
+        graphics.fill(leftPos + 7, topPos + 17, leftPos + 169, topPos + 35, 0x50C08000);
+        graphics.fill(leftPos + 7, topPos + 35, leftPos + 169, topPos + 53, 0x4040C040);
+        graphics.fill(leftPos + 7, topPos + 107, leftPos + 169, topPos + 125, 0x50C0A040);
+        for (Slot slot : menu.slots) {
+            int x = leftPos + slot.x;
+            int y = topPos + slot.y;
+            graphics.renderOutline(x - 1, y - 1, 18, 18, SLOT_EDGE);
+            graphics.fill(x, y, x + 16, y + 16, SLOT);
+        }
+    }
+
+    @Override
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
+        graphics.drawString(font, title, titleLabelX, titleLabelY, GOLD, false);
+        graphics.drawString(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, DIM, false);
     }
 
     @Override

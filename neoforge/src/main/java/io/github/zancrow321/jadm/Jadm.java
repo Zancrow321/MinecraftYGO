@@ -57,6 +57,7 @@ public final class Jadm {
         DuelDome.register(modBus);
         DuelArena.register(modBus);
         io.github.zancrow321.jadm.ranking.RankingBoard.register(modBus);
+        io.github.zancrow321.jadm.display.Displays.register(modBus);
         container.registerConfig(ModConfig.Type.SERVER, JadmServerConfig.SPEC);
         io.github.zancrow321.jadm.clan.ClanParties.init();
         modBus.addListener(JadmNetwork::register);
@@ -87,10 +88,13 @@ public final class Jadm {
             io.github.zancrow321.jadm.clan.ClanWars.tick(event.getServer());
             io.github.zancrow321.jadm.clan.ClanBattles.tick(event.getServer());
             io.github.zancrow321.jadm.clan.ClanParties.tick(event.getServer());
+            Progress.tick(event.getServer());
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
+                io.github.zancrow321.jadm.banlist.BanlistCommands.sync(player);
                 Progress.sync(player);
+                io.github.zancrow321.jadm.collection.JoinDecks.onLogin(player);
                 io.github.zancrow321.jadm.progression.StarterDecks.offer(player);
                 io.github.zancrow321.jadm.guide.GuideBook.onLogin(player);
                 DuelManager.get(player.server).onLogin(player);
@@ -99,6 +103,8 @@ public final class Jadm {
                 io.github.zancrow321.jadm.points.Points.login(player);
                 io.github.zancrow321.jadm.clan.ClanCommands.onLogin(player);
                 io.github.zancrow321.jadm.clan.ClanParties.onLogin(player);
+                io.github.zancrow321.jadm.bounty.Bounties.login(player);
+                io.github.zancrow321.jadm.quest.Quests.onLogin(player);
             }
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {
@@ -114,6 +120,7 @@ public final class Jadm {
         });
         NeoForge.EVENT_BUS.addListener(this::onInteractPlayer);
         NeoForge.EVENT_BUS.addListener(io.github.zancrow321.jadm.ranking.RankedDuels::tabListName);
+        NeoForge.EVENT_BUS.addListener(io.github.zancrow321.jadm.bounty.Bounties::tabListName);
         // With points as the currency, card traders open a points shop instead of the trade window.
         NeoForge.EVENT_BUS.addListener((PlayerInteractEvent.EntityInteract event) -> {
             if (event.getTarget() instanceof net.minecraft.world.entity.npc.Villager villager
@@ -173,7 +180,10 @@ public final class Jadm {
 
     private void onServerStarting(ServerStartingEvent event) {
         JadmServerConfig.migrate();
+        JadmData.reloadDownloaded();
+        io.github.zancrow321.jadm.quest.QuestPool.load();
         Progress.started(event.getServer());
+        io.github.zancrow321.jadm.collection.JoinDecks.prepare();
         // Duels run on the server, so load the engine there and fail loudly but harmlessly if it's unavailable.
         try {
             LOGGER.info("Loaded OCG-Core {} with {} cards", OcgCore.get().version(), JadmData.cards().all().size());

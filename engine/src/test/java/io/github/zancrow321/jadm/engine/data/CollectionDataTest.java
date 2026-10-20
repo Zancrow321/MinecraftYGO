@@ -157,8 +157,8 @@ class CollectionDataTest {
             }
             assertEquals(set.profile().size(), set.open(random).size(), set.id());
         }
-        assertEquals(BoosterSets.Rarity.SECRET, BoosterSets.Rarity.ofPrinted("Starlight Rare"));
-        assertEquals(BoosterSets.Rarity.ULTRA, BoosterSets.Rarity.ofPrinted("Ultimate Rare"));
+        assertEquals(BoosterSets.Rarity.SECRET, BoosterSets.Rarity.ofPrinted("Starlight Rare").slot());
+        assertEquals(BoosterSets.Rarity.ULTRA, BoosterSets.Rarity.ofPrinted("Ultimate Rare").slot());
         assertEquals(BoosterSets.Rarity.COMMON, BoosterSets.Rarity.ofPrinted("Super Short Print"));
         assertEquals(BoosterSets.Rarity.RARE, BoosterSets.Rarity.ofPrinted("Rare"));
     }

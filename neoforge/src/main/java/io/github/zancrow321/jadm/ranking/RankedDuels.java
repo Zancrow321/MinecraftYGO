@@ -1,6 +1,7 @@
 package io.github.zancrow321.jadm.ranking;
 
 import io.github.zancrow321.jadm.JadmServerConfig;
+import io.github.zancrow321.jadm.api.event.RankChangeEvent;
 import io.github.zancrow321.jadm.points.Points;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -8,6 +9,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.ArrayList;
@@ -84,6 +86,8 @@ public final class RankedDuels {
                 }
             }
             out.put(change.player(), new Outcome(line, Tiers.color(tier), notes));
+            NeoForge.EVENT_BUS.post(new RankChangeEvent(server, change.player(), after.name(),
+                    change.before().rating(), after.rating(), change.before().tier(), tier, change.promotedTo() >= 0));
             ServerPlayer online = server.getPlayerList().getPlayer(change.player());
             if (online != null) {
                 online.refreshTabListName();

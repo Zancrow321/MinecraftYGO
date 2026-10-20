@@ -11,7 +11,7 @@ import java.util.UUID;
 
 /**
  * How far a world has progressed: the id of its newest unlocked product, and with {@code scope = "player"} each
- * player's. Also who has picked their starter deck and who has been given the handbook. Saved by product id so that a data update which adds products keeps everyone where they were.
+ * player's, and the day from which the wait for the next set counts. Also who has picked their starter deck and who has been given the handbook. Saved by product id so that a data update which adds products keeps everyone where they were.
  */
 public final class ProgressionData extends SavedData {
     private static final String NAME = "jadm_progression";
@@ -19,6 +19,9 @@ public final class ProgressionData extends SavedData {
     /** The world's product, or {@code null} until the first step is taken (the start product applies). */
     private String world;
     private final Map<UUID, String> players = new HashMap<>();
+    /** The Minecraft day the world's (or each player's) wait for the next set counts from; missing until first seen. */
+    private Long worldDay;
+    private final Map<UUID, Long> playerDays = new HashMap<>();
     /** Players who have picked their starter deck. */
     private final java.util.Set<UUID> starters = new java.util.HashSet<>();
     /** Players who have been given the handbook on their first join. */
@@ -49,6 +52,25 @@ public final class ProgressionData extends SavedData {
         setDirty();
     }
 
+    /** @return the day the world's wait for the next set counts from, or {@code null} before it is first seen */
+    Long worldDay() {
+        return worldDay;
+    }
+
+    void worldDay(long day) {
+        worldDay = day;
+        setDirty();
+    }
+
+    Long playerDay(UUID player) {
+        return playerDays.get(player);
+    }
+
+    void playerDay(UUID player, long day) {
+        playerDays.put(player, day);
+        setDirty();
+    }
+
     boolean hasStarter(UUID player) {
         return starters.contains(player);
     }
@@ -76,6 +98,13 @@ public final class ProgressionData extends SavedData {
         for (String key : players.getAllKeys()) {
             data.players.put(UUID.fromString(key), players.getString(key));
         }
+        if (tag.contains("WorldDay")) {
+            data.worldDay = tag.getLong("WorldDay");
+        }
+        CompoundTag days = tag.getCompound("PlayerDays");
+        for (String key : days.getAllKeys()) {
+            data.playerDays.put(UUID.fromString(key), days.getLong(key));
+        }
         for (net.minecraft.nbt.Tag t : tag.getList("Starters", net.minecraft.nbt.Tag.TAG_INT_ARRAY)) {
             data.starters.add(net.minecraft.nbt.NbtUtils.loadUUID(t));
         }
@@ -93,6 +122,12 @@ public final class ProgressionData extends SavedData {
         CompoundTag players = new CompoundTag();
         this.players.forEach((id, product) -> players.putString(id.toString(), product));
         tag.put("Players", players);
+        if (worldDay != null) {
+            tag.putLong("WorldDay", worldDay);
+        }
+        CompoundTag days = new CompoundTag();
+        playerDays.forEach((id, day) -> days.putLong(id.toString(), day));
+        tag.put("PlayerDays", days);
         net.minecraft.nbt.ListTag starters = new net.minecraft.nbt.ListTag();
         this.starters.forEach(id -> starters.add(net.minecraft.nbt.NbtUtils.createUUID(id)));
         tag.put("Starters", starters);

@@ -33,7 +33,8 @@ public final class DuelHud {
 
     public static void render(GuiGraphics g, DeltaTracker delta) {
         Minecraft mc = Minecraft.getInstance();
-        if (!ClientField.active() || mc.options.hideGui || !DuelMode.showsHud(mc.screen)) {
+        if (!ClientField.active() || ClientField.nearby() || mc.options.hideGui || !DuelMode.showsHud(mc.screen)
+                || AceCamera.playing()) {
             return;
         }
         DuelView view = ClientDuel.view();
@@ -51,10 +52,12 @@ public final class DuelHud {
         lifePanel(g, font, 6, h - 70, view.names().get(me), board.side(me), me, true);
         damagePopups(g, font, me, h, partial);
 
-        // Turn and phase, top centre, between the life panel and the right edge.
-        String phase = "Turn " + board.turn() + "  ·  " + JadmData.text().phase(board.phase())
-                + (board.turnPlayer() == me ? "  (your turn)" : "");
-        g.drawCenteredString(font, font.plainSubstrByWidth(phase, w - 2 * LIFE_PANEL_RIGHT), w / 2, 6, DIM);
+        // Turn and phase, top centre, between the life panel and the right edge (none while the coin toss is open).
+        if (board.turn() > 0) {
+            String phase = "Turn " + board.turn() + "  ·  " + JadmData.text().phase(board.phase())
+                    + (board.turnPlayer() == me ? "  (your turn)" : "");
+            g.drawCenteredString(font, font.plainSubstrByWidth(phase, w - 2 * LIFE_PANEL_RIGHT), w / 2, 6, DIM);
+        }
 
         int half = Math.min(PROMPT_HALF_WIDTH, w / 2 - LIFE_PANEL_RIGHT);
         int top = promptTop(w);

@@ -2,7 +2,10 @@ package io.github.zancrow321.jadm.client.duel;
 
 import io.github.zancrow321.jadm.client.ClientDuel;
 import io.github.zancrow321.jadm.client.field.ClientField;
+import io.github.zancrow321.jadm.client.field.Finale;
 import io.github.zancrow321.jadm.engine.duel.DuelView;
+import io.github.zancrow321.jadm.network.DuelCoinPayload;
+import io.github.zancrow321.jadm.network.DuelOrderPayload;
 import io.github.zancrow321.jadm.network.DuelResultPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -30,6 +33,8 @@ public final class DuelStaging {
     public static final int INTRO_TICKS = COIN_AT + COIN_TICKS;
     /** How long an opponent's card is shown before its effect plays. */
     public static final int BANNER_TICKS = 34;
+    /** How long "You go first!" stays up once the winner of the coin toss has chosen. */
+    private static final int CHOSEN_TICKS = 30;
     /** How long the field stays still after the last effect before the result screen opens. */
     private static final int RESULT_DELAY = 20;
 
@@ -45,6 +50,16 @@ public final class DuelStaging {
     private static DuelResultPayload result;
     private static long settledAt = -1;
     private static boolean closed;
+    /** The coin toss whose winner chooses whether to go first, or {@code null} when the server decided alone. */
+    private static DuelCoinPayload coin;
+    /** When the coin toss arrived (field tick), for the time left to choose. */
+    private static float coinAt;
+    /** When the choice was made (intro time), or -1 while it is open. */
+    private static float chosenAt = -1;
+    /** You clicked Go First or Go Second and the server hasn't confirmed yet. */
+    private static boolean asked;
+    /** The choice came with the teams trading ends; the field turns with the next view. */
+    private static boolean tradePending;
 
     private DuelStaging() {
     }
@@ -55,6 +70,70 @@ public final class DuelStaging {
         result = null;
         settledAt = -1;
         closed = false;
+        coin = null;
+        chosenAt = -1;
+        asked = false;
+        tradePending = false;
+    }
+
+    /** The server's word on the coin toss: who chooses whether to go first, and later that they chose. */
+    public static void coin(DuelCoinPayload payload) {
+        if (!payload.decided()) {
+            coin = payload;
+            coinAt = now();
+            chosenAt = -1;
+            asked = false;
+            return;
+        }
+        if (coin == null) {
+            coin = payload;
+        }
+        chosenAt = Math.max(introTime(), COIN_AT + COIN_TICKS * 0.55f);
+        tradePending = payload.turned();
+        ClientField.holdQueue((int) Math.ceil(Math.max(INTRO_TICKS, chosenAt + CHOSEN_TICKS) - introTime()));
+    }
+
+    /** Whether the next view comes from the other end of the field; asking clears it. */
+    public static boolean takeTrade() {
+        boolean trade = tradePending;
+        tradePending = false;
+        return trade;
+    }
+
+    /** Whether the winner of the coin toss is still choosing whether to go first. */
+    public static boolean choosing() {
+        DuelView view = ClientDuel.view();
+        return coin != null && chosenAt < 0 && view != null && view.result() == null;
+    }
+
+    /** Whether you are the one choosing and the coin has landed, so the Go First and Go Second buttons show. */
+    public static boolean choiceButtons() {
+        return choosing() && coin.you() && !asked && coinLanded();
+    }
+
+    private static boolean coinLanded() {
+        return introTime() >= COIN_AT + COIN_TICKS * 0.55f;
+    }
+
+    /** Tells the server whether you go first; the buttons go until it answers. */
+    public static void choose(boolean first) {
+        if (choiceButtons()) {
+            asked = true;
+            net.neoforged.neoforge.network.PacketDistributor.sendToServer(new DuelOrderPayload(first));
+        }
+    }
+
+    /** Where the Go First and Go Second buttons go, under the coin. */
+    public static int choiceButtonsY(int h) {
+        return h / 2 + 30;
+    }
+
+    /** When the start show is over: after the coin toss, or once its winner has chosen and that was shown. */
+    private static float introEnd() {
+        if (coin != null && chosenAt < 0) {
+            return Float.MAX_VALUE;
+        }
+        return chosenAt < 0 ? INTRO_TICKS : Math.max(INTRO_TICKS, chosenAt + CHOSEN_TICKS);
     }
 
     /** What the server says this duel brought you; shown on the result screen. */
@@ -77,7 +156,8 @@ public final class DuelStaging {
 
     /** Whether the start is still playing; nothing can be clicked until it's over. */
     public static boolean introRunning() {
-        return ClientField.active() && !ClientField.watching() && introTime() < INTRO_TICKS;
+        return ClientField.active() && !ClientField.watching() && introTime() < introEnd()
+                && ClientDuel.view().result() == null;
     }
 
     /** How far the camera has swept in, 0 (high over the far end) to 1 (in place behind you), eased. */
@@ -100,7 +180,8 @@ public final class DuelStaging {
         if (settledAt < 0 && ClientField.idle()) {
             settledAt = ClientField.tick();
         }
-        return settledAt >= 0 && ClientField.tick() >= settledAt + RESULT_DELAY;
+        return settledAt >= 0 && ClientField.tick() >= settledAt + RESULT_DELAY
+                + Finale.resultHold();
     }
 
     /** Closes the result screen: the field goes and duel mode ends. */
@@ -120,8 +201,8 @@ public final class DuelStaging {
             int alpha = (int) (255 * Mth.clamp((1 - p) * 4, 0, 1));
             big(g, font, "DUEL!", w / 2, h / 2 - 20, scale, (alpha << 24) | (GOLD & 0xFFFFFF));
         }
-        if (t >= COIN_AT && t < INTRO_TICKS) {
-            float p = (t - COIN_AT) / COIN_TICKS;
+        if (t >= COIN_AT && t < introEnd()) {
+            float p = Math.min(1, (t - COIN_AT) / COIN_TICKS);
             int r = 14;
             int cx = w / 2;
             int cy = h / 2 - 20;
@@ -132,9 +213,24 @@ public final class DuelStaging {
             coin(g, cx, cy - lift, r, Math.max(0.08, face));
             if (spin >= 1) {
                 DuelView view = ClientDuel.view();
-                String who = view == null ? "" : view.you() == 0 ? "You go first!"
-                        : view.names().get(1 - view.you()) + " goes first!";
-                big(g, font, who, cx, cy + r + 8, 1.5f, TEXT);
+                if (coin != null && (chosenAt < 0 || tradePending)) {
+                    // Chosen but not started yet: the first view of the started duel is on its way.
+                    String who = coin.you() ? "You won the coin toss!" : coin.chooser() + " won the coin toss!";
+                    big(g, font, who, cx, cy + r + 8, 1.5f, TEXT);
+                    if (!coin.you() && chosenAt < 0) {
+                        g.drawCenteredString(font, "Choosing whether to go first or second...", cx, cy + r + 24,
+                                DIM);
+                    } else if (coin.you() && chosenAt < 0 && !asked) {
+                        float left = coin.seconds() - (now() - coinAt) / 20;
+                        g.drawCenteredString(font, "Go first or second? (first in " + Math.max(0, (int) Math.ceil(left))
+                                + "s)", cx, cy + r + 24, DIM);
+                    }
+                } else {
+                    String who = view == null ? "" : view.you() == 0 ? "You go first!"
+                            : coin != null && coin.you() ? "You go second!"
+                            : view.names().get(1 - view.you()) + " goes first!";
+                    big(g, font, who, cx, cy + r + 8, 1.5f, TEXT);
+                }
             }
         }
     }

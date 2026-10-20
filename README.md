@@ -15,7 +15,7 @@ the engine behind EDOPro, running on the server. Monster models come from
 | `native/build.sh`, `native/build.ps1` | Build OCG-Core for the host into `engine/src/main/resources/natives/<platform>/`. |
 | `tools/models/import_models.py` | Converts YGOMCModels to GeckoLib assets, maps each model to its card and writes the era pool (`pool.json`). |
 | `tools/carddata/build_carddata.py` | Bundles card data, Lua scripts and system strings for every official card. Run it after `import_models.py`. |
-| `tools/carddata/build_banlists.py` | Writes every TCG Forbidden & Limited List since 1999 with its date (`banlists.json`). |
+| `tools/carddata/build_banlists.py` | Writes every TCG Forbidden & Limited List since 1999 with its date (`banlists.json`), the other official lists and Genesys points (`official_banlists.json`) and Konami's card ids (`konami_ids.json`). |
 | `tools/carddata/build_collection.py` | Picks the booster sets of the modeled pool, lists every TCG product in release order (`products.json`) and writes the era banlist. |
 | `tools/textures/make_collection_textures.py` | Draws the pack, binder, deck box, Card Shop and Card Trader textures. |
 | `tools/textures/make_guide_book.py` | Draws the handbook's item texture and the open book its screen is drawn on. |
@@ -116,23 +116,36 @@ In game:
   under it. Export copies the deck as a YDK list (the format of YGOPro, EDOPro and most deck builders) and Import
   replaces it with the YDK list in the clipboard, built from the cards you own and saying which ones were missing.
 - **Progression** (the default `[pool] mode = "progression"`): a new world starts with Legend of Blue Eyes White
-  Dragon, and operators unlock the TCG products in release order. Every TCG product with new cards is a step; reprint
+  Dragon and unlocks the TCG products in release order: the next one by itself every 3 Minecraft days
+  (`[progression] daysPerSet`, counted from when the world first runs with it; sleeping through a night counts),
+  or whenever an operator unlocks it. Every TCG product with new cards is a step; reprint
   packs come along with the next one. Cards from sets that are still locked show a padlock in binders and can't go in
   a deck (`[cards] lockedInDeck`). Duels follow the newest unlocked cards: Master Rule 1 until the first Xyz set, 2
   until the first Pendulum set, 3 until the first Link set, 4 until April 2020, then 5, with the TCG Forbidden &
   Limited List of the time. When two players at different steps duel, the one further along sets the rules; an NPC
   follows the player it duels.
-  - `/jadm progression status` shows the current set, rules, banlist and the next set.
+  - `/jadm progression status` shows the current set, rules, banlist and the next set with the days until it unlocks.
   - `/jadm progression next [count]` unlocks the next set (or several), `/jadm progression until <code or date>`
     everything up to `MRL` or `2005-03-01`, `/jadm progression set <code or date>` also goes back.
   - `/jadm progression list [page]` lists the sets in order with what is unlocked.
   - `[progression] scope = "player"` gives each player their own progress (`/jadm progression next <player>`),
-    `startProduct` sets where worlds or players start and `announce` the chat messages.
+    `startProduct` sets where worlds or players start and `announce` the chat messages. Per player, the days count
+    from a player's first day on the server and keep counting while they are away. `daysPerSet = 0` leaves unlocking
+    to operators.
 - **Banlist:** `banlist = "auto"` (the default) is the TCG list of the time in a progression world, today's list with
   `mode = "all"` and the May 2000 OCG list for the modeled pool (which a server can still replace with
   `config/jadm/banlist.json`). `"none"` turns it off, and any other value names a file in
   `config/jadm/banlists/`, e.g. `banlist = "goat"` for `goat.json`, in the format of the bundled
-  `engine/src/main/resources/jadm/banlist.json` (`"limits": {"<card code>": <copies allowed>}`).
+  `engine/src/main/resources/jadm/banlist.json` (`"limits": {"<card code>": <copies allowed>}`). The official
+  lists `tcg`, `ocg`, `traditional`, `worlds`, `master-duel`, `genesys` and `genesys-ocg` are built in;
+  `/jadm banlist update` downloads the newest ones (into `config/jadm/official_banlists.json`) and
+  `/jadm banlist reset` drops them again.
+  `/jadm banlist use <list> <player>` gives single players their own list (`use server <player>` takes it back); a
+  duel uses the list its duelists share, otherwise the challenger's (arena duels: the server's).
+- **Genesys:** `banlist = "genesys"` plays the Genesys format: card points instead of limits, at most
+  `genesysPointCap` (100) per deck, no Link or Pendulum monsters, and with `ruleset = "auto"` the `genesys` ruleset
+  (no Extra Monster Zones or Pendulum Zones). A custom Genesys list has `"points": {"<card code>": <points>}` and
+  `"pointCap"`.
 - **Ante:** `/jadm duel <player> ante`, or sneak while right-clicking with the disk. Each duelist puts up a random
   card from their deck box and the winner takes both. The cards are held by the server until the duel ends (a
   crash or restart returns them), and a winner who logged off gets them on their next login. Servers can turn
@@ -183,9 +196,11 @@ In game:
   starter or structure deck that is out, or a random deck from the card pool with an Extra Deck of what the pool
   offers, favoring cards with a 3D model. The NPC says which deck it plays. Right-click one to duel it; beat it and
   it gives you a booster pack, then won't duel you again for a Minecraft day (`[results.npcs]`). They can't be hurt while dueling. A
-  **Duelist Spawn Egg** is in the creative tab. NPCs and the `bot` seats play with a heuristic AI that summons its
-  strongest monsters, brings out a Synchro, Xyz or Link monster when that beats what it has, Pendulum Summons,
-  only attacks when it wins the fight and saves its traps for your turn. Tournament decks live in
+  **Duelist Spawn Egg** is in the creative tab. NPCs, the `bot` seats, tournament bots and the stand-in for
+  players out of time play with WindBot (ported from YGOPro's bot, with the Astra executor that plays any deck) in one
+  of four styles: balanced, aggressive, defensive or control. Each NPC keeps its style, and NPCs now and then let a
+  response or an attack go by like beginners. `[ai]` in the server config picks the styles (`npcStyle`, `botStyle`),
+  how often they slip (`npcMistakes`, `botMistakes`) and `engine = "classic"` for the older heuristic AI. Tournament decks live in
   `engine/src/main/resources/jadm/tournament_decks.json`, listed by card name with the date they were
   played.
 - **Tournaments:** single elimination, double elimination (with a losers' bracket and a grand final reset), Swiss
@@ -215,6 +230,8 @@ In game:
   [docs/figura.md](docs/figura.md). A ready-made starter avatar (Millennium Puzzle, Battle City coat, duel reactions,
   emotes) lives in [figura/jadm-duelist](figura/jadm-duelist) and is built as its own download by
   `./gradlew figuraStarterKit`.
+- **KubeJS** (optional): server scripts get `JadmEvents` (duel start and end, pack opened, tournament end, rank
+  change, set completed) and `Jadm` helpers for cards, packs and Duel Points. See [docs/kubejs.md](docs/kubejs.md).
 - `/jadm version` reports the loaded OCG-Core version.
 - `/jadm duel bot` or `/jadm duel <player>` (then `/jadm accept`) starts a duel. In a duel you stand still
   and play with the mouse: click a card for its actions or drag it from your hand onto a zone, use the phase
@@ -279,11 +296,14 @@ python3 tools/carddata/build_collection.py --ygoprodeck ygoprodeck.json --cardse
 
 A set joins the modeled pool's boosters when at least 60% of its cards are in that pool.
 
-The banlist history comes from yaml-yugi-limit-regulation:
+The banlist history and the Master Duel and Genesys lists come from yaml-yugi-limit-regulation, the newest TCG,
+OCG, Traditional and Worlds lists from Project Ignis:
 
 ```sh
 git clone --depth 1 https://github.com/DawnbrandBots/yaml-yugi-limit-regulation
-python3 tools/carddata/build_banlists.py --lists yaml-yugi-limit-regulation --ygoprodeck ygoprodeck.json
+git clone --depth 1 https://github.com/ProjectIgnis/LFLists
+python3 tools/carddata/build_banlists.py --lists yaml-yugi-limit-regulation --lflists LFLists \
+    --ygoprodeck ygoprodeck.json
 ```
 
 ## Updating the duel disk model
@@ -315,6 +335,8 @@ becomes an Xyz material, and `LOCATION_EMZONE` and `LOCATION_PZONE` reach the Ex
   [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). Placed on the arm, given straps, a glowing layer,
   recolored skins and a standby pose with deploy/fold animations. Not for commercial use; the rest of the mod stays
   GPL-3.0. The notice ships as `assets/jadm/DuelDisk-LICENSE.md`.
+- Duel AI: a Java port of [WindBot](https://github.com/IceYGO/windbot), MIT, © 2015-2017 IceYGO, with the Astra
+  executor; the license ships as `assets/jadm/WindBot-LICENSE.md`.
 - Monster models: MIT, © iconmaster ([YGOMCModels](https://github.com/iconmaster5326/YGOMCModels)); the license ships as `assets/jadm/YGOMCModels-LICENSE.md`.
 - Card data and scripts: BabelCDB and CardScripts by Project Ignis (AGPL-3.0).
 - Historical Forbidden & Limited Lists: gathered by DawnbrandBots'

@@ -1,12 +1,14 @@
 package io.github.zancrow321.jadm.item;
 
 import io.github.zancrow321.jadm.JadmData;
+import io.github.zancrow321.jadm.JadmServerConfig;
 import io.github.zancrow321.jadm.engine.data.BoosterSets;
 import io.github.zancrow321.jadm.engine.data.Deck;
 import io.github.zancrow321.jadm.engine.data.Products;
 import io.github.zancrow321.jadm.progression.StarterDecks;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -25,7 +27,7 @@ import java.util.Map;
 
 /**
  * A sealed structure or starter deck, or a collector's tin, of one TCG product. Right-click to open it: a deck puts
- * its cards in your binder, a tin gives its promo card and three packs.
+ * its cards in your binder, a tin gives its promo card (into your binder too) and three packs.
  */
 public final class SealedProductItem extends Item {
     /** Packs in a tin. */
@@ -92,23 +94,17 @@ public final class SealedProductItem extends Item {
     }
 
     private static int deckSize(Products.Product product) {
-        Deck deck = StarterDecks.deckOf(product, null);
+        Deck deck = StarterDecks.contentsOf(product);
         return deck.main().size() + deck.extra().size();
     }
 
     /** Every card of the deck goes into the player's first binder, or loose into the inventory without one. */
     private static void openDeck(ServerPlayer player, Products.Product product) {
         Map<Integer, Integer> counts = new HashMap<>();
-        Deck deck = StarterDecks.deckOf(product, null);
+        Deck deck = StarterDecks.contentsOf(product);
         deck.main().forEach(code -> counts.merge(code, 1, Integer::sum));
         deck.extra().forEach(code -> counts.merge(code, 1, Integer::sum));
-        ItemStack binder = ItemStack.EMPTY;
-        for (ItemStack item : player.getInventory().items) {
-            if (item.is(JadmItems.BINDER.get())) {
-                binder = item;
-                break;
-            }
-        }
+        ItemStack binder = BinderItem.forPulls(player);
         int total = counts.values().stream().mapToInt(Integer::intValue).sum();
         if (!binder.isEmpty()) {
             Map<Integer, Integer> merged = new HashMap<>(BinderItem.collection(binder).counts());
@@ -119,7 +115,8 @@ public final class SealedProductItem extends Item {
             return;
         }
         counts.forEach((code, n) -> give(player, CardItem.of(code), n));
-        player.sendSystemMessage(Component.translatable("message.jadm.structure_deck.loose", total,
+        player.sendSystemMessage(Component.translatable(JadmServerConfig.PACKS_INTO_BINDER.get()
+                ? "message.jadm.structure_deck.loose" : "message.jadm.structure_deck.inventory", total,
                 product.name()).withStyle(ChatFormatting.GREEN));
     }
 
@@ -129,17 +126,30 @@ public final class SealedProductItem extends Item {
         List<Products.Printing> promos = tin.cards().stream()
                 .filter(p -> JadmData.cards().card(p.code()) != null).toList();
         Component card = Component.literal("-");
+        boolean filed = false;
         if (!promos.isEmpty()) {
             Products.Printing promo = promos.get(random.nextInt(promos.size()));
-            give(player, CardItem.of(promo.code(), BoosterSets.Rarity.ofPrinted(promo.rarity())), 1);
-            card = Component.literal(JadmData.cards().card(promo.code()).name() + " (" + promo.rarity() + ")");
+            int code = JadmData.pullArtwork(promo.code(), new java.util.Random(random.nextLong()));
+            BoosterSets.Rarity rarity = BoosterSets.Rarity.ofPrinted(promo.rarity());
+            ItemStack binder = BinderItem.forPulls(player);
+            if (!binder.isEmpty()) {
+                BinderItem.add(binder, code, rarity, 1);
+                filed = true;
+            } else {
+                give(player, CardItem.of(code, rarity), 1);
+            }
+            MutableComponent named = Component.literal(JadmData.cards().card(code).name() + " (" + promo.rarity());
+            if (JadmData.isAltArt(code)) {
+                named.append(", ").append(Component.translatable("item.jadm.card.alt_art.short"));
+            }
+            card = named.append(")");
         }
         List<String> packs = tinPacks(tin);
         for (String set : packs) {
             give(player, BoosterPackItem.of(set), 1);
         }
-        player.sendSystemMessage(Component.translatable("message.jadm.tin.opened", tin.name(), card,
-                packs.size()).withStyle(ChatFormatting.GREEN));
+        player.sendSystemMessage(Component.translatable(filed ? "message.jadm.tin.opened.binder"
+                : "message.jadm.tin.opened", tin.name(), card, packs.size()).withStyle(ChatFormatting.GREEN));
     }
 
     /**

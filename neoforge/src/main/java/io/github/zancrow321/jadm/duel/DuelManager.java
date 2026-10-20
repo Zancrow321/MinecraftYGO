@@ -3,12 +3,16 @@ package io.github.zancrow321.jadm.duel;
 import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.JadmServerConfig;
+import io.github.zancrow321.jadm.api.event.DuelEndEvent;
+import io.github.zancrow321.jadm.api.event.DuelInfo;
+import io.github.zancrow321.jadm.api.event.DuelStartEvent;
 import io.github.zancrow321.jadm.arena.DuelArena;
+import io.github.zancrow321.jadm.bounty.Bounties;
 import io.github.zancrow321.jadm.cosmetics.Cosmetics;
 import io.github.zancrow321.jadm.cosmetics.PlayerCosmetics;
 import io.github.zancrow321.jadm.engine.DuelSettings;
 import io.github.zancrow321.jadm.engine.Ruleset;
-import io.github.zancrow321.jadm.engine.ai.DuelistAi;
+import io.github.zancrow321.jadm.engine.ai.Responder;
 import io.github.zancrow321.jadm.engine.data.BundledScripts;
 import io.github.zancrow321.jadm.engine.data.Deck;
 import io.github.zancrow321.jadm.engine.duel.DuelTable;
@@ -19,10 +23,14 @@ import io.github.zancrow321.jadm.item.DeckBoxItem;
 import io.github.zancrow321.jadm.item.JadmComponents;
 import io.github.zancrow321.jadm.item.JadmItems;
 import io.github.zancrow321.jadm.network.DuelClockPayload;
+import io.github.zancrow321.jadm.network.DuelCoinPayload;
 import io.github.zancrow321.jadm.network.DuelFieldPayload;
 import io.github.zancrow321.jadm.network.DuelResultPayload;
 import io.github.zancrow321.jadm.network.DuelistStatePayload;
 import io.github.zancrow321.jadm.network.DuelViewPayload;
+import io.github.zancrow321.jadm.points.Points;
+import io.github.zancrow321.jadm.quest.DuelFacts;
+import io.github.zancrow321.jadm.quest.Quests;
 import io.github.zancrow321.jadm.ranking.RankedDuels;
 import io.github.zancrow321.jadm.ranking.Ranking;
 import io.github.zancrow321.jadm.ranking.Tiers;
@@ -36,6 +44,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -60,6 +69,15 @@ public final class DuelManager {
     private static final List<String> BOT_NAMES = List.of("Duel Bot", "Bandit Bot", "Rare Hunter Bot");
     /** How far in front of a player a duel against bots is projected (the field is about 16 blocks long). */
     private static final double BOT_FIELD_DISTANCE = 8;
+    /**
+     * How long the winner of the coin toss has to choose before they go first, counted from the duel's start: the
+     * disk unfolding and the start show take about 8 seconds, then 30 to choose.
+     */
+    private static final int COIN_SECONDS = 38;
+    /** How near a player has to stand to a duel's field (blocks from its centre) to see it in the world. */
+    private static final double NEARBY_RANGE = 48;
+    /** How long after their own duel (or the one they watched) ends a player is left to its result screen, in ticks. */
+    private static final int AFTER_DUEL_TICKS = 600;
 
     private static DuelManager instance;
 
@@ -68,6 +86,10 @@ public final class DuelManager {
     private final Map<UUID, Invite> invites = new HashMap<>();
     private final Map<UUID, ServerDuel> duelsByPlayer = new HashMap<>();
     private final Map<UUID, ServerDuel> duelsBySpectator = new HashMap<>();
+    /** Players standing near a duel they're not in, who see its field in the world (public cards only). */
+    private final Map<UUID, ServerDuel> duelsByOnlooker = new HashMap<>();
+    /** Players whose duel just ended, until when no other duel's field is shown to them (it would take theirs away). */
+    private final Map<UUID, Long> justDueled = new HashMap<>();
     private final List<ServerDuel> duels = new ArrayList<>();
     /** Where each dueling person stands (once they're on the ground); they are held there until the duel ends. */
     private final Map<UUID, Vec3> anchors = new HashMap<>();
@@ -82,11 +104,12 @@ public final class DuelManager {
      * @param npc   the NPC duelist sitting in the bot seat, or {@code null}
      * @param split a Battle City tag duel, each partner on their own half of the team's zones
      * @param ranked a ranked 1v1 duel between two people, which moves their ratings
+     * @param arena  a duel on arena podiums, which nobody challenged: it has no host whose banlist counts
      */
     private record Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt,
-                          DuelistNpc npc, boolean split, boolean ranked) {
+                          DuelistNpc npc, boolean split, boolean ranked, boolean arena) {
         Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt, DuelistNpc npc) {
-            this(host, entrants, pending, ante, expiresAt, npc, false, false);
+            this(host, entrants, pending, ante, expiresAt, npc, false, false, false);
         }
     }
 
@@ -97,24 +120,54 @@ public final class DuelManager {
      * @param npc the NPC duelist playing the bot seat, or {@code null}
      * @param match the organized duel (a tournament game) this is, or {@code null}
      * @param ranked whether it moves the two people's ratings
+     * @param info   what the duel events tell other mods and scripts about it
+     * @param decks the deck of each seat
+     * @param coin the coin toss whose winner is still choosing whether to go first, or {@code null} once the duel runs
      */
     private record ServerDuel(DuelTable table, UUID[] seats, DuelFieldPayload field, UUID ante, DuelistNpc npc,
-                              Set<UUID> spectators, Clock clock, MatchSetup match, boolean ranked) {
+                              Set<UUID> spectators, Clock clock, MatchSetup match, boolean ranked, DuelInfo info,
+                              List<Deck> decks, Coin coin) {
     }
 
     /**
-     * The turn time limit: ticks each seat spent choosing this turn, and the bot that chooses for whoever ran out.
+     * A coin toss a person won. Their team sits as team 0 (OCG-Core lets team 0 go first) and the duel engine waits
+     * until they choose; going second builds the duel again with the teams traded.
+     *
+     * @param chooser  who chooses, the first person of the winning team
+     * @param deadline the server tick from which they go first without having chosen
+     * @param table    builds the duel for the seats given
+     */
+    private record Coin(UUID chooser, String name, long deadline,
+                        java.util.function.Function<List<DuelTable.Seat>, DuelTable> table) {
+    }
+
+    /**
+     * The turn time limit: ticks each seat spent choosing this turn, and the bots that choose for whoever ran out.
      */
     private static final class Clock {
-        final DuelistAi standIn;
+        /** Per person's seat; each follows the duel from the start, so it knows what happened when it steps in. */
+        final Map<Integer, Responder> standIns = new HashMap<>();
+        final long seed;
         final Map<Integer, Integer> used = new HashMap<>();
         final Set<Integer> outOfTime = new HashSet<>();
         int turn;
         /** Answers the stand-in gave for the current prompt that weren't allowed. */
         int refused;
 
-        Clock(long seed) {
-            standIn = new DuelistAi(seed, JadmData.cards());
+        Clock(long seed, DuelTable table, List<Deck> decks) {
+            this.seed = seed;
+            boolean tag = table.seats().size() > 2;
+            for (int seat = 0; seat < table.seats().size(); seat++) {
+                if (!table.isBot(seat)) {
+                    Responder standIn = DuelBots.standIn(seed + seat, tag ? null : decks.get(seat));
+                    standIns.put(seat, standIn);
+                    table.addObserver(table.seats().get(seat).team(), standIn);
+                }
+            }
+        }
+
+        Responder standIn(int seat) {
+            return standIns.computeIfAbsent(seat, s -> DuelBots.standIn(seed + s, null));
         }
     }
 
@@ -138,7 +191,11 @@ public final class DuelManager {
     }
 
     public boolean inDuel(ServerPlayer player) {
-        return duelsByPlayer.containsKey(player.getUUID());
+        return inDuel(player.getUUID());
+    }
+
+    public boolean inDuel(UUID player) {
+        return duelsByPlayer.containsKey(player);
     }
 
     /** Invites {@code target} to a 1v1 duel, with an ante if {@code ante} and the server allows it. */
@@ -216,7 +273,7 @@ public final class DuelManager {
         entrants.stream().map(Entrant::player).filter(Objects::nonNull).filter(id -> !id.equals(host.getUUID()))
                 .forEach(pending::add);
         Invite invite = new Invite(host.getUUID(), List.copyOf(entrants), pending, ante,
-                server.getTickCount() + INVITE_TIMEOUT_TICKS, null, split, ranked);
+                server.getTickCount() + INVITE_TIMEOUT_TICKS, null, split, ranked, false);
         if (pending.isEmpty()) {
             launch(invite);
             return;
@@ -238,9 +295,39 @@ public final class DuelManager {
                     ? " Right-click them with your Duel Disk or click " : " Click ";
             target.sendSystemMessage(Component.literal(host.getScoreboardName() + " invites you: " + matchup
                     + (ante ? ". The winner takes a random card from the loser's deck box." : ".")
-                    + (ranked ? rankedNote(host, target) : "") + chips + how)
+                    + (ranked ? rankedNote(host, target) : "") + banlistNote(host, target) + chips + bountyNote(entrants) + how)
                     .append(accept));
         }
+    }
+
+    /**
+     * " You play with Alex's banlist: Genesys, October 18, 2026 (yours is TCG, September 2026)." when the challenger
+     * plays with another list than the one invited, otherwise nothing.
+     */
+    private static String banlistNote(ServerPlayer host, ServerPlayer target) {
+        if (JadmData.banlistSetting(host).equalsIgnoreCase(JadmData.banlistSetting(target))) {
+            return "";
+        }
+        String theirs = JadmData.banlist(host).name();
+        String mine = JadmData.banlist(target).name();
+        return theirs.equals(mine) ? "" : " You play with " + host.getScoreboardName() + "'s banlist: " + theirs
+                + " (yours is " + mine + ").";
+    }
+
+    /** " Bounty on Kaiba: 1,200 DP." for everyone in the duel with a bounty on them. */
+    private String bountyNote(List<Entrant> entrants) {
+        if (!JadmServerConfig.BOUNTY.enabled.get()) {
+            return "";
+        }
+        StringBuilder note = new StringBuilder();
+        Bounties bounties = Bounties.get(server);
+        for (Entrant entrant : entrants) {
+            long total = entrant.player() == null ? 0 : bounties.total(entrant.player());
+            if (total > 0) {
+                note.append(" Bounty on ").append(entrant.name()).append(": ").append(Points.format(total)).append(".");
+            }
+        }
+        return note.toString();
     }
 
     /** " Ranked: your rating 1180 (Silver) against their 1216 (Gold)." */
@@ -337,7 +424,7 @@ public final class DuelManager {
                 && RankedDuels.whyNot(server, first.getUUID(), second.getUUID()) == null;
         launch(new Invite(first.getUUID(), List.of(new Entrant(0, first.getUUID(), first.getScoreboardName()),
                 new Entrant(1, second.getUUID(), second.getScoreboardName())), Set.of(), false, 0, null, false,
-                ranked));
+                ranked, true));
     }
 
     /** Starts a tag duel between two pairs standing on the podiums of a free player-built arena. */
@@ -351,7 +438,8 @@ public final class DuelManager {
                 entrants.add(new Entrant(team, player.getUUID(), player.getScoreboardName()));
             }
         }
-        launch(new Invite(team0.get(0).getUUID(), List.copyOf(entrants), Set.of(), false, 0, null));
+        launch(new Invite(team0.get(0).getUUID(), List.copyOf(entrants), Set.of(), false, 0, null, false, false,
+                true));
     }
 
     /**
@@ -359,7 +447,7 @@ public final class DuelManager {
      * lent starter deck). Tells them nothing.
      */
     public static String deckProblem(ServerPlayer player) {
-        io.github.zancrow321.jadm.engine.data.Banlist banlist = JadmData.banlist(JadmData.step(player));
+        io.github.zancrow321.jadm.engine.data.Banlist banlist = JadmData.banlist(player);
         List<ItemStack> boxes = deckBoxes(player);
         for (ItemStack box : boxes) {
             if (DeckBoxItem.problems(box, player, banlist).isEmpty()) {
@@ -395,13 +483,14 @@ public final class DuelManager {
         }
         // In a progression world the duel is played under the rules and banlist of whoever is furthest along.
         int step = online.stream().mapToInt(JadmData::step).max().orElse(JadmData.step(null));
-        io.github.zancrow321.jadm.engine.data.Banlist banlist = JadmData.banlist(step);
+        io.github.zancrow321.jadm.engine.data.Banlist banlist = duelBanlist(online,
+                invite.arena() ? null : player(invite.host()), step);
         List<Deck> decks = new ArrayList<>();
         List<ItemStack> boxes = new ArrayList<>();
         int botIndex = 0;
         for (Entrant e : entrants) {
             if (e.player() == null) {
-                Deck npcDeck = invite.npc() != null ? invite.npc().deck(step)
+                Deck npcDeck = invite.npc() != null ? invite.npc().deck(step, banlist)
                         : Deck.bundled(BOT_DECKS.get(botIndex++ % BOT_DECKS.size()));
                 if (invite.npc() != null && !npcDeck.name().equals(invite.npc().duelistName())) {
                     // A tournament or structure deck: say which, so the player knows what they are up against.
@@ -442,8 +531,8 @@ public final class DuelManager {
                     .map(e -> e.name() + " (" + Ranking.get(server).rating(e.player()) + ")").toList()) + ".")
                     .withStyle(ChatFormatting.GOLD));
         }
-        if (start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step, null,
-                invite.ranked()) && entrants.size() == 2) {
+        if (start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step, banlist,
+                null, invite.ranked(), true) == null && entrants.size() == 2) {
             StarChips.get(server).begin(entrants.get(0).player(), entrants.get(1).player(), invite.npc() != null);
         }
     }
@@ -476,7 +565,7 @@ public final class DuelManager {
         }
         int step = online.stream().mapToInt(JadmData::step).max().orElse(JadmData.step(null));
         io.github.zancrow321.jadm.engine.data.Banlist banlist = setup.rules().banlist() != null
-                ? setup.rules().banlist() : JadmData.banlist(step);
+                ? setup.rules().banlist() : duelBanlist(online, null, step);
         List<Deck> decks = new ArrayList<>();
         for (MatchSetup.Seat seat : setup.seats()) {
             Deck deck = seat.deck();
@@ -501,8 +590,8 @@ public final class DuelManager {
                 setup.ranked(), winner -> told.accept(swapped && (winner == 0 || winner == 1) ? 1 - winner : winner));
         boolean ranked = setup.ranked() && online.size() == 2
                 && RankedDuels.whyNot(server, online.get(0).getUUID(), online.get(1).getUUID()) == null;
-        return start(entrants, decks, field, null, setup.npc(), false, step, unswapped, ranked) ? null
-                : "the duel engine isn't available";
+        return start(entrants, decks, field, null, setup.npc(), false, step, banlist, unswapped, ranked,
+                setup.firstTeam() < 0);
     }
 
     /** The same field seen from the other end: team 0 gets the far side. */
@@ -558,6 +647,22 @@ public final class DuelManager {
     }
 
     /**
+     * The banlist a duel is played with: the one all its people play with if they share one (their own lists from
+     * {@code /jadm banlist use <list> <player>} or the server's), otherwise the challenger's, and without a challenger
+     * (arena and organized duels) the server's.
+     *
+     * @param host the player who challenged the others, or {@code null}
+     */
+    private static io.github.zancrow321.jadm.engine.data.Banlist duelBanlist(List<ServerPlayer> people,
+                                                                              ServerPlayer host, int step) {
+        java.util.Set<String> settings = new java.util.HashSet<>();
+        people.forEach(p -> settings.add(JadmData.banlistSetting(p).strip().toLowerCase(java.util.Locale.ROOT)));
+        String setting = settings.size() == 1 ? settings.iterator().next()
+                : host != null ? JadmData.banlistSetting(host) : JadmData.banlistSetting();
+        return JadmData.banlist(step, setting);
+    }
+
+    /**
      * The first legal deck box a player carries (hands first, then the inventory). Tells the player when they carry
      * deck boxes but none is legal.
      *
@@ -610,11 +715,15 @@ public final class DuelManager {
     /**
      * @param anteBoxes each person's deck box to take the ante from, or {@code null} for a duel without an ante
      * @param step      the progression step whose rules the duel is played under
+     * @param banlist   the banlist the decks were checked against
      * @param match     the organized duel this is, with its own rules, or {@code null}
-     * @return whether the duel started
+     * @return why it didn't start, or {@code null} once it has
      */
-    private boolean start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes,
-                          DuelistNpc npc, boolean split, int step, MatchSetup match, boolean ranked) {
+    /** @param coinToss whether a coin toss put team 0 first, so its first person may choose to go second */
+    private String start(List<Entrant> entrants, List<Deck> decks, DuelFieldPayload field, List<ItemStack> anteBoxes,
+                         DuelistNpc npc, boolean split, int step,
+                         io.github.zancrow321.jadm.engine.data.Banlist banlist, MatchSetup match, boolean ranked,
+                         boolean coinToss) {
         var random = server.overworld().getRandom();
         long[] seed = {random.nextLong(), random.nextLong(), random.nextLong(), random.nextLong() | 1};
         List<DuelTable.Seat> seats = new ArrayList<>();
@@ -622,32 +731,43 @@ public final class DuelManager {
         for (int i = 0; i < entrants.size(); i++) {
             Entrant e = entrants.get(i);
             people[i] = e.player();
-            seats.add(new DuelTable.Seat(e.team(), e.name(),
-                    e.player() == null ? new DuelistAi(random.nextLong(), JadmData.cards()) : null));
+            Deck own = entrants.size() > 2 ? null : decks.get(i);
+            Responder bot = e.player() == null ? npc != null ? DuelBots.npc(random.nextLong(), npc.deckSeed(), own)
+                    : DuelBots.bot(random.nextLong(), own) : null;
+            seats.add(new DuelTable.Seat(e.team(), e.name(), bot));
         }
         MatchSetup.Rules rules = match != null ? match.rules() : MatchSetup.Rules.SERVER;
-        Ruleset ruleset = rules.ruleset() != null ? rules.ruleset() : JadmData.ruleset(step);
+        Ruleset ruleset = rules.ruleset() != null ? rules.ruleset()
+                : JadmData.ruleset(step, JadmData.rulesetSetting(), banlist);
+        // Named at the start when it isn't the server's, such as a Genesys duel on a TCG server.
+        String banlistNote = banlist.name().equals(JadmData.banlist(step).name()) ? "" : " with " + banlist.name();
         int serverLifePoints = entrants.size() > 2 ? JadmServerConfig.TAG_STARTING_LIFE_POINTS.get()
                 : JadmServerConfig.STARTING_LIFE_POINTS.get();
-        DuelSettings.Team team = new DuelSettings.Team(rules.lifePoints() > 0 ? rules.lifePoints()
-                : serverLifePoints, 5, 1);
+        int lifePoints = rules.lifePoints() > 0 ? rules.lifePoints() : serverLifePoints;
+        DuelSettings.Team team = new DuelSettings.Team(lifePoints, 5, 1);
+        DuelInfo info = new DuelInfo(server, entrants.stream()
+                .map(e -> new DuelInfo.Duelist(e.team(), e.player(), e.name())).toList(), npc, ranked,
+                anteBoxes != null, match != null, split, lifePoints);
+        DuelStartEvent starting = NeoForge.EVENT_BUS.post(new DuelStartEvent(info));
+        if (starting.isCanceled()) {
+            broadcast(entrants, Component.literal(starting.getCancelMessage()).withStyle(ChatFormatting.RED));
+            releaseArena(entrants, npc);
+            return starting.getCancelMessage();
+        }
+        DuelSettings settings = new DuelSettings(seed, ruleset.flags(), team, team);
+        java.util.function.Function<List<DuelTable.Seat>, DuelTable> build = sitting -> new DuelTable(JadmData.text(),
+                new BundledScripts(), settings, sitting, decks,
+                (type, message) -> Jadm.LOGGER.debug("[ocgcore {}] {}", type, message)).splitField(split);
         DuelTable table;
         try {
-            table = new DuelTable(JadmData.text(), new BundledScripts(),
-                    new DuelSettings(seed, ruleset.flags(), team, team), seats, decks,
-                    (type, message) -> Jadm.LOGGER.debug("[ocgcore {}] {}", type, message));
+            table = build.apply(seats);
         } catch (UnsatisfiedLinkError | RuntimeException e) {
             Jadm.LOGGER.error("Could not start a duel", e);
             broadcast(entrants, Component.literal("The duel engine isn't available on this server."));
-            List<UUID> riders = new ArrayList<>(entrants.stream().map(Entrant::player).filter(Objects::nonNull).toList());
-            if (npc != null) {
-                riders.add(npc.getUUID());
-            }
-            DuelArena.release(riders);
-            return false;
+            releaseArena(entrants, npc);
+            return "the duel engine isn't available";
         }
         UUID ante = anteBoxes == null ? null : takeAnte(entrants, anteBoxes, random);
-        table.splitField(split);
         if (split) {
             // One sleeve per duelist, in seat order within each team, for their own half of the field.
             List<String> sleeves = new ArrayList<>();
@@ -663,8 +783,12 @@ public final class DuelManager {
         } else {
             field = field.withLayout(false, List.of(sleeveOf(entrants, 0, npc), sleeveOf(entrants, 1, npc)));
         }
+        Entrant winner = !coinToss ? null
+                : entrants.stream().filter(e -> e.team() == 0 && e.player() != null).findFirst().orElse(null);
+        Coin coin = winner == null ? null : new Coin(winner.player(), winner.name(),
+                server.getTickCount() + COIN_SECONDS * 20L, build);
         ServerDuel duel = new ServerDuel(table, people, field, ante, npc, new HashSet<>(),
-                new Clock(random.nextLong()), match, ranked);
+                new Clock(random.nextLong(), table, decks), match, ranked, info, List.copyOf(decks), coin);
         duels.add(duel);
         if (npc != null) {
             npc.setDueling(true);
@@ -676,6 +800,7 @@ public final class DuelManager {
                 continue;
             }
             duelsByPlayer.put(seat, duel);
+            duelsByOnlooker.remove(seat);
             ServerPlayer player = player(seat);
             if (player != null) {
                 if (player.onGround()) {
@@ -688,7 +813,7 @@ public final class DuelManager {
                 PacketDistributor.sendToPlayer(player, field);
             }
             message(seat, Component.literal((split ? "Battle City duel! " : tag ? "Tag duel! " : "Duel! ") + matchup(entrants) + ", "
-                    + ruleset.displayName() + " rules. L opens the duel log, Esc the duel menu." + (tag ? " Partners take turns; you answer when it's yours." : "")
+                    + ruleset.displayName() + " rules" + banlistNote + ". L opens the duel log, Esc the duel menu." + (tag ? " Partners take turns; you answer when it's yours." : "")
                     + (split ? " Each partner plays on their own half of the field." : "")));
         }
         Component clanWar = io.github.zancrow321.jadm.clan.ClanWars.startNote(server, teamPeople(entrants, 0),
@@ -696,11 +821,89 @@ public final class DuelManager {
         if (clanWar != null) {
             broadcast(entrants, clanWar);
         }
-        run(duel, table::start);
-        return true;
+        if (coin == null) {
+            run(duel, table::start);
+            return null;
+        }
+        // The field comes up with the decks in place; the duel starts once the winner of the coin toss has chosen.
+        run(duel, table::waiting);
+        for (UUID seat : people) {
+            ServerPlayer player = player(seat);
+            if (player != null) {
+                PacketDistributor.sendToPlayer(player, new DuelCoinPayload(coin.name(), seat.equals(coin.chooser()),
+                        COIN_SECONDS, false, false));
+            }
+        }
+        return null;
     }
 
-    /** The people (and {@code null} for each bot) on {@code team}. */
+    /** Frees the arena a duel that won't start had claimed. */
+    private static void releaseArena(List<Entrant> entrants, DuelistNpc npc) {
+        List<UUID> riders = new ArrayList<>(entrants.stream().map(Entrant::player).filter(Objects::nonNull).toList());
+        if (npc != null) {
+            riders.add(npc.getUUID());
+        }
+        DuelArena.release(riders);
+    }
+
+    /** The winner of the coin toss chose: their team goes {@code first}, or second. */
+    public void chooseOrder(ServerPlayer player, boolean first) {
+        ServerDuel duel = duelsByPlayer.get(player.getUUID());
+        if (duel != null && duel.coin() != null && duel.coin().chooser().equals(player.getUUID())) {
+            decide(duel, first);
+        }
+    }
+
+    /** Settles the order and starts the duel; going second rebuilds it with the teams traded. */
+    private void decide(ServerDuel duel, boolean first) {
+        Coin coin = duel.coin();
+        ServerDuel next = new ServerDuel(duel.table(), duel.seats(), duel.field(), duel.ante(), duel.npc(),
+                duel.spectators(), duel.clock(), duel.match(), duel.ranked(), duel.info(), duel.decks(), null);
+        if (!first) {
+            List<DuelTable.Seat> traded = duel.table().seats().stream()
+                    .map(s -> new DuelTable.Seat(1 - s.team(), s.name(), s.bot())).toList();
+            try {
+                DuelTable table = coin.table().apply(traded);
+                duel.table().close();
+                next = new ServerDuel(table, duel.seats(), duel.field().endsTraded(), duel.ante(), duel.npc(),
+                        duel.spectators(), new Clock(duel.clock().seed, table, duel.decks()), duel.match() == null ? null : duel.match().endsTraded(),
+                        duel.ranked(), tradedEnds(duel.info()), duel.decks(), null);
+            } catch (UnsatisfiedLinkError | RuntimeException e) {
+                Jadm.LOGGER.error("Could not rebuild the duel for going second", e);
+                first = true;
+            }
+        }
+        duels.set(duels.indexOf(duel), next);
+        for (UUID seat : duel.seats()) {
+            if (seat != null) {
+                duelsByPlayer.put(seat, next);
+                ServerPlayer player = player(seat);
+                if (player != null) {
+                    PacketDistributor.sendToPlayer(player, new DuelCoinPayload(coin.name(),
+                            seat.equals(coin.chooser()), 0, true, !first));
+                }
+                message(seat, Component.literal((seat.equals(coin.chooser()) ? "You" : coin.name()) + " chose to go "
+                        + (first ? "first." : "second.")));
+            }
+        }
+        for (UUID id : duel.spectators()) {
+            duelsBySpectator.put(id, next);
+            ServerPlayer spectator = player(id);
+            if (spectator != null) {
+                PacketDistributor.sendToPlayer(spectator, new DuelCoinPayload(coin.name(), false, 0, true, !first));
+            }
+        }
+        run(next, next.table()::start);
+    }
+
+    /** The same duel with the teams traded, for a coin toss winner who went second. */
+    private static DuelInfo tradedEnds(DuelInfo info) {
+        return new DuelInfo(info.server(), info.duelists().stream()
+                .map(d -> new DuelInfo.Duelist(1 - d.team(), d.player(), d.name())).toList(), info.npc(),
+                info.ranked(), info.ante(), info.tournament(), info.battleCity(), info.lifePoints());
+    }
+
+        /** The people (and {@code null} for each bot) on {@code team}. */
     private static List<UUID> teamPeople(List<Entrant> entrants, int team) {
         List<UUID> out = new ArrayList<>();
         for (Entrant e : entrants) {
@@ -766,6 +969,19 @@ public final class DuelManager {
         watch(watcher, duel);
     }
 
+    /** {@code watcher} right-clicked the field of a duel they stand near (or typed /jadm watch): watch it. */
+    public void watchNearby(ServerPlayer watcher) {
+        ServerDuel duel = duelsByOnlooker.get(watcher.getUUID());
+        if (duel == null) {
+            duel = duelNear(watcher, null);
+        }
+        if (duel == null) {
+            watcher.sendSystemMessage(Component.literal("There is no duel nearby to watch."));
+            return;
+        }
+        watch(watcher, duel);
+    }
+
     /** {@code watcher} right-clicked an NPC duelist that is dueling: watch that duel. */
     public void watchNpc(ServerPlayer watcher, DuelistNpc npc) {
         duels.stream().filter(d -> d.npc() == npc).findFirst().ifPresent(duel -> watch(watcher, duel));
@@ -780,6 +996,7 @@ public final class DuelManager {
             return;
         }
         unwatch(watcher, false);
+        duelsByOnlooker.remove(watcher.getUUID());
         duel.spectators().add(watcher.getUUID());
         duelsBySpectator.put(watcher.getUUID(), duel);
         calmMobs(watcher);
@@ -832,6 +1049,7 @@ public final class DuelManager {
 
     public void onLogout(ServerPlayer player) {
         unwatch(player, false);
+        duelsByOnlooker.remove(player.getUUID());
         invites.remove(player.getUUID());
         invites.values().removeIf(invite -> invite.host().equals(player.getUUID()));
         ServerDuel duel = duelsByPlayer.get(player.getUUID());
@@ -844,6 +1062,12 @@ public final class DuelManager {
         long now = server.getTickCount();
         invites.values().removeIf(invite -> invite.expiresAt() < now);
         for (ServerDuel duel : List.copyOf(duels)) {
+            if (duel.coin() != null) {
+                if (now >= duel.coin().deadline()) {
+                    decide(duel, true);
+                }
+                continue;
+            }
             run(duel, duel.table()::pump);
             MatchSetup.Rules rules = duel.match() != null ? duel.match().rules() : MatchSetup.Rules.SERVER;
             int limit = (rules.turnTimeLimit() >= 0 ? rules.turnTimeLimit() : JadmServerConfig.TURN_TIME_LIMIT.get())
@@ -876,6 +1100,76 @@ public final class DuelManager {
             }
         }
         DuelArena.tick(server, id -> duelsByPlayer.containsKey(id) && anchors.containsKey(id));
+        if (now % 10 == 0) {
+            updateOnlookers();
+        }
+    }
+
+    /**
+     * Shows each duel's field to the players standing near it, the way a hologram duel is seen by everyone around,
+     * and takes it away from those who walked off. Duelists and spectators have their own field already.
+     */
+    private void updateOnlookers() {
+        long now = server.getTickCount();
+        justDueled.values().removeIf(until -> until < now);
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            UUID id = player.getUUID();
+            ServerDuel seen = duelsByOnlooker.get(id);
+            boolean busy = duelsByPlayer.containsKey(id) || duelsBySpectator.containsKey(id)
+                    || justDueled.containsKey(id);
+            ServerDuel near = busy ? null : duelNear(player, seen);
+            if (near == seen) {
+                continue;
+            }
+            duelsByOnlooker.remove(id);
+            if (near != null) {
+                duelsByOnlooker.put(id, near);
+                PacketDistributor.sendToPlayer(player, near.field().nearby());
+                PacketDistributor.sendToPlayer(player,
+                        new DuelViewPayload(ViewCodec.encode(near.table().watchingNow())));
+                player.displayClientMessage(Component.literal(String.join(" vs ", near.table().names())
+                        + ": right-click the field to watch.").withStyle(ChatFormatting.GOLD), true);
+            } else if (!busy) {
+                PacketDistributor.sendToPlayer(player, DuelFieldPayload.none());
+            }
+        }
+    }
+
+    /** The running duel whose field {@code player} stands near, keeping to {@code current} while still near it. */
+    private ServerDuel duelNear(ServerPlayer player, ServerDuel current) {
+        if (current != null && duels.contains(current) && near(player, current)) {
+            return current;
+        }
+        for (ServerDuel duel : duels) {
+            if (near(player, duel)) {
+                return duel;
+            }
+        }
+        return null;
+    }
+
+    private boolean near(ServerPlayer player, ServerDuel duel) {
+        DuelFieldPayload field = duel.field();
+        if (!field.active() || player.level() != levelOf(duel)) {
+            return false;
+        }
+        double dx = player.getX() - field.x();
+        double dz = player.getZ() - field.z();
+        return dx * dx + dz * dz <= NEARBY_RANGE * NEARBY_RANGE && Math.abs(player.getY() - field.y()) <= NEARBY_RANGE;
+    }
+
+    /** The world a duel is held in: where its NPC or its people are, or {@code null} if nobody is there. */
+    private net.minecraft.world.level.Level levelOf(ServerDuel duel) {
+        if (duel.npc() != null) {
+            return duel.npc().level();
+        }
+        for (UUID seat : duel.seats()) {
+            ServerPlayer player = player(seat);
+            if (player != null) {
+                return player.level();
+            }
+        }
+        return null;
     }
 
     /** Counts down the waiting person's time for this turn; once it's gone, the stand-in bot chooses for them. */
@@ -907,7 +1201,7 @@ public final class DuelManager {
             }
         }
         run(duel, () -> {
-            Map<Integer, DuelView> views = table.timeOut(seat, clock.standIn, clock.refused);
+            Map<Integer, DuelView> views = table.timeOut(seat, clock.standIn(seat), clock.refused);
             DuelView own = views.get(seat);
             boolean refused = own != null && own.prompt() != null && own.log().contains(DuelTable.RETRY_LINE);
             clock.refused = refused ? clock.refused + 1 : 0;
@@ -933,7 +1227,10 @@ public final class DuelManager {
         Map<Integer, DuelView> views;
         try {
             views = action.get();
-        } catch (RuntimeException e) {
+        } catch (VirtualMachineError e) {
+            throw e;
+        } catch (RuntimeException | Error e) {
+            // Error covers a crash inside the native core ("Invalid memory access"): end this duel, not the server.
             Jadm.LOGGER.error("Duel crashed", e);
             for (UUID seat : duel.seats()) {
                 message(seat, Component.literal("The duel ended because of an error."));
@@ -956,6 +1253,12 @@ public final class DuelManager {
                     PacketDistributor.sendToPlayer(spectator, watched);
                 }
             }
+            duelsByOnlooker.forEach((id, seen) -> {
+                ServerPlayer onlooker = seen == duel ? player(id) : null;
+                if (onlooker != null) {
+                    PacketDistributor.sendToPlayer(onlooker, watched);
+                }
+            });
         }
         if (duel.table().finished()) {
             end(duel);
@@ -966,6 +1269,15 @@ public final class DuelManager {
         duels.remove(duel);
         // Spectators keep the field until they close the result screen.
         duel.spectators().forEach(duelsBySpectator::remove);
+        long quietUntil = server.getTickCount() + AFTER_DUEL_TICKS;
+        duel.spectators().forEach(id -> justDueled.put(id, quietUntil));
+        for (UUID seat : duel.seats()) {
+            if (seat != null) {
+                justDueled.put(seat, quietUntil);
+            }
+        }
+        // So do the players nearby, until it fades.
+        duelsByOnlooker.values().removeIf(seen -> seen == duel);
         for (UUID seat : duel.seats()) {
             if (seat != null) {
                 duelsByPlayer.remove(seat);
@@ -989,6 +1301,17 @@ public final class DuelManager {
         DuelArena.release(riders);
         int winner = duel.table().winner();
         boolean decided = winner == 0 || winner == 1;
+        if (decided && duel.table().finished()) {
+            List<Entity> winners = new ArrayList<>();
+            List<Entity> losers = new ArrayList<>();
+            for (int seat = 0; seat < duel.seats().length; seat++) {
+                Entity who = duel.seats()[seat] != null ? player(duel.seats()[seat]) : duel.npc();
+                if (who != null) {
+                    (duel.table().seats().get(seat).team() == winner ? winners : losers).add(who);
+                }
+            }
+            VictoryFireworks.celebrate(server, duel.field(), winners, losers);
+        }
         Map<UUID, List<String>> rewards = new HashMap<>();
         Map<UUID, String> records = new HashMap<>();
         Set<UUID> gifted = new HashSet<>();
@@ -1019,6 +1342,11 @@ public final class DuelManager {
             rewards.put(id, lines);
             if (won) {
                 PlayerCosmetics.wonDuel(player, againstNpc).forEach(u -> lines.add("Unlocked: " + u));
+            }
+            if (duel.table().finished()) {
+                Quests.duelEnded(player, new DuelFacts(won, againstNpc ? "npcs" : vsPlayers ? "players" : "bots",
+                        duel.ranked(), duel.match() != null, duel.decks().get(seat), duel.table().lifePoints(team),
+                        duel.table().turn(), duel.table().tally(team)));
             }
             // Tournament games bring the tournament's prizes instead.
             if (decided && duel.match() == null
@@ -1056,6 +1384,10 @@ public final class DuelManager {
                             rewards.get(id).add(note);
                         }
                     });
+        }
+        if (decided && duel.table().finished() && !againstNpc && JadmServerConfig.BOUNTY.enabled.get()
+                && duel.table().turn() >= JadmServerConfig.BOUNTY.minTurns.get()) {
+            claimBounties(duel, winner, rewards);
         }
         if (againstNpc && duel.match() != null) {
             // An NPC standing in for a tournament duelist only came to show; it hands out nothing.
@@ -1101,6 +1433,10 @@ public final class DuelManager {
             }
             escrow.settle(server, duel.ante(), payTo);
         }
+        DuelEndEvent ended = NeoForge.EVENT_BUS.post(new DuelEndEvent(duel.info(),
+                duel.table().finished() ? winner : -1, duel.table().finished(), duel.table().turn(),
+                new int[]{duel.table().lifePoints(0), duel.table().lifePoints(1)}));
+        rewards.forEach((id, lines) -> lines.addAll(ended.notes(id)));
         for (int seat = 0; seat < duel.seats().length; seat++) {
             ServerPlayer player = player(duel.seats()[seat]);
             if (player != null) {
@@ -1112,9 +1448,49 @@ public final class DuelManager {
                         rank == null ? "" : rank.line(), rank == null ? 0 : rank.color()));
             }
         }
-        duel.table().close();
+        try {
+            duel.table().close();
+        } catch (VirtualMachineError e) {
+            throw e;
+        } catch (RuntimeException | Error e) {
+            Jadm.LOGGER.error("Could not free a crashed duel", e);
+        }
         if (duel.match() != null) {
             duel.match().onEnd().accept(duel.table().finished() ? winner : -1);
+        }
+    }
+
+    /** The winners of a duel between people collect the bounties on the people they beat. */
+    private void claimBounties(ServerDuel duel, int winner, Map<UUID, List<String>> rewards) {
+        int losers = 1 - winner;
+        if (!opponentsArePeople(duel, losers)) {
+            return;
+        }
+        List<UUID> winners = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        for (int seat = 0; seat < duel.seats().length; seat++) {
+            if (duel.table().seats().get(seat).team() == winner) {
+                winners.add(duel.seats()[seat]);
+                names.add(duel.table().seats().get(seat).name());
+            }
+        }
+        Bounties bounties = Bounties.get(server);
+        for (int seat = 0; seat < duel.seats().length; seat++) {
+            UUID loser = duel.seats()[seat];
+            if (loser == null || duel.table().seats().get(seat).team() != losers) {
+                continue;
+            }
+            long total = bounties.total(loser);
+            for (Bounties.Claim claim : bounties.claim(server, loser, winners, names)) {
+                if (rewards.containsKey(claim.winner())) {
+                    rewards.get(claim.winner()).add("Bounty collected: " + Points.format(claim.amount()) + " (on "
+                            + claim.target() + ")");
+                }
+            }
+            if (total > 0 && rewards.containsKey(loser)) {
+                rewards.get(loser).add("The bounty of " + Points.format(total) + " on you went to "
+                        + String.join(" & ", names));
+            }
         }
     }
 

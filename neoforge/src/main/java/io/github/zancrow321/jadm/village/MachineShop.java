@@ -171,7 +171,10 @@ public final class MachineShop implements Merchant, PointShopMenu.Seller {
         return (long) offer.getCostA().getCount() * JadmServerConfig.POINTS.pricePoints.get();
     }
 
-    /** What a machine pays for a loose card, by its rarity; 0 if it doesn't buy it. */
+    /**
+     * What a machine pays for a loose card, by its rarity's slot; a rarer finish pays as much more as it is rarer
+     * (a Starlight Rare five times a Secret Rare). 0 if it doesn't buy it.
+     */
     static int sellValue(ItemStack card) {
         JadmComponents.CardStack data = card.get(JadmComponents.CARD.get());
         if (data == null) {
@@ -184,13 +187,14 @@ public final class MachineShop implements Merchant, PointShopMenu.Seller {
         } catch (IllegalArgumentException e) {
             rarity = BoosterSets.Rarity.COMMON;
         }
-        return (switch (rarity) {
+        int value = (switch (rarity.slot()) {
             case COMMON -> config.sellCommon;
             case RARE -> config.sellRare;
             case SUPER -> config.sellSuper;
             case ULTRA -> config.sellUltra;
-            case SECRET -> config.sellSecret;
+            default -> config.sellSecret;
         }).get();
+        return (int) Math.round(value / rarity.weight());
     }
 
     /** Whether a player is still at the machine, which is still there. */

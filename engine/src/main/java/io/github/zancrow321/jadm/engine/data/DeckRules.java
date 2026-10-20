@@ -11,6 +11,7 @@ import java.util.function.IntPredicate;
 /**
  * Deck construction rules: 40 to 60 main deck cards, up to 15 in the extra deck (fusion, synchro, xyz and link
  * monsters), at most three copies of a card, or fewer if the banlist says so, and only cards this server plays with.
+ * Under a Genesys list the deck's points stay within the cap, and it holds no Link or Pendulum monsters.
  */
 public final class DeckRules {
     public static final int MAIN_MIN = 40;
@@ -23,6 +24,17 @@ public final class DeckRules {
     /** Whether a card belongs in the extra deck. */
     public static boolean isExtra(CardInfo card) {
         return card != null && (card.data().type() & OcgConstants.TYPES_EXTRA_DECK) != 0;
+    }
+
+    /** The Genesys points of the main, extra and side deck together (0 under a Forbidden & Limited List). */
+    public static int points(Deck deck, Banlist banlist) {
+        int points = 0;
+        for (List<Integer> part : List.of(deck.main(), deck.extra(), deck.side())) {
+            for (int code : part) {
+                points += banlist.points(code);
+            }
+        }
+        return points;
     }
 
     /** @return what is wrong with the deck, empty if it is legal; every card counts as playable */
@@ -43,21 +55,36 @@ public final class DeckRules {
         if (deck.extra().size() > EXTRA_MAX) {
             problems.add("The extra deck holds at most " + EXTRA_MAX + " cards (it has " + deck.extra().size() + ").");
         }
+        // Alternate artworks are copies of their original: they share its limit.
         Map<Integer, Integer> copies = new TreeMap<>();
+        Map<Integer, Integer> limits = new TreeMap<>();
         for (List<Integer> part : List.of(deck.main(), deck.extra(), deck.side())) {
-            part.forEach(code -> copies.merge(code, 1, Integer::sum));
+            for (int code : part) {
+                int original = cards.original(code);
+                copies.merge(original, 1, Integer::sum);
+                limits.merge(original, Math.min(banlist.limit(code), banlist.limit(original)), Math::min);
+            }
         }
-        copies.keySet().stream().filter(code -> !playable.test(code)).findFirst().ifPresent(code ->
+        java.util.stream.Stream.of(deck.main(), deck.extra(), deck.side()).flatMap(List::stream)
+                .filter(code -> !playable.test(code)).findFirst().ifPresent(code ->
                 problems.add((cards.card(code) == null ? "#" + code : cards.name(code))
                         + " can't be played on this server."));
         copies.forEach((code, n) -> {
-            int limit = banlist.limit(code);
+            int limit = limits.get(code);
             if (n > limit) {
                 String name = cards.card(code) == null ? "#" + code : cards.name(code);
-                problems.add(limit == 0 ? name + " is forbidden."
+                problems.add(banlist.genesys() && Banlist.genesysForbidden(cards.card(code))
+                        ? name + ": no Link or Pendulum monsters in Genesys."
+                        : limit == 0 ? name + " is forbidden."
                         : name + ": at most " + limit + (limit == 1 ? " copy" : " copies") + " (" + n + " in the deck).");
             }
         });
+        if (banlist.genesys()) {
+            int points = points(deck, banlist);
+            if (points > banlist.pointCap()) {
+                problems.add("The deck costs " + points + " Genesys points (at most " + banlist.pointCap() + ").");
+            }
+        }
         for (int code : deck.main()) {
             if (isExtra(cards.card(code))) {
                 problems.add(cards.name(code) + " belongs in the extra deck.");

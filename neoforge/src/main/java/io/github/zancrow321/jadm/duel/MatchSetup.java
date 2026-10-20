@@ -21,6 +21,13 @@ import java.util.function.IntConsumer;
  */
 public record MatchSetup(List<Seat> seats, Rules rules, int firstTeam, DuelistNpc npc, boolean ranked,
                          IntConsumer onEnd) {
+    /** The same match with the two teams trading places, so the winner it is told is mapped back. */
+    MatchSetup endsTraded() {
+        IntConsumer told = onEnd;
+        return new MatchSetup(seats, rules, firstTeam, npc, ranked,
+                winner -> told.accept(winner == 0 || winner == 1 ? 1 - winner : winner));
+    }
+
     /**
      * @param player {@code null} for a bot
      * @param deck   the deck to play, or {@code null} for the person's deck box (or a starter deck)

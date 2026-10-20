@@ -181,6 +181,7 @@ public final class Trade {
             player.sendSystemMessage(Component.translatable("message.jadm.trade.done",
                     (player == first ? second : first).getDisplayName()).withStyle(ChatFormatting.GREEN));
             player.playNotifySound(SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.5f, 1.4f);
+            io.github.zancrow321.jadm.quest.Quests.traded(player);
         }
     }
 

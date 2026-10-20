@@ -33,4 +33,13 @@ class PromptCensorTest {
         assertEquals(List.of(70903634, 0),
                 codes((SelectCard) PromptCensor.forChooser(pick, card -> card.equals(shown))));
     }
+
+    @Test
+    void opponentsXyzMaterialsShow() {
+        // A material's position is its index in the stack, so index 0 must not read as face-down.
+        SelectCard detach = new SelectCard(0, false, 1, 1, List.of(
+                new CardRef(46986414, new Loc(1, LOCATION_MZONE | LOCATION_OVERLAY, 2, 0)),
+                new CardRef(89631139, new Loc(1, LOCATION_MZONE | LOCATION_OVERLAY, 2, 1))));
+        assertEquals(List.of(46986414, 89631139), codes((SelectCard) PromptCensor.forChooser(detach)));
+    }
 }

@@ -30,7 +30,7 @@ import java.util.function.Supplier;
 public final class BinderScreen extends Screen {
     private static final int WIDTH = 336;
     private static final int HEIGHT = 214;
-    /** The rarity filter's choices: any, every foil, then each rarity on its own. */
+    /** The rarity filter's choices: any, every foil, then each pack slot (Ultra Rare takes in Gold Rares...). */
     private static final String[] RARITY_KEYS = {"any", "foil", "common", "rare", "super", "ultra", "secret"};
 
     private final InteractionHand hand;
@@ -108,7 +108,7 @@ public final class BinderScreen extends Screen {
     }
 
     private boolean rarityOk(Rarity r) {
-        return rarity == 0 || (rarity == 1 ? r != Rarity.COMMON : r.ordinal() == rarity - 2);
+        return rarity == 0 || (rarity == 1 ? r != Rarity.COMMON : r.slot() == Rarity.SLOTS.get(rarity - 2));
     }
 
     /** Whether anything narrows down what the grid shows. */

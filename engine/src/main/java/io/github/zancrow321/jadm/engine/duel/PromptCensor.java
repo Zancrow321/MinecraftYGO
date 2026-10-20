@@ -52,6 +52,9 @@ public final class PromptCensor {
         if (loc.location() == 0 || loc.controller() == viewer) {
             return true; // a bare card code (declare-a-card style lists) or the chooser's own card, deck included
         }
+        if (loc.isOverlay()) {
+            return true; // Xyz materials are public; their position is the stack index, not a face-up flag
+        }
         return switch (loc.location() & 0x7F) {
             case LOCATION_GRAVE -> true;
             case LOCATION_MZONE, LOCATION_SZONE, LOCATION_REMOVED -> loc.isFaceUp();
