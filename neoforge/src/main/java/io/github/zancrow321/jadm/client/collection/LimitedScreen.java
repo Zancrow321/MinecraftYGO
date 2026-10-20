@@ -93,7 +93,7 @@ public final class LimitedScreen extends Screen {
                 List<JadmComponents.CardStack> cards = latest.packs.get(i).stream()
                         .map(c -> new JadmComponents.CardStack(c.code, c.rarity)).toList();
                 screen = new PackOpenScreen(latest.packNames.get(i) + " (" + (i + 1) + "/" + latest.packs.size()
-                        + ")", cards, screen);
+                        + ")", i < latest.packCodes.size() ? latest.packCodes.get(i) : "", cards, screen);
             }
         }
         if (screen != mc.screen) {

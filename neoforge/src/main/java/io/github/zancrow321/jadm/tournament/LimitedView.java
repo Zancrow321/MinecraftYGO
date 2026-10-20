@@ -44,4 +44,6 @@ public final class LimitedView {
     /** Sealed: the packs you opened and their sets, for the window to reveal them once */
     public List<List<Draft.Card>> packs = new ArrayList<>();
     public List<String> packNames = new ArrayList<>();
+    /** The set codes of the packs, for their pictures */
+    public List<String> packCodes = new ArrayList<>();
 }

@@ -14,6 +14,20 @@
   top card, for the bottom of the Deck the last click goes to the very bottom), each picked card shows its number,
   and Confirm puts them back that way. "Keep order" leaves them as they are.
 
+### Pack opening show
+- **Packs open as a show:** the pack flies in, spinning, with light rays behind it. Click it and it tears open in 3D:
+  the top rips off with sparks, the rest drops away, and the cards fly out into a fan, face down.
+- **Rare cards announce themselves face down:** they glow in their rarity's color, the better ones throw sparks and
+  ultra cards shine with rays; a Secret Rare or better stands in a beam of light and twitches now and then, in rainbow
+  colors for the rarest (Starlight, Ghost, Collector's, Quarter Century...).
+- **Turn each card over with a click:** the rarer the card, the bigger the reveal: it charges up, flips with a lift,
+  then sparks, shock waves, a flash, the screen shaking and its rarity in big letters ("SECRET RARE!"); a Secret Rare
+  or better rains confetti. Each rarity has its own sounds. "Reveal all" turns the rest over one after the other,
+  Space or a right click skips straight to all cards face up. Once all are up they line up in rows with their
+  rarities, and their texts show on hover.
+- The pack is the real product's picture (with `realProductImages` on), also for the packs of a Sealed tournament.
+- Client option `packOpeningShow` (default on) turns the show off: the cards just turn over in rows.
+
 ### All official rarities
 - **29 rarities instead of five:** besides Common, Rare, Super, Ultra and Secret Rare, cards now come as Normal and
   Rare Parallel, Starfoil, Shatterfoil, Mosaic, Super and Ultra Parallel, Pharaoh's, Gold, Premium Gold, Platinum,
