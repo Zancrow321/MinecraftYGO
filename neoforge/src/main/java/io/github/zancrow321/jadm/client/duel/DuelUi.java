@@ -59,6 +59,9 @@ public final class DuelUi {
     private static final int PHASE_WIDTH = 24;
     private static final int SIDE_BUTTON_WIDTH = 72;
     private static final int CARD_PANEL_WIDTH = 96;
+    /** How much of the screen the panels on the left (life points, card) and the phase buttons on the right take. */
+    static final int LEFT_COLUMN = 6 + CARD_PANEL_WIDTH;
+    static final int RIGHT_COLUMN = PHASE_WIDTH + 6;
     /** Life panels sit in the corners this wide; the hand and the panels keep clear of them. */
     private static final int SIDE_MARGIN = 110;
     /** How far the hand sits below its full height while the mouse is elsewhere, so the zones behind it show. */

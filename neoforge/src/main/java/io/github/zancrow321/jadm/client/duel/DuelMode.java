@@ -3,6 +3,7 @@ package io.github.zancrow321.jadm.client.duel;
 import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.client.ClientDuel;
 import io.github.zancrow321.jadm.client.field.ClientField;
+import io.github.zancrow321.jadm.client.field.FieldLayout;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -164,19 +165,23 @@ public final class DuelMode {
         double sweep = DuelStaging.sweep();
         double turn = (1 - sweep) * Math.PI;
         // A longer field (Extra Monster Zones in the middle) needs the camera further back and higher.
-        double longer = io.github.zancrow321.jadm.client.field.FieldLayout.halfLength()
-                - io.github.zancrow321.jadm.client.field.FieldLayout.HALF_LENGTH;
+        double longer = FieldLayout.halfLength() - FieldLayout.HALF_LENGTH;
         // A bigger or smaller field (on a player-built arena) moves the camera with it.
         double size = ClientField.size();
         Vec3 back = towardOpponent().scale(-(CAMERA_BACK + longer) * size);
         Vec3 turned = new Vec3(back.x * Math.cos(turn) - back.z * Math.sin(turn), 0,
                 back.x * Math.sin(turn) + back.z * Math.cos(turn));
         double up = (CAMERA_HEIGHT + longer * 1.6) * size + (1 - sweep) * 5;
-        if (ClientField.ceiling() > 0) {
-            // Under a roof the camera stays inside the arena.
-            up = Math.min(up, ClientField.ceiling() - 0.4);
+        return underRoof(ClientField.center().add(turned).add(0, up, 0));
+    }
+
+    /** Under a roof the camera stays inside the arena. */
+    private static Vec3 underRoof(Vec3 position) {
+        if (ClientField.ceiling() <= 0) {
+            return position;
         }
-        return ClientField.center().add(turned).add(0, up, 0);
+        return new Vec3(position.x, Math.min(position.y, ClientField.center().y + ClientField.ceiling() - 0.4),
+                position.z);
     }
 
     /** What the top-down camera looks at: the middle of the field while it sweeps in, then nearer your end. */
@@ -185,12 +190,92 @@ public final class DuelMode {
                 * DuelStaging.sweep()));
     }
 
+    /** Where the top-down camera ends up and what it looks at. */
+    private record Shot(Vec3 position, Vec3 target) {
+    }
+
+    /** Room left between the field and the panels at the sides, in GUI pixels. */
+    private static final int FIT_MARGIN = 4;
+    /** The camera moves back at most this much further to fit the field between the panels. */
+    private static final double MAX_ZOOM = 1.6;
+
+    /**
+     * The top-down camera, moved so the field lies between the panels on the left and the phase buttons on the
+     * right instead of under them: sideways to centre it there, and back as well on a screen too narrow for it (so
+     * the Field Zone, nearest the card panel, is never hidden behind it).
+     */
+    private static Shot topDownShot() {
+        Vec3 position = topDownPosition();
+        Vec3 target = topDownTarget();
+        double sweep = DuelStaging.sweep();
+        Minecraft mc = Minecraft.getInstance();
+        int guiWidth = mc.getWindow().getGuiScaledWidth();
+        double left = -1 + 2.0 * (DuelUi.LEFT_COLUMN + FIT_MARGIN) / guiWidth;
+        double right = 1 - 2.0 * (DuelUi.RIGHT_COLUMN + FIT_MARGIN) / guiWidth;
+        if (sweep <= 0 || right - left < 0.2) {
+            return new Shot(position, target);
+        }
+        double[] span = span(position, target);
+        double zoom = Math.min(MAX_ZOOM, (span[2] - span[0]) / (right - left));
+        if (zoom > 1) {
+            position = underRoof(target.add(position.subtract(target).scale(1 + (zoom - 1) * sweep)));
+            span = span(position, target);
+        }
+        // Moving the camera sideways moves each point across the screen by less the further away it is, so the
+        // move is the one that leaves the same room at both ends.
+        double shift = (span[0] + span[2] - left - right) / (1 / span[1] + 1 / span[3]) * sweep;
+        Vec3 side = screenRight(position, target).scale(shift);
+        return new Shot(position.add(side), target.add(side));
+    }
+
+    private static Vec3 screenRight(Vec3 position, Vec3 target) {
+        return target.subtract(position).cross(new Vec3(0, 1, 0)).normalize();
+    }
+
+    /**
+     * How far the mat's zones reach across the screen from this camera: the leftmost and rightmost corner, each as
+     * {screen x from -1 to 1, its distance scaled so that moving the camera sideways by d moves it by d / that}.
+     */
+    private static double[] span(Vec3 position, Vec3 target) {
+        Minecraft mc = Minecraft.getInstance();
+        double aspect = (double) mc.getWindow().getWidth() / Math.max(1, mc.getWindow().getHeight());
+        double perDepth = Math.tan(Math.toRadians(FOV) / 2) * aspect;
+        Vec3 look = target.subtract(position).normalize();
+        Vec3 right = screenRight(position, target);
+        double[] span = {Double.MAX_VALUE, 1, -Double.MAX_VALUE, 1};
+        double halfWidth = FieldLayout.ZONE_WIDTH / 2;
+        double halfDepth = FieldLayout.ZONE_DEPTH / 2;
+        for (int[] zone : FieldLayout.ZONES) {
+            FieldLayout.Slot slot = FieldLayout.slot(zone[0], zone[1], zone[2]);
+            for (int corner = 0; corner < 4; corner++) {
+                Vec3 to = ClientField.toWorld(slot.x() + (corner % 2 == 0 ? -halfWidth : halfWidth),
+                        slot.z() + (corner < 2 ? -halfDepth : halfDepth), 0).subtract(position);
+                double depth = to.dot(look);
+                if (depth < 0.1) {
+                    continue;
+                }
+                double scaled = depth * perDepth;
+                double x = to.dot(right) / scaled;
+                if (x < span[0]) {
+                    span[0] = x;
+                    span[1] = scaled;
+                }
+                if (x > span[2]) {
+                    span[2] = x;
+                    span[3] = scaled;
+                }
+            }
+        }
+        return span[0] > span[2] ? new double[]{0, 1, 0, 1} : span;
+    }
+
     @SubscribeEvent
     public static void onCameraAngles(ViewportEvent.ComputeCameraAngles event) {
         if (!topDown()) {
             return;
         }
-        Vec3 look = topDownTarget().subtract(topDownPosition());
+        Shot shot = topDownShot();
+        Vec3 look = shot.target().subtract(shot.position());
         event.setYaw((float) Math.toDegrees(Math.atan2(-look.x, look.z)));
         event.setPitch((float) Math.toDegrees(Math.atan2(-look.y, look.horizontalDistance())));
         event.setRoll(0);
@@ -203,7 +288,7 @@ public final class DuelMode {
             return;
         }
         try {
-            SET_CAMERA_POSITION.invoke(event.getCamera(), topDownPosition());
+            SET_CAMERA_POSITION.invoke(event.getCamera(), topDownShot().position());
             event.setDistance(0);
         } catch (ReflectiveOperationException e) {
             Jadm.LOGGER.error("Could not place the duel camera", e);
