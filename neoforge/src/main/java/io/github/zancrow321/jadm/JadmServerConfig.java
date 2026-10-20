@@ -74,6 +74,12 @@ public final class JadmServerConfig {
             .comment("Say in chat when new sets, rules or banlists are unlocked.")
             .define("announce", true);
 
+    public static final ModConfigSpec.IntValue DAYS_PER_SET = BUILDER
+            .comment("Minecraft days (as the F3 screen counts them, so sleeping through a night counts) after which "
+                    + "the next set unlocks by itself, counted from when a world (or, per player, a player) starts "
+                    + "with it. 0 means only operators unlock sets with /jadm progression.")
+            .defineInRange("daysPerSet", 3, 0, 10000);
+
     public static final ModConfigSpec.BooleanValue LOCKED_IN_DECK = BUILDER.pop().push("cards")
             .comment("In a progression world, cards from sets that are still locked can't go in a deck (they still "
                     + "count in the binder, with a lock).")

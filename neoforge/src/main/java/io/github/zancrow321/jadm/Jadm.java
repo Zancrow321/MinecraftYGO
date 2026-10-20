@@ -87,6 +87,7 @@ public final class Jadm {
             io.github.zancrow321.jadm.clan.ClanWars.tick(event.getServer());
             io.github.zancrow321.jadm.clan.ClanBattles.tick(event.getServer());
             io.github.zancrow321.jadm.clan.ClanParties.tick(event.getServer());
+            Progress.tick(event.getServer());
         });
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
