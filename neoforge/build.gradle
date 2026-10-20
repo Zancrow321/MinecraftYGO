@@ -123,6 +123,10 @@ neoForge {
             if (project.hasProperty('duelSetup')) {
                 systemProperty 'jadm.duelSetup', file(project.property('duelSetup').toString()).absolutePath
             }
+            // -PfieldSpells=<code>,<code>/<code> shows these Field Spells' ground one after another, for screenshots.
+            if (project.hasProperty('fieldSpells')) {
+                systemProperty 'jadm.fieldSpells', project.property('fieldSpells').toString()
+            }
             // -Pcamera=THIRD_PERSON_FRONT[:bodyYawOffset] locks the camera, for screenshots of the player's duel disk.
             if (project.hasProperty('camera')) {
                 systemProperty 'jadm.camera', project.property('camera').toString()

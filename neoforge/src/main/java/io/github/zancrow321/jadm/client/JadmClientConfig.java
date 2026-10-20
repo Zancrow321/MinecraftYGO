@@ -14,6 +14,7 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.BooleanValue SKIP_RESPONSES;
     public static final ModConfigSpec.BooleanValue CARD_PREVIEW;
     public static final ModConfigSpec.BooleanValue PACK_OPENING_SHOW;
+    public static final ModConfigSpec.BooleanValue FIELD_SPELL_ARENA;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -53,6 +54,10 @@ public final class JadmClientConfig {
                         + "announce themselves; click each card to turn it over. Off: the cards just turn over one "
                         + "after the other. Space or a right click skips the show either way.")
                 .define("packOpeningShow", true);
+        FIELD_SPELL_ARENA = builder
+                .comment("Let face-up Field Spells transform the duel field: Umi floods it, Yami covers it in shadow, "
+                        + "Sogen grows grass, and so on. Each half shows its owner's Field Spell.")
+                .define("fieldSpellArena", true);
         SPEC = builder.build();
     }
 
