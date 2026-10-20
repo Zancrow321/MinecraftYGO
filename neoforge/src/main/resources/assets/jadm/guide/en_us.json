@@ -132,7 +132,6 @@
         "- Card Vending Machines buy loose cards ({server:shop.points.sellCommon} DP for a common up to {server:shop.points.sellSecret} for a Secret Rare) and emeralds ({server:shop.points.emeraldExchange} DP each).",
         "- `{cmd} dp pay <player> <amount>` gives DP to someone else.",
         "A DP shop shows its wares as tiles with the real product pictures; click one to see it large with its price, then Buy (or double-click it, or press Enter). Shift, or the second button, buys as many as you can afford. The Sell tab (Tab key) lists what the shop buys from you. Just start typing to search the shop, like the binder.",
-        "In a DP shop, click to buy once and shift-click to buy as many as you can.",
         "# Daily quests",
         "**{key:quests}** or `{cmd} quests` opens your quests: {server:quests.daily} daily ones and {server:quests.weekly} weekly ones, such as \"Win 2 duels with a Dragon deck\" or \"Fusion Summon 2 monsters\". Each shows its progress and what it brings: Duel Points, booster packs and more.",
         "- Duels count once they reach turn {server:quests.minTurns}. A pop-up in the corner shows when a quest moves on, and chat says when one is done.",
