@@ -36,8 +36,11 @@ public record PackProfile(String name, int size, List<Slot> slots) {
     public static final Slot RARE = new Slot(0, 0, 0);
     /** The modern foil slot: secret 1 in 12, ultra 1 in 6, otherwise super. */
     public static final Slot FOIL = new Slot(1 / 12.0, 1 / 6.0, 1 - 1 / 12.0 - 1 / 6.0);
-    /** All-foil sets: mostly ultra, secret 1 in 4. */
-    public static final Slot PREMIUM = new Slot(1 / 4.0, 3 / 4.0, 0);
+    /**
+     * All-foil sets: secret 1 in 4, else mostly ultra; a super 1 in 4 in the sets that have supers (the Rarity
+     * Collections), an ultra in those that don't.
+     */
+    public static final Slot PREMIUM = new Slot(1 / 4.0, 1 / 2.0, 1 / 4.0);
     /** Always a secret rare. */
     public static final Slot SECRET = new Slot(1, 0, 0);
 
@@ -90,7 +93,8 @@ public record PackProfile(String name, int size, List<Slot> slots) {
             if (base == BoosterSets.Rarity.RARE && modern) {
                 return RARE_ONLY;
             }
-            if (base == BoosterSets.Rarity.SUPER && rarities.contains(BoosterSets.Rarity.SECRET)) {
+            if (base == BoosterSets.Rarity.SUPER
+                    && rarities.stream().anyMatch(r -> r.slot() == BoosterSets.Rarity.SECRET)) {
                 return SUPER_SECRET;
             }
         }

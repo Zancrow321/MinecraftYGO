@@ -20,7 +20,7 @@ class PackProfileTest {
         for (int i = 0; i < packs; i++) {
             List<BoosterSets.Card> pack = set.open(random);
             assertEquals(set.profile().size(), pack.size(), set.id());
-            foils += pack.stream().filter(c -> c.rarity() != BoosterSets.Rarity.COMMON).count();
+            foils += pack.stream().filter(c -> c.rarity().slot() != BoosterSets.Rarity.COMMON).count();
         }
         return foils;
     }
@@ -59,7 +59,8 @@ class PackProfileTest {
         Random random = new Random(5);
         long secrets = 0;
         for (int i = 0; i < packs; i++) {
-            secrets += set.open(random).stream().filter(c -> c.rarity() == BoosterSets.Rarity.SECRET).count();
+            secrets += set.open(random).stream().filter(c -> c.rarity().slot() == BoosterSets.Rarity.SECRET)
+                    .count();
         }
         return secrets;
     }
@@ -76,9 +77,9 @@ class PackProfileTest {
             for (int i = 0; i < 200; i++) {
                 List<BoosterSets.Card> pack = set.open(random);
                 assertEquals(7, pack.size(), id);
-                assertTrue(pack.stream().noneMatch(c -> c.rarity() == BoosterSets.Rarity.COMMON), id);
+                assertTrue(pack.stream().noneMatch(c -> c.rarity().slot() == BoosterSets.Rarity.COMMON), id);
                 assertTrue(pack.stream().map(BoosterSets.Card::code).distinct().count() >= 4, id + ": varied packs");
-                assertTrue(pack.get(6).rarity().compareTo(BoosterSets.Rarity.RARE) > 0, id + ": a foil last");
+                assertTrue(pack.get(6).rarity().slot().compareTo(BoosterSets.Rarity.RARE) > 0, id + ": a foil last");
             }
         }
     }
@@ -97,7 +98,7 @@ class PackProfileTest {
         Random random = new Random(3);
         long ultras = 0;
         for (int i = 0; i < 6000; i++) {
-            ultras += phni.open(random).stream().filter(c -> c.rarity() == BoosterSets.Rarity.ULTRA).count();
+            ultras += phni.open(random).stream().filter(c -> c.rarity().slot() == BoosterSets.Rarity.ULTRA).count();
         }
         assertTrue(ultras > 800 && ultras < 1200, "about one ultra in six packs: " + ultras);
 
@@ -146,6 +147,85 @@ class PackProfileTest {
             for (Products.Printing printing : product.cards()) {
                 assertTrue(real.matcher(printing.rarity()).find(), product.id() + " " + printing);
             }
+        }
+    }
+
+    /** Every rarity a set's cards are printed in can be pulled, the rare finishes less often than the plain ones. */
+    @Test
+    void everyPrintedRarityCanBePulled() {
+        assertPulls("phantom_nightmare", BoosterSets.Rarity.COMMON, BoosterSets.Rarity.SUPER,
+                BoosterSets.Rarity.ULTRA, BoosterSets.Rarity.SECRET, BoosterSets.Rarity.QUARTER_CENTURY);
+        assertPulls("rarity_collection_5", BoosterSets.Rarity.SUPER, BoosterSets.Rarity.ULTRA,
+                BoosterSets.Rarity.ULTIMATE, BoosterSets.Rarity.SECRET, BoosterSets.Rarity.COLLECTORS,
+                BoosterSets.Rarity.PLATINUM_SECRET, BoosterSets.Rarity.STARLIGHT);
+        java.util.Map<BoosterSets.Rarity, Integer> pulled = assertPulls("doom_of_dimensions",
+                BoosterSets.Rarity.SECRET, BoosterSets.Rarity.STARLIGHT);
+        // Per card, a Starlight Rare comes a fifth as often as a Secret Rare.
+        BoosterSets.BoosterSet dood = SETS.get("doom_of_dimensions");
+        double starlight = (double) pulled.get(BoosterSets.Rarity.STARLIGHT)
+                / dood.cards().stream().filter(c -> c.rarity() == BoosterSets.Rarity.STARLIGHT).count();
+        double secret = (double) pulled.get(BoosterSets.Rarity.SECRET)
+                / dood.cards().stream().filter(c -> c.rarity() == BoosterSets.Rarity.SECRET).count();
+        assertTrue(starlight > secret * 0.12 && starlight < secret * 0.3, starlight + " vs " + secret);
+
+        // Every rarity printed in a booster set is in it, and none is lost to an unknown name.
+        for (Products.Product product : Products.loadBundled().products()) {
+            BoosterSets.BoosterSet set = SETS.get(product.id());
+            if (set == null) {
+                continue;
+            }
+            for (Products.Printing p : product.cards()) {
+                if (set.cards().stream().noneMatch(c -> c.code() == p.code())) {
+                    continue; // not in the pool
+                }
+                for (String printed : java.util.stream.Stream.concat(java.util.stream.Stream.of(p.rarity()),
+                        p.better().stream()).toList()) {
+                    BoosterSets.Rarity r = BoosterSets.Rarity.ofPrinted(printed);
+                    assertTrue(set.cards().contains(new BoosterSets.Card(p.code(), r))
+                                    || r.slot().compareTo(set.base()) < 0,
+                            product.id() + " " + p.code() + " " + printed);
+                }
+            }
+        }
+    }
+
+    private static java.util.Map<BoosterSets.Rarity, Integer> assertPulls(String id, BoosterSets.Rarity... rarities) {
+        Random random = new Random(11);
+        java.util.Map<BoosterSets.Rarity, Integer> pulled = new java.util.EnumMap<>(BoosterSets.Rarity.class);
+        for (int i = 0; i < 24_000; i++) {
+            SETS.get(id).open(random).forEach(c -> pulled.merge(c.rarity(), 1, Integer::sum));
+        }
+        for (BoosterSets.Rarity r : rarities) {
+            assertTrue(pulled.getOrDefault(r, 0) > 0, id + " gives " + r + ": " + pulled);
+        }
+        return pulled;
+    }
+
+    @Test
+    void printedRarityNames() {
+        String[][] names = {
+                {"Common", "COMMON"}, {"Short Print", "COMMON"}, {"Super Short Print", "COMMON"},
+                {"Duel Terminal Normal Parallel Rare", "NORMAL_PARALLEL"}, {"Normal Parallel Rare", "NORMAL_PARALLEL"},
+                {"Duel Terminal Normal Rare Parallel Rare", "RARE_PARALLEL"},
+                {"Duel Terminal Rare Parallel Rare", "RARE_PARALLEL"}, {"Rare", "RARE"},
+                {"Starfoil Rare", "STARFOIL"}, {"Shatterfoil Rare", "SHATTERFOIL"}, {"Mosaic Rare", "MOSAIC"},
+                {"Super Rare", "SUPER"}, {"Duel Terminal Super Parallel Rare", "SUPER_PARALLEL"},
+                {"Super Parallel Rare", "SUPER_PARALLEL"}, {"Ultra Rare", "ULTRA"},
+                {"Ultra Parallel Rare", "ULTRA_PARALLEL"}, {"Duel Terminal Ultra Parallel Rare", "ULTRA_PARALLEL"},
+                {"Ultra Rare (Pharaoh's Rare)", "PHARAOH"}, {"Gold Rare", "GOLD"}, {"Premium Gold Rare", "PREMIUM_GOLD"},
+                {"Platinum Rare", "PLATINUM"}, {"Ultimate Rare", "ULTIMATE"}, {"Secret Rare", "SECRET"},
+                {"Ultra Secret Rare", "ULTRA_SECRET"}, {"Prismatic Secret Rare", "PRISMATIC_SECRET"},
+                {"Platinum Secret Rare", "PLATINUM_SECRET"}, {"PLatinum Secret Rare", "PLATINUM_SECRET"},
+                {"Gold Secret Rare", "GOLD_SECRET"}, {"Extra Secret Rare", "EXTRA_SECRET"},
+                {"Ghost Rare", "GHOST"}, {"Ghost/Gold Rare", "GHOST_GOLD"}, {"Collector's Rare", "COLLECTORS"},
+                {"Quarter Century Secret Rare", "QUARTER_CENTURY"}, {"Grand Master Rare", "GRAND_MASTER"},
+                {"Starlight Rare", "STARLIGHT"}, {"10000 Secret Rare", "TEN_THOUSAND_SECRET"}};
+        for (String[] n : names) {
+            assertEquals(BoosterSets.Rarity.valueOf(n[1]), BoosterSets.Rarity.ofPrinted(n[0]), n[0]);
+        }
+        for (BoosterSets.Rarity r : BoosterSets.Rarity.values()) {
+            assertEquals(r, BoosterSets.Rarity.parse(r.id()));
+            assertEquals(r, BoosterSets.Rarity.ofPrinted(r.displayName()), r.displayName());
         }
     }
 }

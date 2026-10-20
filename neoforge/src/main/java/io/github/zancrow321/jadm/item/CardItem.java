@@ -52,24 +52,26 @@ public final class CardItem extends Item {
         }
     }
 
+    /** The color of a rarity's name: that of its slot, yellow for the gold foils. */
     public static ChatFormatting color(Rarity rarity) {
         return switch (rarity) {
+            case GOLD, PREMIUM_GOLD, GOLD_SECRET, GHOST_GOLD, GRAND_MASTER -> ChatFormatting.YELLOW;
+            default -> slotColor(rarity.slot());
+        };
+    }
+
+    private static ChatFormatting slotColor(Rarity slot) {
+        return switch (slot) {
             case COMMON -> ChatFormatting.WHITE;
             case RARE -> ChatFormatting.AQUA;
             case SUPER -> ChatFormatting.GOLD;
             case ULTRA -> ChatFormatting.LIGHT_PURPLE;
-            case SECRET -> ChatFormatting.RED;
+            default -> ChatFormatting.RED;
         };
     }
 
     public static String rarityName(Rarity rarity) {
-        return switch (rarity) {
-            case COMMON -> "Common";
-            case RARE -> "Rare";
-            case SUPER -> "Super Rare";
-            case ULTRA -> "Ultra Rare";
-            case SECRET -> "Secret Rare";
-        };
+        return rarity.displayName();
     }
 
     @Override
@@ -84,7 +86,7 @@ public final class CardItem extends Item {
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        return rarity(stack).ordinal() >= Rarity.SUPER.ordinal();
+        return rarity(stack).slot().compareTo(Rarity.SUPER) >= 0;
     }
 
     @Override

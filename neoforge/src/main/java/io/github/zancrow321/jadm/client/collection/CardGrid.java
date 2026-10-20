@@ -212,19 +212,14 @@ public final class CardGrid {
     }
 
     /**
-     * The short rarity of a foil card (R, SR, UR, ScR) in its bottom left corner, over the passcode, where it hides
-     * nothing that matters. At half size on small cards.
+     * The short rarity of a foil card (R, SR, UR, ScR, StR, GhR...) in its bottom left corner, over the passcode,
+     * where it hides nothing that matters. At half size on small cards.
      */
     static void drawRarityTag(GuiGraphics g, Font font, Rarity rarity, int x, int y, int w, int h) {
         if (rarity == Rarity.COMMON) {
             return;
         }
-        String tag = switch (rarity) {
-            case RARE -> "R";
-            case SUPER -> "SR";
-            case ULTRA -> "UR";
-            default -> "ScR";
-        };
+        String tag = rarity.tag();
         Integer color = CardItem.color(rarity).getColor();
         float scale = w < 60 ? 0.5f : 1f;
         int tw = Math.round(font.width(tag) * scale);

@@ -56,7 +56,7 @@ public final class RandomCardFunction extends LootItemConditionalFunction {
             return ItemStack.EMPTY;
         }
         BoosterSets.Rarity wanted = BoosterSets.Rarity.parse(rarity);
-        List<BoosterSets.Card> cards = set.of(wanted).isEmpty() ? set.cards() : set.of(wanted);
+        List<BoosterSets.Card> cards = set.of(wanted.slot()).isEmpty() ? set.cards() : set.of(wanted.slot());
         BoosterSets.Card card = cards.get(context.getRandom().nextInt(cards.size()));
         stack.set(JadmComponents.CARD.get(), new JadmComponents.CardStack(card.code(), card.rarity().id()));
         return stack;
