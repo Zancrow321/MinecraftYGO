@@ -106,7 +106,7 @@ final class Holograms {
             if (!summon.started(now)) {
                 return; // appears when its summon plays
             }
-            float p = summon.progress(now, partial);
+            float p = SummonShow.appearance(summon, now, partial);
             grow = Mth.clamp((p - 0.12f) / 0.45f, 0, 1);
             // Flickers on like a projector warming up.
             alpha = p < 0.6f && (now + seq) % 3 == 0 ? 0.25f : 0.5f + 0.5f * Mth.clamp(p / 0.6f, 0, 1);
@@ -255,7 +255,7 @@ final class Holograms {
     static void labels(FieldRenderer.Draw draw, PoseStack poses, Font font, int player, int seq, CardState card,
                        long now, float partial) {
         FieldAnimation summon = ClientField.pending(FieldEvent.Kind.SUMMON, new Loc(player, LOCATION_MZONE, seq, 0));
-        if (summon != null && summon.progress(now, partial) < 0.5f) {
+        if (summon != null && SummonShow.appearance(summon, now, partial) < 0.5f) {
             return; // not there yet
         }
         Slot s = slot(player, LOCATION_MZONE, seq);

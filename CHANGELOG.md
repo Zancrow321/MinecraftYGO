@@ -205,6 +205,19 @@
   `config/jadm-client.toml`.
 - An opponent's ace no longer gets the "summons" banner first: its shot already shows its name.
 
+### Summon shows
+- **Every kind of summon has its own show**, for every card and for both duelists: **Fusion** opens a swirl of
+  colours the materials spiral into and melt together; **Synchro** stacks green rings over the zone and the monster's
+  stars fly up through them; **Xyz** spreads a galaxy on the zone that the materials dive into as lights before it
+  bursts upward; **Ritual** draws a burning summoning circle with flames at its points and a pillar of fire; **Link**
+  raises the Link circuit, whose arrows light up one after another; **Pendulum** swings a pendulum over the two
+  scales, and every monster of the Pendulum Summon comes down out of its arc together. The monster appears as the show
+  ends, with its own sounds and particles.
+- Only real summons get a show: a Fusion Monster brought back by Monster Reborn appears as before. The duel log says
+  which kind it was ("Fusion Summoned Dark Paladin").
+- The shows last about 2.5 seconds; the client setting `longSummonShows = false` makes them 1.5 seconds. The server
+  works out the kind of summon, so it needs the new version too.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

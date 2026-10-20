@@ -20,6 +20,7 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.IntValue ACE_MIN_LEVEL;
     public static final ModConfigSpec.IntValue ACE_MIN_ATTACK;
     public static final ModConfigSpec.BooleanValue ACE_EXTRA_DECK;
+    public static final ModConfigSpec.BooleanValue LONG_SUMMON_SHOWS;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -82,6 +83,10 @@ public final class JadmClientConfig {
         ACE_EXTRA_DECK = builder
                 .comment("Every Fusion, Synchro, Xyz and Link Monster gets the ace shot.")
                 .define("aceExtraDeck", true);
+        LONG_SUMMON_SHOWS = builder
+                .comment("Play the full show (about 2.5 seconds) for a Fusion, Synchro, Xyz, Ritual, Link or Pendulum "
+                        + "Summon in a duel. Off, the shows are shorter (1.5 seconds), for decks that summon a lot.")
+                .define("longSummonShows", true);
         SPEC = builder.build();
     }
 

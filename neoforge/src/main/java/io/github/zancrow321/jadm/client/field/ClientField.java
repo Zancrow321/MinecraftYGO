@@ -260,6 +260,12 @@ public final class ClientField {
         long start = Math.max(queueFree, tick);
         for (FieldEvent event : view.events()) {
             int actor = actor(event, view);
+            // A later monster of a Pendulum Summon comes down with the first one, if its show is still on.
+            long joined = SummonShow.joins(event, tick);
+            if (joined >= 0) {
+                animations.add(new FieldAnimation(event, joined, FieldAnimation.duration(event), actor));
+                continue;
+            }
             boolean ace = event.kind() == FieldEvent.Kind.SUMMON && AceCamera.ace(actor);
             // An ace's shot shows its name big already, so it needs no banner first.
             if (actor != 0 && !ace && event.player() != view.you()
