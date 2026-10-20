@@ -79,6 +79,7 @@ public final class ClientField {
         right = new Vec3(-forward.z, 0, forward.x);
         endsAt = -1;
         animations.clear();
+        AceCamera.reset();
         lastBoard = null;
         // Wait for the duel disk to unfold, then grow the field; queued effects start once it is full size.
         revealAt = tick + DiskClient.deployTicks();
@@ -121,6 +122,7 @@ public final class ClientField {
         center = null;
         hovered = null;
         animations.clear();
+        AceCamera.reset();
         lastBoard = null;
         FieldRenderer.reset();
     }
@@ -258,7 +260,9 @@ public final class ClientField {
         long start = Math.max(queueFree, tick);
         for (FieldEvent event : view.events()) {
             int actor = actor(event, view);
-            if (actor != 0 && event.player() != view.you()
+            boolean ace = event.kind() == FieldEvent.Kind.SUMMON && AceCamera.ace(actor);
+            // An ace's shot shows its name big already, so it needs no banner first.
+            if (actor != 0 && !ace && event.player() != view.you()
                     && (event.kind() == FieldEvent.Kind.ACTIVATE || event.kind() == FieldEvent.Kind.SUMMON)) {
                 // The opponent's card is shown big first, then its effect plays.
                 DuelStaging.banner(actor, view.names().get(event.player()) + (event.kind() == FieldEvent.Kind.ACTIVATE
@@ -266,7 +270,7 @@ public final class ClientField {
                 start += DuelStaging.BANNER_TICKS;
             }
             animations.add(new FieldAnimation(event, start, FieldAnimation.duration(event), actor));
-            start += FieldAnimation.spacing(event);
+            start += ace ? AceCamera.queue(event, view, start) : FieldAnimation.spacing(event);
         }
         lastBoard = view.board();
         queueFree = start;
@@ -296,6 +300,7 @@ public final class ClientField {
             return;
         }
         FieldRenderer.tickEffects();
+        AceCamera.tick();
         if (!DuelMode.active()) {
             hovered = lookedAtZone();
         }

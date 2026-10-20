@@ -4,6 +4,7 @@ import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.client.CardArt;
 import io.github.zancrow321.jadm.client.ClientDuel;
 import io.github.zancrow321.jadm.client.JadmClientConfig;
+import io.github.zancrow321.jadm.client.field.AceCamera;
 import io.github.zancrow321.jadm.client.field.ClientField;
 import io.github.zancrow321.jadm.client.field.DuelHud;
 import io.github.zancrow321.jadm.client.field.FieldLayout;
@@ -179,6 +180,7 @@ public final class DuelUi {
     public static boolean hotkey(int key) {
         PromptView p = ClientDuel.prompt();
         if (p == null || ClientDuel.view() == null || DuelStaging.introRunning() || DuelStaging.resultShowing()
+                || AceCamera.playing()
                 || ClientDuel.view().result() != null) {
             return false;
         }
@@ -361,6 +363,13 @@ public final class DuelUi {
                 button(g, font, w / 2 - 84, y, 80, "Go First", true, mx, my, () -> DuelStaging.choose(true));
                 button(g, font, w / 2 + 4, y, 80, "Go Second", true, mx, my, () -> DuelStaging.choose(false));
             }
+            return;
+        }
+        if (AceCamera.playing()) {
+            // The camera is off circling an ace: just its name and stats until it is back.
+            panelBox = null;
+            panelBar = null;
+            AceCamera.render(g, font, w, h);
             return;
         }
         hoverCode = 0;
@@ -1083,7 +1092,7 @@ public final class DuelUi {
     /** A right click on a graveyard, the banished cards, an extra deck or an Xyz monster opens it for a look. */
     public static boolean rightClicked(double mx, double my, int w, int h) {
         if (ClientDuel.view() == null || !ClientField.active() || DuelStaging.introRunning()
-                || DuelStaging.resultShowing()) {
+                || DuelStaging.resultShowing() || AceCamera.playing()) {
             return false;
         }
         Loc zone = zoneUnder(mx, my, w, h);
@@ -1339,7 +1348,7 @@ public final class DuelUi {
                 return true;
             }
         }
-        if (DuelStaging.introRunning() || DuelStaging.resultShowing()) {
+        if (DuelStaging.introRunning() || DuelStaging.resultShowing() || AceCamera.playing()) {
             return true;
         }
         if (menu != null) {

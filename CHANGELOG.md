@@ -195,6 +195,16 @@
   thin beam of light upward in their rarity's color. Off with the client setting `displayEffects`.
 - **Name plate:** the frame, the stand and the pack display show what they hold, or their own name from an anvil.
 
+### Ace camera
+- **Ace shot:** when a big monster is summoned, yours or the opponent's, the camera leaves its place, circles the
+  monster's model or hologram while it rises, and its name slams in big with its stars and ATK/DEF between black bars,
+  like a summon in Master Duel. Then the camera flies back. It plays in the top-down view and in first person, for
+  duelists and spectators, and like every duel animation it isn't skipped.
+- **Which monsters:** Level 7 or higher, any Fusion, Synchro, Xyz or Link Monster, or 2500 ATK or more. Client settings
+  `aceCamera` (on/off), `aceMinLevel`, `aceMinAttack` (0 turns that rule off) and `aceExtraDeck` in
+  `config/jadm-client.toml`.
+- An opponent's ace no longer gets the "summons" banner first: its shot already shows its name.
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,

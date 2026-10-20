@@ -16,6 +16,10 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.BooleanValue PACK_OPENING_SHOW;
     public static final ModConfigSpec.BooleanValue FIELD_SPELL_ARENA;
     public static final ModConfigSpec.BooleanValue DISPLAY_EFFECTS;
+    public static final ModConfigSpec.BooleanValue ACE_CAMERA;
+    public static final ModConfigSpec.IntValue ACE_MIN_LEVEL;
+    public static final ModConfigSpec.IntValue ACE_MIN_ATTACK;
+    public static final ModConfigSpec.BooleanValue ACE_EXTRA_DECK;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -63,6 +67,21 @@ public final class JadmClientConfig {
                 .comment("Let shiny cards in collector displays (card frames, showcases, toploader stands) glow around "
                         + "their edge and sparkle, the rarer the more, with a beam of light for Secret Rares and up.")
                 .define("displayEffects", true);
+        ACE_CAMERA = builder
+                .comment("In a duel, when a big monster is summoned (yours or the opponent's), the camera circles it for "
+                        + "two seconds and its name shows big, like a summon in Master Duel. Which monsters count is set "
+                        + "below; a monster counts if any one of them fits.")
+                .define("aceCamera", true);
+        ACE_MIN_LEVEL = builder
+                .comment("Monsters of this Level or higher get the ace shot (Ranks and Link ratings don't count as "
+                        + "Levels).")
+                .defineInRange("aceMinLevel", 7, 1, 13);
+        ACE_MIN_ATTACK = builder
+                .comment("Monsters with at least this much printed ATK get the ace shot. 0 turns this rule off.")
+                .defineInRange("aceMinAttack", 2500, 0, 100000);
+        ACE_EXTRA_DECK = builder
+                .comment("Every Fusion, Synchro, Xyz and Link Monster gets the ace shot.")
+                .define("aceExtraDeck", true);
         SPEC = builder.build();
     }
 

@@ -403,7 +403,8 @@
         "- `cardPreview` = {client:cardPreview}: ein großes Bild der Karte unter der Maus mit ihrem Text, links neben Inventar, Truhen, Kartenordner und Deckbox, und einer Karte in deiner Hand.",
         "- `packOpeningShow` = {client:packOpeningShow}: Booster-Packs als Show öffnen (aufreißen, auffächern, jede Karte einzeln umdrehen). Aus: die Karten drehen sich einfach in Reihen um.",
         "- `fieldSpellArena` = {client:fieldSpellArena}: offene Feldzauber verwandeln das Duellfeld.",
-        "- `displayEffects` = {client:displayEffects}: glänzende Karten in Sammler-Vitrinen leuchten und funkeln, ab Secret Rare mit Lichtstrahl."
+        "- `displayEffects` = {client:displayEffects}: glänzende Karten in Sammler-Vitrinen leuchten und funkeln, ab Secret Rare mit Lichtstrahl.",
+        "- `aceCamera` = {client:aceCamera}: wird ein großes Monster beschworen, fährt die Kamera zwei Sekunden um es herum und sein Name erscheint groß. Es zählt jedes Monster ab Stufe `aceMinLevel` = {client:aceMinLevel}, mit mindestens `aceMinAttack` = {client:aceMinAttack} ATK (0: aus) oder aus dem Extra Deck (`aceExtraDeck` = {client:aceExtraDeck})."
       ]
     },
     {

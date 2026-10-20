@@ -403,7 +403,8 @@
         "- `cardPreview` = {client:cardPreview}: a big picture of the card under the mouse, with its text, left of the inventory, chests, the binder and the deck box, and of a card in your hand.",
         "- `packOpeningShow` = {client:packOpeningShow}: open booster packs as a show (tear open, fan, turn each card over). Off, the cards just turn over in rows.",
         "- `fieldSpellArena` = {client:fieldSpellArena}: face-up Field Spells transform the duel field.",
-        "- `displayEffects` = {client:displayEffects}: shiny cards in collector displays glow and sparkle, with a beam for Secret Rares and up."
+        "- `displayEffects` = {client:displayEffects}: shiny cards in collector displays glow and sparkle, with a beam for Secret Rares and up.",
+        "- `aceCamera` = {client:aceCamera}: when a big monster is summoned, the camera circles it for two seconds and its name shows big. Every monster of Level `aceMinLevel` = {client:aceMinLevel} or higher counts, with at least `aceMinAttack` = {client:aceMinAttack} ATK (0: off), or from the Extra Deck (`aceExtraDeck` = {client:aceExtraDeck})."
       ]
     },
     {

@@ -681,6 +681,9 @@ public final class FieldRenderer {
 
     /** ATK/DEF over each face-up monster, and the hovered card's name. */
     private static void drawLabels(Draw draw, PoseStack poses, Board board, long now, float partial) {
+        if (AceCamera.playing()) {
+            return; // up close, the labels would float huge in front of the ace; its name shows on screen instead
+        }
         Font font = Minecraft.getInstance().font;
         for (int player = 0; player < 2; player++) {
             List<CardState> monsters = board.side(player).monsters();
