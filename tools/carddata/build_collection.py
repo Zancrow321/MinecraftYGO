@@ -93,6 +93,8 @@ def kind(name, code, size):
         return "tin"
     if "deck" in lower and "booster" not in lower:
         return "deck"
+    if lower.startswith("champion pack"):  # "Champion Pack: Game One" is a pack, not a video game promo
+        return "booster"
     if any(w in lower for w in ("promo", "participation", "shonen jump", "prize", "sneak peek", "championship",
                                 "premiere", "sample", "giveaway", "magazine", "issue", "game")):
         return "promo"

@@ -37,6 +37,11 @@ class PackProfileTest {
 
         assertEquals("tournament", SETS.get("tournament_pack_1st_season").profile().name());
         assertEquals(3, SETS.get("tournament_pack_1st_season").profile().size());
+        for (String game : List.of("one", "two", "three", "four", "five", "six", "seven", "eight")) {
+            BoosterSets.BoosterSet cp = SETS.get("champion_pack_game_" + game);
+            assertEquals("tournament", cp.profile().name(), "Champion Pack: Game " + game);
+            assertEquals(20, cp.cards().size());
+        }
 
         BoosterSets.BoosterSet drl = SETS.get("dragons_of_legend");
         assertEquals("premium", drl.profile().name());

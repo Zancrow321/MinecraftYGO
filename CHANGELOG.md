@@ -111,6 +111,11 @@
   duels between players on different lists use the server's list, tournaments their own.
 - The bundled TCG history now ends with the September 2026 list.
 
+### Champion Packs
+- **Champion Pack: Game One to Game Eight** (CP01-CP08) can be opened now: 3-card packs like the Tournament Packs,
+  sold in the shop and unlocked with their release date. They were filed as promos before because their names
+  contain "Game".
+
 ### Duelist clans
 - **Clans:** `/jadm clan create <tag> <name>` founds a clan (500 Duel Points by default). The leader and officers
   invite with `/jadm clan invite <player>` (the player clicks **[Join]**), or the clan is open to all. Roles: leader,
