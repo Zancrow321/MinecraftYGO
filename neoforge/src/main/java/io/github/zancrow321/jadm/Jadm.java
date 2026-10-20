@@ -57,6 +57,7 @@ public final class Jadm {
         DuelDome.register(modBus);
         DuelArena.register(modBus);
         io.github.zancrow321.jadm.ranking.RankingBoard.register(modBus);
+        io.github.zancrow321.jadm.display.Displays.register(modBus);
         container.registerConfig(ModConfig.Type.SERVER, JadmServerConfig.SPEC);
         io.github.zancrow321.jadm.clan.ClanParties.init();
         modBus.addListener(JadmNetwork::register);

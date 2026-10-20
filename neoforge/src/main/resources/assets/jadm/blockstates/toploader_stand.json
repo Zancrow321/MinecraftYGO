@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=south": {
+   "model": "jadm:block/toploader_stand"
+  },
+  "facing=west": {
+   "model": "jadm:block/toploader_stand",
+   "y": 90
+  },
+  "facing=north": {
+   "model": "jadm:block/toploader_stand",
+   "y": 180
+  },
+  "facing=east": {
+   "model": "jadm:block/toploader_stand",
+   "y": 270
+  }
+ }
+}

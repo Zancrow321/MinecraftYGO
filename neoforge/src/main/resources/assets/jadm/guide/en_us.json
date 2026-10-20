@@ -105,7 +105,18 @@
         "- The list shows each set's picture, your cards and a bar. Filter by started, complete, reward ready or not started, and sort by release, name or how complete; type a set's name or code to find it.",
         "- Click a set to see its cards: the ones you're missing are greyed out, and a button shows only the missing ones.",
         "- A complete set brings a reward once per player and set: {server:collection.pointsPerCard} DP per card of the set and {server:collection.packs} booster packs on this server. Click [Claim reward] (or \"Claim all\" for several). Everyone hears about it in chat.",
-        "[recipe {modid}:set_book]"
+        "[recipe {modid}:set_book]",
+        "# Collector displays",
+        "Show off your collection in your base. Right-click a display to open its slots: they take only cards (packs, decks and tins for the pack display), one per slot, and show them with their real pictures and foil. Shiny cards glow around their edge and sparkle, the rarer the more, and Secret Rares and up send a beam of light upward.",
+        "- **Card Frame**: one card behind glass, on a wall or lying on a table, with a name plate.",
+        "- **Card Showcase**: nine cards in three rows behind glass. Look at a card to see its name and rarity above it.",
+        "- **Toploader Stand**: one card standing in a toploader on your desk.",
+        "- **Pack Display**: an open display box with three sealed booster packs, structure decks or tins.",
+        "Whoever places a display owns it. New displays are **locked**: only the owner and operators can take things out or break it. The owner switches the lock and the light with the buttons in its window; with the light on it glows and its cards shine even in the dark. Name it in an anvil to put your own text on its name plate.",
+        "[recipe {modid}:card_frame]",
+        "[recipe {modid}:card_showcase]",
+        "[recipe {modid}:toploader_stand]",
+        "[recipe {modid}:pack_display]"
       ]
     },
     {
@@ -391,7 +402,8 @@
         "- `skipResponses` = {client:skipResponses}: pass every response you don't have to take (switch it in a duel with {key:duel_responses}).",
         "- `cardPreview` = {client:cardPreview}: a big picture of the card under the mouse, with its text, left of the inventory, chests, the binder and the deck box, and of a card in your hand.",
         "- `packOpeningShow` = {client:packOpeningShow}: open booster packs as a show (tear open, fan, turn each card over). Off, the cards just turn over in rows.",
-        "- `fieldSpellArena` = {client:fieldSpellArena}: face-up Field Spells transform the duel field."
+        "- `fieldSpellArena` = {client:fieldSpellArena}: face-up Field Spells transform the duel field.",
+        "- `displayEffects` = {client:displayEffects}: shiny cards in collector displays glow and sparkle, with a beam for Secret Rares and up."
       ]
     },
     {

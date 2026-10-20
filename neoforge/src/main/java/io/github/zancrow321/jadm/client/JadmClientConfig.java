@@ -15,6 +15,7 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.BooleanValue CARD_PREVIEW;
     public static final ModConfigSpec.BooleanValue PACK_OPENING_SHOW;
     public static final ModConfigSpec.BooleanValue FIELD_SPELL_ARENA;
+    public static final ModConfigSpec.BooleanValue DISPLAY_EFFECTS;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -58,6 +59,10 @@ public final class JadmClientConfig {
                 .comment("Let face-up Field Spells transform the duel field: Umi floods it, Yami covers it in shadow, "
                         + "Sogen grows grass, and so on. Each half shows its owner's Field Spell.")
                 .define("fieldSpellArena", true);
+        DISPLAY_EFFECTS = builder
+                .comment("Let shiny cards in collector displays (card frames, showcases, toploader stands) glow around "
+                        + "their edge and sparkle, the rarer the more, with a beam of light for Secret Rares and up.")
+                .define("displayEffects", true);
         SPEC = builder.build();
     }
 

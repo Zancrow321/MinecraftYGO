@@ -105,7 +105,18 @@
         "- Die Liste zeigt für jedes Set sein Bild, deine Karten und einen Balken. Filtern nach angefangen, komplett, Belohnung offen oder nicht begonnen, sortieren nach Erscheinen, Name oder Fortschritt; tippe Name oder Kürzel eines Sets, um es zu finden.",
         "- Klick auf ein Set zeigt seine Karten: Fehlende sind ausgegraut, ein Knopf zeigt nur die fehlenden.",
         "- Ein komplettes Set bringt einmal pro Spieler und Set eine Belohnung: auf diesem Server {server:collection.pointsPerCard} DP pro Karte des Sets und {server:collection.packs} Booster. Klick auf [Abholen] (oder \"Alle abholen\" für mehrere). Alle erfahren es im Chat.",
-        "[recipe {modid}:set_book]"
+        "[recipe {modid}:set_book]",
+        "# Sammler-Vitrinen",
+        "Zeig deine Sammlung in deiner Basis. Rechtsklick auf eine Vitrine öffnet ihre Fächer: sie nehmen nur Karten (beim Pack-Display Packs, Decks und Tins), eine pro Fach, und zeigen sie mit echtem Bild und Foil. Glänzende Karten leuchten am Rand und funkeln, je seltener desto mehr, und ab Secret Rare steigt ein Lichtstrahl nach oben.",
+        "- **Kartenrahmen**: eine Karte hinter Glas, an der Wand oder liegend auf dem Tisch, mit Namensschild.",
+        "- **Kartenvitrine**: neun Karten in drei Reihen hinter Glas. Schau eine Karte an, dann erscheinen Name und Seltenheit darüber.",
+        "- **Toploader-Ständer**: eine Karte im Toploader auf deinem Tisch.",
+        "- **Pack-Display**: eine offene Display-Box mit drei versiegelten Boostern, Structure Decks oder Tins.",
+        "Wer eine Vitrine aufstellt, dem gehört sie. Neue Vitrinen sind **abgeschlossen**: nur der Besitzer und Operatoren können etwas herausnehmen oder sie abbauen. Schloss und Licht schaltet der Besitzer mit den Knöpfen im Fenster; mit Licht leuchtet sie und ihre Karten strahlen auch im Dunkeln. Benenne sie im Amboss um, dann steht dein Text auf dem Namensschild.",
+        "[recipe {modid}:card_frame]",
+        "[recipe {modid}:card_showcase]",
+        "[recipe {modid}:toploader_stand]",
+        "[recipe {modid}:pack_display]"
       ]
     },
     {
@@ -391,7 +402,8 @@
         "- `skipResponses` = {client:skipResponses}: jede Antwort auslassen, die du nicht nehmen musst (im Duell mit {key:duel_responses} umschalten).",
         "- `cardPreview` = {client:cardPreview}: ein großes Bild der Karte unter der Maus mit ihrem Text, links neben Inventar, Truhen, Kartenordner und Deckbox, und einer Karte in deiner Hand.",
         "- `packOpeningShow` = {client:packOpeningShow}: Booster-Packs als Show öffnen (aufreißen, auffächern, jede Karte einzeln umdrehen). Aus: die Karten drehen sich einfach in Reihen um.",
-        "- `fieldSpellArena` = {client:fieldSpellArena}: offene Feldzauber verwandeln das Duellfeld."
+        "- `fieldSpellArena` = {client:fieldSpellArena}: offene Feldzauber verwandeln das Duellfeld.",
+        "- `displayEffects` = {client:displayEffects}: glänzende Karten in Sammler-Vitrinen leuchten und funkeln, ab Secret Rare mit Lichtstrahl."
       ]
     },
     {

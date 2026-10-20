@@ -112,6 +112,8 @@ public final class JadmClient {
                     io.github.zancrow321.jadm.client.ranking.RankingBoardRenderer::new);
             event.registerBlockEntityRenderer(io.github.zancrow321.jadm.arena.DuelDome.CORE_ENTITY.get(),
                     io.github.zancrow321.jadm.client.arena.ArenaCoreRenderer::new);
+            event.registerBlockEntityRenderer(io.github.zancrow321.jadm.display.Displays.ENTITY.get(),
+                    io.github.zancrow321.jadm.client.display.DisplayRenderer::new);
         }
 
         @SubscribeEvent
@@ -122,6 +124,8 @@ public final class JadmClient {
                     io.github.zancrow321.jadm.client.shop.PointShopScreen::new);
             event.register(io.github.zancrow321.jadm.trade.Trades.MENU.get(),
                     io.github.zancrow321.jadm.client.trade.TradeScreen::new);
+            event.register(io.github.zancrow321.jadm.display.Displays.MENU.get(),
+                    io.github.zancrow321.jadm.client.display.DisplayScreen::new);
         }
 
         @SubscribeEvent
