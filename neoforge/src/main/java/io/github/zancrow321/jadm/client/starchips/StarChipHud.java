@@ -47,7 +47,8 @@ public final class StarChipHud {
     public static void render(GuiGraphics g, DeltaTracker delta) {
         Minecraft mc = Minecraft.getInstance();
         StarChipsPayload s = state;
-        if (s.status().isEmpty() || s.status().equals("left") || mc.options.hideGui || ClientField.active()) {
+        if (s.status().isEmpty() || s.status().equals("left") || mc.options.hideGui
+                || ClientField.active() && !ClientField.nearby()) {
             return;
         }
         Font font = mc.font;

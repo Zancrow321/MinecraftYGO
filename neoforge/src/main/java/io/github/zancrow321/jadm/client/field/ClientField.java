@@ -57,6 +57,8 @@ public final class ClientField {
     private static final List<ResourceLocation> sleeves = new ArrayList<>();
     private static boolean split;
     private static boolean watching;
+    /** Only standing near someone else's duel: the field shows in the world, but this client isn't at the duel. */
+    private static boolean nearby;
 
     private ClientField() {
     }
@@ -70,6 +72,7 @@ public final class ClientField {
         ClientDuel.forget(); // a new duel: its first view is on its way
         split = payload.layout().split();
         watching = payload.layout().watching();
+        nearby = payload.layout().nearby();
         size = payload.layout().size() > 0 ? payload.layout().size() : 1;
         ceiling = payload.layout().ceiling();
         outline = payload.layout().outline();
@@ -183,6 +186,11 @@ public final class ClientField {
     /** Whether this client is only watching the duel. */
     public static boolean watching() {
         return watching;
+    }
+
+    /** Whether this client only sees the field in passing, standing near a duel it isn't at. */
+    public static boolean nearby() {
+        return nearby;
     }
 
     /** When the field starts growing (and the duel's start plays), as a {@link #tick()}. */
@@ -309,7 +317,7 @@ public final class ClientField {
         tick++;
         Finale.clientTick();
         animations.removeIf(a -> a.finished(tick));
-        if (endsAt >= 0 && tick >= endsAt && !DuelStaging.holdsField()) {
+        if (endsAt >= 0 && tick >= endsAt && (nearby || !DuelStaging.holdsField())) {
             clear();
             return;
         }
@@ -363,6 +371,10 @@ public final class ClientField {
     public static boolean click() {
         if (!active() || hovered == null) {
             return false;
+        }
+        if (nearby) {
+            Minecraft.getInstance().player.connection.sendCommand("jadm watch");
+            return true;
         }
         clickAt(hovered);
         return true;

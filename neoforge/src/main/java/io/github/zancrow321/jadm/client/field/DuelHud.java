@@ -33,7 +33,8 @@ public final class DuelHud {
 
     public static void render(GuiGraphics g, DeltaTracker delta) {
         Minecraft mc = Minecraft.getInstance();
-        if (!ClientField.active() || mc.options.hideGui || !DuelMode.showsHud(mc.screen) || AceCamera.playing()) {
+        if (!ClientField.active() || ClientField.nearby() || mc.options.hideGui || !DuelMode.showsHud(mc.screen)
+                || AceCamera.playing()) {
             return;
         }
         DuelView view = ClientDuel.view();
