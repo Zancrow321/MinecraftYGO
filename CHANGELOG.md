@@ -2,12 +2,14 @@
 
 ## Unreleased
 
-### Ace camera: boss monster list
-- **List mode:** the new client setting `aceMode` picks which monsters get the ace shot: `rules` (as before: Level,
-  ATK and Extra Deck rules), `list` (only the boss monsters in `aceMonsters`, so each deck's ace gets the shot and
-  nothing else) or `both`. `aceMonsters` takes English card names as in the binder (capitals don't matter) or
-  passcodes; alternate artworks count as their card. It starts with 20 classic aces (Blue-Eyes White Dragon, Dark
-  Magician, Stardust Dragon...). Names that match no card are logged as a warning.
+### Boss monster per deck
+- **Mark your deck's boss:** right-click a monster in the deck box's deck to make it the deck's boss monster. It gets a
+  gold frame and a crown, its name shows next to the deck box's name and in the deck box's tooltip; right-click it again
+  to unmark it. Taking its last copy out of the deck unmarks it too.
+- **Only the boss gets the ace shot:** in a duel, a deck with a boss gives the ace camera's shot to that monster only
+  (alternate artworks included), for both duelists and onlookers, instead of every Level 7+, Extra Deck or 2500+ ATK
+  monster. Decks without a boss (NPCs, bots, starter decks) keep those rules. A locked tournament deck keeps its boss.
+- The server sends the bosses with the duel, so servers need the new version too.
 
 ## 1.2.9 (2026-10-20)
 

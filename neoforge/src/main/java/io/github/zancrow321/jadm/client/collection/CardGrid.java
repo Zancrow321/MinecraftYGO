@@ -45,6 +45,8 @@ public final class CardGrid {
     java.util.function.IntPredicate locked = code -> false;
     /** Cards the player doesn't have, in the Set Collection Book: greyed out. */
     java.util.function.IntPredicate missing = code -> false;
+    /** The deck's boss monster, in the deck box: a gold frame and a crown. */
+    java.util.function.IntPredicate boss = code -> false;
 
     CardGrid(int x, int y, int columns, int rows, int cardWidth) {
         this.x = x;
@@ -147,6 +149,9 @@ public final class CardGrid {
                 g.fill(cx, cy, cx + font.width(p) + 3, cy + 10, 0xD0603000);
                 g.drawString(font, p, cx + 2, cy + 1, 0xFFFFD040, false);
                 g.pose().popPose();
+            }
+            if (boss.test(e.code())) {
+                drawBoss(g, cx, cy, cardWidth, cardHeight);
             }
         }
         Entry hovered = at(mouseX, mouseY);
@@ -253,6 +258,28 @@ public final class CardGrid {
         // body and keyhole
         g.fill(cx - 6, cy - 2, cx + 6, cy + 7, 0xFFE0C060);
         g.fill(cx - 1, cy + 1, cx + 1, cy + 4, 0xFF402810);
+    }
+
+    /** A gold double frame around the boss monster and a little crown on its top right corner. */
+    static void drawBoss(GuiGraphics g, int x, int y, int w, int h) {
+        int gold = 0xFFFFC030;
+        g.pose().pushPose();
+        g.pose().translate(0, 0, 30);
+        g.renderOutline(x - 1, y - 1, w + 2, h + 2, gold);
+        g.renderOutline(x, y, w, h, 0xFFB07010);
+        int cx = x + w - 10;
+        int cy = y + 1;
+        g.fill(cx - 1, cy, cx + 10, cy + 8, 0xD0000000);
+        // Three points over a band.
+        g.fill(cx, cy + 4, cx + 9, cy + 7, gold);
+        g.fill(cx, cy + 1, cx + 1, cy + 4, gold);
+        g.fill(cx + 4, cy + 1, cx + 5, cy + 4, gold);
+        g.fill(cx + 8, cy + 1, cx + 9, cy + 4, gold);
+        g.fill(cx + 1, cy + 3, cx + 2, cy + 4, gold);
+        g.fill(cx + 3, cy + 3, cx + 4, cy + 4, gold);
+        g.fill(cx + 5, cy + 3, cx + 6, cy + 4, gold);
+        g.fill(cx + 7, cy + 3, cx + 8, cy + 4, gold);
+        g.pose().popPose();
     }
 
     /** The tooltip line of a locked card: which set unlocks it. */

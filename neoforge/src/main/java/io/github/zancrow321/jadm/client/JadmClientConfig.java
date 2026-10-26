@@ -17,8 +17,6 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.BooleanValue FIELD_SPELL_ARENA;
     public static final ModConfigSpec.BooleanValue DISPLAY_EFFECTS;
     public static final ModConfigSpec.BooleanValue ACE_CAMERA;
-    public static final ModConfigSpec.ConfigValue<String> ACE_MODE;
-    public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> ACE_MONSTERS;
     public static final ModConfigSpec.IntValue ACE_MIN_LEVEL;
     public static final ModConfigSpec.IntValue ACE_MIN_ATTACK;
     public static final ModConfigSpec.BooleanValue ACE_EXTRA_DECK;
@@ -74,18 +72,8 @@ public final class JadmClientConfig {
         ACE_CAMERA = builder
                 .comment("In a duel, when a big monster is summoned (yours or the opponent's), the camera circles it for "
                         + "two seconds and its name shows big, like a summon in Master Duel. Which monsters count is set "
-                        + "below.")
+                        + "below; a monster counts if any one of them fits.")
                 .define("aceCamera", true);
-        ACE_MODE = builder
-                .comment("Which monsters get the ace shot: \"rules\" (any monster that fits one of the rules below: "
-                        + "aceMinLevel, aceMinAttack, aceExtraDeck), \"list\" (only the boss monsters in aceMonsters, "
-                        + "so each deck's ace gets the shot and nothing else) or \"both\" (the list and the rules).")
-                .define("aceMode", "rules", v -> v instanceof String m
-                        && ("rules".equals(m) || "list".equals(m) || "both".equals(m)));
-        ACE_MONSTERS = builder
-                .comment("The boss monsters for aceMode \"list\" or \"both\": English card names as in the binder "
-                        + "(capitals don't matter) or passcodes. Alternate artworks count as their card.")
-                .defineListAllowEmpty("aceMonsters", io.github.zancrow321.jadm.engine.data.BossMonsters.DEFAULT, () -> "", o -> o instanceof String);
         ACE_MIN_LEVEL = builder
                 .comment("Monsters of this Level or higher get the ace shot (Ranks and Link ratings don't count as "
                         + "Levels).")

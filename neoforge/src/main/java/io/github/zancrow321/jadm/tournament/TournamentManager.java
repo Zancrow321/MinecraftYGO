@@ -241,6 +241,7 @@ public final class TournamentManager {
             if (t.bool("lockDeck")) {
                 e.main = List.copyOf(deck.main());
                 e.extra = List.copyOf(deck.extra());
+                e.boss = deck.boss();
             }
             e.deckName = deck.name();
         }
@@ -287,8 +288,7 @@ public final class TournamentManager {
         }
         for (ItemStack box : boxes) {
             if (DeckBoxItem.problems(box, player, banlist).isEmpty()) {
-                Deck deck = DeckBoxItem.toDeck(box);
-                return new Deck(box.getHoverName().getString(), deck.main(), deck.extra(), deck.side());
+                return DeckBoxItem.toDeck(box);
             }
         }
         if (t.bool("starterDecks") && JadmServerConfig.STARTER_DECKS.get()) {
@@ -951,7 +951,7 @@ public final class TournamentManager {
         for (int index : new int[]{m.a, m.b}) {
             Tournament.Entrant e = t.entrants.get(index);
             Deck deck = e.main == null ? null : new Deck(e.deckName == null ? e.name : e.deckName, e.main, e.extra,
-                    List.of());
+                    List.of(), e.boss);
             seats.add(new MatchSetup.Seat(e.player, e.name, deck));
         }
         MatchSetup.Rules rules = new MatchSetup.Rules(t.integer("startingLifePoints"), ruleset(t),

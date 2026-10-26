@@ -133,7 +133,9 @@
         "# Finding cards",
         "Search by name, filter by type (monsters, spells, traps, extra deck), attribute and level, and sort by name, ATK, DEF or level. Click a filter to step through it, shift-click to step back.",
         "# Import and export",
-        "Export copies the deck as a YDK list, the format most deck builders read. Import replaces the deck with the YDK list in your clipboard, built from the cards you own, and says which ones were missing."
+        "Export copies the deck as a YDK list, the format most deck builders read. Import replaces the deck with the YDK list in your clipboard, built from the cards you own, and says which ones were missing.",
+        "# Boss monster",
+        "Right-click a monster in the deck to make it the deck's **boss monster**: it gets a gold frame and a crown, and its name shows next to the deck box's name. In a duel only your boss gets the ace shot when it is summoned, for you, your opponent and onlookers. Right-click it again to unmark it. A deck without a boss uses the ace camera's rules (see the client settings)."
       ]
     },
     {
@@ -405,7 +407,7 @@
         "- `packOpeningShow` = {client:packOpeningShow}: open booster packs as a show (tear open, fan, turn each card over). Off, the cards just turn over in rows.",
         "- `fieldSpellArena` = {client:fieldSpellArena}: face-up Field Spells transform the duel field.",
         "- `displayEffects` = {client:displayEffects}: shiny cards in collector displays glow and sparkle, with a beam for Secret Rares and up.",
-        "- `aceCamera` = {client:aceCamera}: when a big monster is summoned, the camera circles it for two seconds and its name shows big. Every monster of Level `aceMinLevel` = {client:aceMinLevel} or higher counts, with at least `aceMinAttack` = {client:aceMinAttack} ATK (0: off), or from the Extra Deck (`aceExtraDeck` = {client:aceExtraDeck}). With `aceMode` = {client:aceMode} set to `list`, only the boss monsters named in `aceMonsters` get the shot (English card names or passcodes), so each deck's ace stands out; `both` takes the list and the rules.",
+        "- `aceCamera` = {client:aceCamera}: when a big monster is summoned, the camera circles it for two seconds and its name shows big. Every monster of Level `aceMinLevel` = {client:aceMinLevel} or higher counts, with at least `aceMinAttack` = {client:aceMinAttack} ATK (0: off), or from the Extra Deck (`aceExtraDeck` = {client:aceExtraDeck}). A deck with a marked boss monster gets the shot for its boss only.",
         "- `longSummonShows` = {client:longSummonShows}: the full show (about 2.5 seconds) for a Fusion, Synchro, Xyz, Ritual, Link or Pendulum Summon; off, 1.5 seconds.",
         "- `finisherCamera` = {client:finisherCamera}: swing the camera round to whoever takes the final blow of a duel while it plays in slow motion."
       ]

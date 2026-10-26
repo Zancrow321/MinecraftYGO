@@ -60,6 +60,11 @@ public final class CollectionActions {
                     }
                 }
             }
+            case DECK_BOSS -> {
+                if (held.is(JadmItems.DECK_BOX.get())) {
+                    toggleBoss(player, held, action.code());
+                }
+            }
         }
     }
 
@@ -128,6 +133,24 @@ public final class CollectionActions {
         box.set(JadmComponents.DECK.get(), new DeckList(main, extraList));
     }
 
+    /** Marks a monster in the deck as its boss, or unmarks it if it already is the boss. */
+    private static void toggleBoss(ServerPlayer player, ItemStack box, int code) {
+        var card = JadmData.cards().card(code);
+        DeckList deck = DeckBoxItem.deck(box);
+        if (card == null || !card.is(io.github.zancrow321.jadm.engine.OcgConstants.TYPE_MONSTER)
+                || !deck.main().contains(code) && !deck.extra().contains(code)) {
+            return;
+        }
+        int original = JadmData.original(code);
+        if (DeckBoxItem.boss(box) == original) {
+            box.remove(JadmComponents.DECK_BOSS.get());
+            player.displayClientMessage(Component.translatable("message.jadm.deck.boss_cleared", card.name()), true);
+        } else {
+            box.set(JadmComponents.DECK_BOSS.get(), original);
+            player.displayClientMessage(Component.translatable("message.jadm.deck.boss_set", card.name()), true);
+        }
+    }
+
     private static void deckRemove(ServerPlayer player, ItemStack box, int code) {
         DeckList deck = DeckBoxItem.deck(box);
         List<Integer> main = new ArrayList<>(deck.main());
@@ -136,6 +159,10 @@ public final class CollectionActions {
             return;
         }
         box.set(JadmComponents.DECK.get(), new DeckList(main, extra));
+        // The boss goes with its last copy, so adding the card again later doesn't bring the mark back.
+        if (box.has(JadmComponents.DECK_BOSS.get()) && DeckBoxItem.boss(box) == 0) {
+            box.remove(JadmComponents.DECK_BOSS.get());
+        }
         ItemStack binder = findBinder(player);
         if (binder.isEmpty()) {
             give(player, CardItem.of(code), 1);

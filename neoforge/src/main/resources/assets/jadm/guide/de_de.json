@@ -133,7 +133,9 @@
         "# Karten finden",
         "Nach Namen suchen, nach Typ (Monster, Zauber, Fallen, Extra Deck), Attribut und Stufe filtern und nach Name, ATK, DEF oder Stufe sortieren. Ein Klick auf einen Filter schaltet weiter, Shift-Klick zurück.",
         "# Import und Export",
-        "Export kopiert das Deck als YDK-Liste, die die meisten Deck-Builder lesen. Import ersetzt das Deck durch die YDK-Liste aus der Zwischenablage, gebaut aus deinen Karten, und sagt, welche gefehlt haben."
+        "Export kopiert das Deck als YDK-Liste, die die meisten Deck-Builder lesen. Import ersetzt das Deck durch die YDK-Liste aus der Zwischenablage, gebaut aus deinen Karten, und sagt, welche gefehlt haben.",
+        "# Boss-Monster",
+        "Rechtsklick auf ein Monster im Deck macht es zum **Boss-Monster** des Decks: Es bekommt einen goldenen Rahmen und eine Krone, und sein Name steht neben dem Namen der Deckbox. Im Duell bekommt nur dein Boss die Ass-Kamerafahrt, wenn er beschworen wird, für dich, deinen Gegner und Zuschauer. Noch ein Rechtsklick nimmt die Markierung weg. Ein Deck ohne Boss nutzt die Regeln der Ass-Kamera (siehe Client-Einstellungen)."
       ]
     },
     {
@@ -405,7 +407,7 @@
         "- `packOpeningShow` = {client:packOpeningShow}: Booster-Packs als Show öffnen (aufreißen, auffächern, jede Karte einzeln umdrehen). Aus: die Karten drehen sich einfach in Reihen um.",
         "- `fieldSpellArena` = {client:fieldSpellArena}: offene Feldzauber verwandeln das Duellfeld.",
         "- `displayEffects` = {client:displayEffects}: glänzende Karten in Sammler-Vitrinen leuchten und funkeln, ab Secret Rare mit Lichtstrahl.",
-        "- `aceCamera` = {client:aceCamera}: wird ein großes Monster beschworen, fährt die Kamera zwei Sekunden um es herum und sein Name erscheint groß. Es zählt jedes Monster ab Stufe `aceMinLevel` = {client:aceMinLevel}, mit mindestens `aceMinAttack` = {client:aceMinAttack} ATK (0: aus) oder aus dem Extra Deck (`aceExtraDeck` = {client:aceExtraDeck}). Steht `aceMode` = {client:aceMode} auf `list`, bekommen nur die Boss-Monster aus `aceMonsters` die Kamerafahrt (englische Kartennamen oder Passcodes), so sticht das Ass jedes Decks heraus; `both` nimmt Liste und Regeln zusammen.",
+        "- `aceCamera` = {client:aceCamera}: wird ein großes Monster beschworen, fährt die Kamera zwei Sekunden um es herum und sein Name erscheint groß. Es zählt jedes Monster ab Stufe `aceMinLevel` = {client:aceMinLevel}, mit mindestens `aceMinAttack` = {client:aceMinAttack} ATK (0: aus) oder aus dem Extra Deck (`aceExtraDeck` = {client:aceExtraDeck}). Ein Deck mit markiertem Boss-Monster bekommt die Kamerafahrt nur für seinen Boss.",
         "- `longSummonShows` = {client:longSummonShows}: die ganze Show (etwa 2,5 Sekunden) bei Fusions-, Synchro-, Xyz-, Ritual-, Link- und Pendelbeschwörungen; aus: 1,5 Sekunden.",
         "- `finisherCamera` = {client:finisherCamera}: die Kamera schwenkt auf den, der den letzten Treffer eines Duells abbekommt, während er in Zeitlupe läuft."
       ]

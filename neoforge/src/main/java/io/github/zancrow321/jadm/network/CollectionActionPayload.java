@@ -25,7 +25,9 @@ public record CollectionActionPayload(Action action, boolean offhand, int code, 
         /** Move a card from the deck back to the binder. */
         DECK_REMOVE,
         /** Move the whole deck back to the binder. */
-        DECK_CLEAR
+        DECK_CLEAR,
+        /** Mark a monster in the deck as its boss, or unmark it if it already is. */
+        DECK_BOSS
     }
 
     public CollectionActionPayload(Action action, boolean offhand, int code, boolean all) {
