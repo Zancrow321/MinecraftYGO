@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.10 (2026-10-26)
 
 ### Duel log names more cards
 - **Cards added from the GY or banishment are named:** "Steve added Monster Reborn from their GY to their hand",

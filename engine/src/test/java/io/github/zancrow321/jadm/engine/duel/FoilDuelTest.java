@@ -52,7 +52,7 @@ class FoilDuelTest {
                 allFoil(Deck.bundled("starter_yugi"), Rarity.STARLIGHT), Deck.bundled("starter_kaiba"), log)) {
             duel.advance();
             Board board = ViewCodec.decode(ViewCodec.encode(new DuelView(0, List.of("a", "b"), duel.board(),
-                    List.of(), List.of(), null, 0, null))).board();
+                    List.of(), List.of(), null, 0, null, null))).board();
             assertEquals(5, board.side(0).hand().size());
             for (CardState card : board.side(0).hand()) {
                 assertEquals(Rarity.STARLIGHT, card.rarity(), "foil in hand: " + card.code());

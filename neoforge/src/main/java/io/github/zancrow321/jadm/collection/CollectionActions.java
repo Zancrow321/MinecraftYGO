@@ -6,6 +6,7 @@ import io.github.zancrow321.jadm.engine.data.DeckRules;
 import io.github.zancrow321.jadm.item.BinderItem;
 import io.github.zancrow321.jadm.item.CardItem;
 import io.github.zancrow321.jadm.item.DeckBoxItem;
+import io.github.zancrow321.jadm.item.JadmComponents;
 import io.github.zancrow321.jadm.item.JadmComponents.DeckList;
 import io.github.zancrow321.jadm.item.JadmItems;
 import io.github.zancrow321.jadm.network.CollectionActionPayload;
