@@ -405,7 +405,7 @@
         "- `packOpeningShow` = {client:packOpeningShow}: Booster-Packs als Show öffnen (aufreißen, auffächern, jede Karte einzeln umdrehen). Aus: die Karten drehen sich einfach in Reihen um.",
         "- `fieldSpellArena` = {client:fieldSpellArena}: offene Feldzauber verwandeln das Duellfeld.",
         "- `displayEffects` = {client:displayEffects}: glänzende Karten in Sammler-Vitrinen leuchten und funkeln, ab Secret Rare mit Lichtstrahl.",
-        "- `aceCamera` = {client:aceCamera}: wird ein großes Monster beschworen, fährt die Kamera zwei Sekunden um es herum und sein Name erscheint groß. Es zählt jedes Monster ab Stufe `aceMinLevel` = {client:aceMinLevel}, mit mindestens `aceMinAttack` = {client:aceMinAttack} ATK (0: aus) oder aus dem Extra Deck (`aceExtraDeck` = {client:aceExtraDeck}).",
+        "- `aceCamera` = {client:aceCamera}: wird ein großes Monster beschworen, fährt die Kamera zwei Sekunden um es herum und sein Name erscheint groß. Es zählt jedes Monster ab Stufe `aceMinLevel` = {client:aceMinLevel}, mit mindestens `aceMinAttack` = {client:aceMinAttack} ATK (0: aus) oder aus dem Extra Deck (`aceExtraDeck` = {client:aceExtraDeck}). Steht `aceMode` = {client:aceMode} auf `list`, bekommen nur die Boss-Monster aus `aceMonsters` die Kamerafahrt (englische Kartennamen oder Passcodes), so sticht das Ass jedes Decks heraus; `both` nimmt Liste und Regeln zusammen.",
         "- `longSummonShows` = {client:longSummonShows}: die ganze Show (etwa 2,5 Sekunden) bei Fusions-, Synchro-, Xyz-, Ritual-, Link- und Pendelbeschwörungen; aus: 1,5 Sekunden.",
         "- `finisherCamera` = {client:finisherCamera}: die Kamera schwenkt auf den, der den letzten Treffer eines Duells abbekommt, während er in Zeitlupe läuft."
       ]

@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Ace camera: boss monster list
+- **List mode:** the new client setting `aceMode` picks which monsters get the ace shot: `rules` (as before: Level,
+  ATK and Extra Deck rules), `list` (only the boss monsters in `aceMonsters`, so each deck's ace gets the shot and
+  nothing else) or `both`. `aceMonsters` takes English card names as in the binder (capitals don't matter) or
+  passcodes; alternate artworks count as their card. It starts with 20 classic aces (Blue-Eyes White Dragon, Dark
+  Magician, Stardust Dragon...). Names that match no card are logged as a warning.
+
 ## 1.2.9 (2026-10-20)
 
 ### Progression unlocks by itself

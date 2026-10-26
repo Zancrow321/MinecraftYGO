@@ -1,7 +1,9 @@
 package io.github.zancrow321.jadm.client.field;
 
+import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.client.JadmClientConfig;
+import io.github.zancrow321.jadm.engine.data.BossMonsters;
 import io.github.zancrow321.jadm.engine.data.CardInfo;
 import io.github.zancrow321.jadm.engine.data.CardPool;
 import io.github.zancrow321.jadm.engine.duel.DuelView;
@@ -23,8 +25,8 @@ import java.util.List;
 import static io.github.zancrow321.jadm.engine.OcgConstants.*;
 
 /**
- * The ace shot: when a big monster is summoned (high level, from the Extra Deck or with high ATK, as set in the
- * client config), the camera leaves its place, circles the monster's model or hologram while it rises, and its name
+ * The ace shot: when a big monster is summoned (high level, from the Extra Deck or with high ATK, or a boss monster
+ * on the list, as set in the client config), the camera leaves its place, circles the monster's model or hologram while it rises, and its name
  * slams in big with its stats between black bars, like a summon in Master Duel. Then the camera flies back and the
  * duel goes on. Only touched on the client thread.
  */
@@ -45,6 +47,8 @@ public final class AceCamera {
     }
 
     private static final List<Shot> shots = new ArrayList<>();
+    /** The boss list last checked for names that are no card. */
+    private static List<String> checkedBosses;
 
     private AceCamera() {
     }
@@ -54,7 +58,10 @@ public final class AceCamera {
         shots.clear();
     }
 
-    /** Whether {@code code} summoned gets a shot: the setting is on and the card is big enough. */
+    /**
+     * Whether {@code code} summoned gets a shot: the setting is on and the card is a boss monster on the list or big
+     * enough for the rules, as {@code aceMode} says.
+     */
     public static boolean ace(int code) {
         if (code == 0 || !JadmClientConfig.ACE_CAMERA.get()) {
             return false;
@@ -63,6 +70,34 @@ public final class AceCamera {
         if (info == null || !info.is(TYPE_MONSTER) || info.is(TYPE_TOKEN)) {
             return false;
         }
+        String mode = JadmClientConfig.ACE_MODE.get();
+        if (!"rules".equals(mode)) {
+            List<? extends String> bosses = JadmClientConfig.ACE_MONSTERS.get();
+            warnUnknown(bosses);
+            if (BossMonsters.contains(bosses, JadmData.cards(), code)) {
+                return true;
+            }
+            if ("list".equals(mode)) {
+                return false;
+            }
+        }
+        return byRules(info);
+    }
+
+    /** Logs the boss monsters that name no card, once per list. */
+    private static void warnUnknown(List<? extends String> bosses) {
+        if (bosses.equals(checkedBosses)) {
+            return;
+        }
+        checkedBosses = List.copyOf(bosses);
+        List<String> unknown = BossMonsters.unknown(bosses, JadmData.cards());
+        if (!unknown.isEmpty()) {
+            Jadm.LOGGER.warn("aceMonsters in jadm-client.toml names no card for {}", unknown);
+        }
+    }
+
+    /** Whether a monster is big enough for the ace shot by the level, ATK and Extra Deck settings. */
+    private static boolean byRules(CardInfo info) {
         if (JadmClientConfig.ACE_EXTRA_DECK.get() && (info.data().type() & EXTRA) != 0) {
             return true;
         }
