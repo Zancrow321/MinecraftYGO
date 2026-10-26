@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Duel log names more cards
+- **Cards added from the GY or banishment are named:** "Steve added Monster Reborn from their GY to their hand",
+  for everyone, since the card was public. A card that was banished face down stays "a card" for the opponent.
+- **Set cards say where they came from:** "You Set Trap Hole from your Deck in the Spell & Trap Zone". You see the
+  name of every card you Set; the opponent sees it if it came from the GY or face-up banishment, or if they were shown
+  it before (Lilith, Lady of Lament). A card Set straight from the Deck otherwise stays secret, as in the real game.
+- A monster Special Summoned face down no longer gives its name away to the opponent.
+
 ## 1.2.9 (2026-10-20)
 
 ### Progression unlocks by itself
