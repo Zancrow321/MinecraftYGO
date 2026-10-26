@@ -1,0 +1,19 @@
+{
+  "cards": [18161786],
+  "ground": [
+    {"sprite": "minecraft:block/crying_obsidian", "weight": 6},
+    {"sprite": "minecraft:block/amethyst_block", "weight": 1}
+  ],
+  "opacity": 0.91,
+  "glow": "#C040FF",
+  "props": [
+    {"shape": "box", "sprite": "minecraft:block/amethyst_block", "top": "minecraft:block/amethyst_block", "count": 8, "width": 0.35, "height": [1.2, 2.8]},
+    {"shape": "cross", "sprite": "minecraft:block/amethyst_cluster", "count": 16, "height": [0.7, 1.2]}
+  ],
+  "particles": [
+    {"type": "minecraft:portal", "where": "ground", "perTick": 8, "spread": 0.4, "speed": 0.4},
+    {"type": "minecraft:reverse_portal", "where": "ground", "perTick": 4, "spread": 0.2, "speed": 0.1},
+    {"type": "minecraft:witch", "where": "ground", "perTick": 3, "spread": 0.6, "speed": 0.1}
+  ],
+  "sounds": {"pitch": 0.8, "ambient": "minecraft:block.portal.ambient", "reveal": ["minecraft:block.amethyst_cluster.place", "minecraft:block.beacon.power_select"]}
+}

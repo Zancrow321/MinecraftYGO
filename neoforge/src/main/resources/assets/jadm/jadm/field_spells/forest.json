@@ -1,0 +1,24 @@
+{
+  "cards": [87430998],
+  "ground": [
+    {"sprite": "minecraft:block/moss_block", "weight": 1},
+    {"sprite": "minecraft:block/grass_block_top", "weight": 6, "tint": "#4E9A2C"}
+  ],
+  "opacity": 0.94,
+  "glow": "#60E060",
+  "wind": 0.3,
+  "props": [
+    {"shape": "cross", "sprite": "minecraft:block/oak_sapling", "count": 12, "height": [2.2, 3.4], "sway": 0.12},
+    {"shape": "cross", "sprite": "minecraft:block/spruce_sapling", "count": 10, "height": [2.2, 3.4], "sway": 0.12},
+    {"shape": "cross", "sprite": "minecraft:block/fern", "count": 40, "height": [0.7, 1.2], "tint": "#59AE30", "sway": 0.2},
+    {"shape": "cross", "sprite": "minecraft:block/large_fern_top", "count": 14, "height": [1.2, 1.8], "tint": "#59AE30", "sway": 0.2},
+    {"shape": "cross", "sprite": "minecraft:block/red_mushroom", "count": 6, "height": [0.4, 0.6]},
+    {"shape": "cross", "sprite": "minecraft:block/brown_mushroom", "count": 6, "height": [0.4, 0.6]}
+  ],
+  "particles": [
+    {"type": "minecraft:falling_dust", "where": "air", "perTick": 8, "spread": 3.5, "block": "minecraft:oak_leaves"},
+    {"type": "minecraft:spore_blossom_air", "where": "ground", "perTick": 3, "spread": 1.5},
+    {"type": "minecraft:happy_villager", "where": "ground", "perTick": 1, "spread": 0.8}
+  ],
+  "sounds": {"pitch": 0.9, "ambient": "minecraft:block.azalea_leaves.step", "reveal": ["minecraft:block.azalea_leaves.place", "minecraft:block.grass.place"]}
+}

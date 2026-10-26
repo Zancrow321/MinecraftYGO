@@ -1,0 +1,16 @@
+{
+  "cards": [45778932],
+  "ground": [
+    {"sprite": "minecraft:block/white_wool", "weight": 1, "tint": "#E8F4FF"}
+  ],
+  "opacity": 0.56,
+  "glow": "#C0F0FF",
+  "wind": 2.0,
+  "particles": [
+    {"type": "minecraft:cloud", "where": "ground", "perTick": 5, "spread": 0.3, "speed": 0.25},
+    {"type": "minecraft:gust", "where": "ground", "perTick": 1, "spread": 0.8},
+    {"type": "minecraft:small_gust", "where": "ground", "perTick": 2, "spread": 1.2},
+    {"type": "minecraft:white_ash", "where": "wind", "perTick": 8}
+  ],
+  "sounds": {"pitch": 1.0, "ambient": "minecraft:entity.breeze.idle_air", "reveal": ["minecraft:entity.breeze.wind_burst", "minecraft:item.elytra.flying"]}
+}

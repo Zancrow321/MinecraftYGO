@@ -1,5 +1,9 @@
 package io.github.zancrow321.jadm.client.field;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.JadmData;
@@ -17,28 +21,37 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import org.joml.Vector3f;
 
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import static io.github.zancrow321.jadm.client.field.FieldLayout.*;
 import static io.github.zancrow321.jadm.engine.OcgConstants.*;
@@ -50,8 +63,10 @@ import static io.github.zancrow321.jadm.engine.OcgConstants.*;
  * Field Spell; a single one covers the whole field. Field Spells without a look of their own tint the field in the
  * colour of the attribute their text is about.
  *
- * <p>Only the field and the ground around it change, never sky or fog. Built from vanilla block textures, particles
- * and sounds, so nothing ships with it.
+ * <p>Only the field and the ground around it change, never sky or fog. Each look is a JSON file in a resource pack,
+ * {@code assets/<namespace>/jadm/field_spells/<name>.json}, naming its cards, ground, props, particles and sounds;
+ * the mod's own looks are such files too, so packs can add looks and replace the built-in ones. The format is in the
+ * Duelist's Handbook and in {@code docs/field-spell-looks.md}.
  */
 @EventBusSubscriber(modid = Jadm.MOD_ID, value = Dist.CLIENT)
 public final class FieldSpellArena {
@@ -83,15 +98,25 @@ public final class FieldSpellArena {
 
     // ------------------------------------------------------------------ the looks
 
+    /** Where the looks live, in every namespace of every resource pack: {@code assets/<ns>/jadm/field_spells/*.json}. */
+    static final String FOLDER = "jadm/field_spells";
+
     /** One block texture of a ground, how often it is picked, and its tint. */
-    private record Tile(String sprite, int weight, int tint) {
+    private record Tile(ResourceLocation sprite, int weight, int tint) {
     }
 
     private enum Shape { CROSS, BOX, PEAK }
 
     /** What grows out of the ground around the mat. */
-    private record PropKind(Shape shape, String sprite, String top, int tint, int count, double minHeight,
-                            double maxHeight, double width, double sway) {
+    private record PropKind(Shape shape, ResourceLocation sprite, ResourceLocation top, int tint, int count,
+                            double minHeight, double maxHeight, double width, double sway) {
+    }
+
+    /** Where a look's particles appear (see {@link Spawn}). */
+    private enum Where { GROUND, EDGE, AIR, WIND, PEAK }
+
+    /** Particles a look sends up every tick, scaled by how far its ground has spread. */
+    private record Particles(ParticleOptions particle, Where where, double perTick, double spread, double speed) {
     }
 
     /** One Field Spell's ground, what grows on it and what flies over it. */
@@ -104,8 +129,8 @@ public final class FieldSpellArena {
         double waves;
         double wind;
         int glow = 0x40C8FF;
-        Consumer<Spawn> weather = s -> { };
-        SoundEvent[] reveal = {SoundEvents.AMETHYST_BLOCK_RESONATE};
+        final List<Particles> particles = new ArrayList<>();
+        List<SoundEvent> reveal = List.of(SoundEvents.AMETHYST_BLOCK_RESONATE);
         float pitch = 1;
         SoundEvent ambient;
 
@@ -113,229 +138,167 @@ public final class FieldSpellArena {
             this.name = name;
         }
 
-        Look ground(String sprite, int weight, int tint) {
-            ground.add(new Tile(sprite, weight, tint));
-            return this;
-        }
-
-        Look alpha(int alpha) {
-            this.alpha = alpha;
-            return this;
-        }
-
-        Look cross(String sprite, int tint, int count, double minHeight, double maxHeight, double sway) {
-            props.add(new PropKind(Shape.CROSS, sprite, null, tint, count, minHeight, maxHeight, 0, sway));
-            return this;
-        }
-
-        Look box(String side, String top, int tint, int count, double width, double minHeight, double maxHeight) {
-            props.add(new PropKind(Shape.BOX, side, top, tint, count, minHeight, maxHeight, width, 0));
-            return this;
-        }
-
-        Look peaks(String side, String top, int count, double width, double minHeight, double maxHeight) {
-            props.add(new PropKind(Shape.PEAK, side, top, 0xFFFFFF, count, minHeight, maxHeight, width, 0));
-            return this;
-        }
-
-        Look waves(double height) {
-            waves = height;
-            return this;
-        }
-
-        Look wind(double strength) {
-            wind = strength;
-            return this;
-        }
-
-        Look glow(int rgb) {
-            glow = rgb;
-            return this;
-        }
-
-        Look weather(Consumer<Spawn> weather) {
-            this.weather = weather;
-            return this;
-        }
-
-        Look sounds(float pitch, SoundEvent ambient, SoundEvent... reveal) {
-            this.pitch = pitch;
-            this.ambient = ambient;
-            this.reveal = reveal;
-            return this;
+        void weather(Spawn s) {
+            for (Particles p : particles) {
+                switch (p.where()) {
+                    case GROUND -> s.ground(p.particle(), p.perTick(), p.spread(), p.speed());
+                    case EDGE -> s.edge(p.particle(), p.perTick(), p.spread(), p.speed());
+                    case AIR -> s.air(p.particle(), p.perTick(), p.spread());
+                    case WIND -> s.wind(p.particle(), p.perTick());
+                    case PEAK -> s.peak(p.particle(), p.perTick());
+                }
+            }
         }
     }
 
-    static final int UMI = 22702055;
-    static final int A_LEGENDARY_OCEAN = 295517;
-    static final int UMIIRUKA = 82999629;
-    static final int YAMI = 59197169;
-    static final int SOGEN = 86318356;
-    static final int WASTELAND = 23424603;
-    static final int MOUNTAIN = 50913601;
-    static final int FOREST = 87430998;
-    static final int GAIA_POWER = 56594520;
-    static final int MOLTEN_DESTRUCTION = 19384334;
-    static final int NECROVALLEY = 47355498;
-    static final int RISING_AIR_CURRENT = 45778932;
-    static final int LUMINOUS_SPARK = 81777047;
-    static final int MYSTIC_PLASMA_ZONE = 18161786;
+    /** Looks by card passcode, from the resource packs; replaced as a whole on every resource reload. */
+    private static volatile Map<Integer, Look> LOOKS = Map.of();
 
-    private static final Map<Integer, Look> LOOKS = new HashMap<>();
-
-    private static Look ocean(String name, int water, int glow) {
-        return new Look(name).ground("block/water_still", 1, water).alpha(0xD8).waves(0.45).glow(glow)
-                .cross("block/kelp_plant", 0xFFFFFF, 14, 1.2, 2.6, 0.25)
-                .cross("block/seagrass", 0xFFFFFF, 18, 0.6, 1.1, 0.2)
-                .cross("block/tube_coral", 0xFFFFFF, 5, 0.6, 0.9, 0)
-                .cross("block/brain_coral", 0xFFFFFF, 5, 0.6, 0.9, 0)
-                .cross("block/fire_coral", 0xFFFFFF, 4, 0.6, 0.9, 0)
-                .weather(s -> {
-                    s.edge(ParticleTypes.SPLASH, 10, 0.5, 0.25);
-                    s.edge(ParticleTypes.FALLING_WATER, 2, 1.8, 0);
-                    s.ground(ParticleTypes.DOLPHIN, 3, 0.2, 0.05);
-                    s.ground(ParticleTypes.BUBBLE_POP, 2, 0.1, 0.02);
-                })
-                .sounds(1, SoundEvents.BOAT_PADDLE_WATER, SoundEvents.GENERIC_SPLASH, SoundEvents.PLAYER_SPLASH_HIGH_SPEED);
+    /**
+     * Reads every look from the resource packs. The mod's own files come first, so a file of the same name higher in
+     * the pack list replaces one of them, and a look in another namespace that names the same card wins over the
+     * mod's.
+     */
+    static void reload(ResourceManager manager) {
+        Map<Integer, Look> looks = new HashMap<>();
+        var files = new java.util.TreeMap<ResourceLocation, Resource>((a, b) -> {
+            boolean ownA = a.getNamespace().equals(Jadm.MOD_ID);
+            boolean ownB = b.getNamespace().equals(Jadm.MOD_ID);
+            return ownA != ownB ? (ownA ? -1 : 1) : a.compareTo(b);
+        });
+        files.putAll(manager.listResources(FOLDER, path -> path.getPath().endsWith(".json")));
+        for (var file : files.entrySet()) {
+            String path = file.getKey().getPath();
+            String name = file.getKey().getNamespace() + ":" + path.substring(FOLDER.length() + 1, path.length() - 5);
+            try (Reader reader = file.getValue().openAsReader()) {
+                JsonObject json = JsonParser.parseReader(reader).getAsJsonObject();
+                Look look = parse(name, json);
+                for (JsonElement card : json.getAsJsonArray("cards")) {
+                    looks.put(card.getAsInt(), look);
+                }
+            } catch (Exception e) {
+                Jadm.LOGGER.warn("Skipping Field Spell look {}: {}", file.getKey(), e.toString());
+            }
+        }
+        LOOKS = Map.copyOf(looks);
+        TINTS.clear();
+        Jadm.LOGGER.info("Loaded {} Field Spell looks for {} cards", files.size(), looks.size());
     }
 
-    static {
-        LOOKS.put(UMI, ocean("umi", 0x4C90F4, 0x60C0FF));
-        LOOKS.put(A_LEGENDARY_OCEAN, ocean("legendary_ocean", 0x2850D8, 0x4080FF));
-        LOOKS.put(UMIIRUKA, ocean("umiiruka", 0x40C8D8, 0x80FFF0));
-        LOOKS.put(YAMI, new Look("yami").ground("block/sculk", 6, 0x7050A0).ground("block/obsidian", 1, 0xFFFFFF)
-                .alpha(0xF0).glow(0x8030FF)
-                .box("block/crying_obsidian", "block/obsidian", 0xFFFFFF, 10, 0.35, 1.4, 3.2)
-                .cross("block/wither_rose", 0xFFFFFF, 12, 0.7, 1.0, 0.05)
-                .weather(s -> {
-                    s.ground(new DustParticleOptions(new Vector3f(0.22f, 0.05f, 0.32f), 1.6f), 4, 0.8, 0.03);
-                    s.ground(ParticleTypes.LARGE_SMOKE, 2, 0.1, 0.04);
-                    s.ground(ParticleTypes.PORTAL, 6, 0.3, 0.3);
-                    s.ground(ParticleTypes.SCULK_SOUL, 1, 0.1, 0.05);
-                    s.air(ParticleTypes.ASH, 10, 3);
-                })
-                .sounds(0.6f, SoundEvents.SCULK_CATALYST_BLOOM, SoundEvents.SCULK_SHRIEKER_SHRIEK,
-                        SoundEvents.WITHER_AMBIENT));
-        LOOKS.put(SOGEN, new Look("sogen").ground("block/grass_block_top", 1, 0xB4E05A).alpha(0xF0).wind(1.2)
-                .glow(0xA0FF60)
-                .cross("block/short_grass", 0xA8DC50, 110, 0.7, 1.3, 0.35)
-                .cross("block/tall_grass_top", 0xA8DC50, 50, 1.3, 2.2, 0.5)
-                .cross("block/oxeye_daisy", 0xFFFFFF, 12, 0.6, 0.8, 0.3)
-                .cross("block/dandelion", 0xFFFFFF, 12, 0.6, 0.8, 0.3)
-                .weather(s -> {
-                    s.wind(ParticleTypes.WHITE_ASH, 6);
-                    s.wind(new BlockParticleOption(ParticleTypes.BLOCK, Blocks.SHORT_GRASS.defaultBlockState()), 2);
-                    s.ground(ParticleTypes.SMALL_GUST, 1, 0.6, 0);
-                })
-                .sounds(1.2f, SoundEvents.BREEZE_IDLE_GROUND, SoundEvents.GRASS_PLACE,
-                        SoundEvents.BREEZE_WIND_CHARGE_BURST.value()));
-        LOOKS.put(WASTELAND, new Look("wasteland").ground("block/red_sand", 7, 0xFFFFFF)
-                .ground("block/coarse_dirt", 2, 0xFFFFFF).ground("block/terracotta", 1, 0xFFFFFF).alpha(0xF0)
-                .wind(0.6).glow(0xFFA050)
-                .cross("block/dead_bush", 0xFFFFFF, 26, 0.6, 1.2, 0.1)
-                .box("block/terracotta", "block/terracotta", 0xFFFFFF, 8, 0.45, 0.3, 0.9)
-                .box("block/cobblestone", "block/cobblestone", 0xFFFFFF, 4, 0.35, 0.2, 0.5)
-                .weather(s -> {
-                    s.wind(new BlockParticleOption(ParticleTypes.FALLING_DUST, Blocks.RED_SAND.defaultBlockState()), 8);
-                    s.ground(ParticleTypes.DUST_PLUME, 2, 0.1, 0.05);
-                })
-                .sounds(0.8f, SoundEvents.SAND_BREAK, SoundEvents.ROOTED_DIRT_BREAK, SoundEvents.SAND_PLACE));
-        LOOKS.put(MOUNTAIN, new Look("mountain").ground("block/stone", 7, 0xFFFFFF).ground("block/andesite", 2, 0xFFFFFF)
-                .ground("block/gravel", 1, 0xFFFFFF).ground("block/snow", 1, 0xFFFFFF).alpha(0xF0).wind(0.5).glow(0xE0F0FF)
-                .peaks("block/stone", "block/snow", 7, 1.4, 2.2, 4.2)
-                .box("block/andesite", "block/snow", 0xFFFFFF, 10, 0.4, 0.3, 0.8)
-                .weather(s -> {
-                    s.air(ParticleTypes.SNOWFLAKE, 10, 4);
-                    s.peak(ParticleTypes.CLOUD, 2);
-                })
-                .sounds(0.5f, SoundEvents.POWDER_SNOW_STEP, SoundEvents.DEEPSLATE_BREAK, SoundEvents.STONE_PLACE));
-        LOOKS.put(FOREST, new Look("forest").ground("block/moss_block", 1, 0xFFFFFF)
-                .ground("block/grass_block_top", 6, 0x4E9A2C).alpha(0xF0).wind(0.3).glow(0x60E060)
-                .cross("block/oak_sapling", 0xFFFFFF, 12, 2.2, 3.4, 0.12)
-                .cross("block/spruce_sapling", 0xFFFFFF, 10, 2.2, 3.4, 0.12)
-                .cross("block/fern", 0x59AE30, 40, 0.7, 1.2, 0.2)
-                .cross("block/large_fern_top", 0x59AE30, 14, 1.2, 1.8, 0.2)
-                .cross("block/red_mushroom", 0xFFFFFF, 6, 0.4, 0.6, 0)
-                .cross("block/brown_mushroom", 0xFFFFFF, 6, 0.4, 0.6, 0)
-                .weather(s -> {
-                    s.air(new BlockParticleOption(ParticleTypes.FALLING_DUST, Blocks.OAK_LEAVES.defaultBlockState()), 8, 3.5);
-                    s.ground(ParticleTypes.SPORE_BLOSSOM_AIR, 3, 1.5, 0);
-                    s.ground(ParticleTypes.HAPPY_VILLAGER, 1, 0.8, 0);
-                })
-                .sounds(0.9f, SoundEvents.AZALEA_LEAVES_STEP, SoundEvents.AZALEA_LEAVES_PLACE, SoundEvents.GRASS_PLACE));
-        LOOKS.put(GAIA_POWER, new Look("gaia_power").ground("block/moss_block", 1, 0xFFFFFF).alpha(0xF0).wind(0.2)
-                .glow(0x80FF40)
-                .cross("block/poppy", 0xFFFFFF, 10, 0.6, 0.9, 0.1)
-                .cross("block/dandelion", 0xFFFFFF, 10, 0.6, 0.9, 0.1)
-                .cross("block/allium", 0xFFFFFF, 8, 0.6, 0.9, 0.1)
-                .cross("block/blue_orchid", 0xFFFFFF, 8, 0.6, 0.9, 0.1)
-                .cross("block/cornflower", 0xFFFFFF, 8, 0.6, 0.9, 0.1)
-                .cross("block/azure_bluet", 0xFFFFFF, 8, 0.6, 0.9, 0.1)
-                .cross("block/oak_sapling", 0xFFFFFF, 8, 1.8, 3.0, 0.1)
-                .cross("block/short_grass", 0x5DB830, 30, 0.6, 1.0, 0.15)
-                .weather(s -> {
-                    s.ground(ParticleTypes.HAPPY_VILLAGER, 4, 0.6, 0.1);
-                    s.ground(ParticleTypes.COMPOSTER, 3, 0.4, 0.1);
-                    s.ground(ParticleTypes.SPORE_BLOSSOM_AIR, 3, 1.5, 0);
-                    s.ground(new DustParticleOptions(new Vector3f(0.4f, 1f, 0.3f), 1.4f), 4, 0.2, 0.2);
-                })
-                .sounds(1.1f, SoundEvents.BONE_MEAL_USE, SoundEvents.CHORUS_FLOWER_GROW, SoundEvents.BONE_MEAL_USE));
-        LOOKS.put(MOLTEN_DESTRUCTION, new Look("molten_destruction").ground("block/lava_still", 6, 0xFFFFFF)
-                .ground("block/magma", 1, 0xFFFFFF).alpha(0xF0).waves(0.15).glow(0xFF6020)
-                .box("block/basalt_side", "block/basalt_top", 0xFFFFFF, 10, 0.45, 1.0, 3.0)
-                .box("block/blackstone", "block/magma", 0xFFFFFF, 8, 0.4, 0.3, 0.8)
-                .cross("block/fire_0", 0xFFFFFF, 8, 0.5, 0.9, 0)
-                .weather(s -> {
-                    s.ground(ParticleTypes.LAVA, 4, 0.1, 0);
-                    s.ground(ParticleTypes.FLAME, 5, 0.2, 0.05);
-                    s.ground(ParticleTypes.SMOKE, 3, 0.4, 0.04);
-                    s.air(ParticleTypes.ASH, 8, 3);
-                })
-                .sounds(0.8f, SoundEvents.LAVA_AMBIENT, SoundEvents.BLAZE_SHOOT, SoundEvents.LAVA_POP,
-                        SoundEvents.FIRECHARGE_USE));
-        LOOKS.put(NECROVALLEY, new Look("necrovalley").ground("block/sand", 4, 0xFFFFFF)
-                .ground("block/sandstone_top", 1, 0xFFFFFF).alpha(0xF0).wind(0.4).glow(0x60E0FF)
-                .box("block/cut_sandstone", "block/chiseled_sandstone", 0xFFFFFF, 8, 0.45, 2.4, 3.6)
-                .box("block/sandstone", "block/sandstone_top", 0xFFFFFF, 6, 0.4, 0.3, 0.8)
-                .cross("block/dead_bush", 0xFFFFFF, 10, 0.6, 1.0, 0.05)
-                .cross("block/soul_fire_0", 0xFFFFFF, 8, 0.7, 1.2, 0)
-                .weather(s -> {
-                    s.ground(ParticleTypes.SOUL, 2, 0.3, 0.05);
-                    s.ground(ParticleTypes.SOUL_FIRE_FLAME, 2, 0.2, 0.03);
-                    s.wind(new BlockParticleOption(ParticleTypes.FALLING_DUST, Blocks.SAND.defaultBlockState()), 5);
-                })
-                .sounds(0.7f, SoundEvents.SOUL_ESCAPE.value(), SoundEvents.SOUL_ESCAPE.value(), SoundEvents.SAND_BREAK));
-        LOOKS.put(RISING_AIR_CURRENT, new Look("rising_air_current").ground("block/white_wool", 1, 0xE8F4FF)
-                .alpha(0x90).wind(2.0).glow(0xC0F0FF)
-                .weather(s -> {
-                    s.ground(ParticleTypes.CLOUD, 5, 0.3, 0.25);
-                    s.ground(ParticleTypes.GUST, 1, 0.8, 0);
-                    s.ground(ParticleTypes.SMALL_GUST, 2, 1.2, 0);
-                    s.wind(ParticleTypes.WHITE_ASH, 8);
-                })
-                .sounds(1.0f, SoundEvents.BREEZE_IDLE_AIR, SoundEvents.BREEZE_WIND_CHARGE_BURST.value(),
-                        SoundEvents.ELYTRA_FLYING));
-        LOOKS.put(LUMINOUS_SPARK, new Look("luminous_spark").ground("block/glowstone", 1, 0xFFFFFF)
-                .alpha(0xA0).glow(0xFFE880)
-                .box("block/sea_lantern", "block/sea_lantern", 0xFFFFFF, 8, 0.35, 1.4, 2.8)
-                .weather(s -> {
-                    s.ground(ParticleTypes.END_ROD, 5, 0.6, 0.1);
-                    s.ground(ParticleTypes.ELECTRIC_SPARK, 6, 0.4, 0.4);
-                    s.ground(ParticleTypes.WAX_ON, 3, 0.4, 0.2);
-                })
-                .sounds(1.3f, SoundEvents.AMETHYST_BLOCK_CHIME, SoundEvents.BEACON_ACTIVATE,
-                        SoundEvents.AMETHYST_BLOCK_RESONATE));
-        LOOKS.put(MYSTIC_PLASMA_ZONE, new Look("mystic_plasma_zone").ground("block/crying_obsidian", 6, 0xFFFFFF)
-                .ground("block/amethyst_block", 1, 0xFFFFFF).alpha(0xE8).glow(0xC040FF)
-                .box("block/amethyst_block", "block/amethyst_block", 0xFFFFFF, 8, 0.35, 1.2, 2.8)
-                .cross("block/amethyst_cluster", 0xFFFFFF, 16, 0.7, 1.2, 0)
-                .weather(s -> {
-                    s.ground(ParticleTypes.PORTAL, 8, 0.4, 0.4);
-                    s.ground(ParticleTypes.REVERSE_PORTAL, 4, 0.2, 0.1);
-                    s.ground(ParticleTypes.WITCH, 3, 0.6, 0.1);
-                })
-                .sounds(0.8f, SoundEvents.PORTAL_AMBIENT, SoundEvents.AMETHYST_CLUSTER_PLACE,
-                        SoundEvents.BEACON_POWER_SELECT));
+    private static Look parse(String name, JsonObject json) {
+        Look look = new Look(name);
+        if (!json.has("cards") || json.getAsJsonArray("cards").isEmpty()) {
+            throw new IllegalArgumentException("no \"cards\"");
+        }
+        for (JsonElement e : json.getAsJsonArray("ground")) {
+            JsonObject tile = e.getAsJsonObject();
+            look.ground.add(new Tile(ResourceLocation.parse(GsonHelper.getAsString(tile, "sprite")),
+                    Math.max(1, GsonHelper.getAsInt(tile, "weight", 1)), color(tile, "tint", 0xFFFFFF)));
+        }
+        if (look.ground.isEmpty()) {
+            throw new IllegalArgumentException("no \"ground\"");
+        }
+        look.alpha = (int) (255 * Mth.clamp(GsonHelper.getAsFloat(json, "opacity", 0.88f), 0, 1));
+        look.glow = color(json, "glow", 0x40C8FF);
+        look.waves = GsonHelper.getAsDouble(json, "waves", 0);
+        look.wind = GsonHelper.getAsDouble(json, "wind", 0);
+        for (JsonElement e : GsonHelper.getAsJsonArray(json, "props", new JsonArray())) {
+            JsonObject prop = e.getAsJsonObject();
+            Shape shape = Shape.valueOf(GsonHelper.getAsString(prop, "shape", "cross").toUpperCase(Locale.ROOT));
+            ResourceLocation sprite = ResourceLocation.parse(GsonHelper.getAsString(prop, "sprite"));
+            ResourceLocation top = prop.has("top") ? ResourceLocation.parse(GsonHelper.getAsString(prop, "top")) : sprite;
+            double[] height = range(prop, "height", 1);
+            look.props.add(new PropKind(shape, sprite, top, color(prop, "tint", 0xFFFFFF),
+                    Mth.clamp(GsonHelper.getAsInt(prop, "count", 8), 0, 400), height[0], height[1],
+                    GsonHelper.getAsDouble(prop, "width", 0.4), GsonHelper.getAsDouble(prop, "sway", 0)));
+        }
+        for (JsonElement e : GsonHelper.getAsJsonArray(json, "particles", new JsonArray())) {
+            JsonObject p = e.getAsJsonObject();
+            look.particles.add(new Particles(particle(p),
+                    Where.valueOf(GsonHelper.getAsString(p, "where", "ground").toUpperCase(Locale.ROOT)),
+                    Mth.clamp(GsonHelper.getAsDouble(p, "perTick", 2), 0, 40), GsonHelper.getAsDouble(p, "spread", 0.3),
+                    GsonHelper.getAsDouble(p, "speed", 0)));
+        }
+        JsonObject sounds = GsonHelper.getAsJsonObject(json, "sounds", new JsonObject());
+        look.pitch = GsonHelper.getAsFloat(sounds, "pitch", 1);
+        look.ambient = sounds.has("ambient") ? sound(GsonHelper.getAsString(sounds, "ambient")) : null;
+        if (sounds.has("reveal")) {
+            List<SoundEvent> reveal = new ArrayList<>();
+            sounds.getAsJsonArray("reveal").forEach(s -> reveal.add(sound(s.getAsString())));
+            look.reveal = reveal;
+        }
+        return look;
+    }
+
+    /** A colour written as "#RRGGBB" (or a plain number). */
+    private static int color(JsonObject json, String key, int fallback) {
+        if (!json.has(key)) {
+            return fallback;
+        }
+        JsonElement e = json.get(key);
+        if (e.getAsJsonPrimitive().isNumber()) {
+            return e.getAsInt() & 0xFFFFFF;
+        }
+        String s = e.getAsString().trim();
+        return Integer.parseInt(s.startsWith("#") ? s.substring(1) : s, 16) & 0xFFFFFF;
+    }
+
+    /** A height written as one number or as [lowest, highest]. */
+    private static double[] range(JsonObject json, String key, double fallback) {
+        if (!json.has(key)) {
+            return new double[]{fallback, fallback};
+        }
+        JsonElement e = json.get(key);
+        if (e.isJsonArray()) {
+            JsonArray a = e.getAsJsonArray();
+            return new double[]{a.get(0).getAsDouble(), a.get(a.size() > 1 ? 1 : 0).getAsDouble()};
+        }
+        return new double[]{e.getAsDouble(), e.getAsDouble()};
+    }
+
+    /**
+     * A particle by id. Particles that need more than their id take it from the entry: {@code block} for block and
+     * falling-dust particles, {@code color} and {@code size} for dust.
+     */
+    @SuppressWarnings("unchecked")
+    private static ParticleOptions particle(JsonObject json) {
+        ResourceLocation id = ResourceLocation.parse(GsonHelper.getAsString(json, "type"));
+        ParticleType<?> type = BuiltInRegistries.PARTICLE_TYPE.getOptional(id)
+                .orElseThrow(() -> new IllegalArgumentException("unknown particle " + id));
+        if (type instanceof SimpleParticleType simple) {
+            return simple;
+        }
+        if (type == ParticleTypes.DUST) {
+            int rgb = color(json, "color", 0xFFFFFF);
+            return new DustParticleOptions(new Vector3f(((rgb >> 16) & 0xFF) / 255f, ((rgb >> 8) & 0xFF) / 255f,
+                    (rgb & 0xFF) / 255f), GsonHelper.getAsFloat(json, "size", 1));
+        }
+        if (type == ParticleTypes.BLOCK || type == ParticleTypes.FALLING_DUST || type == ParticleTypes.DUST_PILLAR) {
+            ResourceLocation block = ResourceLocation.parse(GsonHelper.getAsString(json, "block"));
+            Block b = BuiltInRegistries.BLOCK.getOptional(block)
+                    .orElseThrow(() -> new IllegalArgumentException("unknown block " + block));
+            return new BlockParticleOption((ParticleType<BlockParticleOption>) type, b.defaultBlockState());
+        }
+        throw new IllegalArgumentException("particle " + id + " needs options this file can't give");
+    }
+
+    /** A sound by id: a vanilla or mod sound, or one a resource pack adds in its own sounds.json. */
+    private static SoundEvent sound(String id) {
+        ResourceLocation location = ResourceLocation.parse(id);
+        return BuiltInRegistries.SOUND_EVENT.getOptional(location)
+                .orElseGet(() -> SoundEvent.createVariableRangeEvent(location));
+    }
+
+    /** Loads the looks on every resource reload (start-up, F3+T, changing resource packs). */
+    @EventBusSubscriber(modid = Jadm.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+    public static final class Loader {
+        private Loader() {
+        }
+
+        @SubscribeEvent
+        public static void register(RegisterClientReloadListenersEvent event) {
+            event.registerReloadListener((ResourceManagerReloadListener) FieldSpellArena::reload);
+        }
     }
 
     /** Attribute colours for Field Spells without a look of their own. */
@@ -389,11 +352,13 @@ public final class FieldSpellArena {
 
     private static Look tint(int rgb) {
         Vector3f color = new Vector3f(((rgb >> 16) & 0xFF) / 255f, ((rgb >> 8) & 0xFF) / 255f, (rgb & 0xFF) / 255f);
-        return new Look("tint").ground("block/white_concrete_powder", 1, rgb).alpha(0x90).glow(rgb)
-                .weather(s -> {
-                    s.ground(new DustParticleOptions(color, 1.5f), 8, 0.2, 0.25);
-                    s.ground(ParticleTypes.END_ROD, 1, 0.3, 0.05);
-                });
+        Look look = new Look("tint");
+        look.ground.add(new Tile(ResourceLocation.withDefaultNamespace("block/white_concrete_powder"), 1, rgb));
+        look.alpha = 0x90;
+        look.glow = rgb;
+        look.particles.add(new Particles(new DustParticleOptions(color, 1.5f), Where.GROUND, 8, 0.2, 0.25));
+        look.particles.add(new Particles(ParticleTypes.END_ROD, Where.GROUND, 1, 0.3, 0.05));
+        return look;
     }
 
     // ------------------------------------------------------------------ layers
@@ -549,7 +514,7 @@ public final class FieldSpellArena {
         layers.removeIf(l -> l.leaving && l.progress <= 0 && l.lastProgress <= 0);
         for (Layer layer : layers) {
             if (layer.progress > 0.05) {
-                layer.look.weather.accept(new Spawn(layer));
+                layer.look.weather(new Spawn(layer));
                 ambientSound(layer);
             }
         }
@@ -732,7 +697,7 @@ public final class FieldSpellArena {
         int total = look.ground.stream().mapToInt(Tile::weight).sum();
         TextureAtlasSprite[] sprites = new TextureAtlasSprite[look.ground.size()];
         for (int i = 0; i < sprites.length; i++) {
-            sprites[i] = atlas.apply(ResourceLocation.withDefaultNamespace(look.ground.get(i).sprite()));
+            sprites[i] = atlas.apply(look.ground.get(i).sprite());
         }
         double hx = HALF_WIDTH + 0.3 + MARGIN;
         double hz = halfLength() + 0.3 + MARGIN;
@@ -793,12 +758,12 @@ public final class FieldSpellArena {
             PropKind kind = prop.kind();
             int alpha = (int) (255 * Math.min(1, grow * 1.5));
             if (kind.shape() == Shape.CROSS) {
-                cross(draw, vc, atlas.apply(ResourceLocation.withDefaultNamespace(kind.sprite())), prop, base,
+                cross(draw, vc, atlas.apply(kind.sprite()), prop, base,
                         height, kind.tint(), alpha, layer.look.wind, now, partial);
             } else {
-                TextureAtlasSprite side = atlas.apply(ResourceLocation.withDefaultNamespace(kind.sprite()));
-                TextureAtlasSprite top = atlas.apply(ResourceLocation.withDefaultNamespace(
-                        kind.shape() == Shape.PEAK && prop.tier() < 2 ? kind.sprite() : kind.top()));
+                TextureAtlasSprite side = atlas.apply(kind.sprite());
+                TextureAtlasSprite top = atlas.apply(
+                        kind.shape() == Shape.PEAK && prop.tier() < 2 ? kind.sprite() : kind.top());
                 box(draw, vc, side, top, prop.x(), prop.z(), base, prop.width() * Math.min(1, grow * 1.2), height,
                         kind.tint(), alpha);
             }

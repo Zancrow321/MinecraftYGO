@@ -268,6 +268,10 @@ full text, where there is room, and a card held in the hand shows the same way i
 Monsters without a model stand on the field as an artwork hologram. A resource pack can give any monster a 3D model
 instead; see [docs/resource-pack-models.md](docs/resource-pack-models.md).
 
+Face-up Field Spells transform the duel field (Umi floods it, Yami covers it in shadow, ...). Each look is a JSON file,
+so a resource pack can add looks for more Field Spells or replace the built-in ones; see
+[docs/field-spell-looks.md](docs/field-spell-looks.md).
+
 ## Releasing
 
 See [docs/release/README.md](docs/release/README.md): pushing a `v<version>` tag builds the jar and the Figura

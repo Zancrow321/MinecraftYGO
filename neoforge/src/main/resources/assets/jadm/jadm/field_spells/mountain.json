@@ -1,0 +1,21 @@
+{
+  "cards": [50913601],
+  "ground": [
+    {"sprite": "minecraft:block/stone", "weight": 7},
+    {"sprite": "minecraft:block/andesite", "weight": 2},
+    {"sprite": "minecraft:block/gravel", "weight": 1},
+    {"sprite": "minecraft:block/snow", "weight": 1}
+  ],
+  "opacity": 0.94,
+  "glow": "#E0F0FF",
+  "wind": 0.5,
+  "props": [
+    {"shape": "peak", "sprite": "minecraft:block/stone", "top": "minecraft:block/snow", "count": 7, "width": 1.4, "height": [2.2, 4.2]},
+    {"shape": "box", "sprite": "minecraft:block/andesite", "top": "minecraft:block/snow", "count": 10, "width": 0.4, "height": [0.3, 0.8]}
+  ],
+  "particles": [
+    {"type": "minecraft:snowflake", "where": "air", "perTick": 10, "spread": 4},
+    {"type": "minecraft:cloud", "where": "peak", "perTick": 2}
+  ],
+  "sounds": {"pitch": 0.5, "ambient": "minecraft:block.powder_snow.step", "reveal": ["minecraft:block.deepslate.break", "minecraft:block.stone.place"]}
+}
