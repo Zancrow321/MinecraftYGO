@@ -38,6 +38,7 @@
         "You stand still and safe at your end of the field: nothing hurts you and mobs leave you alone. Surrender from the duel menu (Escape) or with `{cmd} forfeit`.",
         "# Field Spells",
         "A face-up Field Spell transforms its owner's half of the field: **Umi**, A Legendary Ocean and Umiiruka flood it with waves, **Yami** covers it in shadow, **Sogen** grows grass in the wind, Wasteland, Mountain, Forest, Gaia Power, Molten Destruction, Necrovalley, Rising Air Current, Luminous Spark and Mystic Plasma Zone each have their own ground. Other Field Spells tint the field in the colour of their attribute. With only one Field Spell out, it covers the whole field.",
+        "Your own looks come from resource packs: one JSON file per look under `assets/<name>/jadm/field_spells/`, with the card passcodes (`cards`), ground textures (`ground`), plants, rocks and peaks (`props`), particles and sounds. A file named like a built-in look under `assets/jadm/jadm/field_spells/` replaces it. F3+T reloads them. The built-in files in the mod jar and `docs/field-spell-looks.md` in the GitHub repository show the format.",
         "# Watching",
         "Everyone within about 48 blocks of a duel sees its field in the world, with only the public cards. Right-click that field, someone who is dueling (NPCs too) or use `{cmd} watch <player>` to watch it up close. Spectators see the field, the life points and the log, but no hidden cards. Leave with Escape and \"Stop watching\" or `{cmd} unwatch`.",
         "# Wins and losses",

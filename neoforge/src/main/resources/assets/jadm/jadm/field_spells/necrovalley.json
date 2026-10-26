@@ -1,0 +1,22 @@
+{
+  "cards": [47355498],
+  "ground": [
+    {"sprite": "minecraft:block/sand", "weight": 4},
+    {"sprite": "minecraft:block/sandstone_top", "weight": 1}
+  ],
+  "opacity": 0.94,
+  "glow": "#60E0FF",
+  "wind": 0.4,
+  "props": [
+    {"shape": "box", "sprite": "minecraft:block/cut_sandstone", "top": "minecraft:block/chiseled_sandstone", "count": 8, "width": 0.45, "height": [2.4, 3.6]},
+    {"shape": "box", "sprite": "minecraft:block/sandstone", "top": "minecraft:block/sandstone_top", "count": 6, "width": 0.4, "height": [0.3, 0.8]},
+    {"shape": "cross", "sprite": "minecraft:block/dead_bush", "count": 10, "height": [0.6, 1.0], "sway": 0.05},
+    {"shape": "cross", "sprite": "minecraft:block/soul_fire_0", "count": 8, "height": [0.7, 1.2]}
+  ],
+  "particles": [
+    {"type": "minecraft:soul", "where": "ground", "perTick": 2, "spread": 0.3, "speed": 0.05},
+    {"type": "minecraft:soul_fire_flame", "where": "ground", "perTick": 2, "spread": 0.2, "speed": 0.03},
+    {"type": "minecraft:falling_dust", "where": "wind", "perTick": 5, "block": "minecraft:sand"}
+  ],
+  "sounds": {"pitch": 0.7, "ambient": "minecraft:particle.soul_escape", "reveal": ["minecraft:particle.soul_escape", "minecraft:block.sand.break"]}
+}

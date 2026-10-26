@@ -1,0 +1,22 @@
+{
+  "cards": [19384334],
+  "ground": [
+    {"sprite": "minecraft:block/lava_still", "weight": 6},
+    {"sprite": "minecraft:block/magma", "weight": 1}
+  ],
+  "opacity": 0.94,
+  "glow": "#FF6020",
+  "waves": 0.15,
+  "props": [
+    {"shape": "box", "sprite": "minecraft:block/basalt_side", "top": "minecraft:block/basalt_top", "count": 10, "width": 0.45, "height": [1.0, 3.0]},
+    {"shape": "box", "sprite": "minecraft:block/blackstone", "top": "minecraft:block/magma", "count": 8, "width": 0.4, "height": [0.3, 0.8]},
+    {"shape": "cross", "sprite": "minecraft:block/fire_0", "count": 8, "height": [0.5, 0.9]}
+  ],
+  "particles": [
+    {"type": "minecraft:lava", "where": "ground", "perTick": 4, "spread": 0.1},
+    {"type": "minecraft:flame", "where": "ground", "perTick": 5, "spread": 0.2, "speed": 0.05},
+    {"type": "minecraft:smoke", "where": "ground", "perTick": 3, "spread": 0.4, "speed": 0.04},
+    {"type": "minecraft:ash", "where": "air", "perTick": 8, "spread": 3}
+  ],
+  "sounds": {"pitch": 0.8, "ambient": "minecraft:block.lava.ambient", "reveal": ["minecraft:entity.blaze.shoot", "minecraft:block.lava.pop", "minecraft:item.firecharge.use"]}
+}

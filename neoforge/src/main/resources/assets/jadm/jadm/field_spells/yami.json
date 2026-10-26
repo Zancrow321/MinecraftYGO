@@ -1,0 +1,21 @@
+{
+  "cards": [59197169],
+  "ground": [
+    {"sprite": "minecraft:block/sculk", "weight": 6, "tint": "#7050A0"},
+    {"sprite": "minecraft:block/obsidian", "weight": 1}
+  ],
+  "opacity": 0.94,
+  "glow": "#8030FF",
+  "props": [
+    {"shape": "box", "sprite": "minecraft:block/crying_obsidian", "top": "minecraft:block/obsidian", "count": 10, "width": 0.35, "height": [1.4, 3.2]},
+    {"shape": "cross", "sprite": "minecraft:block/wither_rose", "count": 12, "height": [0.7, 1.0], "sway": 0.05}
+  ],
+  "particles": [
+    {"type": "minecraft:dust", "where": "ground", "perTick": 4, "spread": 0.8, "speed": 0.03, "color": "#380D52", "size": 1.6},
+    {"type": "minecraft:large_smoke", "where": "ground", "perTick": 2, "spread": 0.1, "speed": 0.04},
+    {"type": "minecraft:portal", "where": "ground", "perTick": 6, "spread": 0.3, "speed": 0.3},
+    {"type": "minecraft:sculk_soul", "where": "ground", "perTick": 1, "spread": 0.1, "speed": 0.05},
+    {"type": "minecraft:ash", "where": "air", "perTick": 10, "spread": 3}
+  ],
+  "sounds": {"pitch": 0.6, "ambient": "minecraft:block.sculk_catalyst.bloom", "reveal": ["minecraft:block.sculk_shrieker.shriek", "minecraft:entity.wither.ambient"]}
+}

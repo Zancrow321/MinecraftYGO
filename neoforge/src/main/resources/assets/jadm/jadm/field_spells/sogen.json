@@ -1,0 +1,21 @@
+{
+  "cards": [86318356],
+  "ground": [
+    {"sprite": "minecraft:block/grass_block_top", "weight": 1, "tint": "#B4E05A"}
+  ],
+  "opacity": 0.94,
+  "glow": "#A0FF60",
+  "wind": 1.2,
+  "props": [
+    {"shape": "cross", "sprite": "minecraft:block/short_grass", "count": 110, "height": [0.7, 1.3], "tint": "#A8DC50", "sway": 0.35},
+    {"shape": "cross", "sprite": "minecraft:block/tall_grass_top", "count": 50, "height": [1.3, 2.2], "tint": "#A8DC50", "sway": 0.5},
+    {"shape": "cross", "sprite": "minecraft:block/oxeye_daisy", "count": 12, "height": [0.6, 0.8], "sway": 0.3},
+    {"shape": "cross", "sprite": "minecraft:block/dandelion", "count": 12, "height": [0.6, 0.8], "sway": 0.3}
+  ],
+  "particles": [
+    {"type": "minecraft:white_ash", "where": "wind", "perTick": 6},
+    {"type": "minecraft:block", "where": "wind", "perTick": 2, "block": "minecraft:short_grass"},
+    {"type": "minecraft:small_gust", "where": "ground", "perTick": 1, "spread": 0.6}
+  ],
+  "sounds": {"pitch": 1.2, "ambient": "minecraft:entity.breeze.idle_ground", "reveal": ["minecraft:block.grass.place", "minecraft:entity.breeze.wind_burst"]}
+}

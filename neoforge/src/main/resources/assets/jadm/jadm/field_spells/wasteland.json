@@ -1,0 +1,21 @@
+{
+  "cards": [23424603],
+  "ground": [
+    {"sprite": "minecraft:block/red_sand", "weight": 7},
+    {"sprite": "minecraft:block/coarse_dirt", "weight": 2},
+    {"sprite": "minecraft:block/terracotta", "weight": 1}
+  ],
+  "opacity": 0.94,
+  "glow": "#FFA050",
+  "wind": 0.6,
+  "props": [
+    {"shape": "cross", "sprite": "minecraft:block/dead_bush", "count": 26, "height": [0.6, 1.2], "sway": 0.1},
+    {"shape": "box", "sprite": "minecraft:block/terracotta", "top": "minecraft:block/terracotta", "count": 8, "width": 0.45, "height": [0.3, 0.9]},
+    {"shape": "box", "sprite": "minecraft:block/cobblestone", "top": "minecraft:block/cobblestone", "count": 4, "width": 0.35, "height": [0.2, 0.5]}
+  ],
+  "particles": [
+    {"type": "minecraft:falling_dust", "where": "wind", "perTick": 8, "block": "minecraft:red_sand"},
+    {"type": "minecraft:dust_plume", "where": "ground", "perTick": 2, "spread": 0.1, "speed": 0.05}
+  ],
+  "sounds": {"pitch": 0.8, "ambient": "minecraft:block.sand.break", "reveal": ["minecraft:block.rooted_dirt.break", "minecraft:block.sand.place"]}
+}
