@@ -1,5 +1,6 @@
 package io.github.zancrow321.jadm.duel;
 
+import io.github.zancrow321.jadm.engine.data.BoosterSets.Rarity;
 import io.github.zancrow321.jadm.item.CardItem;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -28,7 +29,7 @@ public final class AnteEscrow extends SavedData {
      * @param duel  the running duel, or {@code null} once settled
      * @param payTo who gets the card when it is handed over
      */
-    private record Entry(UUID duel, UUID owner, int code, UUID payTo) {
+    private record Entry(UUID duel, UUID owner, int code, Rarity rarity, UUID payTo) {
     }
 
     private final List<Entry> entries = new ArrayList<>();
@@ -38,9 +39,9 @@ public final class AnteEscrow extends SavedData {
                 new SavedData.Factory<>(AnteEscrow::new, AnteEscrow::load, null), NAME);
     }
 
-    /** Puts {@code owner}'s card up for {@code duel}. */
-    public void put(UUID duel, UUID owner, int code) {
-        entries.add(new Entry(duel, owner, code, owner));
+    /** Puts {@code owner}'s copy of a card (at a rarity; {@code null} for a common) up for {@code duel}. */
+    public void put(UUID duel, UUID owner, int code, Rarity rarity) {
+        entries.add(new Entry(duel, owner, code, rarity == null ? Rarity.COMMON : rarity, owner));
         setDirty();
     }
 
@@ -67,7 +68,7 @@ public final class AnteEscrow extends SavedData {
         for (int i = 0; i < entries.size(); i++) {
             Entry e = entries.get(i);
             if (duel.equals(e.duel())) {
-                entries.set(i, new Entry(null, e.owner(), e.code(), winner == null ? e.owner() : winner));
+                entries.set(i, new Entry(null, e.owner(), e.code(), e.rarity(), winner == null ? e.owner() : winner));
             }
         }
         setDirty();
@@ -80,7 +81,7 @@ public final class AnteEscrow extends SavedData {
         for (int i = 0; i < entries.size(); i++) {
             Entry e = entries.get(i);
             if (e.duel() != null) {
-                entries.set(i, new Entry(null, e.owner(), e.code(), e.owner()));
+                entries.set(i, new Entry(null, e.owner(), e.code(), e.rarity(), e.owner()));
                 changed = true;
             }
         }
@@ -97,7 +98,7 @@ public final class AnteEscrow extends SavedData {
             if (e.duel() != null || !e.payTo().equals(player.getUUID())) {
                 continue;
             }
-            ItemStack card = CardItem.of(e.code());
+            ItemStack card = CardItem.of(e.code(), e.rarity());
             Component name = card.getHoverName();
             if (!player.getInventory().add(card)) {
                 player.drop(card, false);
@@ -122,6 +123,7 @@ public final class AnteEscrow extends SavedData {
             }
             entry.putUUID("owner", e.owner());
             entry.putInt("code", e.code());
+            entry.putString("rarity", e.rarity().id());
             entry.putUUID("payTo", e.payTo());
             list.add(entry);
         }
@@ -129,12 +131,22 @@ public final class AnteEscrow extends SavedData {
         return tag;
     }
 
+    /** A saved rarity; older saves have none, and a rarity this version doesn't know is a common. */
+    private static Rarity rarity(String id) {
+        try {
+            return id.isEmpty() ? Rarity.COMMON : Rarity.parse(id);
+        } catch (IllegalArgumentException e) {
+            return Rarity.COMMON;
+        }
+    }
+
     private static AnteEscrow load(CompoundTag tag, HolderLookup.Provider registries) {
         AnteEscrow escrow = new AnteEscrow();
         for (Tag t : tag.getList("entries", Tag.TAG_COMPOUND)) {
             CompoundTag entry = (CompoundTag) t;
             escrow.entries.add(new Entry(entry.hasUUID("duel") ? entry.getUUID("duel") : null,
-                    entry.getUUID("owner"), entry.getInt("code"), entry.getUUID("payTo")));
+                    entry.getUUID("owner"), entry.getInt("code"), rarity(entry.getString("rarity")),
+                    entry.getUUID("payTo")));
         }
         return escrow;
     }

@@ -72,6 +72,70 @@ public record Products(List<Product> products, Map<Integer, LocalDate> ocgOnly) 
         return products.stream().filter(p -> p.id().equals(id)).findFirst().orElse(null);
     }
 
+    /**
+     * Finds a product by what a person types: its id, or a set code ({@code MRD}; promos share theirs, so the first
+     * product with new cards under it).
+     *
+     * @return the product, or {@code null}
+     */
+    public Product resolve(String key) {
+        String k = key.strip();
+        Product byId = get(k.toLowerCase(java.util.Locale.ROOT));
+        if (byId != null) {
+            return byId;
+        }
+        Product fallback = null;
+        for (Product p : products) {
+            if (p.code().equalsIgnoreCase(k)) {
+                if (!p.newCards().isEmpty()) {
+                    return p;
+                }
+                fallback = fallback == null ? p : fallback;
+            }
+        }
+        return fallback;
+    }
+
+    /**
+     * The same products with some released on other days, in release order again: a product moved earlier comes
+     * before the ones it now precedes and brings the cards that are new in it from then on.
+     *
+     * @param dates product id to its new release date; ids that aren't here are ignored
+     */
+    public Products withReleaseDates(Map<String, LocalDate> dates) {
+        if (dates.isEmpty()) {
+            return this;
+        }
+        List<Product> moved = new ArrayList<>();
+        for (Product p : products) {
+            LocalDate date = dates.get(p.id());
+            moved.add(date == null ? p : new Product(p.id(), p.code(), p.name(), date, p.kind(), p.cards(),
+                    p.newCards()));
+        }
+        // Stable, so products of one day keep their order.
+        moved.sort(java.util.Comparator.comparing(Product::date));
+        // Which product a card is new in depends on the order: the first one now that prints a card new in any.
+        java.util.Set<Integer> introduced = new java.util.HashSet<>();
+        products.forEach(p -> introduced.addAll(p.newCards()));
+        java.util.Set<Integer> taken = new java.util.HashSet<>();
+        List<Product> out = new ArrayList<>();
+        for (Product p : moved) {
+            List<Integer> newCards = new ArrayList<>();
+            for (int code : p.newCards()) {
+                if (taken.add(code)) {
+                    newCards.add(code);
+                }
+            }
+            for (Printing printing : p.cards()) {
+                if (introduced.contains(printing.code()) && taken.add(printing.code())) {
+                    newCards.add(printing.code());
+                }
+            }
+            out.add(new Product(p.id(), p.code(), p.name(), p.date(), p.kind(), p.cards(), newCards));
+        }
+        return new Products(out, ocgOnly);
+    }
+
     public static Products loadBundled() {
         try (InputStream in = Products.class.getResourceAsStream(RESOURCE)) {
             if (in == null) {

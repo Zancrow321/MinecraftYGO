@@ -1,5 +1,62 @@
 # Changelog
 
+## 1.2.10 (2026-10-26)
+
+### Duel log names more cards
+- **Cards added from the GY or banishment are named:** "Steve added Monster Reborn from their GY to their hand",
+  for everyone, since the card was public. A card that was banished face down stays "a card" for the opponent.
+- **Set cards say where they came from:** "You Set Trap Hole from your Deck in the Spell & Trap Zone". You see the
+  name of every card you Set; the opponent sees it if it came from the GY or face-up banishment, or if they were shown
+  it before (Lilith, Lady of Lament). A card Set straight from the Deck otherwise stays secret, as in the real game.
+- A monster Special Summoned face down no longer gives its name away to the opponent.
+
+### Missing products
+- **Power-Up Packs can be opened:** the Super Starter Power-Up Pack, the Space-Time Showdown Power-Up Pack and the
+  Noble Knights of the Round Table Power-Up Pack were too small to count as a set, so no shop sold them and no
+  progression step unlocked them. They are packs of five now: the Super Starter one with an Ultra Rare and two Super
+  Rares, the Space-Time Showdown one with an Ultra Rare, the Noble Knights one all Platinum Rares.
+- **Duelist's Advance has all 100 cards:** the card source listed only its 48 monsters, so it had no spells, traps
+  or Link Monsters and opened as a small 5-card pack. Its other 52 cards are added from the official set list, and
+  it opens as the 9-card core booster it is. Cards that came out first in Duelist's Advance (Trap Holic, Parallel
+  Teleport, the R.B. cards...) now unlock with it, not later or only once everything is unlocked.
+
+### Boss monster per deck
+- **Mark your deck's boss:** right-click a monster in the deck box's deck to make it the deck's boss monster. It gets a
+  gold frame and a crown, its name shows next to the deck box's name and in the deck box's tooltip; right-click it again
+  to unmark it. Taking its last copy out of the deck unmarks it too.
+- **Only the boss gets the ace shot:** in a duel, a deck with a boss gives the ace camera's shot to that monster only
+  (alternate artworks included), for both duelists and onlookers, instead of every Level 7+, Extra Deck or 2500+ ATK
+  monster. Decks without a boss (NPCs, bots, starter decks) keep those rules. A locked tournament deck keeps its boss.
+- The server sends the bosses with the duel, so servers need the new version too.
+
+### Sets come out on their release date (Tycoon Calendar)
+- **Tycoon Calendar support (optional):** with [Tycoon Calendar](https://www.curseforge.com/minecraft/mc-mods/tycoon-calendar)
+  installed, sets in a progression world come out when the world's calendar reaches their real TCG release date,
+  in place of `daysPerSet`. A calendar that starts in, say, 2006 unlocks everything up to then as soon as its start
+  date is settled; setting the calendar back takes nothing away. `[progression] calendar = false` turns it off.
+  Without the mod nothing changes.
+- **Own release dates:** `/jadm progression date <set> <YYYY-MM-DD>` gives a set another release date (`reset` for
+  the real one; `/jadm progression date` lists them), saved in `[progression] releaseDates`. Sets unlock in the order
+  of their dates, with the calendar and with `daysPerSet`; `/jadm progression list` marks moved dates with `*`.
+  The world keeps the date it had reached, so a set moved before it unlocks and one moved past it locks again.
+- `/jadm progression status` says when the next set comes out by the calendar.
+
+### Duel
+- **Where each card is, in every card pick:** the cards in a pick window (deck searches, Monster Reborn, materials,
+  the Extra Deck or graveyard picker...) carry a strip along their bottom saying where the card is now and whose it is,
+  such as "Your Deck", "Your GY" or "Opp. Field": blue for yours, red for your opponent's. Hovering a card names the
+  place in full ("In your opponent's Graveyard").
+
+### Foils stay foils in decks and duels
+- **Deck boxes keep rarities:** a foil put into a deck used to come back out of it as a common (the deck box only
+  remembered the card). Deck boxes now remember each copy's rarity, and it goes back into the binder as it came.
+- **The deck editor shows them:** your cards and the deck list each rarity on its own, with its foil and short name
+  (StR, ScR, UR...), as in the binder. Click the copy you want; importing a YDK list takes your best copies.
+- **The duel shows them too:** the foil copies of your deck shine in your hand, in the card panel, in the card
+  windows and on the field (Field Spells, face-up Spells and Traps, monsters shown as cards, the top of the
+  Graveyard). Each copy keeps its own rarity wherever it goes, also in tag duels. The server needs this version too.
+- An ante card keeps its rarity as well.
+
 ## 1.2.9 (2026-10-20)
 
 ### Progression unlocks by itself

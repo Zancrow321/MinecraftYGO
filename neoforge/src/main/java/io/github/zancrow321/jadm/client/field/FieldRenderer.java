@@ -6,6 +6,8 @@ import io.github.zancrow321.jadm.Jadm;
 import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.client.CardArt;
 import io.github.zancrow321.jadm.client.ClientDuel;
+import io.github.zancrow321.jadm.client.collection.FoilEffect;
+import io.github.zancrow321.jadm.engine.data.BoosterSets.Rarity;
 import io.github.zancrow321.jadm.engine.data.CardPool;
 import io.github.zancrow321.jadm.engine.duel.Board;
 import io.github.zancrow321.jadm.engine.duel.DuelTable;
@@ -246,6 +248,21 @@ public final class FieldRenderer {
             }
         }
 
+        /**
+         * The foil of a card drawn with {@link #texQuad} at {@code center}, {@code u}, {@code v}: on its front, and on
+         * its back too when that shows the picture as well.
+         */
+        void foilQuad(int code, Rarity rarity, Vec3 center, Vec3 u, Vec3 v, boolean bothSides) {
+            if (rarity == Rarity.COMMON || code == 0) {
+                return;
+            }
+            Vec3 c = center.subtract(cam);
+            FoilEffect.drawWorld(code, rarity, pose, buffers, c.subtract(u).add(v), u.scale(2), v.scale(-2));
+            if (bothSides) {
+                FoilEffect.drawWorld(code, rarity, pose, buffers, c.add(u).add(v), u.scale(-2), v.scale(-2));
+            }
+        }
+
         private void vertex(VertexConsumer vc, Vec3 p, float[] uv, Vec3 n, int r, int g, int b, int a) {
             vc.addVertex(pose, (float) (p.x - cam.x), (float) (p.y - cam.y), (float) (p.z - cam.z))
                     .setColor(r, g, b, a).setUv(uv[0], uv[1]).setOverlay(OverlayTexture.NO_OVERLAY)
@@ -350,14 +367,14 @@ public final class FieldRenderer {
             return;
         }
         if (seq == 5) { // Field Spells lie flat, face-up.
-            flatCard(draw, player, s, front(card.code()), false, 0, 0xFFFFFFFF);
+            flatCard(draw, player, s, card, false, 0);
             return;
         }
         FieldAnimation activation = ClientField.pending(FieldEvent.Kind.ACTIVATE, new Loc(player, LOCATION_SZONE,
                 seq, 0));
         double rise = activation != null && activation.started(now)
                 ? Math.sin(Math.PI * activation.progress(now, partial)) * 0.6 : 0;
-        standingCard(draw, s, player, card.code(), 0.15 + rise, 0xE8FFFFFF);
+        standingCard(draw, s, player, card.code(), card.rarity(), 0.15 + rise, 0xE8FFFFFF);
     }
 
     /** Monsters without a model (as holograms, or as their card until the artwork is there), and face-down ones. */
@@ -370,9 +387,10 @@ public final class FieldRenderer {
         if (Holograms.shows(card)) {
             Holograms.draw(draw, player, seq, card, now, partial);
         } else if (defense(card)) {
-            flatCard(draw, player, s, front(card.code()), true, 0, 0xFFFFFFFF);
+            flatCard(draw, player, s, card, true, 0);
         } else {
-            standingCard(draw, s, player, card.code(), 0.15 + bob(seq, player, now, partial), 0xF0FFFFFF);
+            standingCard(draw, s, player, card.code(), card.rarity(), 0.15 + bob(seq, player, now, partial),
+                    0xF0FFFFFF);
         }
     }
 
@@ -456,9 +474,19 @@ public final class FieldRenderer {
         return 0.08 + 0.06 * Math.sin((now + partial + seq * 7 + player * 13) / 12.0);
     }
 
-    /** A card lying on the mat, readable from its owner's end (top of the card away from them). */
+    /** A face-up card lying on the mat, with the foil of its copy. */
+    private static void flatCard(Draw draw, int player, Slot s, CardState card, boolean sideways, double up) {
+        flatCard(draw, player, s, front(card.code()), sideways, up, 0xFFFFFFFF, card.code(), card.rarity());
+    }
+
     private static void flatCard(Draw draw, int player, Slot s, ResourceLocation tex, boolean sideways, double up,
                                  int argb) {
+        flatCard(draw, player, s, tex, sideways, up, argb, 0, Rarity.COMMON);
+    }
+
+    /** A card lying on the mat, readable from its owner's end (top of the card away from them). */
+    private static void flatCard(Draw draw, int player, Slot s, ResourceLocation tex, boolean sideways, double up,
+                                 int argb, int code, Rarity rarity) {
         Vec3 c = ClientField.toWorld(s.x(), s.z(), CARD_Y + up);
         double mirror = player == 0 ? 1 : -1;
         Vec3 u = ClientField.right().scale(mirror * CARD_WIDTH / 2);
@@ -470,37 +498,46 @@ public final class FieldRenderer {
             v = t;
         }
         draw.texQuad(tex, c, u, v, argb, false);
+        draw.foilQuad(code, rarity, c, u, v, false);
     }
 
-    private static void standingCard(Draw draw, Slot s, int player, int code, double lift, int argb) {
+    private static void standingCard(Draw draw, Slot s, int player, int code, Rarity rarity, double lift, int argb) {
         double back = (player == 0 ? -1 : 1) * 0.3;
         Vec3 c = ClientField.toWorld(s.x(), s.z() + back, lift + CARD_HEIGHT / 2);
         Vec3 u = ClientField.right().scale(CARD_WIDTH / 2 * (player == 0 ? 1 : -1));
         Vec3 v = new Vec3(0, CARD_HEIGHT / 2, 0);
         // Front faces the opponent; both sides show the art so everyone can read it.
         draw.texQuad(front(code), c, u.scale(-1), v, argb, true);
+        draw.foilQuad(code, rarity, c, u.scale(-1), v, true);
     }
 
     private static void drawPiles(Draw draw, int player, Board.Side side) {
         pile(draw, player, slot(player, LOCATION_DECK, 0), ClientField.sleeve(player), side.deckCount());
         pile(draw, player, slot(player, LOCATION_EXTRA, 0), ClientField.sleeve(player), side.extra().size());
         if (!side.graveyard().isEmpty()) {
-            pile(draw, player, slot(player, LOCATION_GRAVE, 0), front(side.graveyard().getLast().code()),
-                    side.graveyard().size());
+            CardState top = side.graveyard().getLast();
+            pile(draw, player, slot(player, LOCATION_GRAVE, 0), front(top.code()), side.graveyard().size(),
+                    top.code(), top.rarity());
         }
         if (!side.banished().isEmpty()) {
             CardState top = side.banished().getLast();
             pile(draw, player, slot(player, LOCATION_REMOVED, 0), top.code() == 0 ? ClientField.sleeve(player) : front(top.code()),
-                    side.banished().size());
+                    side.banished().size(), top.code(), top.rarity());
         }
     }
 
     private static void pile(Draw draw, int player, Slot s, ResourceLocation top, int count) {
+        pile(draw, player, s, top, count, 0, Rarity.COMMON);
+    }
+
+    /** A pile of cards, the top one's picture ({@code code}, at {@code rarity}) on top. */
+    private static void pile(Draw draw, int player, Slot s, ResourceLocation top, int count, int code,
+                             Rarity rarity) {
         if (count <= 0) {
             return;
         }
         double height = Math.min(count, 60) * 0.008;
-        flatCard(draw, player, s, top, false, height, 0xFFFFFFFF);
+        flatCard(draw, player, s, top, false, height, 0xFFFFFFFF, code, rarity);
         // A glowing side so the stack reads as a pile.
         VertexConsumer vc = draw.buffers().getBuffer(RenderType.lightning());
         Vec3 u = ClientField.right().scale(CARD_WIDTH / 2);

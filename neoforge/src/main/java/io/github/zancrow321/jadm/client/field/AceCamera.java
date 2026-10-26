@@ -23,8 +23,8 @@ import java.util.List;
 import static io.github.zancrow321.jadm.engine.OcgConstants.*;
 
 /**
- * The ace shot: when a big monster is summoned (high level, from the Extra Deck or with high ATK, as set in the
- * client config), the camera leaves its place, circles the monster's model or hologram while it rises, and its name
+ * The ace shot: when a deck's boss monster is summoned (marked in the deck box), or in a deck without one a big
+ * monster (high level, from the Extra Deck or with high ATK, as set in the client config), the camera leaves its place, circles the monster's model or hologram while it rises, and its name
  * slams in big with its stats between black bars, like a summon in Master Duel. Then the camera flies back and the
  * duel goes on. Only touched on the client thread.
  */
@@ -54,14 +54,22 @@ public final class AceCamera {
         shots.clear();
     }
 
-    /** Whether {@code code} summoned gets a shot: the setting is on and the card is big enough. */
-    public static boolean ace(int code) {
+    /**
+     * Whether {@code code} summoned gets a shot: the setting is on and the card is the boss monster of a deck on the
+     * summoning team or, if that team marked no boss, big enough by the client settings.
+     *
+     * @param bosses the boss monsters of the summoning team's decks (original passcodes), empty for none
+     */
+    public static boolean ace(int code, List<Integer> bosses) {
         if (code == 0 || !JadmClientConfig.ACE_CAMERA.get()) {
             return false;
         }
         CardInfo info = JadmData.cards().card(code);
         if (info == null || !info.is(TYPE_MONSTER) || info.is(TYPE_TOKEN)) {
             return false;
+        }
+        if (!bosses.isEmpty()) {
+            return bosses.contains(JadmData.original(code));
         }
         if (JadmClientConfig.ACE_EXTRA_DECK.get() && (info.data().type() & EXTRA) != 0) {
             return true;

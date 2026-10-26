@@ -12,10 +12,14 @@ import io.github.zancrow321.jadm.engine.protocol.DuelMessage;
 import io.github.zancrow321.jadm.engine.protocol.MessageDecoder;
 import io.github.zancrow321.jadm.engine.protocol.QueryDecoder;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.SplittableRandom;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import static io.github.zancrow321.jadm.engine.OcgConstants.*;
 
@@ -35,6 +39,10 @@ public final class DuelController implements AutoCloseable {
     private int phase;
     private final int[] duelists = new int[2];
     private final int[] activeDuelist = new int[2];
+    private final CardDatabase cards;
+    private final List<List<Deck>> teams;
+    /** Per team and duelist, whether their foils are on their cards yet (see {@link #showFoils}). */
+    private final boolean[][] foilsShown = new boolean[2][];
 
     public DuelController(CardDatabase cards, ScriptProvider scripts, DuelSettings settings, Deck deck0, Deck deck1,
                           DuelLogHandler log) {
@@ -50,6 +58,8 @@ public final class DuelController implements AutoCloseable {
             throw new IllegalArgumentException("Need two teams with at least one deck each");
         }
         this.duel = OcgCore.get().createDuel(settings, cards, scripts, log);
+        this.cards = cards;
+        this.teams = List.copyOf(teams);
         this.summonStyles = new SummonStyle.Tracker(cards);
         try {
             for (String base : BASE_SCRIPTS) {
@@ -61,10 +71,12 @@ public final class DuelController implements AutoCloseable {
             SplittableRandom random = new SplittableRandom(mix(settings.seed()));
             for (int team = 0; team < 2; team++) {
                 duelists[team] = teams.get(team).size();
+                foilsShown[team] = new boolean[duelists[team]];
                 for (int duelist = 0; duelist < duelists[team]; duelist++) {
                     addDeck(team, duelist, teams.get(team).get(duelist), random);
                 }
             }
+            showFoils();
             runSetupScript();
             duel.start();
         } catch (RuntimeException e) {
@@ -108,6 +120,40 @@ public final class DuelController implements AutoCloseable {
         }
     }
 
+    /**
+     * Marks each foil copy in the decks of the duelists playing now with its rarity, so the board shows it. The core
+     * keeps a number per card, its cover (a Skill card's sleeve, otherwise unused), and reports it with the card
+     * wherever it goes; copies of a card play the same, so which of them gets which rarity doesn't matter. A tag
+     * partner's cards only reach the field once they take over, so theirs are marked then, still in hand and deck.
+     */
+    private void showFoils() {
+        for (int team = 0; team < 2; team++) {
+            int duelist = activeDuelist[team];
+            if (foilsShown[team][duelist]) {
+                continue;
+            }
+            foilsShown[team][duelist] = true;
+            // By the code the core reports for the card: an alternate artwork's is its original's.
+            Map<Integer, List<Integer>> covers = new TreeMap<>();
+            teams.get(team).get(duelist).foils().forEach((code, rarities) -> rarities.forEach(rarity ->
+                    covers.computeIfAbsent(cards.original(code), c -> new ArrayList<>()).add(rarity.ordinal())));
+            if (covers.isEmpty()) {
+                continue;
+            }
+            StringBuilder lua = new StringBuilder("local f={");
+            covers.forEach((code, list) -> lua.append('[').append(code).append("]={")
+                    .append(list.stream().map(String::valueOf).collect(Collectors.joining(","))).append("},"));
+            lua.append("}\n")
+                    .append("for c in Duel.GetFieldGroup(").append(team)
+                    .append(",LOCATION_DECK|LOCATION_EXTRA|LOCATION_HAND,0):Iter() do\n")
+                    .append(" local l=f[c:GetOriginalCode()]\n")
+                    .append(" if l and #l>0 and c:Cover()==0 then c:Cover(table.remove(l)) end\n")
+                    .append("end\n");
+            // A failed script only costs the foils, never the duel.
+            duel.loadScript("jadm_foils.lua", lua.toString().getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
     /** Folds the duel's four seed words into one, so the same seed always gives the same deck order. */
     private static long mix(long[] seed) {
         long mixed = 0;
@@ -146,6 +192,7 @@ public final class DuelController implements AutoCloseable {
                 messages.add(message);
                 track(message);
             }
+            showFoils();
             if (result != null || status == OcgDuel.Status.END) {
                 pendingPrompt = null;
                 return new Step(messages, null, result);

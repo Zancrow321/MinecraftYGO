@@ -99,6 +99,21 @@ public final class JadmServerConfig {
                     + "with it. 0 means only operators unlock sets with /jadm progression.")
             .defineInRange("daysPerSet", 3, 0, 10000);
 
+    public static final ModConfigSpec.BooleanValue CALENDAR = BUILDER
+            .comment("With the Tycoon Calendar mod installed: sets unlock when the world's calendar date reaches their "
+                    + "release date (in place of daysPerSet), once the calendar's start date is settled. A calendar "
+                    + "that starts after a set's date unlocks it right away; turning the calendar back takes nothing "
+                    + "away. false: daysPerSet as without the mod.")
+            .define("calendar", true);
+
+    public static final ModConfigSpec.ConfigValue<java.util.List<? extends String>> RELEASE_DATES = BUILDER
+            .comment("Sets released on another day than in the real TCG, e.g. [\"MRD=2002-04-01\", \"PSV=2003-01-15\"] "
+                    + "(set code or product id = YYYY-MM-DD). Sets unlock in the order of these dates, with "
+                    + "daysPerSet as well as with the calendar. /jadm progression date <set> <date|reset> changes "
+                    + "them in game.")
+            .defineListAllowEmpty("releaseDates", java.util.List.of(), () -> "MRD=2002-04-01",
+                    o -> o instanceof String s && s.contains("="));
+
     public static final ModConfigSpec.BooleanValue LOCKED_IN_DECK = BUILDER.pop().push("cards")
             .comment("In a progression world, cards from sets that are still locked can't go in a deck (they still "
                     + "count in the binder, with a lock).")

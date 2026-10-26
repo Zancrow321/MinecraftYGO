@@ -59,6 +59,11 @@ public final class Jadm {
         io.github.zancrow321.jadm.ranking.RankingBoard.register(modBus);
         io.github.zancrow321.jadm.display.Displays.register(modBus);
         container.registerConfig(ModConfig.Type.SERVER, JadmServerConfig.SPEC);
+        modBus.addListener((net.neoforged.fml.event.config.ModConfigEvent.Reloading event) -> {
+            if (event.getConfig().getSpec() == JadmServerConfig.SPEC) {
+                Progress.configReloaded();
+            }
+        });
         io.github.zancrow321.jadm.clan.ClanParties.init();
         modBus.addListener(JadmNetwork::register);
         if (FMLEnvironment.dist == Dist.CLIENT) {

@@ -26,6 +26,11 @@ public final class ProgressionData extends SavedData {
     private final java.util.Set<UUID> starters = new java.util.HashSet<>();
     /** Players who have been given the handbook on their first join. */
     private final java.util.Set<UUID> guides = new java.util.HashSet<>();
+    /**
+     * The release dates the saved products were reached under ({@code id=YYYY-MM-DD}), so that progress can be carried
+     * over when they change, also while the server was down.
+     */
+    private java.util.List<String> releaseDates = java.util.List.of();
 
     public static ProgressionData get(MinecraftServer server) {
         return server.overworld().getDataStorage().computeIfAbsent(
@@ -71,6 +76,20 @@ public final class ProgressionData extends SavedData {
         setDirty();
     }
 
+    /** Every player with progress of their own. */
+    java.util.Set<UUID> players() {
+        return java.util.Set.copyOf(players.keySet());
+    }
+
+    java.util.List<String> releaseDates() {
+        return releaseDates;
+    }
+
+    void releaseDates(java.util.List<String> dates) {
+        releaseDates = java.util.List.copyOf(dates);
+        setDirty();
+    }
+
     boolean hasStarter(UUID player) {
         return starters.contains(player);
     }
@@ -111,6 +130,10 @@ public final class ProgressionData extends SavedData {
         for (net.minecraft.nbt.Tag t : tag.getList("Guides", net.minecraft.nbt.Tag.TAG_INT_ARRAY)) {
             data.guides.add(net.minecraft.nbt.NbtUtils.loadUUID(t));
         }
+        for (net.minecraft.nbt.Tag t : tag.getList("ReleaseDates", net.minecraft.nbt.Tag.TAG_STRING)) {
+            data.releaseDates = new java.util.ArrayList<>(data.releaseDates);
+            data.releaseDates.add(t.getAsString());
+        }
         return data;
     }
 
@@ -134,6 +157,9 @@ public final class ProgressionData extends SavedData {
         net.minecraft.nbt.ListTag guides = new net.minecraft.nbt.ListTag();
         this.guides.forEach(id -> guides.add(net.minecraft.nbt.NbtUtils.createUUID(id)));
         tag.put("Guides", guides);
+        net.minecraft.nbt.ListTag dates = new net.minecraft.nbt.ListTag();
+        releaseDates.forEach(d -> dates.add(net.minecraft.nbt.StringTag.valueOf(d)));
+        tag.put("ReleaseDates", dates);
         return tag;
     }
 }

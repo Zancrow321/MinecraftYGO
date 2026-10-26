@@ -43,6 +43,10 @@ public record PackProfile(String name, int size, List<Slot> slots) {
     public static final Slot PREMIUM = new Slot(1 / 4.0, 1 / 2.0, 1 / 4.0);
     /** Always a secret rare. */
     public static final Slot SECRET = new Slot(1, 0, 0);
+    /** Always an ultra rare. */
+    public static final Slot ULTRA = new Slot(0, 1, 0);
+    /** Always a super rare. */
+    public static final Slot SUPER = new Slot(0, 0, 1);
 
     /** Nine cards, eight of them common: the core boosters until mid-2014, and the modeled pool's sets. */
     public static final PackProfile CLASSIC_CORE = new PackProfile("core", 9, List.of(CLASSIC));
@@ -62,6 +66,8 @@ public record PackProfile(String name, int size, List<Slot> slots) {
                     + "|platinum|25th anniversary|rarity collection|quarter century|ghosts from the past"
                     + "|spirit warriors|secret slayers|wing raiders|fusion enforcers|destiny soldiers"
                     + "|legendary duelists: season");
+    /** The packs that came inside a Super Starter or box set: Super Starter, Space-Time Showdown, Noble Knights. */
+    private static final Pattern POWER_UP = Pattern.compile("power-up pack");
     private static final Pattern BATTLE = Pattern.compile("battle pack|speed duel");
     private static final Pattern MINI = Pattern.compile(
             "duelist pack|hidden arsenal|duel terminal|world superstars|millennium pack"
@@ -81,6 +87,13 @@ public record PackProfile(String name, int size, List<Slot> slots) {
         }
         if (ALL_FOIL.matcher(name).find()) {
             return new PackProfile("premium", 5, List.of(PREMIUM, PREMIUM, PREMIUM, PREMIUM, PREMIUM));
+        }
+        // Five cards: its ultra and, in the sets that have supers, two supers (Super Starter: V for Victory's two
+        // packs held both its ultras and all four supers between them).
+        if (POWER_UP.matcher(name).find()) {
+            boolean supers = product.cards().stream()
+                    .anyMatch(p -> BoosterSets.Rarity.ofPrinted(p.rarity()).slot() == BoosterSets.Rarity.SUPER);
+            return new PackProfile("power-up", 5, supers ? List.of(ULTRA, SUPER, SUPER) : List.of(ULTRA));
         }
         if (BATTLE.matcher(name).find()) {
             return new PackProfile("battle", 5, List.of(CLASSIC));

@@ -92,5 +92,13 @@ class RevealDuelTest {
         String cardsShown = own.substring("You revealed ".length(), own.indexOf(" from your Deck"));
         assertTrue(logs.get(1).contains("Alex revealed " + cardsShown + " from their Deck to you"),
                 logs.get(1).toString());
+        // Steve picked the card Alex Sets, so both logs name it and say it came from the Deck.
+        String set = logs.get(0).stream().filter(l -> l.startsWith("You Set ")).findFirst()
+                .orElseThrow(() -> new AssertionError(logs.get(0)));
+        assertTrue(set.endsWith(" from your Deck in the Spell & Trap Zone"), set);
+        String setCard = set.substring("You Set ".length(), set.indexOf(" from your Deck"));
+        assertTrue(cardsShown.contains(setCard), set);
+        assertTrue(logs.get(1).contains("Alex Set " + setCard + " from their Deck in the Spell & Trap Zone"),
+                logs.get(1).toString());
     }
 }

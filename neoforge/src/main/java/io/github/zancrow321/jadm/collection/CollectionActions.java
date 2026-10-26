@@ -42,22 +42,27 @@ public final class CollectionActions {
             }
             case DECK_ADD -> {
                 if (held.is(JadmItems.DECK_BOX.get())) {
-                    deckAdd(player, held, action.code());
+                    deckAdd(player, held, action.code(), action.rarity());
                 }
             }
             case DECK_REMOVE -> {
                 if (held.is(JadmItems.DECK_BOX.get())) {
-                    deckRemove(player, held, action.code());
+                    deckRemove(player, held, action.code(), action.rarity());
                 }
             }
             case DECK_CLEAR -> {
                 if (held.is(JadmItems.DECK_BOX.get())) {
                     for (int code : List.copyOf(DeckBoxItem.deck(held).main())) {
-                        deckRemove(player, held, code);
+                        deckRemove(player, held, code, null);
                     }
                     for (int code : List.copyOf(DeckBoxItem.deck(held).extra())) {
-                        deckRemove(player, held, code);
+                        deckRemove(player, held, code, null);
                     }
+                }
+            }
+            case DECK_BOSS -> {
+                if (held.is(JadmItems.DECK_BOX.get())) {
+                    toggleBoss(player, held, action.code());
                 }
             }
         }
@@ -93,7 +98,8 @@ public final class CollectionActions {
         }
     }
 
-    private static void deckAdd(ServerPlayer player, ItemStack box, int code) {
+    /** Moves a copy of a card at {@code rarity} into the deck; {@code null} takes the rarest copy the player has. */
+    private static void deckAdd(ServerPlayer player, ItemStack box, int code, Rarity rarity) {
         var card = JadmData.cards().card(code);
         if (card == null) {
             return;
@@ -118,49 +124,95 @@ public final class CollectionActions {
             player.displayClientMessage(Component.translatable("message.jadm.deck.full"), true);
             return;
         }
-        if (!take(player, code)) {
+        Rarity taken = take(player, code, rarity == null ? best(player, code) : rarity);
+        if (taken == null) {
             player.displayClientMessage(Component.translatable("message.jadm.deck.missing", card.name()), true);
             return;
         }
-        List<Integer> main = new ArrayList<>(deck.main());
-        List<Integer> extraList = new ArrayList<>(deck.extra());
-        (extra ? extraList : main).add(code);
-        box.set(JadmComponents.DECK.get(), new DeckList(main, extraList));
+        DeckBoxItem.add(box, code, taken, extra);
     }
 
-    private static void deckRemove(ServerPlayer player, ItemStack box, int code) {
+    /** Marks a monster in the deck as its boss, or unmarks it if it already is the boss. */
+    private static void toggleBoss(ServerPlayer player, ItemStack box, int code) {
+        var card = JadmData.cards().card(code);
         DeckList deck = DeckBoxItem.deck(box);
-        List<Integer> main = new ArrayList<>(deck.main());
-        List<Integer> extra = new ArrayList<>(deck.extra());
-        if (!main.remove((Integer) code) && !extra.remove((Integer) code)) {
+        if (card == null || !card.is(io.github.zancrow321.jadm.engine.OcgConstants.TYPE_MONSTER)
+                || !deck.main().contains(code) && !deck.extra().contains(code)) {
             return;
         }
-        box.set(JadmComponents.DECK.get(), new DeckList(main, extra));
-        ItemStack binder = findBinder(player);
-        if (binder.isEmpty()) {
-            give(player, CardItem.of(code), 1);
+        int original = JadmData.original(code);
+        if (DeckBoxItem.boss(box) == original) {
+            box.remove(JadmComponents.DECK_BOSS.get());
+            player.displayClientMessage(Component.translatable("message.jadm.deck.boss_cleared", card.name()), true);
         } else {
-            binder.set(JadmComponents.COLLECTION.get(), BinderItem.collection(binder).add(code, 1));
+            box.set(JadmComponents.DECK_BOSS.get(), original);
+            player.displayClientMessage(Component.translatable("message.jadm.deck.boss_set", card.name()), true);
         }
     }
 
-    /** Takes one copy of a card from the first binder that has it, or else from a loose card item. */
-    private static boolean take(ServerPlayer player, int code) {
+    /** Moves a copy of a card at {@code rarity} back out of the deck; {@code null} takes a common first. */
+    private static void deckRemove(ServerPlayer player, ItemStack box, int code, Rarity rarity) {
+        Rarity taken = DeckBoxItem.remove(box, code, rarity);
+        if (taken == null) {
+            return;
+        }
+        // The boss goes with its last copy, so adding the card again later doesn't bring the mark back.
+        if (box.has(JadmComponents.DECK_BOSS.get()) && DeckBoxItem.boss(box) == 0) {
+            box.remove(JadmComponents.DECK_BOSS.get());
+        }
+        ItemStack binder = findBinder(player);
+        if (binder.isEmpty()) {
+            give(player, CardItem.of(code, taken), 1);
+        } else {
+            BinderItem.add(binder, code, taken, 1);
+        }
+    }
+
+    /** The rarest copy of a card the player carries, in a binder or loose, or {@code null}. */
+    private static Rarity best(ServerPlayer player, int code) {
+        Rarity best = null;
         Inventory inventory = player.getInventory();
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             ItemStack stack = inventory.getItem(slot);
-            if (stack.is(JadmItems.BINDER.get()) && BinderItem.removeOne(stack, code) != null) {
-                return true;
+            List<Rarity> have = new ArrayList<>();
+            if (stack.is(JadmItems.BINDER.get())) {
+                BinderItem.copies(stack, code).forEach((r, n) -> have.add(r));
+            } else if (stack.is(JadmItems.CARD.get()) && CardItem.code(stack) == code) {
+                have.add(CardItem.rarity(stack));
+            }
+            for (Rarity r : have) {
+                if (best == null || r.compareTo(best) > 0) {
+                    best = r;
+                }
+            }
+        }
+        return best;
+    }
+
+    /**
+     * Takes one copy of a card at a rarity from the first binder that has it, or else from a loose card item.
+     *
+     * @return the rarity taken, or {@code null} if the player has no such copy
+     */
+    private static Rarity take(ServerPlayer player, int code, Rarity rarity) {
+        if (rarity == null) {
+            return null;
+        }
+        Inventory inventory = player.getInventory();
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+            ItemStack stack = inventory.getItem(slot);
+            if (stack.is(JadmItems.BINDER.get()) && BinderItem.remove(stack, code, rarity, 1) == 1) {
+                return rarity;
             }
         }
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             ItemStack stack = inventory.getItem(slot);
-            if (stack.is(JadmItems.CARD.get()) && CardItem.code(stack) == code) {
+            if (stack.is(JadmItems.CARD.get()) && CardItem.code(stack) == code && CardItem.rarity(stack) == rarity) {
                 stack.shrink(1);
-                return true;
+                return rarity;
             }
         }
-        return false;
+        return null;
     }
 
     /** The first binder in the inventory (off hand included), or {@link ItemStack#EMPTY}. */

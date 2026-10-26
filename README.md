@@ -132,6 +132,15 @@ In game:
     `startProduct` sets where worlds or players start and `announce` the chat messages. Per player, the days count
     from a player's first day on the server and keep counting while they are away. `daysPerSet = 0` leaves unlocking
     to operators.
+  - **Tycoon Calendar** (optional, [CurseForge](https://www.curseforge.com/minecraft/mc-mods/tycoon-calendar)): with
+    it installed, sets come out on their real TCG release date by the world's calendar date instead of every few days
+    (`[progression] calendar = true`, the default; false keeps `daysPerSet`). Nothing unlocks until the calendar's
+    start date is settled (the first operator is asked); a calendar that starts in 2006 unlocks everything up to then
+    at once. Setting the calendar back takes nothing away, and `/jadm progression` still works on top of it.
+  - **Own release dates:** `/jadm progression date <set> <YYYY-MM-DD>` moves a set's release date (`reset` brings back
+    the real one, `/jadm progression date` lists the moved ones). They are saved in `[progression] releaseDates`
+    (e.g. `["MRD=2002-04-01"]`) and change the order sets unlock in, with the calendar as well as with `daysPerSet`.
+    The world keeps the date it had reached: a set moved before it unlocks, one moved past it locks again.
 - **Banlist:** `banlist = "auto"` (the default) is the TCG list of the time in a progression world, today's list with
   `mode = "all"` and the May 2000 OCG list for the modeled pool (which a server can still replace with
   `config/jadm/banlist.json`). `"none"` turns it off, and any other value names a file in
@@ -230,6 +239,7 @@ In game:
   [docs/figura.md](docs/figura.md). A ready-made starter avatar (Millennium Puzzle, Battle City coat, duel reactions,
   emotes) lives in [figura/jadm-duelist](figura/jadm-duelist) and is built as its own download by
   `./gradlew figuraStarterKit`.
+- **Tycoon Calendar** (optional): sets come out on their release date by the world's calendar, see Progression.
 - **KubeJS** (optional): server scripts get `JadmEvents` (duel start and end, pack opened, tournament end, rank
   change, set completed) and `Jadm` helpers for cards, packs and Duel Points. See [docs/kubejs.md](docs/kubejs.md).
 - `/jadm version` reports the loaded OCG-Core version.

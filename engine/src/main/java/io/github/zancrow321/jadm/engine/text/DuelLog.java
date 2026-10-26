@@ -23,6 +23,12 @@ public final class DuelLog {
     private final int viewer;
     private final Function<Loc, Integer> codeAt;
     private final Predicate<CardRef> shown;
+    private final Move lastMove;
+
+    public DuelLog(DuelText text, List<String> names, int viewer, Function<Loc, Integer> codeAt,
+                   Predicate<CardRef> shown) {
+        this(text, names, viewer, codeAt, shown, null);
+    }
 
     /**
      * @param names  display names of player 0 and player 1
@@ -30,14 +36,17 @@ public final class DuelLog {
      * @param codeAt looks up the card currently at a face-up location, for messages that only carry locations
      * @param shown  whether this viewer was shown that card earlier this turn, so a card revealed from the Deck is
      *               named again when it is added to the hand
+     * @param lastMove the latest card move before this message, or {@code null}; a Set follows the move that put the
+     *                 card there, which tells where it was Set from
      */
     public DuelLog(DuelText text, List<String> names, int viewer, Function<Loc, Integer> codeAt,
-                   Predicate<CardRef> shown) {
+                   Predicate<CardRef> shown, Move lastMove) {
         this.text = text;
         this.names = names;
         this.viewer = viewer;
         this.codeAt = codeAt;
         this.shown = shown;
+        this.lastMove = lastMove;
     }
 
     /** @return the commentary line, or {@code null} if the message isn't worth a line */
@@ -60,8 +69,9 @@ public final class DuelLog {
                     case SummonStyle.PENDULUM, SummonStyle.PENDULUM_MORE -> "Pendulum Summoned ";
                     default -> "Special Summoned ";
                 };
-            } + text.cardName(m.code());
-            case DuelMessage.Set m -> who(m.loc().controller()) + " Set a card in the " + text.location(m.loc().location());
+            } + ((m.loc().position() & POS_FACEDOWN) != 0 ? visibleName(m.code(), m.loc()) + " face-down"
+                    : text.cardName(m.code()));
+            case DuelMessage.Set m -> set(m);
             case Chaining m -> who(m.loc().controller()) + " activated " + visibleName(m.code(), m.loc())
                     + " (chain link " + m.chainLink() + ")";
             case ChainEvent m when m.type() == MessageType.CHAIN_NEGATED -> "Chain link " + m.chainLink() + " was negated";
@@ -106,13 +116,44 @@ public final class DuelLog {
         if (dest == LOCATION_REMOVED) {
             return name + " was banished";
         }
+        if (dest == LOCATION_HAND && (from.location() == LOCATION_GRAVE || from.location() == LOCATION_REMOVED)) {
+            // A card leaving the GY or face-up banishment was public, so everyone learns what it was.
+            String card = isPublic(from) || to.controller() == viewer ? text.cardName(m.code()) : "a card";
+            String pile = from.location() == LOCATION_GRAVE ? (from.controller() == viewer ? "your" : "their") + " GY"
+                    : "banishment";
+            return who(to.controller()) + " added " + card + " from " + pile + " to "
+                    + (to.controller() == viewer ? "your" : "their") + " hand";
+        }
         if (dest == LOCATION_HAND && from.location() != LOCATION_DECK && from.location() != 0) {
-            return name + " returned to the hand";
+            return (isPublic(from) ? text.cardName(m.code()) : name) + " returned to the hand";
         }
         if (dest == LOCATION_DECK && from.location() != LOCATION_DECK) {
             return name + " returned to the Deck";
         }
         return null;
+    }
+
+    /**
+     * A card Set on the field. Its owner knows what they Set; the opponent only learns it if it came from a public
+     * place such as the GY or was shown to them (Lilith). Cards Set straight from the Deck stay secret otherwise, but
+     * the log says where they came from.
+     */
+    private String set(DuelMessage.Set m) {
+        Loc at = m.loc();
+        Loc from = lastMove != null && lastMove.code() == m.code() && lastMove.to().place().equals(at.place())
+                ? lastMove.from() : Loc.NONE;
+        boolean seen = isPublic(from) || (!from.isNone() && shown.test(new CardRef(m.code(), from)));
+        String card = seen ? text.cardName(m.code()) : visibleName(m.code(), at);
+        String origin = from.isNone() || from.location() == LOCATION_HAND ? ""
+                : " from " + (from.location() == LOCATION_REMOVED ? "banishment"
+                : (from.controller() == viewer ? "your " : "their ") + text.location(from.location()));
+        return who(at.controller()) + " Set " + card + origin + " in the " + text.location(at.location());
+    }
+
+    /** Whether everyone can see a card at {@code loc}: the GY, or face up on the field, banished or in the Extra Deck. */
+    private static boolean isPublic(Loc loc) {
+        return loc.location() == LOCATION_GRAVE || (loc.isFaceUp() && (loc.location() == LOCATION_REMOVED
+                || loc.location() == LOCATION_EXTRA || (loc.location() & LOCATION_ONFIELD) != 0));
     }
 
     /**

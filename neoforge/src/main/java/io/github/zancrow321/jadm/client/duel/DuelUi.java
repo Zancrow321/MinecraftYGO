@@ -9,7 +9,10 @@ import io.github.zancrow321.jadm.client.field.ClientField;
 import io.github.zancrow321.jadm.client.field.Finale;
 import io.github.zancrow321.jadm.client.field.DuelHud;
 import io.github.zancrow321.jadm.client.field.FieldLayout;
+import io.github.zancrow321.jadm.client.collection.CardGrid;
+import io.github.zancrow321.jadm.client.collection.FoilEffect;
 import io.github.zancrow321.jadm.client.field.FieldRenderer;
+import io.github.zancrow321.jadm.engine.data.BoosterSets.Rarity;
 import io.github.zancrow321.jadm.engine.data.CardInfo;
 import io.github.zancrow321.jadm.engine.duel.DuelView;
 import io.github.zancrow321.jadm.engine.protocol.CardState;
@@ -113,8 +116,11 @@ public final class DuelUi {
     private static int hoveredHand = -1;
     private static boolean handRaised;
     private static int hoverCode;
+    /** The rarity of the copy under the mouse, when it is one of the duel's cards. */
+    private static Rarity hoverRarity = Rarity.COMMON;
     /** The card shown in the card panel: the one under the mouse, or the last one that was. */
     private static int panelCode;
+    private static Rarity panelRarity = Rarity.COMMON;
     /** The card under the mouse when it's on the field, for its current stats. */
     private static CardState hoverCard;
     /** How far the card panel's text is scrolled down, in pixels; back to the top when another card shows. */
@@ -156,8 +162,8 @@ public final class DuelUi {
         DuelFeedback.reset();
     }
 
-    /** A tooltip for a control in the phase column, drawn last. */
-    private static String phaseTip;
+    /** A tooltip for whatever the mouse is on (a phase column control, a card to pick), drawn last. */
+    private static String tooltip;
 
     // ---- Settings and hotkeys ----
 
@@ -377,6 +383,7 @@ public final class DuelUi {
             return;
         }
         hoverCode = 0;
+        hoverRarity = Rarity.COMMON;
         hoverCard = null;
         mouseX = mx;
         mouseY = my;
@@ -386,11 +393,12 @@ public final class DuelUi {
             CardState card = FieldRenderer.cardAt(view.board(), field);
             if (card != null && card.code() != 0) {
                 hoverCode = card.code();
+                hoverRarity = card.rarity();
                 hoverCard = card;
             }
         }
 
-        phaseTip = null;
+        tooltip = null;
         hand(g, view, prompt, mx, my, w, h);
         phases(g, font, view, prompt, mx, my, w, h);
         if (prompt != null && view.result() == null) {
@@ -428,16 +436,38 @@ public final class DuelUi {
         DuelFeedback.render(g, font, w, h);
         DuelStaging.renderBanners(g, font, w, h);
         Finale.renderHud(g, w, h);
-        if (phaseTip != null) {
-            g.renderTooltip(font, Component.literal(phaseTip), mx, my);
+        if (tooltip != null) {
+            g.renderTooltip(font, Component.literal(tooltip), mx, my);
         }
         if (dragging && pressedHand >= 0) {
             List<CardState> cards = view.board().side(view.you()).hand();
             if (pressedHand < cards.size()) {
-                card(g, cards.get(pressedHand).code(), mx - HAND_WIDTH / 2, my - HAND_HEIGHT / 2, HAND_WIDTH,
-                        HAND_HEIGHT);
+                card(g, cards.get(pressedHand).code(), cards.get(pressedHand).rarity(), mx - HAND_WIDTH / 2,
+                        my - HAND_HEIGHT / 2, HAND_WIDTH, HAND_HEIGHT);
             }
         }
+    }
+
+    /**
+     * The rarity of the duel's card at {@code loc}, if it is still the card with {@code code} (choices name a card by
+     * where it was when the prompt came); common for any other place, such as the deck.
+     */
+    private static Rarity rarityAt(Loc loc, int code) {
+        DuelView view = ClientDuel.view();
+        if (view == null || loc == null || loc.isNone() || loc.isOverlay() || code == 0) {
+            return Rarity.COMMON;
+        }
+        var side = view.board().side(loc.controller());
+        List<CardState> zone = switch (loc.location()) {
+            case LOCATION_HAND -> side.hand();
+            case LOCATION_GRAVE -> side.graveyard();
+            case LOCATION_REMOVED -> side.banished();
+            case LOCATION_EXTRA -> side.extra();
+            default -> null;
+        };
+        CardState card = zone == null ? FieldRenderer.cardAt(view.board(), loc)
+                : loc.sequence() < zone.size() ? zone.get(loc.sequence()) : null;
+        return card != null && card.code() == code ? card.rarity() : Rarity.COMMON;
     }
 
     static void panel(GuiGraphics g, int x, int y, int w, int h) {
@@ -458,9 +488,20 @@ public final class DuelUi {
 
     /** A card picture, or its back with the name on it until the art has downloaded. */
     static void card(GuiGraphics g, int code, int x, int y, int w, int h) {
+        card(g, code, Rarity.COMMON, x, y, w, h);
+    }
+
+    /** A card picture with the foil of the copy, and a foil's rarity in the corner when there is room for it. */
+    static void card(GuiGraphics g, int code, Rarity rarity, int x, int y, int w, int h) {
         CardArt.Texture art = code == 0 ? null : CardArt.get(code);
         if (art != null) {
             g.blit(art.location(), x, y, w, h, 0, 0, art.width(), art.height(), art.width(), art.height());
+            if (rarity != Rarity.COMMON) {
+                FoilEffect.drawGui(g, code, rarity, x, y, w, h);
+                if (w >= 30) {
+                    CardGrid.drawRarityTag(g, Minecraft.getInstance().font, rarity, x, y, w, h);
+                }
+            }
             return;
         }
         g.blit(CARD_BACK, x, y, w, h, 0, 0, 68, 100, 68, 100);
@@ -541,11 +582,12 @@ public final class DuelUi {
                 if (prompt != null && actsOn(prompt, loc)) {
                     outline(g, x, y, HAND_WIDTH, HAND_HEIGHT, selected(prompt, loc) ? SELECTED : GOLD);
                 }
-                card(g, cards.get(i).code(), x, y, HAND_WIDTH, HAND_HEIGHT);
+                card(g, cards.get(i).code(), cards.get(i).rarity(), x, y, HAND_WIDTH, HAND_HEIGHT);
             }
         }
         if (hoveredHand >= 0 && !dragging) {
             hoverCode = cards.get(hoveredHand).code();
+            hoverRarity = cards.get(hoveredHand).rarity();
         }
     }
 
@@ -595,7 +637,7 @@ public final class DuelUi {
         y += BUTTON_HEIGHT + 2;
         boolean skip = skippingResponses();
         if (button(g, font, x, y + 4, PHASE_WIDTH, skip ? "Skip" : "Ask", true, mx, my, DuelUi::toggleResponses)) {
-            phaseTip = skip ? "Responses: passing all (C)" : "Responses: asking (C)";
+            tooltip = skip ? "Responses: passing all (C)" : "Responses: asking (C)";
         }
         if (skip) {
             outline(g, x, y + 4, PHASE_WIDTH, BUTTON_HEIGHT, 0xFFFF6060);
@@ -770,10 +812,12 @@ public final class DuelUi {
         int h = CARD_ROW - 2;
         boolean hover = mx >= x && mx < x + w && my >= y && my < y + h;
         g.fill(x, y, x + w, y + h, hover ? BUTTON_HOVER : BUTTON);
-        card(g, c.code(), x + 2, y + 1, 15, 22);
+        Rarity rarity = rarityAt(c.at(), c.code());
+        card(g, c.code(), rarity, x + 2, y + 1, 15, 22);
         g.drawString(font, font.plainSubstrByWidth(c.label(), w - 24), x + 21, y + 8, TEXT);
         if (hover) {
             hoverCode = c.code();
+            hoverRarity = rarity;
             hoverCard = null;
         }
         hits.add(new Hit(x, y, w, h, () -> choose(c, null)));
@@ -834,15 +878,20 @@ public final class DuelUi {
     private static void cardWindow(GuiGraphics g, Font font, PromptView p, int mx, int my, int w, int h) {
         PromptView.MultiSelect multi = p.multi();
         List<Integer> codes = new ArrayList<>();
+        List<Rarity> rarities = new ArrayList<>();
         List<String> names = new ArrayList<>();
         List<Runnable> picks = new ArrayList<>();
         List<Boolean> ticked = new ArrayList<>();
         List<String> badges = new ArrayList<>();
+        List<Loc> places = new ArrayList<>();
         List<Choice> extra = new ArrayList<>();
         if (multi != null) {
             for (int i = 0; i < multi.options().size(); i++) {
                 int index = i;
                 codes.add(multi.codes().get(i));
+                places.add(i < multi.locs().size() ? multi.locs().get(i) : null);
+                rarities.add(i < multi.locs().size() ? rarityAt(multi.locs().get(i), multi.codes().get(i))
+                        : Rarity.COMMON);
                 names.add(multi.options().get(i));
                 ticked.add(ClientDuel.selected().contains(i));
                 // When the clicks put the cards in order, each picked card shows its place.
@@ -857,7 +906,9 @@ public final class DuelUi {
                     continue;
                 }
                 codes.add(c.code());
+                rarities.add(rarityAt(c.at(), c.code()));
                 names.add(c.label());
+                places.add(c.at());
                 // Cards picked so far stay in the window, marked, and a click takes them back out.
                 ticked.add(c.kind() == Kind.UNSELECT);
                 badges.add("");
@@ -865,7 +916,7 @@ public final class DuelUi {
             }
         }
         String title = p.title() + (multi != null ? "  (" + ClientDuel.selected().size() + ")" : "");
-        int[] footer = cardGrid(g, font, title, codes, ticked, badges, picks, mx, my, w, h);
+        int[] footer = cardGrid(g, font, title, codes, places, rarities, ticked, badges, picks, mx, my, w, h);
         if (footer == null) {
             return;
         }
@@ -896,16 +947,21 @@ public final class DuelUi {
         }
         cards.addAll(byCard.values());
         List<Integer> codes = new ArrayList<>();
+        List<Loc> places = new ArrayList<>();
+        List<Rarity> rarities = new ArrayList<>();
         List<Boolean> ticked = new ArrayList<>();
         List<Runnable> picks = new ArrayList<>();
         for (List<Choice> actions : cards) {
             codes.add(actions.getFirst().code());
+            places.add(actions.getFirst().at());
+            rarities.add(rarityAt(actions.getFirst().at(), actions.getFirst().code()));
             ticked.add(false);
             // One action is done on the click; a card with several (Special Summon or Activate) gets its menu.
             picks.add(actions.size() == 1 ? () -> choose(actions.getFirst(), null)
                     : () -> menu = new Menu(mouseX, mouseY, List.copyOf(actions), null));
         }
-        int[] footer = cardGrid(g, font, picker.title(), codes, ticked, null, picks, mx, my, w, h);
+        int[] footer = cardGrid(g, font, picker.title(), codes, places, rarities, ticked, null, picks, mx, my, w,
+                h);
         if (footer != null) {
             button(g, font, footer[0], footer[1], 60, "Cancel", true, mx, my, () -> picker = null);
         }
@@ -914,11 +970,13 @@ public final class DuelUi {
     /**
      * A window of cards to click, under the prompt: title, cards as big as fit, and pages when they don't.
      *
+     * @param places where each card is now, shown along its bottom edge ({@code null} entries for none)
      * @param badges a short mark for the corner of each card ("" for none), or {@code null}
      * @return where buttons go along the bottom (x, y), or {@code null} while the window is folded away
      */
-    private static int[] cardGrid(GuiGraphics g, Font font, String title, List<Integer> codes,
-                                  List<Boolean> ticked, List<String> badges, List<Runnable> picks, int mx, int my,
+    private static int[] cardGrid(GuiGraphics g, Font font, String title, List<Integer> codes, List<Loc> places,
+                                  List<Rarity> rarities, List<Boolean> ticked, List<String> badges,
+                                  List<Runnable> picks, int mx, int my,
                                   int w, int h) {
         int width = windowWidth(w, 300);
         int room = windowBottom(h) - DuelHud.promptBottom(w) - 16 - 22;
@@ -960,7 +1018,12 @@ public final class DuelUi {
                 outline(g, cx, cy, cw, ch, SELECTED);
                 outline(g, cx - 1, cy - 1, cw + 2, ch + 2, SELECTED);
             }
-            card(g, codes.get(i), cx, cy, cw, ch);
+            card(g, codes.get(i), rarities.get(i), cx, cy, cw, ch);
+            Loc place = places.get(i);
+            boolean placed = place != null && !place.isNone();
+            if (placed) {
+                placeStrip(g, font, place, cx, cy + ch - PLACE_STRIP, cw);
+            }
             if (badges != null && !badges.get(i).isEmpty()) {
                 int bw = font.width(badges.get(i)) + 6;
                 g.fill(cx, cy, cx + bw, cy + 12, 0xE0000000);
@@ -970,9 +1033,13 @@ public final class DuelUi {
             if (mx >= cx && mx < cx + cw && my >= cy && my < cy + ch) {
                 if (codes.get(i) != 0) {
                     hoverCode = codes.get(i);
+                    hoverRarity = rarities.get(i);
                     hoverCard = null;
                 }
                 outline(g, cx, cy, cw, ch, GOLD);
+                if (placed) {
+                    tooltip = placeName(place);
+                }
             }
             hits.add(new Hit(cx, cy, cw, ch, picks.get(i)));
         }
@@ -983,6 +1050,63 @@ public final class DuelUi {
             bx += 70;
         }
         return new int[]{bx, by};
+    }
+
+    /** How tall the strip along the bottom of a card to pick is that says where the card is. */
+    private static final int PLACE_STRIP = 10;
+    private static final int YOUR_PLACE = 0xFF80C8FF;
+    private static final int THEIR_PLACE = 0xFFFF8080;
+
+    /** Where a card to pick is ("Your GY", "Opp. Field"), on a strip along its bottom edge in its side's color. */
+    private static void placeStrip(GuiGraphics g, Font font, Loc loc, int x, int y, int w) {
+        DuelView view = ClientDuel.view();
+        boolean yours = view == null || loc.controller() == view.you();
+        int color = yours ? YOUR_PLACE : THEIR_PLACE;
+        g.fill(x, y, x + w, y + PLACE_STRIP, 0xE0000000);
+        g.fill(x, y, x + w, y + 1, color);
+        String label = (yours ? "Your " : "Opp. ") + placeShort(loc);
+        // Small cards get smaller text, so the whole label still fits.
+        float scale = Math.min(1f, (w - 2) / (float) font.width(label));
+        g.pose().pushPose();
+        g.pose().translate(x + w / 2f, y + 1 + (PLACE_STRIP - 1 - 8 * scale) / 2f, 0);
+        g.pose().scale(scale, scale, 1);
+        g.drawString(font, label, -font.width(label) / 2, 0, color, false);
+        g.pose().popPose();
+    }
+
+    private static String placeShort(Loc loc) {
+        if (loc.isOverlay()) {
+            return "Material";
+        }
+        return switch (loc.location()) {
+            case LOCATION_DECK -> "Deck";
+            case LOCATION_HAND -> "Hand";
+            case LOCATION_MZONE, LOCATION_SZONE -> "Field";
+            case LOCATION_GRAVE -> "GY";
+            case LOCATION_REMOVED -> "Banished";
+            case LOCATION_EXTRA -> "Extra";
+            default -> "Field";
+        };
+    }
+
+    /** Where a card to pick is, in full, for the tooltip on it. */
+    private static String placeName(Loc loc) {
+        DuelView view = ClientDuel.view();
+        boolean yours = view == null || loc.controller() == view.you();
+        String whose = yours ? "your " : "your opponent's ";
+        if (loc.isOverlay()) {
+            return "Xyz material on " + whose + "field";
+        }
+        return switch (loc.location()) {
+            case LOCATION_DECK -> "In " + whose + "Deck";
+            case LOCATION_HAND -> "In " + whose + "hand";
+            case LOCATION_MZONE -> "In " + whose + "Monster Zone";
+            case LOCATION_SZONE -> "In " + whose + (loc.sequence() == 5 ? "Field Zone" : "Spell & Trap Zone");
+            case LOCATION_GRAVE -> "In " + whose + "Graveyard";
+            case LOCATION_REMOVED -> "Among " + whose + "banished cards";
+            case LOCATION_EXTRA -> "In " + whose + "Extra Deck";
+            default -> "On " + whose + "field";
+        };
     }
 
     /** A pile that can be looked through at any time: a graveyard, the banished cards or an extra deck. */
@@ -1022,6 +1146,7 @@ public final class DuelUi {
     private static void pileWindow(GuiGraphics g, Font font, DuelView view, int mx, int my, int w, int h) {
         var side = view.board().side(pile.controller());
         List<Integer> cards = new ArrayList<>();
+        List<Rarity> rarities = new ArrayList<>();
         String title;
         if (pile.location() == LOCATION_MZONE) {
             CardState xyz = FieldRenderer.cardAt(view.board(), pile);
@@ -1030,6 +1155,7 @@ public final class DuelUi {
                 return;
             }
             cards.addAll(xyz.overlayCodes());
+            xyz.overlayCodes().forEach(code -> rarities.add(Rarity.COMMON));
             title = "Materials of " + JadmData.text().cardName(xyz.code());
         } else {
             for (CardState card : switch (pile.location()) {
@@ -1038,8 +1164,10 @@ public final class DuelUi {
                 default -> side.extra();
             }) {
                 cards.add(card.code());
+                rarities.add(card.rarity());
             }
             java.util.Collections.reverse(cards);
+            java.util.Collections.reverse(rarities);
             String what = switch (pile.location()) {
                 case LOCATION_GRAVE -> "Graveyard";
                 case LOCATION_REMOVED -> "Banished";
@@ -1074,9 +1202,10 @@ public final class DuelUi {
             int cx = x + 4 + (slot % perRow) * (cw + 4);
             int cy = y + (slot / perRow) * (ch + 4);
             int code = cards.get(i);
-            card(g, code, cx, cy, cw, ch);
+            card(g, code, rarities.get(i), cx, cy, cw, ch);
             if (mx >= cx && mx < cx + cw && my >= cy && my < cy + ch && code != 0) {
                 hoverCode = code;
+                hoverRarity = rarities.get(i);
                 hoverCard = null;
                 outline(g, cx, cy, cw, ch, GOLD);
             }
@@ -1154,12 +1283,14 @@ public final class DuelUi {
             int ry = top + (i - page * perPage) * rowHeight;
             boolean hover = mx >= x + 4 && mx < x + width - 4 && my >= ry && my < ry + rowHeight - 2;
             g.fill(x + 4, ry, x + width - 4, ry + rowHeight - 2, hover ? BUTTON_HOVER : BUTTON);
-            card(g, c.code(), x + 6, ry + 1, 16, 23);
+            Rarity rarity = rarityAt(c.at(), c.code());
+            card(g, c.code(), rarity, x + 6, ry + 1, 16, 23);
             g.drawString(font, font.plainSubstrByWidth(JadmData.text().cardName(c.code()), width - 34), x + 26,
                     ry + 3, GOLD);
             g.drawString(font, font.plainSubstrByWidth(c.action(), width - 34), x + 26, ry + 13, TEXT);
             if (hover) {
                 hoverCode = c.code();
+                hoverRarity = rarity;
             }
             hits.add(new Hit(x + 4, ry, width - 8, rowHeight - 2, () -> choose(c, null)));
         }
@@ -1188,6 +1319,7 @@ public final class DuelUi {
         panelBar = null;
         if (hoverCode != 0 && !panelBarHeld) {
             panelCode = hoverCode;
+            panelRarity = hoverRarity;
         }
         if (panelCode == 0) {
             return;
@@ -1217,7 +1349,7 @@ public final class DuelUi {
         }));
         int artHeight = Math.max(40, Math.min((width - 6) * 58 / 40, (bottom - y) * 11 / 20));
         int artWidth = artHeight * 40 / 58;
-        card(g, panelCode, x + width / 2 - artWidth / 2, y + 3, artWidth, artHeight);
+        card(g, panelCode, panelRarity, x + width / 2 - artWidth / 2, y + 3, artWidth, artHeight);
         int ty = y + 3 + artHeight + 3;
 
         List<Line> lines = new ArrayList<>();

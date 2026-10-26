@@ -25,7 +25,9 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 import java.io.IOException;
@@ -367,6 +369,51 @@ public final class FoilEffect {
                                 .setUv(u(layer, box, c[0], c[1], t), v(layer, box, c[0], c[1], t))
                                 .setOverlay(overlay).setLight(layer.ghost() ? light : 0xF000F0)
                                 .setNormal(poses.last(), 0, 0, 1);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Adds the foil of a card lying or standing in the world, such as on the duel field: its picture's top left
+     * corner at {@code topLeft} and its edges along {@code right} and {@code down}, all relative to the camera. The
+     * foil faces the side the picture is seen from, {@code down × right}.
+     */
+    public static void drawWorld(int code, Rarity rarity, PoseStack.Pose pose, MultiBufferSource buffers,
+                                 Vec3 topLeft, Vec3 right, Vec3 down) {
+        List<Layer> layers = layers(code, rarity);
+        if (layers == null || layers.isEmpty()) {
+            return;
+        }
+        float t = time();
+        Vec3 normal = down.cross(right).normalize();
+        for (Layer layer : layers) {
+            ResourceLocation texture = texture(layer, code);
+            if (texture == null) {
+                continue;
+            }
+            VertexConsumer vc;
+            // Just off the card toward the viewer, the ghost image between the card and its foil.
+            Vec3 lift = normal.scale(layer.ghost() ? 0.002 : 0.004);
+            if (layer.ghost()) {
+                vc = buffers.getBuffer(RenderType.entityCutout(texture));
+            } else {
+                vc = buffers.getBuffer(RenderType.EYES.apply(texture,
+                        layer.multiply() ? MULTIPLY : RenderStateShard.ADDITIVE_TRANSPARENCY));
+            }
+            for (Box box : layer.boxes()) {
+                float[] xs = strips(layer, box);
+                for (int i = 0; i + 1 < xs.length; i++) {
+                    float[][] corners = {{xs[i], box.bottom()}, {xs[i + 1], box.bottom()},
+                            {xs[i + 1], box.top()}, {xs[i], box.top()}};
+                    for (float[] c : corners) {
+                        Vec3 p = topLeft.add(right.scale(c[0])).add(down.scale(c[1])).add(lift);
+                        vc.addVertex(pose, (float) p.x, (float) p.y, (float) p.z)
+                                .setColor(layer.ghost() ? 0xFFFFFFFF : color(layer, c[0], c[1], t))
+                                .setUv(u(layer, box, c[0], c[1], t), v(layer, box, c[0], c[1], t))
+                                .setOverlay(OverlayTexture.NO_OVERLAY).setLight(0xF000F0)
+                                .setNormal(pose, (float) normal.x, (float) normal.y, (float) normal.z);
                     }
                 }
             }

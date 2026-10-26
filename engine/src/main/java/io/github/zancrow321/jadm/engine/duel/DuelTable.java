@@ -4,6 +4,7 @@ import io.github.zancrow321.jadm.engine.DuelLogHandler;
 import io.github.zancrow321.jadm.engine.DuelSettings;
 import io.github.zancrow321.jadm.engine.ScriptProvider;
 import io.github.zancrow321.jadm.engine.ai.Responder;
+import io.github.zancrow321.jadm.engine.data.CardDatabase;
 import io.github.zancrow321.jadm.engine.data.Deck;
 import io.github.zancrow321.jadm.engine.protocol.CardRef;
 import io.github.zancrow321.jadm.engine.protocol.CardState;
@@ -84,6 +85,8 @@ public final class DuelTable implements AutoCloseable {
     private final List<Seat> seats;
     /** Team display names, e.g. "Alex & Steve". */
     private final List<String> names;
+    /** Per team, the boss monsters marked in its decks (original passcodes), for the clients' ace shot. */
+    private final List<List<Integer>> bosses;
     /** Seat indices per team, in turn order. */
     private final List<List<Integer>> teams = List.of(new ArrayList<>(), new ArrayList<>());
     /** Which duelist of each team plays, as of the message being recorded. */
@@ -98,6 +101,8 @@ public final class DuelTable implements AutoCloseable {
      * a pick among them right after shows what they are. See {@link #revealKey}.
      */
     private final List<Set<String>> revealed = List.of(new HashSet<>(), new HashSet<>());
+    /** The latest card move, so the log can say where a Set card came from. */
+    private DuelMessage.Move lastMove;
     private final List<Tally> tallies = List.of(new Tally(), new Tally());
     private long hint;
     private int botRetries;
@@ -124,9 +129,14 @@ public final class DuelTable implements AutoCloseable {
         this.text = text;
         this.seats = List.copyOf(seats);
         List<List<Deck>> teamDecks = List.of(new ArrayList<>(), new ArrayList<>());
+        List<List<Integer>> teamBosses = List.of(new ArrayList<>(), new ArrayList<>());
         for (int i = 0; i < seats.size(); i++) {
             teams.get(seats.get(i).team()).add(i);
             teamDecks.get(seats.get(i).team()).add(decks.get(i));
+            int boss = bossOf(decks.get(i), text.cards());
+            if (boss != 0 && !teamBosses.get(seats.get(i).team()).contains(boss)) {
+                teamBosses.get(seats.get(i).team()).add(boss);
+            }
             pendingLog.add(new ArrayList<>());
             pendingEvents.add(new ArrayList<>());
         }
@@ -135,7 +145,24 @@ public final class DuelTable implements AutoCloseable {
             teamNames.add(String.join(" & ", team.stream().map(i -> seats.get(i).name()).toList()));
         }
         this.names = List.copyOf(teamNames);
+        this.bosses = List.of(List.copyOf(teamBosses.get(0)), List.copyOf(teamBosses.get(1)));
         this.duel = new DuelController(text.cards(), scripts, settings, teamDecks, log);
+    }
+
+    /** A deck's boss monster as its original passcode, or 0 if it has none or the deck doesn't hold it. */
+    static int bossOf(Deck deck, CardDatabase cards) {
+        if (deck.boss() == 0) {
+            return 0;
+        }
+        int boss = cards.original(deck.boss());
+        boolean held = java.util.stream.Stream.concat(deck.main().stream(), deck.extra().stream())
+                .anyMatch(code -> cards.original(code) == boss);
+        return held ? boss : 0;
+    }
+
+    /** Per team, the boss monsters marked in its decks (original passcodes). */
+    public List<List<Integer>> bosses() {
+        return bosses;
     }
 
     /**
@@ -246,7 +273,8 @@ public final class DuelTable implements AutoCloseable {
 
     /** What a spectator who just sat down sees: the board as it is, with nothing that happened before. */
     public DuelView watchingNow() {
-        return new DuelView(0, names, duel.board().viewedBy(-1, false), List.of(), List.of(), null, 0, null);
+        return new DuelView(0, names, duel.board().viewedBy(-1, false), List.of(), List.of(), null, 0, null,
+                bosses);
     }
 
     /** What {@code team} (0 or 1) did in the duel so far. */
@@ -408,8 +436,8 @@ public final class DuelTable implements AutoCloseable {
             if (watched != null) {
                 spectatorEvents.add(watched);
             }
-            String watchedLine = new DuelLog(text, names, -1, loc -> faceUpCodeAt(board, loc), card -> false)
-                    .describe(message);
+            String watchedLine = new DuelLog(text, names, -1, loc -> faceUpCodeAt(board, loc), card -> false,
+                    lastMove).describe(message);
             if (watchedLine != null && !(message instanceof DuelMessage.Retry)) {
                 spectatorLog.add(watchedLine);
             }
@@ -429,10 +457,13 @@ public final class DuelTable implements AutoCloseable {
                 }
                 Set<String> seen = revealed.get(as);
                 String line = new DuelLog(text, names, as, loc -> faceUpCodeAt(board, loc),
-                        card -> seen.contains(revealKey(card))).describe(message);
+                        card -> seen.contains(revealKey(card)), lastMove).describe(message);
                 if (line != null) {
                     pendingLog.get(viewer).add(line);
                 }
+            }
+            if (message instanceof DuelMessage.Move move) {
+                lastMove = move;
             }
         }
     }
@@ -512,7 +543,8 @@ public final class DuelTable implements AutoCloseable {
             List<FieldEvent> events = List.copyOf(pendingEvents.get(seat));
             pendingEvents.get(seat).clear();
             Board seen = board.viewedBy(team, true);
-            views.put(seat, new DuelView(team, names, seen, log, events, mine, mine != null ? hint : 0, finalText));
+            views.put(seat, new DuelView(team, names, seen, log, events, mine, mine != null ? hint : 0, finalText,
+                    bosses));
         }
         return views;
     }
@@ -529,7 +561,7 @@ public final class DuelTable implements AutoCloseable {
                     + (teams.get(result.player()).size() == 1 ? "s" : "") + " the duel";
         }
         DuelView view = new DuelView(0, names, duel.board().viewedBy(-1, false), List.copyOf(spectatorLog),
-                List.copyOf(spectatorEvents), null, 0, finalText);
+                List.copyOf(spectatorEvents), null, 0, finalText, bosses);
         spectatorLog.clear();
         spectatorEvents.clear();
         return view;

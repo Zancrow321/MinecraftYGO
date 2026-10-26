@@ -61,6 +61,8 @@ final class Tournament {
         /** The deck locked in at joining, or {@code null} to use the deck box of the moment. */
         List<Integer> main;
         List<Integer> extra;
+        /** The locked deck's boss monster, 0 for none. */
+        int boss;
         String deckName;
         int feePaid;
         int place;

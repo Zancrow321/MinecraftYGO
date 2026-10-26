@@ -97,7 +97,7 @@
         "Manche Karten wurden mit mehr als einem Artwork gedruckt: Dark Magician, Blue-Eyes White Dragon, Red-Eyes Black Dragon und rund hundert weitere. Eine Karte aus einem Pack oder einer Tin kommt manchmal als eines ihrer anderen Artworks (Chance {server:cards.altArtChance}, 1 heißt immer). Eine Alt-Art zeigt überall ihr eigenes Bild, ein goldenes ALT in der Ecke und \"Alternatives Artwork 2 von 8\" im Tooltip.",
         "Sie spielt sich genau wie das Original und zählt als dieselbe Karte: höchstens drei davon zusammen in einem Deck (weniger, wenn die Banlist es sagt) und eine Karte im Set-Sammelbuch.",
         "# Kartenordner",
-        "Hält deine Sammlung. \"Alle Karten einlegen\" legt jede lose Karte hinein; ein Klick auf eine Karte nimmt sie wieder heraus (Shift-Klick alle Kopien). Er behält die Seltenheit jeder Karte, in der Ecke angezeigt (R, SR, UR, ScR), und Decks nehmen zuerst Commons, damit deine Foils im Ordner bleiben. Karten aus noch gesperrten Sets zeigen ein Schloss.",
+        "Hält deine Sammlung. \"Alle Karten einlegen\" legt jede lose Karte hinein; ein Klick auf eine Karte nimmt sie wieder heraus (Shift-Klick alle Kopien). Er behält die Seltenheit jeder Karte, in der Ecke angezeigt (R, SR, UR, ScR), und eine Deckbox behält sie auch. Karten aus noch gesperrten Sets zeigen ein Schloss.",
         "**Suchen:** Einfach lostippen, sobald der Ordner offen ist. Jedes Wort muss im Namen, Kartentext, Attribut oder Typ vorkommen, also findet finsternis drache, empfänger oder schnellzauber etwas (Kartennamen und -texte sind englisch); Wörter in Anführungszeichen zählen als ein Ausdruck, etwa \"destroy all\". Rechtsklick leert das Feld. Die Knöpfe darunter filtern nach Kartentyp, Attribut, Stufe und Seltenheit (oder nur Foils) und sortieren nach Name, ATK, DEF oder Stufe; Shift-Klick geht zurück. Die Suche der Deckbox funktioniert genauso.",
         "[recipe {modid}:binder]",
         "# Set-Sammelbuch",
@@ -123,7 +123,7 @@
       "title": "Decks bauen",
       "icon": "{modid}:deck_box",
       "text": [
-        "Eine **Deckbox** hält ein Deck. Rechtsklick: Rechts sind deine Karten, ein Klick legt eine ins Deck; ein Klick auf eine Karte im Deck links legt sie zurück. Fusions-, Synchro-, Xyz- und Link-Monster kommen ins Extra Deck.",
+        "Eine **Deckbox** hält ein Deck. Rechtsklick: Rechts sind deine Karten, ein Klick legt eine ins Deck; ein Klick auf eine Karte im Deck links legt sie zurück. Fusions-, Synchro-, Xyz- und Link-Monster kommen ins Extra Deck. Jede Seltenheit einer Karte steht für sich, du wählst also, welche Kopie hineinkommt: Foils behalten ihre Seltenheit im Deck, glänzen in deinen Duellen und kommen so wieder heraus, wie sie hineingingen.",
         "[recipe {modid}:deck_box]",
         "# Deckregeln",
         "- 40 bis 60 Karten im Main Deck, bis zu 15 im Extra Deck.",
@@ -133,7 +133,9 @@
         "# Karten finden",
         "Nach Namen suchen, nach Typ (Monster, Zauber, Fallen, Extra Deck), Attribut und Stufe filtern und nach Name, ATK, DEF oder Stufe sortieren. Ein Klick auf einen Filter schaltet weiter, Shift-Klick zurück.",
         "# Import und Export",
-        "Export kopiert das Deck als YDK-Liste, die die meisten Deck-Builder lesen. Import ersetzt das Deck durch die YDK-Liste aus der Zwischenablage, gebaut aus deinen Karten, und sagt, welche gefehlt haben."
+        "Export kopiert das Deck als YDK-Liste, die die meisten Deck-Builder lesen. Import ersetzt das Deck durch die YDK-Liste aus der Zwischenablage, gebaut aus deinen Karten, und sagt, welche gefehlt haben.",
+        "# Boss-Monster",
+        "Rechtsklick auf ein Monster im Deck macht es zum **Boss-Monster** des Decks: Es bekommt einen goldenen Rahmen und eine Krone, und sein Name steht neben dem Namen der Deckbox. Im Duell bekommt nur dein Boss die Ass-Kamerafahrt, wenn er beschworen wird, für dich, deinen Gegner und Zuschauer. Noch ein Rechtsklick nimmt die Markierung weg. Ein Deck ohne Boss nutzt die Regeln der Ass-Kamera (siehe Client-Einstellungen)."
       ]
     },
     {
@@ -194,7 +196,9 @@
         "- `{cmd} progression next [count]`: das nächste Set freischalten, oder mehrere.",
         "- `{cmd} progression until <set or date>`: alles bis zu einem Set-Kürzel wie MRL oder einem Datum wie 2005-03-01.",
         "- `{cmd} progression set <set or date>`: wie until, kann aber auch zurückgehen.",
-        "- `{cmd} progression list [page]`: die Sets der Reihe nach, mit dem, was frei ist.",
+        "- `{cmd} progression list [page]`: die Sets der Reihe nach, mit dem, was frei ist (* markiert ein verschobenes Erscheinungsdatum).",
+        "- `{cmd} progression date <set> <YYYY-MM-DD>`: gibt einem Set ein anderes Erscheinungsdatum (`reset` holt das echte zurück); Sets werden in der Reihenfolge ihrer Daten frei. `{cmd} progression date` listet die verschobenen.",
+        "- Mit der Mod Tycoon Calendar erscheinen Sets, sobald der Kalender der Welt ihr Erscheinungsdatum erreicht (`[progression] calendar` = {server:progression.calendar}). Ein später beginnender Kalender schaltet alles bis zu seinem Start sofort frei; ihn zurückzustellen nimmt nichts weg.",
         "Mit `[progression] scope` = {server:progression.scope}: \"player\" gibt jedem Spieler einen eigenen Fortschritt; dann hängst du den Spielernamen an die Befehle an."
       ]
     },
@@ -371,6 +375,8 @@
         "- `[progression] startProduct` = {server:progression.startProduct}: wo neue Welten oder Spieler beginnen.",
         "- `[progression] announce` = {server:progression.announce}: Freischaltungen im Chat ansagen.",
         "- `[progression] daysPerSet` = {server:progression.daysPerSet}: Minecraft-Tage, bis sich das nächste Set von selbst freischaltet; 0 überlässt es den Operatoren.",
+        "- `[progression] calendar` = {server:progression.calendar}: mit der Mod Tycoon Calendar erscheinen Sets stattdessen an ihrem Erscheinungsdatum im Kalender der Welt.",
+        "- `[progression] releaseDates`: Sets mit anderem Erscheinungsdatum, z. B. `[\"MRD=2002-04-01\"]`; `{cmd} progression date` ändert sie im Spiel.",
         "- `[cards] lockedInDeck` = {server:cards.lockedInDeck}: gesperrte Karten bleiben aus Decks draußen.",
         "- `[cards] altArtChance` = {server:cards.altArtChance}: wie oft eine Karte aus einem Pack oder einer Tin als eines ihrer alternativen Artworks kommt (0 nie, 1 immer).",
         "- `[results] trackRecord` = {server:results.trackRecord}, `announce` = {server:results.announce}, `rewardBotDuels` = {server:results.rewardBotDuels}: Duell-Bilanzen, Ergebnisse im Chat, Belohnungen für Bot-Duelle.",
@@ -405,7 +411,7 @@
         "- `packOpeningShow` = {client:packOpeningShow}: Booster-Packs als Show öffnen (aufreißen, auffächern, jede Karte einzeln umdrehen). Aus: die Karten drehen sich einfach in Reihen um.",
         "- `fieldSpellArena` = {client:fieldSpellArena}: offene Feldzauber verwandeln das Duellfeld.",
         "- `displayEffects` = {client:displayEffects}: glänzende Karten in Sammler-Vitrinen leuchten und funkeln, ab Secret Rare mit Lichtstrahl.",
-        "- `aceCamera` = {client:aceCamera}: wird ein großes Monster beschworen, fährt die Kamera zwei Sekunden um es herum und sein Name erscheint groß. Es zählt jedes Monster ab Stufe `aceMinLevel` = {client:aceMinLevel}, mit mindestens `aceMinAttack` = {client:aceMinAttack} ATK (0: aus) oder aus dem Extra Deck (`aceExtraDeck` = {client:aceExtraDeck}).",
+        "- `aceCamera` = {client:aceCamera}: wird ein großes Monster beschworen, fährt die Kamera zwei Sekunden um es herum und sein Name erscheint groß. Es zählt jedes Monster ab Stufe `aceMinLevel` = {client:aceMinLevel}, mit mindestens `aceMinAttack` = {client:aceMinAttack} ATK (0: aus) oder aus dem Extra Deck (`aceExtraDeck` = {client:aceExtraDeck}). Ein Deck mit markiertem Boss-Monster bekommt die Kamerafahrt nur für seinen Boss.",
         "- `longSummonShows` = {client:longSummonShows}: die ganze Show (etwa 2,5 Sekunden) bei Fusions-, Synchro-, Xyz-, Ritual-, Link- und Pendelbeschwörungen; aus: 1,5 Sekunden.",
         "- `finisherCamera` = {client:finisherCamera}: die Kamera schwenkt auf den, der den letzten Treffer eines Duells abbekommt, während er in Zeitlupe läuft."
       ]

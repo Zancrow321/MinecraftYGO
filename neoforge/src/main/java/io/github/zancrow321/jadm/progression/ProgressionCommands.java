@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@code /jadm progression}: status, next, until, set and list (operators only).
+ * {@code /jadm progression}: status, next, until, set, list and date (operators only).
  */
 public final class ProgressionCommands {
     private static final int PAGE = 10;
@@ -32,6 +32,10 @@ public final class ProgressionCommands {
             "Each player has their own progress here (progression.scope = \"player\"); name one."));
     private static final SimpleCommandExceptionType UNKNOWN = new SimpleCommandExceptionType(Component.literal(
             "No such product: give a set code such as MRD or a date such as 2005-03-01."));
+    private static final SimpleCommandExceptionType UNKNOWN_SET = new SimpleCommandExceptionType(Component.literal(
+            "No such product: give a set code such as MRD or a product id."));
+    private static final SimpleCommandExceptionType BAD_DATE = new SimpleCommandExceptionType(Component.literal(
+            "Give a date such as 2002-04-01, or \"reset\" for the real release date."));
 
     private ProgressionCommands() {
     }
@@ -49,6 +53,12 @@ public final class ProgressionCommands {
                         (ctx, player) -> move(ctx, player, step -> Math.max(step, find(ctx))))))
                 .then(Commands.literal("set").then(withPlayer(target(),
                         (ctx, player) -> move(ctx, player, step -> find(ctx)))))
+                .then(Commands.literal("date").executes(ProgressionCommands::dates)
+                        .then(target().executes(ProgressionCommands::date)
+                                .then(Commands.argument("date", StringArgumentType.word())
+                                        .suggests((ctx, builder) -> SharedSuggestionProvider.suggest(
+                                                List.of("reset", "2002-04-01"), builder))
+                                        .executes(ProgressionCommands::setDate))))
                 .then(Commands.literal("list").executes(ctx -> list(ctx, 1))
                         .then(Commands.argument("page", IntegerArgumentType.integer(1))
                                 .executes(ctx -> list(ctx, IntegerArgumentType.getInteger(ctx, "page")))));
@@ -101,13 +111,66 @@ public final class ProgressionCommands {
         return step;
     }
 
+    private static Products.Product product(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        Products.Product product = JadmData.bundledProducts().resolve(StringArgumentType.getString(ctx, "product"));
+        if (product == null) {
+            throw UNKNOWN_SET.create();
+        }
+        return product;
+    }
+
+    /** {@code date}: the sets released on other days than in the TCG. */
+    private static int dates(CommandContext<CommandSourceStack> ctx) {
+        java.util.Map<String, java.time.LocalDate> moved = JadmData.releaseDates();
+        Component head = moved.isEmpty() ? Component.literal("Every set comes out on its real TCG release date. "
+                + "/jadm progression date <set> <YYYY-MM-DD> moves one.").withStyle(ChatFormatting.GRAY)
+                : Component.literal("Sets released on other days ([progression] releaseDates):")
+                        .withStyle(ChatFormatting.GOLD);
+        ctx.getSource().sendSuccess(() -> head, false);
+        moved.forEach((id, date) -> {
+            Products.Product real = JadmData.bundledProducts().get(id);
+            Component line = Component.literal("· " + real.code() + "  " + real.name() + ": " + date + " (real: "
+                    + real.date() + ")").withStyle(ChatFormatting.YELLOW);
+            ctx.getSource().sendSuccess(() -> line, false);
+        });
+        return moved.size();
+    }
+
+    /** {@code date <set>}: when a set comes out here. */
+    private static int date(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        Products.Product real = product(ctx);
+        java.time.LocalDate moved = JadmData.releaseDates().get(real.id());
+        Component line = Component.literal(Progress.describe(real) + (moved == null ? " comes out on its real date."
+                : " comes out on " + moved + " here.")).withStyle(ChatFormatting.YELLOW);
+        ctx.getSource().sendSuccess(() -> line, false);
+        return 1;
+    }
+
+    /** {@code date <set> <YYYY-MM-DD|reset>}: moves a set's release date, saved in the server config. */
+    private static int setDate(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        Products.Product real = product(ctx);
+        String text = StringArgumentType.getString(ctx, "date");
+        java.time.LocalDate date = null;
+        if (!"reset".equalsIgnoreCase(text)) {
+            date = ReleaseDates.date(text);
+            if (date == null) {
+                throw BAD_DATE.create();
+            }
+        }
+        java.time.LocalDate now = ReleaseDates.set(ctx.getSource().getServer(), real, date);
+        Component line = Component.literal(real.name() + " (" + real.code() + ") now comes out on " + now
+                + (date == null ? ", its real release date." : "."));
+        ctx.getSource().sendSuccess(() -> line, true);
+        return 1;
+    }
+
     private static int stepOf(ServerPlayer player) {
         return player == null ? Progress.worldStep() : Progress.step(player);
     }
 
     private static int status(CommandContext<CommandSourceStack> ctx, ServerPlayer player) {
-        for (Component line : Progress.status(stepOf(player), player == null ? "World" : player.getScoreboardName(),
-                Progress.daysLeft(ctx.getSource().getServer(), player))) {
+        for (Component line : Progress.status(ctx.getSource().getServer(), player, stepOf(player),
+                player == null ? "World" : player.getScoreboardName())) {
             ctx.getSource().sendSuccess(() -> line, false);
         }
         return 1;
@@ -139,7 +202,9 @@ public final class ProgressionCommands {
             Products.Product product = progression.product(step);
             String mark = step < current ? "✔ " : step == current ? "▶ " : "· ";
             ChatFormatting color = step <= current ? ChatFormatting.GREEN : ChatFormatting.GRAY;
-            Component line = Component.literal(mark + product.date() + "  " + product.code() + "  " + product.name()
+            boolean moved = JadmData.releaseDates().containsKey(product.id());
+            Component line = Component.literal(mark + product.date() + (moved ? "*" : "") + "  " + product.code()
+                    + "  " + product.name()
                     + "  (" + product.newCards().size() + " new)").withStyle(color);
             ctx.getSource().sendSuccess(() -> line, false);
         }
