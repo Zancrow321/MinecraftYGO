@@ -275,7 +275,7 @@ public final class ClientField {
                 animations.add(new FieldAnimation(event, joined, FieldAnimation.duration(event), actor));
                 continue;
             }
-            boolean ace = event.kind() == FieldEvent.Kind.SUMMON && AceCamera.ace(actor);
+            boolean ace = event.kind() == FieldEvent.Kind.SUMMON && AceCamera.ace(actor, view.bossesOf(event.player()));
             // An ace's shot shows its name big already, so it needs no banner first.
             if (actor != 0 && !ace && event.player() != view.you()
                     && (event.kind() == FieldEvent.Kind.ACTIVATE || event.kind() == FieldEvent.Kind.SUMMON)) {

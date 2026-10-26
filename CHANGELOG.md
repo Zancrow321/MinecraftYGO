@@ -20,6 +20,15 @@
   it opens as the 9-card core booster it is. Cards that came out first in Duelist's Advance (Trap Holic, Parallel
   Teleport, the R.B. cards...) now unlock with it, not later or only once everything is unlocked.
 
+### Boss monster per deck
+- **Mark your deck's boss:** right-click a monster in the deck box's deck to make it the deck's boss monster. It gets a
+  gold frame and a crown, its name shows next to the deck box's name and in the deck box's tooltip; right-click it again
+  to unmark it. Taking its last copy out of the deck unmarks it too.
+- **Only the boss gets the ace shot:** in a duel, a deck with a boss gives the ace camera's shot to that monster only
+  (alternate artworks included), for both duelists and onlookers, instead of every Level 7+, Extra Deck or 2500+ ATK
+  monster. Decks without a boss (NPCs, bots, starter decks) keep those rules. A locked tournament deck keeps its boss.
+- The server sends the bosses with the duel, so servers need the new version too.
+
 ## 1.2.9 (2026-10-20)
 
 ### Progression unlocks by itself

@@ -131,6 +131,10 @@ public final class JadmComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<DeckList>> DECK =
             COMPONENTS.registerComponentType("deck", b -> b.persistent(DeckList.CODEC)
                     .networkSynchronized(DeckList.STREAM_CODEC));
+    /** The monster marked as a deck box's boss: it gets the ace shot in a duel. Its original passcode. */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> DECK_BOSS =
+            COMPONENTS.registerComponentType("deck_boss", b -> b.persistent(Codec.INT)
+                    .networkSynchronized(ByteBufCodecs.VAR_INT));
 
     /** The skin a duel disk wears; see {@code Cosmetics.SKINS}. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> DISK_SKIN =

@@ -18,7 +18,7 @@ import java.util.List;
 
 /**
  * Holds one deck. Right-click to build it from the cards in your binder; the first legal deck box you carry is
- * the deck you duel with.
+ * the deck you duel with. One of its monsters can be marked as its boss, which gets the ace shot in a duel.
  */
 public final class DeckBoxItem extends Item {
     public DeckBoxItem(Properties properties) {
@@ -40,7 +40,21 @@ public final class DeckBoxItem extends Item {
 
     public static Deck toDeck(ItemStack stack) {
         JadmComponents.DeckList list = deck(stack);
-        return new Deck(stack.getHoverName().getString(), list.main(), list.extra(), List.of());
+        return new Deck(stack.getHoverName().getString(), list.main(), list.extra(), List.of(), boss(stack));
+    }
+
+    /**
+     * The monster marked as the deck's boss (its original passcode), or 0 if none is, or its last copy left the deck.
+     */
+    public static int boss(ItemStack stack) {
+        int boss = stack.getOrDefault(JadmComponents.DECK_BOSS.get(), 0);
+        if (boss == 0) {
+            return 0;
+        }
+        JadmComponents.DeckList list = deck(stack);
+        boolean held = java.util.stream.Stream.concat(list.main().stream(), list.extra().stream())
+                .anyMatch(code -> JadmData.original(code) == boss);
+        return held ? boss : 0;
     }
 
     /** What keeps the deck from being played, for the local player on a client (empty if legal). */
@@ -70,6 +84,11 @@ public final class DeckBoxItem extends Item {
         JadmComponents.DeckList deck = deck(stack);
         tooltip.add(Component.translatable("item.jadm.deck_box.tooltip", deck.main().size(),
                 deck.extra().size()).withStyle(ChatFormatting.GRAY));
+        int boss = boss(stack);
+        if (boss != 0) {
+            tooltip.add(Component.translatable("item.jadm.deck_box.boss", JadmData.cards().name(boss))
+                    .withStyle(ChatFormatting.GOLD));
+        }
         List<String> problems = problems(stack);
         tooltip.add(problems.isEmpty()
                 ? Component.translatable("item.jadm.deck_box.legal").withStyle(ChatFormatting.GREEN)

@@ -29,8 +29,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 /**
- * Builds the deck in a deck box: the main deck and below it the extra deck on the left (click to put a card back),
- * the cards you own on the right (click to add; Fusion, Synchro, Xyz and Link monsters go to the extra deck), and
+ * Builds the deck in a deck box: the main deck and below it the extra deck on the left (click to put a card back,
+ * right-click a monster to mark it as the deck's boss, which gets the ace shot in a duel), the cards you own on the right (click to add; Fusion, Synchro, Xyz and Link monsters go to the extra deck), and
  * whether the deck is legal at the top. The cards you own can be filtered by type, attribute and level and sorted;
  * the deck can be copied out and pasted in as a YDK list, the format of YGOPro and most deck builders.
  */
@@ -154,10 +154,23 @@ public final class DeckBoxScreen extends Screen {
         deck.extra().forEach(c -> inExtra.merge(c, 1, Integer::sum));
         deckGrid.set(inMain, "", code -> true, CardFilter.deckOrder());
         extraGrid.set(inExtra, "", code -> true, CardFilter.deckOrder());
+        int boss = DeckBoxItem.boss(box);
+        deckGrid.boss = code -> boss != 0 && base(code) == boss;
+        extraGrid.boss = deckGrid.boss;
         ownedGrid.set(owned(), search.getValue(), filter, filter.order());
         super.render(g, mouseX, mouseY, partialTick);
 
         g.drawString(font, box.getHoverName(), left + 8, top + 6, 0xFFFFFFFF, false);
+        // The boss monster after the name, as far as there is room before the legality status.
+        int bossX = left + 14 + font.width(box.getHoverName());
+        int bossRoom = left + 124 - bossX;
+        if (bossRoom > 20) {
+            Component bossLine = boss != 0
+                    ? Component.translatable("screen.jadm.deck_box.boss", JadmData.cards().name(boss))
+                    : Component.translatable("screen.jadm.deck_box.no_boss");
+            g.drawString(font, font.plainSubstrByWidth(bossLine.getString(), bossRoom), bossX, top + 6,
+                    boss != 0 ? 0xFFFFC030 : 0xFF777777, false);
+        }
         Component mainLabel = Component.translatable("screen.jadm.deck_box.main", deck.main().size());
         g.drawString(font, mainLabel, left + 8, top + 26, 0xFFAAAAAA, false);
         var banlist = JadmData.banlist(minecraft.player);
@@ -199,8 +212,17 @@ public final class DeckBoxScreen extends Screen {
         }
         if (hovered != null) {
             boolean preview = CardPreview.render(g, font, hovered.code(), Rarity.COMMON, left, height);
-            g.renderComponentTooltip(font, withLock(hovered.code(),
-                    CardGrid.tooltip(hovered.code(), "Click: put back", !preview)), mouseX, mouseY);
+            List<Component> tooltip = withLock(hovered.code(),
+                    CardGrid.tooltip(hovered.code(), "Click: put back", !preview));
+            if (monster(hovered.code())) {
+                boolean isBoss = deckGrid.boss.test(hovered.code());
+                if (isBoss) {
+                    tooltip.add(1, Component.literal("Boss monster").withStyle(net.minecraft.ChatFormatting.GOLD));
+                }
+                tooltip.add(Component.literal(isBoss ? "Right-click: no longer the boss"
+                        : "Right-click: make it the boss (ace shot)").withStyle(net.minecraft.ChatFormatting.GRAY));
+            }
+            g.renderComponentTooltip(font, tooltip, mouseX, mouseY);
         }
         hovered = ownedGrid.at(mouseX, mouseY);
         if (hovered != null) {
@@ -340,6 +362,11 @@ public final class DeckBoxScreen extends Screen {
         return 0;
     }
 
+    private static boolean monster(int code) {
+        var card = JadmData.cards().card(code);
+        return card != null && card.is(io.github.zancrow321.jadm.engine.OcgConstants.TYPE_MONSTER);
+    }
+
     /** The original printing's code: alternate arts carry it as their alias. */
     private static int base(int code) {
         return JadmData.original(code);
@@ -374,7 +401,7 @@ public final class DeckBoxScreen extends Screen {
             e = extraGrid.at(mouseX, mouseY);
         }
         if (e != null) {
-            send(Action.DECK_REMOVE, e.code());
+            send(button == 1 && monster(e.code()) ? Action.DECK_BOSS : Action.DECK_REMOVE, e.code());
             return true;
         }
         e = ownedGrid.at(mouseX, mouseY);

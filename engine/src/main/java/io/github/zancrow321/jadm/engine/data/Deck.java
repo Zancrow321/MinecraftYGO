@@ -9,14 +9,21 @@ import java.util.List;
 
 /**
  * A deck as lists of passcodes, read from EDOPro's {@code .ydk} format.
+ *
+ * @param boss the monster its owner marked as the deck's boss (it gets the ace shot in a duel), or 0 for none
  */
-public record Deck(String name, List<Integer> main, List<Integer> extra, List<Integer> side) {
+public record Deck(String name, List<Integer> main, List<Integer> extra, List<Integer> side, int boss) {
     public static final String BUNDLED_ROOT = "/jadm/decks/";
 
     public Deck {
         main = List.copyOf(main);
         extra = List.copyOf(extra);
         side = List.copyOf(side);
+    }
+
+    /** A deck without a boss monster. */
+    public Deck(String name, List<Integer> main, List<Integer> extra, List<Integer> side) {
+        this(name, main, extra, side, 0);
     }
 
     /** Loads a deck bundled under {@value #BUNDLED_ROOT}, e.g. {@code starter_yugi}. */
