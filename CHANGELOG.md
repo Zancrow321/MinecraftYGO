@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.11 (2026-10-26)
 
 ### Field Spell looks from resource packs
 - **Add your own Field Spell looks:** every Field Spell arena look is now a JSON file, so a resource pack can give more
