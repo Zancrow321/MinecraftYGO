@@ -10,8 +10,8 @@ import net.minecraft.resources.ResourceLocation;
 
 /**
  * Client to server: a click in the binder or deck box screen. {@code offhand} says which hand holds the binder or
- * deck box the screen was opened from. {@code rarity} is the copy a binder click takes out, or {@code null} for
- * commons first.
+ * deck box the screen was opened from. {@code rarity} is the copy a click moves, or {@code null} for commons first
+ * (out of a binder or deck) or the rarest copy (into a deck).
  */
 public record CollectionActionPayload(Action action, boolean offhand, int code, boolean all, Rarity rarity)
         implements CustomPacketPayload {

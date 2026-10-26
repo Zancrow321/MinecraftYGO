@@ -20,7 +20,6 @@ import io.github.zancrow321.jadm.engine.duel.DuelView;
 import io.github.zancrow321.jadm.engine.duel.ViewCodec;
 import io.github.zancrow321.jadm.entity.DuelistNpc;
 import io.github.zancrow321.jadm.item.DeckBoxItem;
-import io.github.zancrow321.jadm.item.JadmComponents;
 import io.github.zancrow321.jadm.item.JadmItems;
 import io.github.zancrow321.jadm.network.DuelClockPayload;
 import io.github.zancrow321.jadm.network.DuelCoinPayload;
@@ -935,11 +934,11 @@ public final class DuelManager {
             if (box.isEmpty()) {
                 continue;
             }
-            JadmComponents.DeckList list = DeckBoxItem.deck(box);
-            List<Integer> main = new ArrayList<>(list.main());
-            int code = main.remove(random.nextInt(main.size()));
-            box.set(JadmComponents.DECK.get(), new JadmComponents.DeckList(List.copyOf(main), list.extra()));
-            escrow.put(id, entrants.get(i).player(), code);
+            List<Integer> main = DeckBoxItem.deck(box).main();
+            int code = main.get(random.nextInt(main.size()));
+            // A common copy if the deck has one, so a foil only goes up when every copy is one.
+            var rarity = DeckBoxItem.remove(box, code, null);
+            escrow.put(id, entrants.get(i).player(), code, rarity);
             bets.add(entrants.get(i).name() + " puts up " + JadmData.text().cardName(code));
         }
         broadcast(entrants, Component.literal("Ante: " + String.join(", ", bets) + ".")

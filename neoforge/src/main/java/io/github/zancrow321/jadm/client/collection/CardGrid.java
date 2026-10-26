@@ -220,7 +220,7 @@ public final class CardGrid {
      * The short rarity of a foil card (R, SR, UR, ScR, StR, GhR...) in its bottom left corner, over the passcode,
      * where it hides nothing that matters. At half size on small cards.
      */
-    static void drawRarityTag(GuiGraphics g, Font font, Rarity rarity, int x, int y, int w, int h) {
+    public static void drawRarityTag(GuiGraphics g, Font font, Rarity rarity, int x, int y, int w, int h) {
         if (rarity == Rarity.COMMON) {
             return;
         }

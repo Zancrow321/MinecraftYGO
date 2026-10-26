@@ -33,13 +33,16 @@ public final class QueryDecoder {
     public static final int QUERY_RSCALE = 0x400000;
     public static final int QUERY_LINK = 0x800000;
     public static final int QUERY_IS_HIDDEN = 0x1000000;
+    /** The card's cover, which the mod uses for the rarity of the copy (see {@code DuelController}). */
+    public static final int QUERY_COVER = 0x2000000;
     public static final int QUERY_END = 0x80000000;
 
     /** The fields the mod asks for. */
     public static final int STANDARD_FLAGS = QUERY_CODE | QUERY_POSITION | QUERY_ALIAS | QUERY_TYPE | QUERY_LEVEL
             | QUERY_RANK | QUERY_ATTRIBUTE | QUERY_RACE | QUERY_ATTACK | QUERY_DEFENSE | QUERY_OVERLAY_CARD
             | QUERY_OWNER | QUERY_IS_PUBLIC | QUERY_IS_HIDDEN | QUERY_LSCALE | QUERY_RSCALE | QUERY_LINK
-            | QUERY_BASE_ATTACK | QUERY_BASE_DEFENSE | QUERY_EQUIP_CARD | QUERY_TARGET_CARD | QUERY_STATUS;
+            | QUERY_BASE_ATTACK | QUERY_BASE_DEFENSE | QUERY_EQUIP_CARD | QUERY_TARGET_CARD | QUERY_STATUS
+            | QUERY_COVER;
 
     private QueryDecoder() {
     }
@@ -64,7 +67,7 @@ public final class QueryDecoder {
     private static CardState readCard(ByteReader r) {
         int code = 0, position = 0, alias = 0, type = 0, level = 0, rank = 0, attribute = 0, attack = 0;
         int defense = 0, owner = 0, leftScale = 0, rightScale = 0, link = 0, linkMarker = 0;
-        int baseAttack = 0, baseDefense = 0, status = 0;
+        int baseAttack = 0, baseDefense = 0, status = 0, cover = 0;
         Loc equipTarget = null;
         List<Loc> targets = List.of();
         long race = 0;
@@ -83,7 +86,7 @@ public final class QueryDecoder {
                 case QUERY_END -> {
                     return new CardState(code, position, alias, type, level, rank, attribute, race, attack, defense,
                             owner, isPublic, isHidden, overlay, leftScale, rightScale, link, linkMarker, baseAttack,
-                            baseDefense, status, equipTarget, targets);
+                            baseDefense, status, equipTarget, targets, cover);
                 }
                 case QUERY_CODE -> code = r.i32();
                 case QUERY_POSITION -> position = r.i32();
@@ -98,6 +101,7 @@ public final class QueryDecoder {
                 case QUERY_BASE_ATTACK -> baseAttack = r.i32();
                 case QUERY_BASE_DEFENSE -> baseDefense = r.i32();
                 case QUERY_STATUS -> status = r.i32();
+                case QUERY_COVER -> cover = r.i32();
                 case QUERY_EQUIP_CARD -> {
                     Loc target = r.loc();
                     equipTarget = target.isNone() ? null : target;
