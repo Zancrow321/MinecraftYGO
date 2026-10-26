@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.11 (2026-10-26)
+
+### Field Spell looks from resource packs
+- **Add your own Field Spell looks:** every Field Spell arena look is now a JSON file, so a resource pack can give more
+  Field Spells their own ground, plants, rocks and peaks, particles and sounds, with textures and sounds from vanilla,
+  other mods or the pack itself. Files go in `assets/<namespace>/jadm/field_spells/`; F3+T reloads them. The 14
+  built-in looks are such files too, and a pack can change or replace them. Format: `docs/field-spell-looks.md` and
+  the Duelist's Handbook.
+
 ## 1.2.10 (2026-10-26)
 
 ### Duel log names more cards

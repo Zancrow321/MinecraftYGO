@@ -1,0 +1,23 @@
+{
+  "cards": [295517],
+  "ground": [
+    {"sprite": "minecraft:block/water_still", "weight": 1, "tint": "#2850D8"}
+  ],
+  "opacity": 0.85,
+  "glow": "#4080FF",
+  "waves": 0.45,
+  "props": [
+    {"shape": "cross", "sprite": "minecraft:block/kelp_plant", "count": 14, "height": [1.2, 2.6], "sway": 0.25},
+    {"shape": "cross", "sprite": "minecraft:block/seagrass", "count": 18, "height": [0.6, 1.1], "sway": 0.2},
+    {"shape": "cross", "sprite": "minecraft:block/tube_coral", "count": 5, "height": [0.6, 0.9]},
+    {"shape": "cross", "sprite": "minecraft:block/brain_coral", "count": 5, "height": [0.6, 0.9]},
+    {"shape": "cross", "sprite": "minecraft:block/fire_coral", "count": 4, "height": [0.6, 0.9]}
+  ],
+  "particles": [
+    {"type": "minecraft:splash", "where": "edge", "perTick": 10, "spread": 0.5, "speed": 0.25},
+    {"type": "minecraft:falling_water", "where": "edge", "perTick": 2, "spread": 1.8},
+    {"type": "minecraft:dolphin", "where": "ground", "perTick": 3, "spread": 0.2, "speed": 0.05},
+    {"type": "minecraft:bubble_pop", "where": "ground", "perTick": 2, "spread": 0.1, "speed": 0.02}
+  ],
+  "sounds": {"pitch": 1.0, "ambient": "minecraft:entity.boat.paddle_water", "reveal": ["minecraft:entity.generic.splash", "minecraft:entity.player.splash.high_speed"]}
+}
