@@ -6,6 +6,7 @@ import io.github.zancrow321.jadm.engine.data.BoosterSets.Rarity;
 import io.github.zancrow321.jadm.item.BinderItem;
 import io.github.zancrow321.jadm.item.CardItem;
 import io.github.zancrow321.jadm.item.DeckBoxItem;
+import io.github.zancrow321.jadm.item.JadmComponents;
 import io.github.zancrow321.jadm.item.JadmItems;
 import io.github.zancrow321.jadm.network.CollectionActionPayload;
 import io.github.zancrow321.jadm.network.CollectionActionPayload.Action;
@@ -21,6 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -84,7 +86,7 @@ public final class DeckBoxScreen extends Screen {
         cycle(filter.levelLabel(), step -> filter.nextLevel(step), filter::levelLabel, right + 114, top + 38, 56);
         int deckButtons = left + WIDTH / 2 - 6;
         addRenderableWidget(Button.builder(Component.translatable("screen.jadm.deck_box.clear"),
-                b -> send(Action.DECK_CLEAR, 0)).bounds(deckButtons - 106, top + 21, 32, 16).build());
+                b -> send(Action.DECK_CLEAR, 0, null)).bounds(deckButtons - 106, top + 21, 32, 16).build());
         addRenderableWidget(Button.builder(Component.translatable("screen.jadm.deck_box.export"),
                         b -> exportDeck()).bounds(deckButtons - 73, top + 21, 36, 16)
                 .tooltip(Tooltip.create(Component.translatable("screen.jadm.deck_box.export.hint"))).build());
@@ -125,19 +127,44 @@ public final class DeckBoxScreen extends Screen {
         grid.page = Math.max(0, Math.min(grid.pages() - 1, grid.page + delta));
     }
 
-    /** What the player can add: everything in their binders plus loose cards. */
-    private Map<Integer, Integer> owned() {
-        Map<Integer, Integer> counts = new HashMap<>();
+    /** What the player can add: everything in their binders plus loose cards, one entry per card and rarity. */
+    private List<CardGrid.Entry> owned() {
+        Map<Integer, EnumMap<Rarity, Integer>> copies = new HashMap<>();
         var inventory = minecraft.player.getInventory();
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             ItemStack stack = inventory.getItem(slot);
             if (stack.is(JadmItems.BINDER.get())) {
-                BinderItem.collection(stack).counts().forEach((code, n) -> counts.merge(code, n, Integer::sum));
+                for (BinderItem.Copies c : BinderItem.copies(stack)) {
+                    copies.computeIfAbsent(c.code(), code -> new EnumMap<>(Rarity.class))
+                            .merge(c.rarity(), c.count(), Integer::sum);
+                }
             } else if (stack.is(JadmItems.CARD.get()) && CardItem.code(stack) != 0) {
-                counts.merge(CardItem.code(stack), stack.getCount(), Integer::sum);
+                copies.computeIfAbsent(CardItem.code(stack), code -> new EnumMap<>(Rarity.class))
+                        .merge(CardItem.rarity(stack), stack.getCount(), Integer::sum);
             }
         }
+        List<CardGrid.Entry> entries = new ArrayList<>();
+        copies.forEach((code, byRarity) -> byRarity.forEach((rarity, n) -> entries.add(new CardGrid.Entry(code,
+                rarity, n))));
+        return entries;
+    }
+
+    /** How many copies of each card the player can add, whatever their rarity. */
+    private Map<Integer, Integer> ownedCounts() {
+        Map<Integer, Integer> counts = new HashMap<>();
+        owned().forEach(e -> counts.merge(e.code(), e.count(), Integer::sum));
         return counts;
+    }
+
+    /** The deck's copies, one entry per card and rarity: the extra deck's with {@code extra}, else the main deck's. */
+    private static List<CardGrid.Entry> deckCopies(JadmComponents.DeckList deck, boolean extra) {
+        List<CardGrid.Entry> entries = new ArrayList<>();
+        for (BinderItem.Copies c : DeckBoxItem.copies(deck)) {
+            if (deck.extra().contains(c.code()) == extra) {
+                entries.add(new CardGrid.Entry(c.code(), c.rarity(), c.count()));
+            }
+        }
+        return entries;
     }
 
     @Override
@@ -148,13 +175,9 @@ public final class DeckBoxScreen extends Screen {
             return;
         }
         var deck = DeckBoxItem.deck(box);
-        Map<Integer, Integer> inMain = new HashMap<>();
-        deck.main().forEach(c -> inMain.merge(c, 1, Integer::sum));
-        Map<Integer, Integer> inExtra = new HashMap<>();
-        deck.extra().forEach(c -> inExtra.merge(c, 1, Integer::sum));
-        deckGrid.set(inMain, "", code -> true, CardFilter.deckOrder());
-        extraGrid.set(inExtra, "", code -> true, CardFilter.deckOrder());
-        ownedGrid.set(owned(), search.getValue(), filter, filter.order());
+        deckGrid.setCopies(deckCopies(deck, false), "", e -> true, CardFilter.deckOrder());
+        extraGrid.setCopies(deckCopies(deck, true), "", e -> true, CardFilter.deckOrder());
+        ownedGrid.setCopies(owned(), search.getValue(), e -> filter.test(e.code()), filter.order());
         super.render(g, mouseX, mouseY, partialTick);
 
         g.drawString(font, box.getHoverName(), left + 8, top + 6, 0xFFFFFFFF, false);
@@ -198,15 +221,15 @@ public final class DeckBoxScreen extends Screen {
             hovered = extraGrid.at(mouseX, mouseY);
         }
         if (hovered != null) {
-            boolean preview = CardPreview.render(g, font, hovered.code(), Rarity.COMMON, left, height);
-            g.renderComponentTooltip(font, withLock(hovered.code(),
-                    CardGrid.tooltip(hovered.code(), "Click: put back", !preview)), mouseX, mouseY);
+            boolean preview = CardPreview.render(g, font, hovered.code(), hovered.rarity(), left, height);
+            g.renderComponentTooltip(font, withLock(hovered, CardGrid.tooltip(hovered.code(), "Click: put back",
+                    !preview)), mouseX, mouseY);
         }
         hovered = ownedGrid.at(mouseX, mouseY);
         if (hovered != null) {
             boolean locked = ownedGrid.locked.test(hovered.code());
-            boolean preview = CardPreview.render(g, font, hovered.code(), Rarity.COMMON, left, height);
-            g.renderComponentTooltip(font, withLock(hovered.code(),
+            boolean preview = CardPreview.render(g, font, hovered.code(), hovered.rarity(), left, height);
+            g.renderComponentTooltip(font, withLock(hovered,
                     CardGrid.tooltip(hovered.code(), locked ? null : "Click: add to deck", !preview)),
                     mouseX, mouseY);
         }
@@ -268,11 +291,11 @@ public final class DeckBoxScreen extends Screen {
             notice(Component.translatable("screen.jadm.deck_box.import.none"), 0xFFFF7070);
             return;
         }
-        Map<Integer, Integer> available = owned();
+        Map<Integer, Integer> available = ownedCounts();
         var deck = DeckBoxItem.deck(box());
         deck.main().forEach(c -> available.merge(c, 1, Integer::sum));
         deck.extra().forEach(c -> available.merge(c, 1, Integer::sum));
-        send(Action.DECK_CLEAR, 0);
+        send(Action.DECK_CLEAR, 0, null);
         // The same checks the server makes, so the notice can say what was left out.
         var banlist = JadmData.banlist(minecraft.player);
         var playable = JadmData.playable(minecraft.player);
@@ -303,7 +326,7 @@ public final class DeckBoxScreen extends Screen {
             } else {
                 main++;
             }
-            send(Action.DECK_ADD, have);
+            send(Action.DECK_ADD, have, null);
         }
         int added = main + extra;
         if (missing.isEmpty() && refused.isEmpty()) {
@@ -345,9 +368,14 @@ public final class DeckBoxScreen extends Screen {
         return JadmData.original(code);
     }
 
-    private List<Component> withLock(int code, List<Component> tooltip) {
-        if (ownedGrid.locked.test(code)) {
-            tooltip.add(Math.min(1, tooltip.size()), CardGrid.lockedLine(code));
+    /** A card's tooltip with the rarity of the copy, and which set unlocks it while it is locked. */
+    private List<Component> withLock(CardGrid.Entry entry, List<Component> tooltip) {
+        Component rarity = CardGrid.rarityLine(entry.rarity());
+        if (rarity != null) {
+            tooltip.add(Math.min(1, tooltip.size()), rarity);
+        }
+        if (ownedGrid.locked.test(entry.code())) {
+            tooltip.add(Math.min(1, tooltip.size()), CardGrid.lockedLine(entry.code()));
         }
         return tooltip;
     }
@@ -374,12 +402,12 @@ public final class DeckBoxScreen extends Screen {
             e = extraGrid.at(mouseX, mouseY);
         }
         if (e != null) {
-            send(Action.DECK_REMOVE, e.code());
+            send(Action.DECK_REMOVE, e.code(), e.rarity());
             return true;
         }
         e = ownedGrid.at(mouseX, mouseY);
         if (e != null) {
-            send(Action.DECK_ADD, e.code());
+            send(Action.DECK_ADD, e.code(), e.rarity());
             return true;
         }
         return false;
@@ -395,9 +423,10 @@ public final class DeckBoxScreen extends Screen {
         return true;
     }
 
-    private void send(Action action, int code) {
+    /** @param rarity the copy to move; {@code null} lets the server pick (see {@link CollectionActionPayload}) */
+    private void send(Action action, int code, Rarity rarity) {
         PacketDistributor.sendToServer(new CollectionActionPayload(action, hand == InteractionHand.OFF_HAND, code,
-                false));
+                false, rarity));
     }
 
     @Override

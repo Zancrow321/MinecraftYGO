@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+### Foils stay foils in decks and duels
+- **Deck boxes keep rarities:** a foil put into a deck used to come back out of it as a common (the deck box only
+  remembered the card). Deck boxes now remember each copy's rarity, and it goes back into the binder as it came.
+- **The deck editor shows them:** your cards and the deck list each rarity on its own, with its foil and short name
+  (StR, ScR, UR...), as in the binder. Click the copy you want; importing a YDK list takes your best copies.
+- **The duel shows them too:** the foil copies of your deck shine in your hand, in the card panel, in the card
+  windows and on the field (Field Spells, face-up Spells and Traps, monsters shown as cards, the top of the
+  Graveyard). Each copy keeps its own rarity wherever it goes, also in tag duels. The server needs this version too.
+- An ante card keeps its rarity as well.
+
 ## 1.2.9 (2026-10-20)
 
 ### Progression unlocks by itself

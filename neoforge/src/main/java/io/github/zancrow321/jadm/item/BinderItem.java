@@ -54,7 +54,7 @@ public final class BinderItem extends Item {
      * Splits a card's copies into its foils and the commons left over. Rarest first, so if the counts ever disagree
      * (a copy taken out by code that doesn't know about foils) the best copies are the ones kept.
      */
-    private static Map<Rarity, Integer> split(int total, Map<Rarity, Integer> foils) {
+    static Map<Rarity, Integer> split(int total, Map<Rarity, Integer> foils) {
         Map<Rarity, Integer> copies = new EnumMap<>(Rarity.class);
         Rarity[] rarities = Rarity.values();
         for (int i = rarities.length - 1; i > 0 && foils != null; i--) {
@@ -71,8 +71,13 @@ public final class BinderItem extends Item {
     }
 
     private static Map<Integer, EnumMap<Rarity, Integer>> foils(ItemStack binder) {
+        return foils(binder.getOrDefault(JadmComponents.FOILS.get(), JadmComponents.CardFoils.EMPTY).copies());
+    }
+
+    /** Foil counts keyed {@code "<passcode>:<rarity>"}, by passcode and rarity. */
+    static Map<Integer, EnumMap<Rarity, Integer>> foils(Map<String, Integer> copies) {
         Map<Integer, EnumMap<Rarity, Integer>> foils = new HashMap<>();
-        binder.getOrDefault(JadmComponents.FOILS.get(), JadmComponents.CardFoils.EMPTY).copies().forEach((key, n) -> {
+        copies.forEach((key, n) -> {
             int colon = key.indexOf(':');
             try {
                 int code = Integer.parseInt(key.substring(0, colon));

@@ -93,21 +93,40 @@ public final class JadmComponents {
         }
     }
 
-    /** A deck in a deck box. */
-    public record DeckList(List<Integer> main, List<Integer> extra) {
+    /**
+     * A deck in a deck box. {@code foils} are its foil copies, keyed {@code "<passcode>:<rarity>"} as in a binder's
+     * {@link CardFoils}; the copies of a card that aren't listed there are commons. See {@link DeckBoxItem#copies}.
+     */
+    public record DeckList(List<Integer> main, List<Integer> extra, Map<String, Integer> foils) {
         public static final DeckList EMPTY = new DeckList(List.of(), List.of());
         public static final Codec<DeckList> CODEC = RecordCodecBuilder.create(i -> i.group(
                 Codec.INT.listOf().optionalFieldOf("main", List.of()).forGetter(DeckList::main),
-                Codec.INT.listOf().optionalFieldOf("extra", List.of()).forGetter(DeckList::extra)
+                Codec.INT.listOf().optionalFieldOf("extra", List.of()).forGetter(DeckList::extra),
+                Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("foils", Map.of())
+                        .forGetter(DeckList::foils)
         ).apply(i, DeckList::new));
         public static final StreamCodec<ByteBuf, DeckList> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()), DeckList::main,
                 ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()), DeckList::extra,
+                ByteBufCodecs.<ByteBuf, String, Integer, Map<String, Integer>>map(HashMap::new,
+                        ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_INT), DeckList::foils,
                 DeckList::new);
 
         public DeckList {
             main = List.copyOf(main);
             extra = List.copyOf(extra);
+            Map<String, Integer> sorted = new TreeMap<>();
+            foils.forEach((key, n) -> {
+                if (n > 0) {
+                    sorted.put(key, n);
+                }
+            });
+            foils = Collections.unmodifiableMap(sorted);
+        }
+
+        /** A deck of commons. */
+        public DeckList(List<Integer> main, List<Integer> extra) {
+            this(main, extra, Map.of());
         }
 
         public int size() {
