@@ -40,9 +40,9 @@ public final class JadmData {
     private static final Lazy<CardPool> MODELED = new Lazy<>(CardPool::loadBundled);
     private static final Lazy<CardPool> EVERYTHING =
             new Lazy<>(() -> CardPool.everything(cards(), modeled().models()));
-    private static final Lazy<Products> PRODUCTS = new Lazy<>(Products::loadBundled);
-    private static final Lazy<Progression> PROGRESSION = new Lazy<>(() -> new Progression(products(), cards(),
-            everything(), JadmData.BUNDLED_BANLISTS.get()));
+    private static final Lazy<Products> BUNDLED_PRODUCTS = new Lazy<>(Products::loadBundled);
+    /** The products in the order the server releases them, and the progression through them; see {@link #order}. */
+    private static volatile Order order;
     private static final Lazy<Banlists> BUNDLED_BANLISTS = new Lazy<>(Banlists::loadBundled);
     private static final Lazy<OfficialBanlists> BUNDLED_OFFICIAL = new Lazy<>(OfficialBanlists::loadBundled);
     private static final Lazy<io.github.zancrow321.jadm.engine.data.TournamentDecks> TOURNAMENT_DECKS =
@@ -122,6 +122,9 @@ public final class JadmData {
 
     /** Called on a client when the server it joined says what it plays with. */
     public static void joined(PoolModePayload payload) {
+        if (!Progress.running()) {
+            releaseDates(io.github.zancrow321.jadm.progression.ReleaseDates.decode(payload.releaseDates()));
+        }
         joinedMode = PoolMode.parse(payload.mode());
         joinedStep = progression().indexOf(payload.product());
         joinedLockedInDeck = payload.lockedInDeck();
@@ -132,7 +135,52 @@ public final class JadmData {
     // ---- progression
 
     public static Progression progression() {
-        return PROGRESSION.get();
+        return order().progression().get();
+    }
+
+    /**
+     * The products with the server's release dates ({@code [progression] releaseDates}), product id to date, empty
+     * for the real ones.
+     */
+    public static Map<String, java.time.LocalDate> releaseDates() {
+        return order().dates();
+    }
+
+    /**
+     * Sets the server's release dates: on the server from its config, on a client from the server it joined.
+     *
+     * @return whether the order changed
+     */
+    public static synchronized boolean releaseDates(Map<String, java.time.LocalDate> dates) {
+        if (order().dates().equals(dates)) {
+            return false;
+        }
+        order = Order.of(Map.copyOf(dates));
+        setsStep = -1;
+        stepSets = null;
+        return true;
+    }
+
+    private static Order order() {
+        Order o = order;
+        if (o == null) {
+            synchronized (JadmData.class) {
+                o = order;
+                if (o == null) {
+                    o = order = Order.of(Map.of());
+                }
+            }
+        }
+        return o;
+    }
+
+    /** The products in release order with some dates moved, and the progression through them, built on first use. */
+    private record Order(Map<String, java.time.LocalDate> dates, Products products, Lazy<Progression> progression) {
+        static Order of(Map<String, java.time.LocalDate> dates) {
+            Products products = BUNDLED_PRODUCTS.get().withReleaseDates(dates);
+            return new Order(dates, products, new Lazy<>(() -> new Progression(products, cards(), everything(),
+                    BUNDLED_BANLISTS.get())));
+        }
     }
 
     /**
@@ -243,9 +291,14 @@ public final class JadmData {
         return TOURNAMENT_DECKS.get();
     }
 
-    /** Every TCG product in release order. */
+    /** Every TCG product in release order, with the server's {@link #releaseDates}. */
     public static Products products() {
-        return PRODUCTS.get();
+        return order().products();
+    }
+
+    /** Every TCG product in real release order. */
+    public static Products bundledProducts() {
+        return BUNDLED_PRODUCTS.get();
     }
 
     // ---- models

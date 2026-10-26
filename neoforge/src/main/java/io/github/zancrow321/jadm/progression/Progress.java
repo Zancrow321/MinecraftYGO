@@ -2,6 +2,7 @@ package io.github.zancrow321.jadm.progression;
 
 import io.github.zancrow321.jadm.JadmData;
 import io.github.zancrow321.jadm.JadmServerConfig;
+import io.github.zancrow321.jadm.compat.TycoonCalendarCompat;
 import io.github.zancrow321.jadm.engine.Ruleset;
 import io.github.zancrow321.jadm.engine.data.Banlist;
 import io.github.zancrow321.jadm.engine.data.PoolMode;
@@ -15,6 +16,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,10 +33,20 @@ public final class Progress {
 
     public static void started(MinecraftServer s) {
         server = s;
+        ReleaseDates.apply(s);
+    }
+
+    /** The server config was changed on disk (it is watched): moved release dates take effect. */
+    public static void configReloaded() {
+        MinecraftServer s = server;
+        if (s != null) {
+            s.execute(() -> ReleaseDates.apply(s));
+        }
     }
 
     public static void stopped() {
         server = null;
+        JadmData.releaseDates(java.util.Map.of());
     }
 
     /** Whether a server runs in this JVM (a dedicated server, or the integrated one of a single player world). */
@@ -74,7 +87,8 @@ public final class Progress {
     public static void sync(ServerPlayer player) {
         PacketDistributor.sendToPlayer(player, new PoolModePayload(JadmData.poolMode().id(),
                 JadmData.progression().product(step(player)).id(), JadmServerConfig.LOCKED_IN_DECK.get(),
-                JadmData.banlistSetting(player), JadmServerConfig.GENESYS_POINT_CAP.get()));
+                JadmData.banlistSetting(player), JadmServerConfig.GENESYS_POINT_CAP.get(),
+                ReleaseDates.encode(JadmData.releaseDates())));
     }
 
     /**
@@ -118,9 +132,32 @@ public final class Progress {
                 && JadmData.poolMode() == PoolMode.PROGRESSION;
     }
 
-    /** Unlocks the next set for the world, or per player for each player online, once enough days have passed. */
+    /**
+     * The world's Tycoon Calendar date when sets unlock by it ({@code [progression] calendar}), else {@code null}:
+     * without the mod, before its start date is settled, or outside a progression world.
+     */
+    public static LocalDate calendar(MinecraftServer s) {
+        if (s == null || !JadmServerConfig.SPEC.isLoaded() || !JadmServerConfig.CALENDAR.get()
+                || JadmData.poolMode() != PoolMode.PROGRESSION) {
+            return null;
+        }
+        return TycoonCalendarCompat.today(s);
+    }
+
+    /**
+     * Unlocks the sets released by the calendar's date, or else the next set once enough Minecraft days have passed;
+     * for the world, or per player for each player online.
+     */
     public static void tick(MinecraftServer s) {
-        if (s.getTickCount() % 20 != 0 || !daily()) {
+        if (s.getTickCount() % 20 != 0) {
+            return;
+        }
+        LocalDate date = calendar(s);
+        if (date != null) {
+            byCalendar(s, date);
+            return;
+        }
+        if (!daily()) {
             return;
         }
         ProgressionData data = ProgressionData.get(s);
@@ -151,6 +188,44 @@ public final class Progress {
                 }
             }
         }
+    }
+
+    /** Moves the world, or each player online, up to the newest set out by the calendar's date; never back. */
+    private static void byCalendar(MinecraftServer s, LocalDate date) {
+        int released = JadmData.progression().find(date.toString());
+        ProgressionData data = ProgressionData.get(s);
+        long today = today(s);
+        // Should the calendar go, the wait for daysPerSet starts then, not when the world began.
+        if (!Long.valueOf(today).equals(data.worldDay())) {
+            data.worldDay(today);
+        }
+        if (!perPlayer()) {
+            if (released > worldStep()) {
+                move(s, null, released);
+            }
+            return;
+        }
+        for (ServerPlayer player : s.getPlayerList().getPlayers()) {
+            if (!Long.valueOf(today).equals(data.playerDay(player.getUUID()))) {
+                data.playerDay(player.getUUID(), today);
+            }
+            if (released > step(player)) {
+                move(s, player, released);
+            }
+        }
+    }
+
+    /**
+     * When the next set unlocks by itself, for {@code /jadm progression status}: e.g. {@code in 3 days} or
+     * {@code on 2002-06-26 (the calendar says 2002-05-01)}, or {@code null} if sets don't unlock by themselves.
+     */
+    static String when(MinecraftServer s, ServerPlayer player, Products.Product next) {
+        LocalDate date = calendar(s);
+        if (date != null) {
+            return "on " + next.date() + " (the calendar says " + date + ")";
+        }
+        long days = daysLeft(s, player);
+        return days < 0 ? null : "in " + days + (days == 1 ? " day" : " days");
     }
 
     /** @return the days until the next set unlocks by itself, or -1 if sets don't unlock by themselves */
@@ -211,7 +286,7 @@ public final class Progress {
     }
 
     /** The status lines of {@code /jadm progression status}. */
-    static List<Component> status(int step, String who, long daysLeft) {
+    static List<Component> status(MinecraftServer s, ServerPlayer player, int step, String who) {
         Progression progression = JadmData.progression();
         Products.Product product = progression.product(step);
         List<Component> lines = new ArrayList<>();
@@ -228,7 +303,7 @@ public final class Progress {
         List<Products.Product> next = progression.upcoming(step, 1);
         lines.add(Component.literal(next.isEmpty() ? "Every set is unlocked."
                 : "Next: " + describe(next.get(0)) + ", " + next.get(0).newCards().size() + " new cards"
-                        + (daysLeft < 0 ? "" : ", in " + daysLeft + (daysLeft == 1 ? " day" : " days")))
+                        + (when(s, player, next.get(0)) == null ? "" : ", " + when(s, player, next.get(0))))
                 .withStyle(ChatFormatting.GRAY));
         return lines;
     }

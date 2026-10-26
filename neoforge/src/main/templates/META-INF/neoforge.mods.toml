@@ -57,6 +57,13 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.${mod_id}]]
+modId = "tycooncalendar"
+type = "optional"
+versionRange = "[0.1.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
 modId = "kubejs"
 type = "optional"
 versionRange = "${kubejs_version_range}"

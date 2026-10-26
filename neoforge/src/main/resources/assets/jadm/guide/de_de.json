@@ -196,7 +196,9 @@
         "- `{cmd} progression next [count]`: das nächste Set freischalten, oder mehrere.",
         "- `{cmd} progression until <set or date>`: alles bis zu einem Set-Kürzel wie MRL oder einem Datum wie 2005-03-01.",
         "- `{cmd} progression set <set or date>`: wie until, kann aber auch zurückgehen.",
-        "- `{cmd} progression list [page]`: die Sets der Reihe nach, mit dem, was frei ist.",
+        "- `{cmd} progression list [page]`: die Sets der Reihe nach, mit dem, was frei ist (* markiert ein verschobenes Erscheinungsdatum).",
+        "- `{cmd} progression date <set> <YYYY-MM-DD>`: gibt einem Set ein anderes Erscheinungsdatum (`reset` holt das echte zurück); Sets werden in der Reihenfolge ihrer Daten frei. `{cmd} progression date` listet die verschobenen.",
+        "- Mit der Mod Tycoon Calendar erscheinen Sets, sobald der Kalender der Welt ihr Erscheinungsdatum erreicht (`[progression] calendar` = {server:progression.calendar}). Ein später beginnender Kalender schaltet alles bis zu seinem Start sofort frei; ihn zurückzustellen nimmt nichts weg.",
         "Mit `[progression] scope` = {server:progression.scope}: \"player\" gibt jedem Spieler einen eigenen Fortschritt; dann hängst du den Spielernamen an die Befehle an."
       ]
     },
@@ -373,6 +375,8 @@
         "- `[progression] startProduct` = {server:progression.startProduct}: wo neue Welten oder Spieler beginnen.",
         "- `[progression] announce` = {server:progression.announce}: Freischaltungen im Chat ansagen.",
         "- `[progression] daysPerSet` = {server:progression.daysPerSet}: Minecraft-Tage, bis sich das nächste Set von selbst freischaltet; 0 überlässt es den Operatoren.",
+        "- `[progression] calendar` = {server:progression.calendar}: mit der Mod Tycoon Calendar erscheinen Sets stattdessen an ihrem Erscheinungsdatum im Kalender der Welt.",
+        "- `[progression] releaseDates`: Sets mit anderem Erscheinungsdatum, z. B. `[\"MRD=2002-04-01\"]`; `{cmd} progression date` ändert sie im Spiel.",
         "- `[cards] lockedInDeck` = {server:cards.lockedInDeck}: gesperrte Karten bleiben aus Decks draußen.",
         "- `[cards] altArtChance` = {server:cards.altArtChance}: wie oft eine Karte aus einem Pack oder einer Tin als eines ihrer alternativen Artworks kommt (0 nie, 1 immer).",
         "- `[results] trackRecord` = {server:results.trackRecord}, `announce` = {server:results.announce}, `rewardBotDuels` = {server:results.rewardBotDuels}: Duell-Bilanzen, Ergebnisse im Chat, Belohnungen für Bot-Duelle.",

@@ -196,7 +196,9 @@
         "- `{cmd} progression next [count]`: unlock the next set, or several.",
         "- `{cmd} progression until <set or date>`: everything up to a set code such as MRL or a date such as 2005-03-01.",
         "- `{cmd} progression set <set or date>`: like until, but can also go back.",
-        "- `{cmd} progression list [page]`: the sets in order, with what is unlocked.",
+        "- `{cmd} progression list [page]`: the sets in order, with what is unlocked (* marks a moved release date).",
+        "- `{cmd} progression date <set> <YYYY-MM-DD>`: gives a set another release date (`reset` brings back the real one); sets unlock in the order of their dates. `{cmd} progression date` lists the moved ones.",
+        "- With the Tycoon Calendar mod installed, sets come out when the world's calendar reaches their release date (`[progression] calendar` = {server:progression.calendar}). A calendar that starts later unlocks everything up to its start at once; setting it back takes nothing away.",
         "With `[progression] scope` = {server:progression.scope}, \"player\" gives each player their own progress: add the player's name to the commands."
       ]
     },
@@ -373,6 +375,8 @@
         "- `[progression] startProduct` = {server:progression.startProduct}: where new worlds or players start.",
         "- `[progression] announce` = {server:progression.announce}: say unlocks in chat.",
         "- `[progression] daysPerSet` = {server:progression.daysPerSet}: Minecraft days until the next set unlocks by itself; 0 leaves it to operators.",
+        "- `[progression] calendar` = {server:progression.calendar}: with the Tycoon Calendar mod, sets come out on their release date by the world's calendar instead.",
+        "- `[progression] releaseDates`: sets released on other days, e.g. `[\"MRD=2002-04-01\"]`; `{cmd} progression date` changes them in game.",
         "- `[cards] lockedInDeck` = {server:cards.lockedInDeck}: locked cards stay out of decks.",
         "- `[cards] altArtChance` = {server:cards.altArtChance}: how often a card from a pack or tin comes as one of its alternate artworks (0 never, 1 always).",
         "- `[results] trackRecord` = {server:results.trackRecord}, `announce` = {server:results.announce}, `rewardBotDuels` = {server:results.rewardBotDuels}: duel records, results in chat, rewards for bot duels.",
