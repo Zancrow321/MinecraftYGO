@@ -156,8 +156,8 @@ public final class DuelUi {
         DuelFeedback.reset();
     }
 
-    /** A tooltip for a control in the phase column, drawn last. */
-    private static String phaseTip;
+    /** A tooltip for whatever the mouse is on (a phase column control, a card to pick), drawn last. */
+    private static String tooltip;
 
     // ---- Settings and hotkeys ----
 
@@ -390,7 +390,7 @@ public final class DuelUi {
             }
         }
 
-        phaseTip = null;
+        tooltip = null;
         hand(g, view, prompt, mx, my, w, h);
         phases(g, font, view, prompt, mx, my, w, h);
         if (prompt != null && view.result() == null) {
@@ -428,8 +428,8 @@ public final class DuelUi {
         DuelFeedback.render(g, font, w, h);
         DuelStaging.renderBanners(g, font, w, h);
         Finale.renderHud(g, w, h);
-        if (phaseTip != null) {
-            g.renderTooltip(font, Component.literal(phaseTip), mx, my);
+        if (tooltip != null) {
+            g.renderTooltip(font, Component.literal(tooltip), mx, my);
         }
         if (dragging && pressedHand >= 0) {
             List<CardState> cards = view.board().side(view.you()).hand();
@@ -595,7 +595,7 @@ public final class DuelUi {
         y += BUTTON_HEIGHT + 2;
         boolean skip = skippingResponses();
         if (button(g, font, x, y + 4, PHASE_WIDTH, skip ? "Skip" : "Ask", true, mx, my, DuelUi::toggleResponses)) {
-            phaseTip = skip ? "Responses: passing all (C)" : "Responses: asking (C)";
+            tooltip = skip ? "Responses: passing all (C)" : "Responses: asking (C)";
         }
         if (skip) {
             outline(g, x, y + 4, PHASE_WIDTH, BUTTON_HEIGHT, 0xFFFF6060);
@@ -838,11 +838,13 @@ public final class DuelUi {
         List<Runnable> picks = new ArrayList<>();
         List<Boolean> ticked = new ArrayList<>();
         List<String> badges = new ArrayList<>();
+        List<Loc> places = new ArrayList<>();
         List<Choice> extra = new ArrayList<>();
         if (multi != null) {
             for (int i = 0; i < multi.options().size(); i++) {
                 int index = i;
                 codes.add(multi.codes().get(i));
+                places.add(i < multi.locs().size() ? multi.locs().get(i) : null);
                 names.add(multi.options().get(i));
                 ticked.add(ClientDuel.selected().contains(i));
                 // When the clicks put the cards in order, each picked card shows its place.
@@ -858,6 +860,7 @@ public final class DuelUi {
                 }
                 codes.add(c.code());
                 names.add(c.label());
+                places.add(c.at());
                 // Cards picked so far stay in the window, marked, and a click takes them back out.
                 ticked.add(c.kind() == Kind.UNSELECT);
                 badges.add("");
@@ -865,7 +868,7 @@ public final class DuelUi {
             }
         }
         String title = p.title() + (multi != null ? "  (" + ClientDuel.selected().size() + ")" : "");
-        int[] footer = cardGrid(g, font, title, codes, ticked, badges, picks, mx, my, w, h);
+        int[] footer = cardGrid(g, font, title, codes, places, ticked, badges, picks, mx, my, w, h);
         if (footer == null) {
             return;
         }
@@ -896,16 +899,18 @@ public final class DuelUi {
         }
         cards.addAll(byCard.values());
         List<Integer> codes = new ArrayList<>();
+        List<Loc> places = new ArrayList<>();
         List<Boolean> ticked = new ArrayList<>();
         List<Runnable> picks = new ArrayList<>();
         for (List<Choice> actions : cards) {
             codes.add(actions.getFirst().code());
+            places.add(actions.getFirst().at());
             ticked.add(false);
             // One action is done on the click; a card with several (Special Summon or Activate) gets its menu.
             picks.add(actions.size() == 1 ? () -> choose(actions.getFirst(), null)
                     : () -> menu = new Menu(mouseX, mouseY, List.copyOf(actions), null));
         }
-        int[] footer = cardGrid(g, font, picker.title(), codes, ticked, null, picks, mx, my, w, h);
+        int[] footer = cardGrid(g, font, picker.title(), codes, places, ticked, null, picks, mx, my, w, h);
         if (footer != null) {
             button(g, font, footer[0], footer[1], 60, "Cancel", true, mx, my, () -> picker = null);
         }
@@ -914,10 +919,11 @@ public final class DuelUi {
     /**
      * A window of cards to click, under the prompt: title, cards as big as fit, and pages when they don't.
      *
+     * @param places where each card is now, shown along its bottom edge ({@code null} entries for none)
      * @param badges a short mark for the corner of each card ("" for none), or {@code null}
      * @return where buttons go along the bottom (x, y), or {@code null} while the window is folded away
      */
-    private static int[] cardGrid(GuiGraphics g, Font font, String title, List<Integer> codes,
+    private static int[] cardGrid(GuiGraphics g, Font font, String title, List<Integer> codes, List<Loc> places,
                                   List<Boolean> ticked, List<String> badges, List<Runnable> picks, int mx, int my,
                                   int w, int h) {
         int width = windowWidth(w, 300);
@@ -961,6 +967,11 @@ public final class DuelUi {
                 outline(g, cx - 1, cy - 1, cw + 2, ch + 2, SELECTED);
             }
             card(g, codes.get(i), cx, cy, cw, ch);
+            Loc place = places.get(i);
+            boolean placed = place != null && !place.isNone();
+            if (placed) {
+                placeStrip(g, font, place, cx, cy + ch - PLACE_STRIP, cw);
+            }
             if (badges != null && !badges.get(i).isEmpty()) {
                 int bw = font.width(badges.get(i)) + 6;
                 g.fill(cx, cy, cx + bw, cy + 12, 0xE0000000);
@@ -973,6 +984,9 @@ public final class DuelUi {
                     hoverCard = null;
                 }
                 outline(g, cx, cy, cw, ch, GOLD);
+                if (placed) {
+                    tooltip = placeName(place);
+                }
             }
             hits.add(new Hit(cx, cy, cw, ch, picks.get(i)));
         }
@@ -983,6 +997,63 @@ public final class DuelUi {
             bx += 70;
         }
         return new int[]{bx, by};
+    }
+
+    /** How tall the strip along the bottom of a card to pick is that says where the card is. */
+    private static final int PLACE_STRIP = 10;
+    private static final int YOUR_PLACE = 0xFF80C8FF;
+    private static final int THEIR_PLACE = 0xFFFF8080;
+
+    /** Where a card to pick is ("Your GY", "Opp. Field"), on a strip along its bottom edge in its side's color. */
+    private static void placeStrip(GuiGraphics g, Font font, Loc loc, int x, int y, int w) {
+        DuelView view = ClientDuel.view();
+        boolean yours = view == null || loc.controller() == view.you();
+        int color = yours ? YOUR_PLACE : THEIR_PLACE;
+        g.fill(x, y, x + w, y + PLACE_STRIP, 0xE0000000);
+        g.fill(x, y, x + w, y + 1, color);
+        String label = (yours ? "Your " : "Opp. ") + placeShort(loc);
+        // Small cards get smaller text, so the whole label still fits.
+        float scale = Math.min(1f, (w - 2) / (float) font.width(label));
+        g.pose().pushPose();
+        g.pose().translate(x + w / 2f, y + 1 + (PLACE_STRIP - 1 - 8 * scale) / 2f, 0);
+        g.pose().scale(scale, scale, 1);
+        g.drawString(font, label, -font.width(label) / 2, 0, color, false);
+        g.pose().popPose();
+    }
+
+    private static String placeShort(Loc loc) {
+        if (loc.isOverlay()) {
+            return "Material";
+        }
+        return switch (loc.location()) {
+            case LOCATION_DECK -> "Deck";
+            case LOCATION_HAND -> "Hand";
+            case LOCATION_MZONE, LOCATION_SZONE -> "Field";
+            case LOCATION_GRAVE -> "GY";
+            case LOCATION_REMOVED -> "Banished";
+            case LOCATION_EXTRA -> "Extra";
+            default -> "Field";
+        };
+    }
+
+    /** Where a card to pick is, in full, for the tooltip on it. */
+    private static String placeName(Loc loc) {
+        DuelView view = ClientDuel.view();
+        boolean yours = view == null || loc.controller() == view.you();
+        String whose = yours ? "your " : "your opponent's ";
+        if (loc.isOverlay()) {
+            return "Xyz material on " + whose + "field";
+        }
+        return switch (loc.location()) {
+            case LOCATION_DECK -> "In " + whose + "Deck";
+            case LOCATION_HAND -> "In " + whose + "hand";
+            case LOCATION_MZONE -> "In " + whose + "Monster Zone";
+            case LOCATION_SZONE -> "In " + whose + (loc.sequence() == 5 ? "Field Zone" : "Spell & Trap Zone");
+            case LOCATION_GRAVE -> "In " + whose + "Graveyard";
+            case LOCATION_REMOVED -> "Among " + whose + "banished cards";
+            case LOCATION_EXTRA -> "In " + whose + "Extra Deck";
+            default -> "On " + whose + "field";
+        };
     }
 
     /** A pile that can be looked through at any time: a graveyard, the banished cards or an extra deck. */
