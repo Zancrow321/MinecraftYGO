@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Sets come out on their release date (Tycoon Calendar)
+- **Tycoon Calendar support (optional):** with [Tycoon Calendar](https://www.curseforge.com/minecraft/mc-mods/tycoon-calendar)
+  installed, sets in a progression world come out when the world's calendar reaches their real TCG release date,
+  in place of `daysPerSet`. A calendar that starts in, say, 2006 unlocks everything up to then as soon as its start
+  date is settled; setting the calendar back takes nothing away. `[progression] calendar = false` turns it off.
+  Without the mod nothing changes.
+- **Own release dates:** `/jadm progression date <set> <YYYY-MM-DD>` gives a set another release date (`reset` for
+  the real one; `/jadm progression date` lists them), saved in `[progression] releaseDates`. Sets unlock in the order
+  of their dates, with the calendar and with `daysPerSet`; `/jadm progression list` marks moved dates with `*`.
+  The world keeps the date it had reached, so a set moved before it unlocks and one moved past it locks again.
+- `/jadm progression status` says when the next set comes out by the calendar.
+
 ## 1.2.9 (2026-10-20)
 
 ### Progression unlocks by itself

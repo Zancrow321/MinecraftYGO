@@ -11,6 +11,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProgressionTest {
@@ -101,5 +102,25 @@ class ProgressionTest {
         }
         BoosterSets.BoosterSet lob = sets.get("legend_of_blue_eyes_white_dragon");
         assertFalse(lob.open(new Random(1)).isEmpty());
+    }
+
+    @Test
+    void movedReleaseDatesReorderTheSets() {
+        Products bundled = progression.products();
+        assertSame(bundled, bundled.withReleaseDates(Map.of()));
+        Products.Product psv = bundled.resolve("PSV");
+        Products.Product mrd = bundled.resolve("MRD");
+        assertEquals("pharaoh_s_servant", psv.id());
+        Products moved = bundled.withReleaseDates(Map.of(psv.id(), LocalDate.of(2002, 4, 1)));
+        assertEquals(bundled.products().size(), moved.products().size());
+        Progression early = new Progression(moved, cards, CardPool.everything(cards, CardPool.loadBundled().models()),
+                Banlists.loadBundled());
+        assertTrue(early.indexOf(psv.id()) < early.indexOf(mrd.id()), "Pharaoh's Servant now comes first");
+        assertEquals(LocalDate.of(2002, 4, 1), early.product(early.indexOf(psv.id())).date());
+        int april = early.find("2002-04-30");
+        assertTrue(early.pool(april).contains(77585513), "Jinzo with Pharaoh's Servant in April 2002");
+        assertFalse(progression.pool(progression.find("2002-04-30")).contains(77585513), "not without the move");
+        assertEquals(bundled.products().stream().mapToInt(p -> p.newCards().size()).sum(),
+                moved.products().stream().mapToInt(p -> p.newCards().size()).sum(), "every card is new somewhere");
     }
 }
