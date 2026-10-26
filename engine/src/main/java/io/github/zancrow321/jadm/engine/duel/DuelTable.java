@@ -98,6 +98,8 @@ public final class DuelTable implements AutoCloseable {
      * a pick among them right after shows what they are. See {@link #revealKey}.
      */
     private final List<Set<String>> revealed = List.of(new HashSet<>(), new HashSet<>());
+    /** The latest card move, so the log can say where a Set card came from. */
+    private DuelMessage.Move lastMove;
     private final List<Tally> tallies = List.of(new Tally(), new Tally());
     private long hint;
     private int botRetries;
@@ -408,8 +410,8 @@ public final class DuelTable implements AutoCloseable {
             if (watched != null) {
                 spectatorEvents.add(watched);
             }
-            String watchedLine = new DuelLog(text, names, -1, loc -> faceUpCodeAt(board, loc), card -> false)
-                    .describe(message);
+            String watchedLine = new DuelLog(text, names, -1, loc -> faceUpCodeAt(board, loc), card -> false,
+                    lastMove).describe(message);
             if (watchedLine != null && !(message instanceof DuelMessage.Retry)) {
                 spectatorLog.add(watchedLine);
             }
@@ -429,10 +431,13 @@ public final class DuelTable implements AutoCloseable {
                 }
                 Set<String> seen = revealed.get(as);
                 String line = new DuelLog(text, names, as, loc -> faceUpCodeAt(board, loc),
-                        card -> seen.contains(revealKey(card))).describe(message);
+                        card -> seen.contains(revealKey(card)), lastMove).describe(message);
                 if (line != null) {
                     pendingLog.get(viewer).add(line);
                 }
+            }
+            if (message instanceof DuelMessage.Move move) {
+                lastMove = move;
             }
         }
     }
