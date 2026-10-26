@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Duel
+- **Where each card is, in every card pick:** the cards in a pick window (deck searches, Monster Reborn, materials,
+  the Extra Deck or graveyard picker...) carry a strip along their bottom saying where the card is now and whose it is,
+  such as "Your Deck", "Your GY" or "Opp. Field": blue for yours, red for your opponent's. Hovering a card names the
+  place in full ("In your opponent's Graveyard").
+
 ## 1.2.9 (2026-10-20)
 
 ### Progression unlocks by itself
