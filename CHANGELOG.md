@@ -10,6 +10,16 @@
   it before (Lilith, Lady of Lament). A card Set straight from the Deck otherwise stays secret, as in the real game.
 - A monster Special Summoned face down no longer gives its name away to the opponent.
 
+### Missing products
+- **Power-Up Packs can be opened:** the Super Starter Power-Up Pack, the Space-Time Showdown Power-Up Pack and the
+  Noble Knights of the Round Table Power-Up Pack were too small to count as a set, so no shop sold them and no
+  progression step unlocked them. They are packs of five now: the Super Starter one with an Ultra Rare and two Super
+  Rares, the Space-Time Showdown one with an Ultra Rare, the Noble Knights one all Platinum Rares.
+- **Duelist's Advance has all 100 cards:** the card source listed only its 48 monsters, so it had no spells, traps
+  or Link Monsters and opened as a small 5-card pack. Its other 52 cards are added from the official set list, and
+  it opens as the 9-card core booster it is. Cards that came out first in Duelist's Advance (Trap Holic, Parallel
+  Teleport, the R.B. cards...) now unlock with it, not later or only once everything is unlocked.
+
 ## 1.2.9 (2026-10-20)
 
 ### Progression unlocks by itself

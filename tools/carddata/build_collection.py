@@ -63,6 +63,9 @@ def slug(name):
 # copies in a deck, "New", "European debut", "force-SMW"...), and those are no rarity.
 REAL_RARITY = re.compile(r"rare|common|short print", re.I)
 RARITY_ALIASES = {"Cr": "Collector's Rare"}
+# Printings YGOPRODeck's dump lacks (it has only Duelist's Advance's first 48 cards): product name -> its set code
+# and, per card number and name, [passcode, rarity, better rarities...].
+MISSING_PRINTINGS = Path(__file__).resolve().parent / "missing_printings.json"
 
 
 def printed_rarity(rarity):
@@ -98,7 +101,8 @@ def kind(name, code, size):
     if any(w in lower for w in ("promo", "participation", "shonen jump", "prize", "sneak peek", "championship",
                                 "premiere", "sample", "giveaway", "magazine", "issue", "game")):
         return "promo"
-    if lower.startswith(("tournament pack", "ots tournament pack")) or "battle pack" in lower:
+    if (lower.startswith(("tournament pack", "ots tournament pack")) or "battle pack" in lower
+            or "power-up pack" in lower):  # the packs that came inside a Super Starter or box set
         return "booster"
     if len(code) in (3, 4) and size >= 50:
         return "booster"
@@ -158,6 +162,12 @@ def write_products(cards, cardsets, rarities_only=False):
                 if rarity and rarity not in rarities:
                     rarities.append(rarity)
                 codes.setdefault(name, printing["set_code"].split("-")[0])
+    for name, missing in json.loads(MISSING_PRINTINGS.read_text(encoding="utf-8")).items():
+        if dates.get(name):
+            codes.setdefault(name, missing["code"])
+            for code, *rarities in missing["cards"].values():
+                if code in bundled:
+                    contents[name].setdefault(code, rarities)
     # A card is listed with its plainest rarity, the one it is pulled as in its usual slot (Phantom Nightmare's ultras
     # are also Quarter Century Secret Rares, and listing that one first left the set without ultras); its better
     # printings follow as variants. A card listed with only a note gets the product's most usual rarity: the commons
