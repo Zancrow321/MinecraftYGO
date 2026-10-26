@@ -55,6 +55,37 @@ class PackProfileTest {
         assertEquals(1000, secrets(thsf, 1000), "a secret in every Secret Forces pack");
     }
 
+    /** The Power-Up Packs were 15-card "special" products, too small to come in packs, so they were nowhere. */
+    @Test
+    void powerUpPacksCanBeOpened() {
+        BoosterSets.BoosterSet ys13 = SETS.get("super_starter_power_up_pack");
+        assertEquals("power-up", ys13.profile().name());
+        Random random = new Random(9);
+        for (int i = 0; i < 200; i++) {
+            List<BoosterSets.Card> pack = ys13.open(random);
+            assertEquals(5, pack.size());
+            assertEquals(1, pack.stream().filter(c -> c.rarity().slot() == BoosterSets.Rarity.ULTRA).count());
+            assertEquals(2, pack.stream().filter(c -> c.rarity().slot() == BoosterSets.Rarity.SUPER).count());
+        }
+        BoosterSets.BoosterSet ys14 = SETS.get("space_time_showdown_power_up_pack");
+        assertEquals(1, ys14.profile().slots().size(), "no supers in the Space-Time Showdown pack");
+        assertEquals(1000, foils(ys14, 1000), "its ultra in every pack");
+        assertTrue(SETS.sets().containsKey("noble_knights_of_the_round_table_power_up_pack"));
+    }
+
+    /** YGOPRODeck lists only Duelist's Advance's 48 monsters; its spells, traps and Links come from the set list. */
+    @Test
+    void duelistsAdvanceHasItsSpellsAndTraps() {
+        BoosterSets.BoosterSet duad = SETS.get("duelist_s_advance");
+        assertEquals(PackProfile.MODERN_CORE, duad.profile());
+        CardDatabase db = CardDatabase.loadBundled();
+        long spellsTraps = duad.cards().stream().map(BoosterSets.Card::code).distinct()
+                .filter(c -> (db.get(c).type() & 0x1) == 0).count();
+        assertEquals(34, spellsTraps, "27 spells and 7 traps");
+        assertEquals(100, duad.cards().stream().map(BoosterSets.Card::code).distinct().count());
+        assertEquals(BoosterSets.Rarity.ULTRA, SETS.rarity("duelist_s_advance", 22377092), "Trap Holic");
+    }
+
     private static long secrets(BoosterSets.BoosterSet set, int packs) {
         Random random = new Random(5);
         long secrets = 0;
