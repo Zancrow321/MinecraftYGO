@@ -77,6 +77,8 @@ public final class DuelManager {
     private static final double NEARBY_RANGE = 48;
     /** How long after their own duel (or the one they watched) ends a player is left to its result screen, in ticks. */
     private static final int AFTER_DUEL_TICKS = 600;
+    /** How long a player has to pick their deck before a duel; then the deck they picked last time is played. */
+    private static final int DECK_PICK_SECONDS = 20;
 
     private static DuelManager instance;
 
@@ -90,6 +92,8 @@ public final class DuelManager {
     /** Players whose duel just ended, until when no other duel's field is shown to them (it would take theirs away). */
     private final Map<UUID, Long> justDueled = new HashMap<>();
     private final List<ServerDuel> duels = new ArrayList<>();
+    /** Players picking their deck for a duel about to start -> that pick (shared by everyone in it). */
+    private final Map<UUID, DeckRound> deckRounds = new HashMap<>();
     /** Where each dueling person stands (once they're on the ground); they are held there until the duel ends. */
     private final Map<UUID, Vec3> anchors = new HashMap<>();
 
@@ -110,6 +114,16 @@ public final class DuelManager {
         Invite(UUID host, List<Entrant> entrants, Set<UUID> pending, boolean ante, long expiresAt, DuelistNpc npc) {
             this(host, entrants, pending, ante, expiresAt, npc, false, false, false);
         }
+    }
+
+    /**
+     * The deck pick before a duel: each person with more than one legal deck box chooses which one to play.
+     *
+     * @param offered  each choosing person's deck boxes, by their ids, in the order they were offered
+     * @param waiting  who hasn't picked yet
+     * @param deadline the server tick when the duel starts anyway, with the deck each was offered first
+     */
+    private record DeckRound(Invite invite, Map<UUID, List<UUID>> offered, Set<UUID> waiting, long deadline) {
     }
 
     /**
@@ -461,8 +475,110 @@ public final class DuelManager {
                 + DeckBoxItem.problems(boxes.get(0), player, banlist).get(0);
     }
 
-    /** Everyone accepted: checks decks, takes the ante and starts the duel. */
+    /** Everyone accepted: lets those with several decks pick one, then starts the duel. */
     private void launch(Invite invite) {
+        if (!askForDecks(invite)) {
+            launchNow(invite);
+        }
+    }
+
+    /**
+     * Asks everyone in the duel who carries more than one legal deck box which one to play.
+     *
+     * @return whether anyone was asked: the duel then starts once they have all picked, or the time is up
+     */
+    private boolean askForDecks(Invite invite) {
+        List<ServerPlayer> online = new ArrayList<>();
+        for (Entrant e : invite.entrants()) {
+            if (e.player() == null) {
+                continue;
+            }
+            if (deckRounds.containsKey(e.player())) {
+                message(invite.host(), Component.literal(e.name() + " is picking a deck for another duel."));
+                return true;
+            }
+            ServerPlayer player = player(e.player());
+            if (player == null || inDuel(player)) {
+                return false; // launchNow says why it can't start
+            }
+            online.add(player);
+        }
+        io.github.zancrow321.jadm.engine.data.Banlist banlist = inviteBanlist(invite, online);
+        Map<UUID, List<UUID>> offered = new HashMap<>();
+        for (ServerPlayer player : online) {
+            List<ItemStack> legal = legalDeckBoxes(player, banlist);
+            if (legal.size() < 2) {
+                continue;
+            }
+            List<UUID> ids = legal.stream().map(DuelDecks::id).toList();
+            List<io.github.zancrow321.jadm.network.DeckChoicePayload.Option> options = new ArrayList<>();
+            for (ItemStack box : legal) {
+                io.github.zancrow321.jadm.item.JadmComponents.DeckList list = DeckBoxItem.deck(box);
+                int boss = DeckBoxItem.boss(box);
+                int cover = boss != 0 ? boss : !list.main().isEmpty() ? list.main().get(0)
+                        : !list.extra().isEmpty() ? list.extra().get(0) : 0;
+                options.add(new io.github.zancrow321.jadm.network.DeckChoicePayload.Option(
+                        box.getHoverName().getString(), list.main().size(), list.extra().size(), cover, boss != 0));
+            }
+            offered.put(player.getUUID(), ids);
+            PacketDistributor.sendToPlayer(player, new io.github.zancrow321.jadm.network.DeckChoicePayload(
+                    matchup(invite.entrants()), options, Math.max(0, ids.indexOf(DuelDecks.chosen(player))),
+                    DECK_PICK_SECONDS));
+        }
+        if (offered.isEmpty()) {
+            return false;
+        }
+        DeckRound round = new DeckRound(invite, offered, new LinkedHashSet<>(offered.keySet()),
+                server.getTickCount() + DECK_PICK_SECONDS * 20L);
+        offered.keySet().forEach(id -> deckRounds.put(id, round));
+        String choosing = String.join(", ", offered.keySet().stream().map(this::nameOf).toList());
+        for (Entrant e : invite.entrants()) {
+            if (e.player() != null && !offered.containsKey(e.player())) {
+                message(e.player(), Component.literal("Waiting for " + choosing + " to pick a deck.")
+                        .withStyle(ChatFormatting.GRAY));
+            }
+        }
+        return true;
+    }
+
+    /** {@code player} picked the deck at {@code index} of those offered (or closed the window: the one offered first). */
+    public void pickDeck(ServerPlayer player, int index) {
+        DeckRound round = deckRounds.get(player.getUUID());
+        if (round == null || !round.waiting().remove(player.getUUID())) {
+            return;
+        }
+        List<UUID> ids = round.offered().get(player.getUUID());
+        if (index >= 0 && index < ids.size()) {
+            DuelDecks.choose(player, ids.get(index));
+        }
+        if (round.waiting().isEmpty()) {
+            finish(round);
+        } else {
+            message(player.getUUID(), Component.literal("Waiting for " + String.join(", ",
+                    round.waiting().stream().map(this::nameOf).toList()) + " to pick a deck.")
+                    .withStyle(ChatFormatting.GRAY));
+        }
+    }
+
+    /** Whether {@code player} is picking a deck for a duel about to start. */
+    public boolean pickingDeck(UUID player) {
+        return deckRounds.containsKey(player);
+    }
+
+    /** Everyone picked (or the time is up): the duel starts. */
+    private void finish(DeckRound round) {
+        deckRounds.values().removeIf(r -> r == round);
+        launchNow(round.invite());
+    }
+
+    /** The banlist an invitation's duel is played with (see {@link #duelBanlist}). */
+    private io.github.zancrow321.jadm.engine.data.Banlist inviteBanlist(Invite invite, List<ServerPlayer> online) {
+        int step = online.stream().mapToInt(JadmData::step).max().orElse(JadmData.step(null));
+        return duelBanlist(online, invite.arena() ? null : player(invite.host()), step);
+    }
+
+    /** Checks decks, takes the ante and starts the duel. */
+    private void launchNow(Invite invite) {
         List<Entrant> entrants = invite.entrants();
         // The coin toss: OCG-Core always lets team 0 go first, so the teams trade places half the time.
         if (server.overworld().getRandom().nextBoolean()) {
@@ -661,15 +777,26 @@ public final class DuelManager {
         return JadmData.banlist(step, setting);
     }
 
+    /** The legal deck boxes a player carries, the ones in hand first. */
+    private static List<ItemStack> legalDeckBoxes(ServerPlayer player,
+                                                  io.github.zancrow321.jadm.engine.data.Banlist banlist) {
+        return deckBoxes(player).stream().filter(box -> DeckBoxItem.problems(box, player, banlist).isEmpty()).toList();
+    }
+
     /**
-     * The first legal deck box a player carries (hands first, then the inventory). Tells the player when they carry
-     * deck boxes but none is legal.
+     * The deck box a player duels with: the one they picked last if they carry it and it is legal, else the first
+     * legal one (hands first, then the inventory). Tells the player when they carry deck boxes but none is legal.
      *
      * @return the deck box, or {@code null}
      */
     private static ItemStack legalDeckBox(ServerPlayer player,
                                           io.github.zancrow321.jadm.engine.data.Banlist banlist) {
         List<ItemStack> boxes = deckBoxes(player);
+        for (ItemStack box : boxes) {
+            if (DuelDecks.isChosen(player, box) && DeckBoxItem.problems(box, player, banlist).isEmpty()) {
+                return box;
+            }
+        }
         for (ItemStack box : boxes) {
             if (DeckBoxItem.problems(box, player, banlist).isEmpty()) {
                 return box;
@@ -1051,6 +1178,13 @@ public final class DuelManager {
         duelsByOnlooker.remove(player.getUUID());
         invites.remove(player.getUUID());
         invites.values().removeIf(invite -> invite.host().equals(player.getUUID()));
+        DeckRound round = deckRounds.get(player.getUUID());
+        if (round != null) {
+            round.waiting().remove(player.getUUID());
+            if (round.waiting().isEmpty()) {
+                finish(round); // says they're offline
+            }
+        }
         ServerDuel duel = duelsByPlayer.get(player.getUUID());
         if (duel != null) {
             run(duel, () -> duel.table().forfeit(seatOf(duel, player.getUUID())));
@@ -1060,6 +1194,11 @@ public final class DuelManager {
     public void tick() {
         long now = server.getTickCount();
         invites.values().removeIf(invite -> invite.expiresAt() < now);
+        for (DeckRound round : new ArrayList<>(new LinkedHashSet<>(deckRounds.values()))) {
+            if (now >= round.deadline()) {
+                finish(round);
+            }
+        }
         for (ServerDuel duel : List.copyOf(duels)) {
             if (duel.coin() != null) {
                 if (now >= duel.coin().deadline()) {
