@@ -117,7 +117,9 @@
         "[recipe {modid}:card_frame]",
         "[recipe {modid}:card_showcase]",
         "[recipe {modid}:toploader_stand]",
-        "[recipe {modid}:pack_display]"
+        "[recipe {modid}:pack_display]",
+        "# Server products",
+        "A server can sell its own booster packs, structure decks and tins: one JSON file each in a datapack under `data/<name>/jadm/products/`. They open, sell and unlock like the real ones and come out on their own date in a progression world. `{cmd} products` lists them and what was wrong with their files; `{cmd} products give <product>` hands one out. The product editor in the GitHub repository (`tools/product-editor/`) makes such a datapack without writing JSON, and `docs/custom-products.md` explains the format."
       ]
     },
     {

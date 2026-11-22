@@ -67,6 +67,17 @@ public final class BoosterPackItem extends Item {
         tooltip.add(Component.translatable(product == null ? "item.jadm.booster_pack.random"
                 : "item.jadm.booster_pack.tooltip", product == null ? "" : product.code(),
                 set == null ? BoosterSets.PACK_SIZE : set.profile().size()).withStyle(ChatFormatting.GRAY));
+        if (product != null) {
+            description(product, tooltip);
+        }
+    }
+
+    /** A datapack product's own line for its tooltip, if it has one. */
+    static void description(Products.Product product, List<Component> tooltip) {
+        if (product.isCustom() && !product.custom().description().isEmpty()) {
+            tooltip.add(Component.literal(product.custom().description()).withStyle(ChatFormatting.DARK_AQUA,
+                    ChatFormatting.ITALIC));
+        }
     }
 
     @Override
