@@ -130,15 +130,16 @@ public final class DeckBoxScreen extends Screen {
     /** What the player can add: everything in their binders plus loose cards, one entry per card and rarity. */
     private List<CardGrid.Entry> owned() {
         Map<Integer, EnumMap<Rarity, Integer>> copies = new HashMap<>();
+        for (ItemStack binder : io.github.zancrow321.jadm.collection.CollectionActions.binders(minecraft.player)) {
+            for (BinderItem.Copies c : BinderItem.copies(binder)) {
+                copies.computeIfAbsent(c.code(), code -> new EnumMap<>(Rarity.class))
+                        .merge(c.rarity(), c.count(), Integer::sum);
+            }
+        }
         var inventory = minecraft.player.getInventory();
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             ItemStack stack = inventory.getItem(slot);
-            if (stack.is(JadmItems.BINDER.get())) {
-                for (BinderItem.Copies c : BinderItem.copies(stack)) {
-                    copies.computeIfAbsent(c.code(), code -> new EnumMap<>(Rarity.class))
-                            .merge(c.rarity(), c.count(), Integer::sum);
-                }
-            } else if (stack.is(JadmItems.CARD.get()) && CardItem.code(stack) != 0) {
+            if (stack.is(JadmItems.CARD.get()) && CardItem.code(stack) != 0) {
                 copies.computeIfAbsent(CardItem.code(stack), code -> new EnumMap<>(Rarity.class))
                         .merge(CardItem.rarity(stack), stack.getCount(), Integer::sum);
             }
@@ -456,8 +457,8 @@ public final class DeckBoxScreen extends Screen {
 
     /** @param rarity the copy to move; {@code null} lets the server pick (see {@link CollectionActionPayload}) */
     private void send(Action action, int code, Rarity rarity) {
-        PacketDistributor.sendToServer(new CollectionActionPayload(action, hand == InteractionHand.OFF_HAND, code,
-                false, rarity));
+        PacketDistributor.sendToServer(new CollectionActionPayload(action, hand == InteractionHand.OFF_HAND
+                ? CollectionActionPayload.OFF_HAND : CollectionActionPayload.MAIN_HAND, code, false, rarity));
     }
 
     @Override

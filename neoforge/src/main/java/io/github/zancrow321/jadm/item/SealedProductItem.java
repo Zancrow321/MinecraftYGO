@@ -107,9 +107,7 @@ public final class SealedProductItem extends Item {
         ItemStack binder = BinderItem.forPulls(player);
         int total = counts.values().stream().mapToInt(Integer::intValue).sum();
         if (!binder.isEmpty()) {
-            Map<Integer, Integer> merged = new HashMap<>(BinderItem.collection(binder).counts());
-            counts.forEach((code, n) -> merged.merge(code, n, Integer::sum));
-            binder.set(JadmComponents.COLLECTION.get(), new JadmComponents.CardCollection(merged));
+            BinderItem.addAll(binder, counts);
             player.sendSystemMessage(Component.translatable("message.jadm.structure_deck.binder", total,
                     product.name()).withStyle(ChatFormatting.GREEN));
             return;

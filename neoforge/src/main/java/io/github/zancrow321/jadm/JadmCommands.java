@@ -103,6 +103,7 @@ final class JadmCommands {
                 .then(io.github.zancrow321.jadm.bounty.BountyCommands.build())
                 .then(io.github.zancrow321.jadm.admin.AdminMenu.command())
                 .then(io.github.zancrow321.jadm.collection.JoinDecks.command())
+                .then(io.github.zancrow321.jadm.collection.BinderStore.command())
                 .then(Commands.literal("cosmetics").executes(ctx -> {
                     PlayerCosmetics.open(ctx.getSource().getPlayerOrException());
                     return 1;
