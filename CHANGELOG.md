@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### New cards and sets
+- **Magnificent Maestros is complete:** all 125 cards (before only the 24 known ahead of release), and it opens
+  like Magnificent Monsters. Its 49 TCG debuts unlock with it on 2026-11-12.
+- **Ultimate Tournament Pack 2** (2026-11-05) is in the product list.
+- **About 170 new OCG cards** that came out in Japan from September to November 2026: the Zenet, Raise Moon and
+  Trirealm Rift cards, the new Legendary God Cards and Sun God monsters, Winter Raven, Reindsurm, Ars Magna,
+  Bunnillin, Rikka and Salamangreat support, the new Cubic, Marincess and Ghostrick cards and more. They carry their
+  official English names and unlock on their OCG release date.
+- **11 Beyond the Brave cards got their real passcodes** (they came with temporary ones). Cards, binders and deck
+  boxes that hold the old ones load as the new ones by themselves, and .ydk files with the old passcodes still import.
+- Card scripts and rulings updated from Project Ignis.
+
 ## 1.2.11 (2026-10-26)
 
 ### Field Spell looks from resource packs

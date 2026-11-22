@@ -33,7 +33,7 @@ function s.initial_effect(c)
 	e2:SetTargetRange(0,1)
 	e2:SetCondition(s.angelcountcondition(2))
 	e2:SetOperation(function(e,c,tp,r)
-		return (r&LOCATION_REASON_SPSUMMON)==LOCATION_REASON_SPSUMMON
+		return r==LOCATION_REASON_SPSUMMON
 	end)
 	c:RegisterEffect(e2)
 	--● 3+: Once per turn, you can activate 1 "Angelechy" Trap Card the turn it was Set
@@ -59,7 +59,7 @@ function s.initial_effect(c)
 	e4:SetRange(LOCATION_FZONE)
 	e4:SetCountLimit(1)
 	e4:SetCondition(function(e,tp,eg,ep,ev,re,r,rp)
-		return ep==1-tp and s.angelcountcondition(4)(e)
+		return rp==1-tp and s.angelcountcondition(4)(e)
 	end)
 	e4:SetTarget(s.banishtg)
 	e4:SetOperation(s.banishop)
@@ -96,7 +96,7 @@ function s.drwop(e,tp,eg,ep,ev,re,r,rp)
 	Duel.Draw(p,d,REASON_EFFECT)
 end
 function s.banishtg(e,tp,eg,ep,ev,re,r,rp,chk)
-	local g=eg:Filter(Card.IsAbleToRemove,nil)
+	local g=eg:Filter(Card.IsAbleToRemove,nil):Filter(Card.IsSummonPlayer,nil,1-tp)
 	if chk==0 then return #g>0 end
 	for sc in eg:Iter() do
 		sc:CreateEffectRelation(e)
@@ -104,7 +104,7 @@ function s.banishtg(e,tp,eg,ep,ev,re,r,rp,chk)
 	Duel.SetOperationInfo(0,CATEGORY_REMOVE,g,#g,tp,0)
 end
 function s.banishop(e,tp,eg,ep,ev,re,r,rp)
-	local g=eg:Filter(Card.IsRelateToEffect,nil,e)
+	local g=eg:Filter(Card.IsRelateToEffect,nil,e):Filter(Card.IsSummonPlayer,nil,1-tp)
 	if #g>0 then
 		Duel.Remove(g,POS_FACEUP,REASON_EFFECT)
 	end

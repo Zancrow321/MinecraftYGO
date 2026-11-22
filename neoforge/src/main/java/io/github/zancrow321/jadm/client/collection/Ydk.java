@@ -1,5 +1,7 @@
 package io.github.zancrow321.jadm.client.collection;
 
+import io.github.zancrow321.jadm.engine.data.Renumbered;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +45,7 @@ final class Ydk {
                 section = side;
             } else if (section != null && !line.isEmpty() && !line.startsWith("#")) {
                 try {
-                    section.add(Integer.parseInt(line));
+                    section.add(Renumbered.current(Integer.parseInt(line)));
                 } catch (NumberFormatException ignored) {
                     // Not a passcode; deck builders sometimes leave notes.
                 }
