@@ -112,15 +112,23 @@ public final class DeckPickScreen extends Screen {
             }
             CardGrid.drawCard(g, font, deck.cover(), x, y0(), CARD_WIDTH, cardHeight());
             if (deck.boss()) {
-                g.drawString(font, "♛", x + 3, y0() + 3, GOLD);
+                // The cover is the deck's boss monster: a gold tag on it says so.
+                Component boss = Component.translatable("screen.jadm.deck_pick.boss");
+                int bw = font.width(boss) + 6;
+                g.fill(x + CARD_WIDTH / 2 - bw / 2, y0() + cardHeight() - 6, x + CARD_WIDTH / 2 + bw / 2,
+                        y0() + cardHeight() + 5, GOLD);
+                g.drawString(font, boss, x + CARD_WIDTH / 2 - font.width(boss) / 2, y0() + cardHeight() - 4,
+                        0xFF201000, false);
             }
             List<FormattedCharSequence> lines = font.split(Component.literal(deck.name()), CARD_WIDTH + 20);
-            int ty = y0() + cardHeight() + 5;
+            int ty = y0() + cardHeight() + 8;
             for (int l = 0; l < Math.min(2, lines.size()); l++) {
                 g.drawCenteredString(font, lines.get(l), x + CARD_WIDTH / 2, ty + l * 10,
                         index == selected || index == hovered ? GOLD : 0xFFFFFFFF);
             }
-            String counts = deck.extra() > 0 ? deck.main() + " + " + deck.extra() : String.valueOf(deck.main());
+            Component counts = deck.extra() > 0
+                    ? Component.translatable("screen.jadm.deck_pick.cards_extra", deck.main(), deck.extra())
+                    : Component.translatable("screen.jadm.deck_pick.cards", deck.main());
             g.drawCenteredString(font, counts, x + CARD_WIDTH / 2, ty + Math.min(2, lines.size()) * 10, 0xFF888888);
         }
         if (pages() > 1) {

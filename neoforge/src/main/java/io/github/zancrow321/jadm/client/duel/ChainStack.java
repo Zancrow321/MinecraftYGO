@@ -143,11 +143,19 @@ public final class ChainStack {
                 links.add(new Link(n, e.code(), e.player(), now));
                 shown |= n >= 2;
             }
-            case CHAIN_SOLVING -> set(n, State.SOLVING, now);
+            case CHAIN_SOLVING -> {
+                // The core tells a link is done only after the next one has started: the later links are done.
+                for (Link l : links) {
+                    if (l.number > n) {
+                        solved(l, now);
+                    }
+                }
+                set(n, State.SOLVING, now);
+            }
             case CHAIN_SOLVED -> {
                 Link link = link(n);
-                if (link != null && link.state != State.NEGATED) {
-                    set(n, State.SOLVED, now);
+                if (link != null) {
+                    solved(link, now);
                 }
             }
             case CHAIN_NEGATED -> set(n, State.NEGATED, now);
@@ -164,6 +172,14 @@ public final class ChainStack {
             }
         }
         return null;
+    }
+
+    /** A link that resolved starts to fade, unless it already is or was negated (its cross stays until the end). */
+    private static void solved(Link link, long now) {
+        if (link.state == State.WAITING || link.state == State.SOLVING) {
+            link.state = State.SOLVED;
+            link.since = now;
+        }
     }
 
     private static void set(int number, State state, long now) {
@@ -204,9 +220,12 @@ public final class ChainStack {
             if (fade <= 0.02f) {
                 continue;
             }
-            int edge = link.state == State.SOLVING
-                    ? blend(GOLD, 0.6f + 0.4f * (float) Math.sin(age * 0.6f), fade)
-                    : blend(link.player == view.you() ? MINE : THEIRS, 1, fade);
+            int edge = edge(link, view, fade);
+            if (link.state == State.SOLVING) {
+                // A pulsing glow around the link that is resolving.
+                int glow = blend(GOLD, 0.25f + 0.25f * (float) Math.sin(age * 0.5f), fade);
+                g.fill(x + dx - 4, y - 4, x + dx + CARD_WIDTH + 4, y + CARD_HEIGHT + 4, glow);
+            }
             g.fill(x + dx - 2, y - 2, x + dx + CARD_WIDTH + 2, y + CARD_HEIGHT + 2, edge);
             DuelUi.card(g, link.code, x + dx, y, CARD_WIDTH, CARD_HEIGHT);
             if (fade < 1) {
@@ -220,18 +239,27 @@ public final class ChainStack {
                     g.fill(x + dx + CARD_WIDTH - t - 2, ly, x + dx + CARD_WIDTH - t, ly + 2, blend(THEIRS, 1, fade));
                 }
             }
-            // The link's number in a badge on the card's top left corner.
-            String number = String.valueOf(link.number);
-            int bw = Math.max(10, font.width(number) + 4);
-            g.fill(x + dx - 4, y - 4, x + dx - 4 + bw, y + 7, blend(0xFF101828, 1, fade));
-            g.fill(x + dx - 4, y + 6, x + dx - 4 + bw, y + 7, edge);
-            g.drawCenteredString(font, number, x + dx - 4 + bw / 2, y - 3,
-                    blend(link.state == State.SOLVING ? GOLD : 0xFFFFFFFF, 1, fade));
             boolean top_ = i == count - 1;
             int visible = top_ ? CARD_HEIGHT : step;
             if (mx >= x + dx && mx < x + dx + CARD_WIDTH && my >= y && my < y + visible) {
                 hovered = link.code;
             }
+        }
+        // The links' numbers on top of all the cards, so a newer card never hides an older one's number.
+        for (int i = 0; i < count; i++) {
+            Link link = links.get(i);
+            float fade = out * (link.state == State.SOLVED ? Math.max(0, 1 - (now - link.since) / FADE) : 1);
+            if (fade <= 0.02f) {
+                continue;
+            }
+            int bx = x + (link.state == State.SOLVING ? -6 : 0) - 8;
+            int y = top + (count - 1 - i) * step + 2;
+            String number = String.valueOf(link.number);
+            int bw = Math.max(12, font.width(number) + 5);
+            g.fill(bx - 1, y - 1, bx + bw + 1, y + 12, edge(link, view, fade));
+            g.fill(bx, y, bx + bw, y + 11, blend(0xFF101828, 1, fade));
+            g.drawCenteredString(font, number, bx + bw / 2, y + 2,
+                    blend(link.state == State.SOLVING ? GOLD : 0xFFFFFFFF, 1, fade));
         }
         Link solving = links.stream().filter(l -> l.state == State.SOLVING || l.state == State.NEGATED)
                 .reduce((a, b) -> b).orElse(null);
@@ -243,6 +271,11 @@ public final class ChainStack {
                     solving.state == State.NEGATED ? THEIRS : GOLD);
         }
         return hovered;
+    }
+
+    /** The frame of a link: gold while it resolves, else blue for yours and red for your opponent's. */
+    private static int edge(Link link, DuelView view, float fade) {
+        return blend(link.state == State.SOLVING ? GOLD : link.player == view.you() ? MINE : THEIRS, 1, fade);
     }
 
     /** {@code color} with its alpha scaled by {@code a * fade}. */
