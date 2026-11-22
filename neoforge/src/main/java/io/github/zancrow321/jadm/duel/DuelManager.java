@@ -92,6 +92,8 @@ public final class DuelManager {
     /** Players whose duel just ended, until when no other duel's field is shown to them (it would take theirs away). */
     private final Map<UUID, Long> justDueled = new HashMap<>();
     private final List<ServerDuel> duels = new ArrayList<>();
+    /** Each person's last duel that wasn't an organized one, so it can be played again from the result screen. */
+    private final Map<UUID, Invite> lastDuels = new HashMap<>();
     /** Players picking their deck for a duel about to start -> that pick (shared by everyone in it). */
     private final Map<UUID, DeckRound> deckRounds = new HashMap<>();
     /** Where each dueling person stands (once they're on the ground); they are held there until the duel ends. */
@@ -541,6 +543,67 @@ public final class DuelManager {
         return true;
     }
 
+    /**
+     * {@code player} wants their last duel again (the Rematch button on the result screen, or {@code /jadm rematch}):
+     * the same duelists, bots or NPC, with the same ante, ranking and Battle City setting. The other people get an
+     * invitation, and the button on their result screen accepts it; if one of them asked first, this accepts theirs.
+     */
+    public void rematch(ServerPlayer player) {
+        Invite last = lastDuels.get(player.getUUID());
+        if (last == null) {
+            player.sendSystemMessage(Component.literal("There is no duel to play again."));
+            return;
+        }
+        if (inDuel(player) || pickingDeck(player.getUUID())) {
+            return;
+        }
+        Invite received = invites.get(player.getUUID());
+        if (received != null && last.entrants().stream().anyMatch(e -> received.host().equals(e.player()))) {
+            accept(player);
+            return;
+        }
+        for (Invite sent : invites.values()) {
+            if (sent.host().equals(player.getUUID())) {
+                player.sendSystemMessage(Component.literal("Waiting for " + String.join(", ",
+                        sent.pending().stream().map(this::nameOf).toList()) + " to accept."));
+                return;
+            }
+        }
+        if (last.npc() != null) {
+            if (!last.npc().isAlive()) {
+                player.sendSystemMessage(Component.literal(last.npc().duelistName() + " isn't here any more."));
+                return;
+            }
+            duelNpc(player, last.npc());
+            return;
+        }
+        List<UUID> others = last.entrants().stream().map(Entrant::player)
+                .filter(id -> id != null && !id.equals(player.getUUID())).toList();
+        for (UUID id : others) {
+            if (player(id) == null) {
+                player.sendSystemMessage(Component.literal(nameOf(id) + " is offline."));
+                return;
+            }
+        }
+        boolean ante = last.ante() && JadmServerConfig.ALLOW_ANTE.get();
+        boolean ranked = last.ranked() && others.size() == 1;
+        if (ranked) {
+            String why = RankedDuels.whyNot(server, player.getUUID(), others.get(0));
+            if (why != null) {
+                player.sendSystemMessage(Component.literal("Not ranked this time: " + why));
+                ranked = false;
+            }
+        }
+        invite(player, last.entrants(), ante, last.split(), ranked);
+        for (UUID id : others) {
+            ServerPlayer other = player(id);
+            if (other != null && invites.get(id) != null && invites.get(id).host().equals(player.getUUID())) {
+                PacketDistributor.sendToPlayer(other,
+                        new io.github.zancrow321.jadm.network.RematchOfferPayload(player.getScoreboardName()));
+            }
+        }
+    }
+
     /** {@code player} picked the deck at {@code index} of those offered (or closed the window: the one offered first). */
     public void pickDeck(ServerPlayer player, int index) {
         DeckRound round = deckRounds.get(player.getUUID());
@@ -647,8 +710,12 @@ public final class DuelManager {
                     .withStyle(ChatFormatting.GOLD));
         }
         if (start(entrants, decks, field, invite.ante() ? boxes : null, invite.npc(), invite.split(), step, banlist,
-                null, invite.ranked(), true) == null && entrants.size() == 2) {
-            StarChips.get(server).begin(entrants.get(0).player(), entrants.get(1).player(), invite.npc() != null);
+                null, invite.ranked(), true) == null) {
+            invite.entrants().stream().map(Entrant::player).filter(Objects::nonNull)
+                    .forEach(id -> lastDuels.put(id, invite));
+            if (entrants.size() == 2) {
+                StarChips.get(server).begin(entrants.get(0).player(), entrants.get(1).player(), invite.npc() != null);
+            }
         }
     }
 
@@ -1178,6 +1245,7 @@ public final class DuelManager {
         duelsByOnlooker.remove(player.getUUID());
         invites.remove(player.getUUID());
         invites.values().removeIf(invite -> invite.host().equals(player.getUUID()));
+        lastDuels.remove(player.getUUID());
         DeckRound round = deckRounds.get(player.getUUID());
         if (round != null) {
             round.waiting().remove(player.getUUID());
@@ -1583,7 +1651,8 @@ public final class DuelManager {
                 RankedDuels.Outcome rank = ranks.get(player.getUUID());
                 PacketDistributor.sendToPlayer(player, new DuelResultPayload(outcome,
                         List.copyOf(rewards.get(player.getUUID())), records.getOrDefault(player.getUUID(), ""),
-                        rank == null ? "" : rank.line(), rank == null ? 0 : rank.color()));
+                        rank == null ? "" : rank.line(), rank == null ? 0 : rank.color(),
+                        duel.match() == null && lastDuels.containsKey(player.getUUID())));
             }
         }
         try {

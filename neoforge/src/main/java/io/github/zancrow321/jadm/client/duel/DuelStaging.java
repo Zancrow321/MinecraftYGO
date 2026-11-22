@@ -60,6 +60,10 @@ public final class DuelStaging {
     private static boolean asked;
     /** The choice came with the teams trading ends; the field turns with the next view. */
     private static boolean tradePending;
+    /** Who asked for a rematch of this duel, or {@code null}. */
+    private static String rematchFrom;
+    /** You pressed Rematch and nobody has said yes yet. */
+    private static boolean rematchAsked;
 
     private DuelStaging() {
     }
@@ -74,6 +78,22 @@ public final class DuelStaging {
         chosenAt = -1;
         asked = false;
         tradePending = false;
+        rematchFrom = null;
+        rematchAsked = false;
+    }
+
+    /** {@code from} asked to play this duel again; the Rematch button says yes. */
+    public static void rematchOffer(String from) {
+        rematchFrom = from;
+    }
+
+    /** The Rematch button: asks for the duel again, or accepts the rematch the opponent asked for. */
+    private static void rematch() {
+        if (!rematchAsked) {
+            rematchAsked = true;
+            net.neoforged.neoforge.network.PacketDistributor.sendToServer(
+                    new io.github.zancrow321.jadm.network.RematchPayload());
+        }
     }
 
     /** The server's word on the coin toss: who chooses whether to go first, and later that they chose. */
@@ -297,8 +317,11 @@ public final class DuelStaging {
         boolean watched = result == null;
         String record = watched ? "" : result.record();
         String rank = watched ? "" : result.rank();
+        boolean rematch = !watched && result.rematch();
+        String offer = rematch && rematchFrom != null && !rematchAsked ? rematchFrom + " wants a rematch."
+                : rematch && rematchAsked && rematchFrom == null ? "Rematch asked. Waiting for an answer..." : "";
         int height = 44 + reason.size() * 10 + (watched ? 0 : 14 + Math.max(1, rewards.size()) * 10)
-                + (record.isEmpty() ? 0 : 24) + (rank.isEmpty() ? 0 : 24) + 24;
+                + (record.isEmpty() ? 0 : 24) + (rank.isEmpty() ? 0 : 24) + (offer.isEmpty() ? 0 : 14) + 24;
         int x = w / 2 - width / 2;
         int y = Math.max(4, h / 2 - height / 2);
         DuelUi.panel(g, x, y, width, height);
@@ -335,6 +358,17 @@ public final class DuelStaging {
             g.drawString(font, font.plainSubstrByWidth(rank, width - 16), x + 8, ty, 0xFF000000 | result.rankColor());
             ty += 10;
         }
-        DuelUi.button(g, font, w / 2 - 40, ty + 6, 80, "Continue", true, mx, my, DuelStaging::closeResult);
+        if (!offer.isEmpty()) {
+            ty += 4;
+            g.drawCenteredString(font, offer, w / 2, ty, rematchFrom != null ? GOLD : DIM);
+            ty += 10;
+        }
+        if (rematch) {
+            String label = rematchAsked ? "Asked" : rematchFrom != null ? "Accept rematch" : "Rematch";
+            DuelUi.button(g, font, w / 2 - 94, ty + 6, 90, label, !rematchAsked, mx, my, DuelStaging::rematch);
+            DuelUi.button(g, font, w / 2 + 4, ty + 6, 90, "Continue", true, mx, my, DuelStaging::closeResult);
+        } else {
+            DuelUi.button(g, font, w / 2 - 40, ty + 6, 80, "Continue", true, mx, my, DuelStaging::closeResult);
+        }
     }
 }
