@@ -94,12 +94,23 @@ public final class Jadm {
             io.github.zancrow321.jadm.clan.ClanBattles.tick(event.getServer());
             io.github.zancrow321.jadm.clan.ClanParties.tick(event.getServer());
             Progress.tick(event.getServer());
+            io.github.zancrow321.jadm.collection.BinderStore.tick(event.getServer());
         });
+        // Bound binders' collections are written with the world, so a crash rolls both back to the same moment.
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.level.LevelEvent.Save event) -> {
+            if (event.getLevel() instanceof net.minecraft.server.level.ServerLevel level
+                    && level.dimension() == net.minecraft.world.level.Level.OVERWORLD) {
+                io.github.zancrow321.jadm.collection.BinderStore.saveAll();
+            }
+        });
+        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerStoppedEvent event) ->
+                io.github.zancrow321.jadm.collection.BinderStore.stopped());
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
                 io.github.zancrow321.jadm.banlist.BanlistCommands.sync(player);
                 Progress.sync(player);
                 io.github.zancrow321.jadm.collection.JoinDecks.onLogin(player);
+                io.github.zancrow321.jadm.collection.BinderStore.onLogin(player);
                 io.github.zancrow321.jadm.progression.StarterDecks.offer(player);
                 io.github.zancrow321.jadm.guide.GuideBook.onLogin(player);
                 DuelManager.get(player.server).onLogin(player);
@@ -115,6 +126,7 @@ public final class Jadm {
         NeoForge.EVENT_BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
                 io.github.zancrow321.jadm.trade.Trades.logout(player);
+                io.github.zancrow321.jadm.collection.BinderStore.onLogout(player);
                 DuelManager.get(player.server).onLogout(player);
             }
         });
@@ -188,6 +200,7 @@ public final class Jadm {
         JadmData.reloadDownloaded();
         io.github.zancrow321.jadm.quest.QuestPool.load();
         Progress.started(event.getServer());
+        io.github.zancrow321.jadm.collection.BinderStore.started(event.getServer());
         io.github.zancrow321.jadm.collection.JoinDecks.prepare();
         // Duels run on the server, so load the engine there and fail loudly but harmlessly if it's unavailable.
         try {

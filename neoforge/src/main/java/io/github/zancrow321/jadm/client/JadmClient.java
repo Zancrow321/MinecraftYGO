@@ -78,6 +78,10 @@ public final class JadmClient {
 
     public static final KeyMapping ADMIN = new KeyMapping("key.jadm.admin",
             InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_O, "key.categories.jadm");
+    /** Opens the binder in the Curios slot, else the first one in the inventory, without holding it. */
+    public static final KeyMapping BINDER = new KeyMapping("key.jadm.binder",
+            net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
+            GLFW.GLFW_KEY_N, "key.categories.jadm");
 
     /**
      * For headless testing: {@code -Djadm.camera=THIRD_PERSON_FRONT:90} keeps the camera there and turns
@@ -255,7 +259,28 @@ public final class JadmClient {
             event.register(RANKING);
             event.register(CLAN);
             event.register(QUESTS);
+            event.register(BINDER);
         }
+    }
+
+    private static void openCarriedBinder(Minecraft mc) {
+        var binder = io.github.zancrow321.jadm.item.JadmItems.BINDER.get();
+        var curio = io.github.zancrow321.jadm.compat.CuriosCompat.find(mc.player, binder);
+        if (!curio.isEmpty() && io.github.zancrow321.jadm.item.BinderItem.usableBy(curio, mc.player)) {
+            mc.setScreen(new io.github.zancrow321.jadm.client.collection.BinderScreen(
+                    io.github.zancrow321.jadm.network.CollectionActionPayload.CURIO));
+            return;
+        }
+        var inventory = mc.player.getInventory();
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+            var stack = inventory.getItem(slot);
+            if (stack.is(binder) && io.github.zancrow321.jadm.item.BinderItem.usableBy(stack, mc.player)) {
+                mc.setScreen(new io.github.zancrow321.jadm.client.collection.BinderScreen(slot));
+                return;
+            }
+        }
+        mc.player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.jadm.binder.none"),
+                true);
     }
 
     @SubscribeEvent
@@ -336,6 +361,11 @@ public final class JadmClient {
         while (QUESTS.consumeClick()) {
             if (mc.screen == null && mc.player != null) {
                 mc.player.connection.sendCommand(Jadm.COMMAND + " quests");
+            }
+        }
+        while (BINDER.consumeClick()) {
+            if (mc.screen == null && mc.player != null) {
+                openCarriedBinder(mc);
             }
         }
         while (ADMIN.consumeClick()) {

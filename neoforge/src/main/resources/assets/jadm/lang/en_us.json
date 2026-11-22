@@ -457,5 +457,19 @@
   "commands.jadm.quests.reloaded": "Read %s quests from config/jadm/quests.json.",
   "commands.jadm.quests.reset": "%s gets new quests.",
   "commands.jadm.quests.completed": "Finished the quest %s for %s.",
-  "commands.jadm.quests.not_held": "%s doesn't have the quest %s right now."
+  "commands.jadm.quests.not_held": "%s doesn't have the quest %s right now.",
+  "curios.identifier.binder": "Card Binder",
+  "item.jadm.binder.bound": "Bound to %s: shows their collection",
+  "key.jadm.binder": "Open binder (Curios slot or inventory)",
+  "message.jadm.binder.foreign": "This binder belongs to %s",
+  "message.jadm.binder.bound": "Binder bound to you: its %s cards joined your collection",
+  "message.jadm.binder.restored": "You got a binder showing your collection (%s cards).",
+  "message.jadm.binder.not_bound": "Binders aren't bound to players on this server.",
+  "message.jadm.binder.already": "You already carry a binder showing your collection.",
+  "message.jadm.binder.given": "Here's a binder showing your collection (%s cards).",
+  "message.jadm.binder.gave": "Gave %s a binder showing their collection (%s cards).",
+  "message.jadm.binder.unbind_config": "Turn bindBindersToPlayers off first, or the binder gets bound again at once.",
+  "message.jadm.binder.unbind_hold": "%s has to hold a binder bound to them in the main hand.",
+  "message.jadm.binder.unbound": "%s's binder is an ordinary binder again and holds all %s cards; their stored collection is empty now.",
+  "message.jadm.binder.none": "You don't carry a binder."
 }

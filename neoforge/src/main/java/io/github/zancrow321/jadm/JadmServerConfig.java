@@ -24,6 +24,24 @@ public final class JadmServerConfig {
                     + "the inventory.")
             .define("packsIntoBinder", true);
 
+    public static final ModConfigSpec.BooleanValue BIND_BINDERS = BUILDER
+            .comment("Bind binders to players: a binder becomes bound to the first player who carries it (the cards it "
+                    + "holds join that player's collection), and from then on it only shows that collection, which "
+                    + "the server keeps per player UUID (see boundBinderStorage). Losing the binder or the world loses "
+                    + "no cards: every binder bound to a player shows the same collection, /jadm binder gives a new "
+                    + "one, and a player whose collection has cards but who carries no binder of theirs gets one on "
+                    + "joining. Only the owner can open or use a bound binder. Turning this off later stops new "
+                    + "binders from being bound; bound ones keep showing their owner's collection.")
+            .define("bindBindersToPlayers", false);
+
+    public static final ModConfigSpec.ConfigValue<String> BOUND_BINDER_STORAGE = BUILDER
+            .comment("Where the collections of bound binders are kept, one <uuid>.json file per player: \"server\" in "
+                    + "jadm/binders/ in the server folder (outside the world, so they survive a broken or deleted "
+                    + "world and carry over to a new one; in singleplayer every world of the instance shares them) "
+                    + "or \"world\" in jadm/binders/ inside the world folder (the world's backups include them). "
+                    + "The files are plain JSON, so they can be copied to another server.")
+            .define("boundBinderStorage", "server", v -> "server".equals(v) || "world".equals(v));
+
     /** Bumped when a release changes defaults that older config files should pick up, see {@link #migrate}. */
     private static final int VERSION = 2;
 
