@@ -199,6 +199,14 @@ public final class JadmComponents {
             COMPONENTS.registerComponentType("deck_boss", b -> b.persistent(PASSCODE)
                     .networkSynchronized(ByteBufCodecs.VAR_INT));
 
+    /**
+     * A deck box's own id, given the first time it is offered in the deck pick before a duel, so the box a player
+     * chose can be found again however it moves around their inventory.
+     */
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<java.util.UUID>> DECK_ID =
+            COMPONENTS.registerComponentType("deck_id", b -> b.persistent(net.minecraft.core.UUIDUtil.CODEC)
+                    .networkSynchronized(net.minecraft.core.UUIDUtil.STREAM_CODEC));
+
     /** The skin a duel disk wears; see {@code Cosmetics.SKINS}. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<String>> DISK_SKIN =
             COMPONENTS.registerComponentType("disk_skin", b -> b.persistent(Codec.STRING)

@@ -15,11 +15,20 @@ import static io.github.zancrow321.jadm.engine.OcgConstants.*;
  * @param to     the attack target or the card's destination, else {@link Loc#NONE}
  * @param amount life points for {@link Kind#DAMAGE} and {@link Kind#RECOVER}; the {@link SummonStyle} for
  *               {@link Kind#SUMMON}; the move's reason bits for {@link Kind#LEAVE} (so a client can tell a destroyed
- *               card from one sent away, and with {@link SummonStyle#material} the summon a material left for); else 0
+ *               card from one sent away, and with {@link SummonStyle#material} the summon a material left for); the
+ *               chain link number for {@link Kind#ACTIVATE} and the {@code CHAIN_} kinds; else 0
  */
 public record FieldEvent(Kind kind, int code, Loc from, Loc to, int player, int amount) {
-    /** {@code TURN} is a new turn of {@code player}; {@code PHASE} a new phase, its bits in {@code amount}. */
-    public enum Kind { SUMMON, SET, ACTIVATE, ATTACK, LEAVE, POSITION, DAMAGE, RECOVER, TURN, PHASE }
+    /**
+     * {@code TURN} is a new turn of {@code player}; {@code PHASE} a new phase, its bits in {@code amount}.
+     * {@code CHAIN_SOLVING} is a chain link starting to resolve, {@code CHAIN_SOLVED} one that has,
+     * {@code CHAIN_NEGATED} one whose activation or effect was negated (its number in {@code amount}), and
+     * {@code CHAIN_END} the whole chain done.
+     */
+    public enum Kind {
+        SUMMON, SET, ACTIVATE, ATTACK, LEAVE, POSITION, DAMAGE, RECOVER, TURN, PHASE,
+        CHAIN_SOLVING, CHAIN_SOLVED, CHAIN_NEGATED, CHAIN_END
+    }
 
     /** @return the event {@code message} shows to {@code viewer}, or {@code null} if it isn't one to animate */
     public static FieldEvent of(DuelMessage message, int viewer) {
@@ -29,7 +38,15 @@ public record FieldEvent(Kind kind, int code, Loc from, Loc to, int player, int 
             case DuelMessage.Set m -> new FieldEvent(Kind.SET, m.loc().controller() == viewer ? m.code() : 0, m.loc(),
                     Loc.NONE, m.loc().controller(), 0);
             case DuelMessage.Chaining m -> new FieldEvent(Kind.ACTIVATE, m.code(), m.loc(), Loc.NONE,
-                    m.loc().controller(), 0);
+                    m.loc().controller(), m.chainLink());
+            case DuelMessage.ChainEvent m when m.type() == MessageType.CHAIN_SOLVING ->
+                    new FieldEvent(Kind.CHAIN_SOLVING, 0, Loc.NONE, Loc.NONE, 0, m.chainLink());
+            case DuelMessage.ChainEvent m when m.type() == MessageType.CHAIN_SOLVED ->
+                    new FieldEvent(Kind.CHAIN_SOLVED, 0, Loc.NONE, Loc.NONE, 0, m.chainLink());
+            case DuelMessage.ChainEvent m when m.type() == MessageType.CHAIN_NEGATED
+                    || m.type() == MessageType.CHAIN_DISABLED ->
+                    new FieldEvent(Kind.CHAIN_NEGATED, 0, Loc.NONE, Loc.NONE, 0, m.chainLink());
+            case DuelMessage.ChainEnd m -> new FieldEvent(Kind.CHAIN_END, 0, Loc.NONE, Loc.NONE, 0, 0);
             case DuelMessage.Attack m -> new FieldEvent(Kind.ATTACK, 0, m.attacker(), m.target(),
                     m.attacker().controller(), 0);
             case DuelMessage.PositionChange m when onField(m.loc()) -> new FieldEvent(Kind.POSITION,

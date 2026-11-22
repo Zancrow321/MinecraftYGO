@@ -53,7 +53,10 @@
         "- A **Ranking Board** on a wall shows the ten best on a glowing board three blocks wide and two high, above and beside it. Right-click it for the ranking window.",
         "[recipe {modid}:ranking_board]",
         "# Which deck you play",
-        "Your first legal deck box, looking in your hands first, then your inventory. Without one you duel with Yugi's starter deck, unless the server turned that off."
+        "Carry more than one legal deck box and a window asks which one to play when a duel is about to start: each deck shows its boss monster (or its first card), and the one you picked last is framed. Click a deck, or press Enter for the framed one; after 20 seconds the framed one plays by itself. With `askForDeck` off, the deck you picked last plays without asking.",
+        "With one legal deck box, that one plays. Without one you duel with Yugi's starter deck, unless the server turned that off.",
+        "# Rematch",
+        "The result screen has a **Rematch** button: the same duel again, with the same opponents (bots and NPC duelists too), ante, ranking and Battle City setting. Other players get an invitation, and the same button on their result screen accepts it; `{cmd} rematch` does the same from chat. A ranked rematch only counts if today's limit for the two of you allows it."
       ]
     },
     {
@@ -64,6 +67,7 @@
         "- **Your hand** runs along the bottom. Click a card for its actions (Normal Summon, Set, Activate...) or drag it straight onto a zone.",
         "- **Phase buttons** on the right show the phase: DP SP M1 BP M2 EP. Click BP, M2 or EP to go there.",
         "- **Responses** open their own window, showing what you respond to. Pick a response or \"Don't respond\"; \"-\" folds it away.",
+        "- **The chain:** once a second card is chained, every chain link shows as a numbered card beside the phase buttons, newest on top, framed blue for yours and red for your opponent's. The links then resolve one by one from the top: the one resolving glows gold, a resolved one fades away and a negated one is crossed out. Hover a link to read its card.",
         "- **Card details:** the card under the mouse is shown big on the left with its text and current ATK/DEF. Long text gets a scroll bar: turn the mouse wheel (anywhere but the duel log) or drag the bar.",
         "- **Piles:** click a graveyard, the banished cards or an extra deck (right-click when a card there can be activated) to look through it.",
         "- **Picks** on the field are made right there and confirmed with Confirm; picks from a pile open a card window.",
@@ -311,6 +315,7 @@
         "- `{cmd} duel <player>`: challenge someone, add `ante` for an ante duel.",
         "- `{cmd} accept`: accept a challenge.",
         "- `{cmd} forfeit`: surrender the duel.",
+        "- `{cmd} rematch`: play your last duel again (the Rematch button on the result screen).",
         "- `{cmd} tag <partner> <opponent1> <opponent2>`: tag duel, any seat can be `bot`.",
         "- `{cmd} battlecity <partner> <opponent1> <opponent2>`: tag duel on split halves.",
         "- `{cmd} watch [player]` and `{cmd} unwatch`: watch a duel (without a name, the one you stand near) and stop.",
@@ -420,7 +425,9 @@
         "- `displayEffects` = {client:displayEffects}: shiny cards in collector displays glow and sparkle, with a beam for Secret Rares and up.",
         "- `aceCamera` = {client:aceCamera}: when a big monster is summoned, the camera circles it for two seconds and its name shows big. Every monster of Level `aceMinLevel` = {client:aceMinLevel} or higher counts, with at least `aceMinAttack` = {client:aceMinAttack} ATK (0: off), or from the Extra Deck (`aceExtraDeck` = {client:aceExtraDeck}). A deck with a marked boss monster gets the shot for its boss only.",
         "- `longSummonShows` = {client:longSummonShows}: the full show (about 2.5 seconds) for a Fusion, Synchro, Xyz, Ritual, Link or Pendulum Summon; off, 1.5 seconds.",
-        "- `finisherCamera` = {client:finisherCamera}: swing the camera round to whoever takes the final blow of a duel while it plays in slow motion."
+        "- `finisherCamera` = {client:finisherCamera}: swing the camera round to whoever takes the final blow of a duel while it plays in slow motion.",
+        "- `askForDeck` = {client:askForDeck}: ask which deck to play before a duel when you carry more than one legal deck box. Off, the deck you picked last plays.",
+        "- `chainDisplay` = {client:chainDisplay}: show a chain as numbered chain links that resolve one by one."
       ]
     },
     {

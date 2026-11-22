@@ -76,6 +76,23 @@ public final class JadmNetwork {
         registrar.playToClient(StarChipsPayload.TYPE, StarChipsPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> io.github.zancrow321.jadm.client.starchips
                         .StarChipHud.receive(payload)));
+        registrar.playToClient(RematchOfferPayload.TYPE, RematchOfferPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> io.github.zancrow321.jadm.client.duel.DuelStaging
+                        .rematchOffer(payload.from())));
+        registrar.playToServer(RematchPayload.TYPE, RematchPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        DuelManager.get(player.server).rematch(player);
+                    }
+                }));
+        registrar.playToClient(DeckChoicePayload.TYPE, DeckChoicePayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> ClientScreens.deckChoice(payload)));
+        registrar.playToServer(DeckPickPayload.TYPE, DeckPickPayload.STREAM_CODEC,
+                (payload, context) -> context.enqueueWork(() -> {
+                    if (context.player() instanceof ServerPlayer player) {
+                        DuelManager.get(player.server).pickDeck(player, payload.index());
+                    }
+                }));
         registrar.playToClient(StarterChoicesPayload.TYPE, StarterChoicesPayload.STREAM_CODEC,
                 (payload, context) -> context.enqueueWork(() -> ClientScreens.starterChoices(payload)));
         registrar.playToServer(StarterPickPayload.TYPE, StarterPickPayload.STREAM_CODEC,

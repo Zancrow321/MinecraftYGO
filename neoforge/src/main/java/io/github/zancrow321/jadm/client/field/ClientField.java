@@ -82,6 +82,7 @@ public final class ClientField {
         right = new Vec3(-forward.z, 0, forward.x);
         endsAt = -1;
         animations.clear();
+        io.github.zancrow321.jadm.client.duel.ChainStack.reset();
         AceCamera.reset();
         lastBoard = null;
         // Wait for the duel disk to unfold, then grow the field; queued effects start once it is full size.
@@ -292,7 +293,8 @@ public final class ClientField {
             if (step.slow()) {
                 Finale.slowed(animation);
             }
-            int spacing = FieldAnimation.spacing(event);
+            int spacing = io.github.zancrow321.jadm.client.duel.ChainStack.queue(event, start,
+                    FieldAnimation.spacing(event));
             start += ace ? AceCamera.queue(event, view, start)
                     : step.slow() ? Finale.slowSpacing(event, spacing) : spacing;
         }
@@ -316,6 +318,7 @@ public final class ClientField {
     public static void clientTick() {
         tick++;
         Finale.clientTick();
+        io.github.zancrow321.jadm.client.duel.ChainStack.tick(tick);
         animations.removeIf(a -> a.finished(tick));
         if (endsAt >= 0 && tick >= endsAt && (nearby || !DuelStaging.holdsField())) {
             clear();

@@ -113,6 +113,10 @@ final class JadmCommands {
                     manager(ctx).accept(ctx.getSource().getPlayerOrException());
                     return 1;
                 }))
+                .then(Commands.literal("rematch").executes(ctx -> {
+                    manager(ctx).rematch(ctx.getSource().getPlayerOrException());
+                    return 1;
+                }))
                 .then(Commands.literal("forfeit").executes(ctx -> {
                     manager(ctx).forfeit(ctx.getSource().getPlayerOrException());
                     return 1;

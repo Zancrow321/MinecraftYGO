@@ -18,8 +18,10 @@ import java.util.List;
  *                server doesn't keep records
  * @param rank    for a ranked duel, the receiver's rank after it, e.g. "Gold, 1216 rating (+16), 3rd place", else empty
  * @param rankColor the color of that rank, as RGB
+ * @param rematch whether the duel can be played again from the result screen
  */
-public record DuelResultPayload(int outcome, List<String> rewards, String record, String rank, int rankColor)
+public record DuelResultPayload(int outcome, List<String> rewards, String record, String rank, int rankColor,
+                                boolean rematch)
         implements CustomPacketPayload {
     public static final int LOST = 0;
     public static final int WON = 1;
@@ -33,6 +35,7 @@ public record DuelResultPayload(int outcome, List<String> rewards, String record
             ByteBufCodecs.STRING_UTF8, DuelResultPayload::record,
             ByteBufCodecs.STRING_UTF8, DuelResultPayload::rank,
             ByteBufCodecs.INT, DuelResultPayload::rankColor,
+            ByteBufCodecs.BOOL, DuelResultPayload::rematch,
             DuelResultPayload::new);
 
     @Override

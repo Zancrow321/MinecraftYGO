@@ -42,6 +42,8 @@ public record FieldAnimation(FieldEvent event, long start, int duration, int act
             case DAMAGE, RECOVER -> 30;
             case TURN -> 32;
             case PHASE -> 20;
+            // The chain column (ChainStack) times these itself.
+            case CHAIN_SOLVING, CHAIN_SOLVED, CHAIN_NEGATED, CHAIN_END -> 1;
         };
     }
 
@@ -51,7 +53,7 @@ public record FieldAnimation(FieldEvent event, long start, int duration, int act
             case DAMAGE, RECOVER -> 6;
             // The turn banner gets a moment of its own; a phase banner doesn't hold anything up.
             case TURN -> 16;
-            case PHASE -> 0;
+            case PHASE, CHAIN_SOLVING, CHAIN_SOLVED, CHAIN_NEGATED, CHAIN_END -> 0;
             default -> duration(kind);
         };
     }
