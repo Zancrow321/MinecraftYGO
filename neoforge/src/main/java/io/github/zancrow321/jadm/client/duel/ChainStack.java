@@ -201,6 +201,9 @@ public final class ChainStack {
         }
         float now = ClientField.tick() + Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
         float out = endedAt < 0 ? 1 : Math.max(0, 1 - (now - endedAt) / FADE);
+        if (links.stream().allMatch(l -> l.state == State.SOLVED && now - l.since >= FADE)) {
+            return 0; // everything has resolved and faded: no title on its own
+        }
         int count = links.size();
         int room = h - 120;
         int step = Math.max(12, Math.min(CARD_HEIGHT + 6, (room - CARD_HEIGHT) / Math.max(1, count - 1)));
