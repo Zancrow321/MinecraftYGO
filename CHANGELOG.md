@@ -1,5 +1,29 @@
 # Changelog
 
+## Unreleased
+
+### Chain display
+- **See the chain:** once a second card is chained, every chain link shows as a numbered card beside the phase
+  buttons, newest on top, framed blue for yours and red for your opponent's. The links then resolve one by one from
+  the top, each with a short pause: the one resolving glows gold, a resolved one fades away, a negated one is crossed
+  out, and "Resolving: <card>" names it. Hover a link to read its card in the card panel. Single activations play as
+  fast as before. Client setting `chainDisplay`.
+
+### Pick your deck before a duel
+- **Which deck do you play?** Carry more than one legal deck box and a window asks which one to play when a duel is
+  about to start (challenges, tag and Battle City duels, the bot, NPC duelists, arena duels). Each deck shows its boss
+  monster or first card and its card count; the one you picked last is framed, so Enter (or waiting 20 seconds) plays
+  it again. Before, the first legal deck box in your hands or inventory was always played.
+- The duel starts once everyone has picked; the others are told who is still picking. Client setting `askForDeck`
+  (off: the deck you picked last plays without asking). Tournament games play the deck you picked last.
+
+### Rematch
+- **Rematch button** on the result screen: the same duel again, with the same opponents (bots and NPC duelists too),
+  ante, ranking and Battle City setting. Other players get an invitation, and the same button on their result screen
+  ("Accept rematch") says yes. `/jadm rematch` does the same from chat. A ranked rematch is only ranked if today's
+  limit for the two players allows it. NPC duelists keep their rest time after a loss.
+- The server needs the new version too (new network messages).
+
 ## 1.2.11 (2026-10-26)
 
 ### Field Spell looks from resource packs

@@ -33,6 +33,16 @@ public final class ClientScreens {
                 new io.github.zancrow321.jadm.client.collection.StarterScreen(payload.choices()));
     }
 
+    /** A duel is about to start: pick which deck to play, or play the last one without asking if that is set. */
+    public static void deckChoice(io.github.zancrow321.jadm.network.DeckChoicePayload payload) {
+        if (!JadmClientConfig.ASK_FOR_DECK.get()) {
+            net.neoforged.neoforge.network.PacketDistributor.sendToServer(
+                    new io.github.zancrow321.jadm.network.DeckPickPayload(payload.selected()));
+            return;
+        }
+        Minecraft.getInstance().setScreen(new io.github.zancrow321.jadm.client.collection.DeckPickScreen(payload));
+    }
+
     public static void guide(io.github.zancrow321.jadm.network.GuidePayload payload) {
         Minecraft.getInstance().setScreen(new io.github.zancrow321.jadm.client.guide.GuideScreen(
                 payload.settings()));

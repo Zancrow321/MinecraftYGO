@@ -49,6 +49,7 @@ public final class Jadm {
         JadmItems.register(modBus);
         JadmComponents.register(modBus);
         PlayerCosmetics.register(modBus);
+        io.github.zancrow321.jadm.duel.DuelDecks.register(modBus);
         JadmVillagers.register(modBus);
         io.github.zancrow321.jadm.village.PlayerShops.register(modBus);
         io.github.zancrow321.jadm.points.Points.register(modBus);
