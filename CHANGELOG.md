@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.2.12 (2026-11-22)
 
 ### New cards and sets
 - **Magnificent Maestros is complete:** all 125 cards (before only the 24 known ahead of release), and it opens
@@ -13,11 +13,13 @@
 - **11 Beyond the Brave cards got their real passcodes** (they came with temporary ones). Cards, binders and deck
   boxes that hold the old ones load as the new ones by themselves, and .ydk files with the old passcodes still import.
 - Card scripts and rulings updated from Project Ignis.
+
 ### Fixes
 - **Wandering duelists spawn with fast world generation mods:** a duelist spawned while a new chunk was generated
   picked its look, title and deck with the world's random, which belongs to the server thread. With C2ME (and similar
   mods that generate chunks on worker threads) this threw "ThreadLocalRandom accessed from a different thread" and the
   duelist was not spawned. Duelists now use their own random.
+
 ### Binders bound to players, Curios binder slot
 - **Collections that survive a broken world:** with `bindBindersToPlayers = true` in `jadm-server.toml`, a binder is
   bound to the first player who carries it and the cards in it join that player's collection, which the server keeps
@@ -29,6 +31,7 @@
 - **Curios slot for the binder:** with Curios installed, the binder has its own slot. A binder there still catches
   pulled cards (`packsIntoBinder`), feeds the deck box and counts for the Set Collection Book; **N** opens it (or the
   first binder in the inventory).
+
 ### Your own packs, decks and tins
 - **Custom products from datapacks:** a server can add its own booster packs, structure decks and tins, one JSON file
   each under `data/<namespace>/jadm/products/`. Cards by name or passcode, rarities per card (several per card, as in
@@ -42,6 +45,7 @@
   card search, rarities, pack formats with a sample pack, deck lists from `.ydk`, and the finished `.zip`.
   Format: `docs/custom-products.md` and the Duelist's Handbook.
 - The server sends its products to every client, so servers and players need the new version.
+
 ### Chain display
 - **See the chain:** once a second card is chained, every chain link shows as a numbered card beside the phase
   buttons, newest on top, framed blue for yours and red for your opponent's. The links then resolve one by one from
