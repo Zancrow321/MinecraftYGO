@@ -119,7 +119,9 @@
         "[recipe {modid}:card_frame]",
         "[recipe {modid}:card_showcase]",
         "[recipe {modid}:toploader_stand]",
-        "[recipe {modid}:pack_display]"
+        "[recipe {modid}:pack_display]",
+        "# Server-Produkte",
+        "Ein Server kann eigene Booster, Structure Decks und Tins verkaufen: je eine JSON-Datei in einem Datapack unter `data/<name>/jadm/products/`. Sie lassen sich öffnen, verkaufen und schalten Karten frei wie die echten, und in einer Progression-Welt erscheinen sie an ihrem eigenen Datum. `{cmd} products` listet sie und was an ihren Dateien nicht stimmt, `{cmd} products give <Produkt>` gibt eines aus. Der Produkt-Editor im GitHub-Repository (`tools/product-editor/`) baut so ein Datapack ohne JSON zu schreiben, `docs/custom-products.md` erklärt das Format."
       ]
     },
     {

@@ -47,6 +47,9 @@ public final class SealedProductItem extends Item {
 
     /** Whether a product is sold sealed as a deck or tin. */
     public static boolean sealed(Products.Product product) {
+        if (product.isCustom()) {
+            return product.kind() == Products.Kind.TIN || product.kind() == Products.Kind.DECK;
+        }
         return product.kind() == Products.Kind.TIN
                 || product.kind() == Products.Kind.DECK && product.cards().size() >= 20;
     }
@@ -68,11 +71,14 @@ public final class SealedProductItem extends Item {
         if (product == null) {
             return;
         }
-        tooltip.add(Component.literal(product.code() + " · " + product.date()).withStyle(ChatFormatting.GRAY));
-        tooltip.add(Component.translatable(product.kind() == Products.Kind.TIN ? "item.jadm.tin.tooltip"
-                : "item.jadm.structure_deck.tooltip", product.kind() == Products.Kind.TIN
-                ? product.cards().size() : deckSize(product), TIN_PACKS)
+        boolean dated = !product.isCustom() || product.custom().dated();
+        tooltip.add(Component.literal(product.code() + (dated ? " · " + product.date() : ""))
                 .withStyle(ChatFormatting.GRAY));
+        boolean tin = product.kind() == Products.Kind.TIN;
+        tooltip.add(Component.translatable(tin ? "item.jadm.tin.tooltip" : "item.jadm.structure_deck.tooltip",
+                tin ? product.cards().size() : deckSize(product), tin ? tinPacks(product).size() : TIN_PACKS)
+                .withStyle(ChatFormatting.GRAY));
+        BoosterPackItem.description(product, tooltip);
     }
 
     @Override
@@ -123,10 +129,16 @@ public final class SealedProductItem extends Item {
         var random = player.getRandom();
         List<Products.Printing> promos = tin.cards().stream()
                 .filter(p -> JadmData.cards().card(p.code()) != null).toList();
-        Component card = Component.literal("-");
+        int count = tin.isCustom() ? tin.custom().promos() : 1;
+        List<Products.Printing> left = new ArrayList<>(promos);
+        MutableComponent cards = Component.empty();
         boolean filed = false;
-        if (!promos.isEmpty()) {
-            Products.Printing promo = promos.get(random.nextInt(promos.size()));
+        for (int n = 0; n < count && !promos.isEmpty(); n++) {
+            // Different cards while there are any left, then any again.
+            if (left.isEmpty()) {
+                left.addAll(promos);
+            }
+            Products.Printing promo = left.remove(random.nextInt(left.size()));
             int code = JadmData.pullArtwork(promo.code(), new java.util.Random(random.nextLong()));
             BoosterSets.Rarity rarity = BoosterSets.Rarity.ofPrinted(promo.rarity());
             ItemStack binder = BinderItem.forPulls(player);
@@ -140,8 +152,9 @@ public final class SealedProductItem extends Item {
             if (JadmData.isAltArt(code)) {
                 named.append(", ").append(Component.translatable("item.jadm.card.alt_art.short"));
             }
-            card = named.append(")");
+            cards.append(n == 0 ? Component.empty() : Component.literal(", ")).append(named.append(")"));
         }
+        Component card = cards.getSiblings().isEmpty() ? Component.literal("-") : cards;
         List<String> packs = tinPacks(tin);
         for (String set : packs) {
             give(player, BoosterPackItem.of(set), 1);
@@ -156,6 +169,16 @@ public final class SealedProductItem extends Item {
      */
     public static List<String> tinPacks(Products.Product tin) {
         List<String> packs = new ArrayList<>();
+        if (tin.isCustom() && !tin.custom().tinPacks().isEmpty()) {
+            // The packs it names, each a set code or product id; one that names no booster is left out.
+            for (String key : tin.custom().tinPacks()) {
+                Products.Product p = JadmData.products().resolve(key);
+                if (p != null && JadmData.set(p.id()) != null) {
+                    packs.add(p.id());
+                }
+            }
+            return packs;
+        }
         if (JadmData.allSets().get(tin.id()) != null) {
             for (int i = 0; i < TIN_PACKS; i++) {
                 packs.add(tin.id());

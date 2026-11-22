@@ -321,6 +321,10 @@ public record BoosterSets(Map<String, BoosterSet> sets) {
      * their own (Duelist Packs, Dragons of Legend, Speed Duel boxes, Mega-Tin Mega Packs...) rather than a few promos.
      */
     public static boolean isBooster(Products.Product product) {
+        if (product.isCustom()) {
+            // A datapack's tin names its packs; its cards are only its promos.
+            return product.kind() == Products.Kind.BOOSTER;
+        }
         return product.kind() == Products.Kind.BOOSTER || (product.kind() == Products.Kind.SPECIAL
                 || product.kind() == Products.Kind.TIN) && product.cards().size() >= 20;
     }

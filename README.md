@@ -21,6 +21,7 @@ the engine behind EDOPro, running on the server. Monster models come from
 | `tools/textures/make_guide_book.py` | Draws the handbook's item texture and the open book its screen is drawn on. |
 | `tools/textures/make_logo.py` | Draws the pixel-art mod logo (`jadm_logo.png`) and the store banner (`docs/release/banner.png`). |
 | `tools/models/make_pack.py` | Builds a resource pack that gives monsters a 3D model from Blockbench files ([guide](docs/resource-pack-models.md)). |
+| `tools/product-editor/` | Browser editor for a server's own booster packs, structure decks and tins as a datapack ([format](docs/custom-products.md)). |
 | `tools/disk/convert_disk.py` | Converts the duel disk `.bbmodel` (Figura format, meshes allowed) into the mod's disk model. |
 
 ## Building
@@ -271,6 +272,10 @@ instead; see [docs/resource-pack-models.md](docs/resource-pack-models.md).
 Face-up Field Spells transform the duel field (Umi floods it, Yami covers it in shadow, ...). Each look is a JSON file,
 so a resource pack can add looks for more Field Spells or replace the built-in ones; see
 [docs/field-spell-looks.md](docs/field-spell-looks.md).
+
+A server can sell its own booster packs, structure decks and tins: one JSON file each in a datapack under
+`data/<namespace>/jadm/products/`. `tools/product-editor/jadm-product-editor.html` builds such a datapack in the
+browser; see [docs/custom-products.md](docs/custom-products.md).
 
 ## Releasing
 
