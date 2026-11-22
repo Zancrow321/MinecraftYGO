@@ -9,7 +9,7 @@ effects, chains and timing work the way they do in the real game.
 ## Features
 
 - **Real duels** against players or a bot, with the original rules, Goat format or modern rules.
-- **A field in the world:** 622 monsters as 3D models, face-down cards, life points, summon beams and battle effects.
+- **A field in the world:** 627 monsters as 3D models, face-down cards, life points, summon beams and battle effects.
   Every monster strikes when it attacks, and fan favourites like Blue-Eyes, Dark Magician, Red-Eyes, Summoned Skull,
   Exodia and Kuriboh have their own signature moves. Classic spells and traps like Raigeki, Dark Hole, Mirror Force
   and Monster Reborn have their own effects too.

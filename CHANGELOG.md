@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Five new monster models
+- **Five more monsters stand on the field as 3D models** instead of an artwork hologram: Beta the Magnet Warrior,
+  Insect Queen, Cyber-Tech Alligator, Dunames Dark Witch and Panther Warrior, the newest models from iconmaster's
+  YGOMCModels. In the `modeled` pool they are playable now too (627 monsters).
+
 ## 1.2.11 (2026-10-26)
 
 ### Field Spell looks from resource packs
