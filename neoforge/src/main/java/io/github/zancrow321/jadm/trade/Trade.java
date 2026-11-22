@@ -82,8 +82,14 @@ public final class Trade {
         return Points.active() && JadmServerConfig.TRADE.points.get() && JadmServerConfig.POINTS.transfers.get();
     }
 
-    /** Whether {@code onlyModItems} lets an item be traded. */
+    /**
+     * Whether {@code onlyModItems} lets an item be traded. A player-bound binder never can: it only shows its owner's
+     * collection, so the other player would get an empty window. Its cards are traded one by one instead.
+     */
     static boolean tradeable(ItemStack stack) {
+        if (stack.has(io.github.zancrow321.jadm.item.JadmComponents.BINDER_OWNER.get())) {
+            return false;
+        }
         return !JadmServerConfig.TRADE.onlyModItems.get()
                 || BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(Jadm.MOD_ID);
     }

@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Binders bound to players, Curios binder slot
+- **Collections that survive a broken world:** with `bindBindersToPlayers = true` in `jadm-server.toml`, a binder is
+  bound to the first player who carries it and the cards in it join that player's collection, which the server keeps
+  in `jadm/binders/<uuid>.json` outside the world (`boundBinderStorage = "world"` keeps it in the world folder
+  instead). Every binder bound to a player shows that one collection, so a lost binder or a deleted world loses no
+  cards: `/jadm binder` gives a new one, and joining a world without one hands it out by itself. Only the owner can
+  open, use or trade a bound binder. Operators: `/jadm binder give <player>`, `/jadm binder unbind <player>`. Off by
+  default.
+- **Curios slot for the binder:** with Curios installed, the binder has its own slot. A binder there still catches
+  pulled cards (`packsIntoBinder`), feeds the deck box and counts for the Set Collection Book; **N** opens it (or the
+  first binder in the inventory).
+
 ## 1.2.11 (2026-10-26)
 
 ### Field Spell looks from resource packs

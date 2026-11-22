@@ -159,18 +159,22 @@ public final class SetCollection extends SavedData {
      */
     public static Set<Integer> owned(ServerPlayer player) {
         Set<Integer> owned = new HashSet<>();
-        collect(player.getInventory(), owned);
-        collect(player.getEnderChestInventory(), owned);
+        collect(player.getInventory(), owned, player);
+        collect(player.getEnderChestInventory(), owned, player);
+        collect(io.github.zancrow321.jadm.compat.CuriosCompat.find(player, JadmItems.BINDER.get()), owned, player,
+                false);
+        // A player-bound collection counts wherever its binders are, even with none of them at hand.
+        BinderStore.get(player.getUUID()).cards().counts().forEach((code, n) -> owned.add(SetBook.original(code)));
         return owned;
     }
 
-    private static void collect(Container container, Set<Integer> owned) {
+    private static void collect(Container container, Set<Integer> owned, ServerPlayer player) {
         for (int slot = 0; slot < container.getContainerSize(); slot++) {
-            collect(container.getItem(slot), owned, true);
+            collect(container.getItem(slot), owned, player, true);
         }
     }
 
-    private static void collect(ItemStack stack, Set<Integer> owned, boolean nested) {
+    private static void collect(ItemStack stack, Set<Integer> owned, ServerPlayer player, boolean nested) {
         if (stack.isEmpty()) {
             return;
         }
@@ -180,6 +184,9 @@ public final class SetCollection extends SavedData {
                 owned.add(SetBook.original(code));
             }
         } else if (stack.is(JadmItems.BINDER.get())) {
+            if (!BinderItem.usableBy(stack, player)) {
+                return;
+            }
             BinderItem.collection(stack).counts().forEach((code, n) -> {
                 if (n > 0) {
                     owned.add(SetBook.original(code));
@@ -192,7 +199,7 @@ public final class SetCollection extends SavedData {
         } else if (nested) {
             ItemContainerContents contents = stack.get(DataComponents.CONTAINER);
             if (contents != null) {
-                contents.nonEmptyItems().forEach(inner -> collect(inner, owned, false));
+                contents.nonEmptyItems().forEach(inner -> collect(inner, owned, player, false));
             }
         }
     }

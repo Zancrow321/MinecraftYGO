@@ -9,12 +9,17 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 /**
- * Client to server: a click in the binder or deck box screen. {@code offhand} says which hand holds the binder or
- * deck box the screen was opened from. {@code rarity} is the copy a click moves, or {@code null} for commons first
+ * Client to server: a click in the binder or deck box screen. {@code source} says where the binder or deck box the
+ * screen was opened from is: {@link #MAIN_HAND}, {@link #OFF_HAND}, {@link #CURIO} (the Curios binder slot) or an
+ * inventory slot (0 and up). {@code rarity} is the copy a click moves, or {@code null} for commons first
  * (out of a binder or deck) or the rarest copy (into a deck).
  */
-public record CollectionActionPayload(Action action, boolean offhand, int code, boolean all, Rarity rarity)
+public record CollectionActionPayload(Action action, int source, int code, boolean all, Rarity rarity)
         implements CustomPacketPayload {
+    public static final int MAIN_HAND = -1;
+    public static final int OFF_HAND = -2;
+    public static final int CURIO = -3;
+
     public enum Action {
         /** Put every loose card in the inventory into the binder. */
         DEPOSIT_ALL,
@@ -30,8 +35,8 @@ public record CollectionActionPayload(Action action, boolean offhand, int code, 
         DECK_BOSS
     }
 
-    public CollectionActionPayload(Action action, boolean offhand, int code, boolean all) {
-        this(action, offhand, code, all, null);
+    public CollectionActionPayload(Action action, int source, int code, boolean all) {
+        this(action, source, code, all, null);
     }
 
     public static final Type<CollectionActionPayload> TYPE =
@@ -39,7 +44,7 @@ public record CollectionActionPayload(Action action, boolean offhand, int code, 
 
     public static final StreamCodec<ByteBuf, CollectionActionPayload> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT.map(i -> Action.values()[i], Action::ordinal), CollectionActionPayload::action,
-            ByteBufCodecs.BOOL, CollectionActionPayload::offhand,
+            ByteBufCodecs.VAR_INT, CollectionActionPayload::source,
             ByteBufCodecs.VAR_INT, CollectionActionPayload::code,
             ByteBufCodecs.BOOL, CollectionActionPayload::all,
             // 0 for none, else the rarity's ordinal + 1.

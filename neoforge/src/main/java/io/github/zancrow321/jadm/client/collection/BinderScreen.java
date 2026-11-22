@@ -1,6 +1,7 @@
 package io.github.zancrow321.jadm.client.collection;
 
 import io.github.zancrow321.jadm.JadmData;
+import io.github.zancrow321.jadm.collection.CollectionActions;
 import io.github.zancrow321.jadm.engine.data.BoosterSets.Rarity;
 import io.github.zancrow321.jadm.engine.data.PoolMode;
 import io.github.zancrow321.jadm.item.BinderItem;
@@ -33,7 +34,8 @@ public final class BinderScreen extends Screen {
     /** The rarity filter's choices: any, every foil, then each pack slot (Ultra Rare takes in Gold Rares...). */
     private static final String[] RARITY_KEYS = {"any", "foil", "common", "rare", "super", "ultra", "secret"};
 
-    private final InteractionHand hand;
+    /** Where the binder is, as {@link CollectionActionPayload#source}. */
+    private final int source;
     private final CardFilter filter = new CardFilter();
     private int rarity;
     private CardGrid grid;
@@ -43,12 +45,17 @@ public final class BinderScreen extends Screen {
     private int top;
 
     public BinderScreen(InteractionHand hand) {
+        this(hand == InteractionHand.OFF_HAND ? CollectionActionPayload.OFF_HAND : CollectionActionPayload.MAIN_HAND);
+    }
+
+    /** @param source where the binder is, as {@link CollectionActionPayload#source} */
+    public BinderScreen(int source) {
         super(Component.translatable("screen.jadm.binder"));
-        this.hand = hand;
+        this.source = source;
     }
 
     private ItemStack binder() {
-        return minecraft.player == null ? ItemStack.EMPTY : minecraft.player.getItemInHand(hand);
+        return minecraft.player == null ? ItemStack.EMPTY : CollectionActions.at(minecraft.player, source);
     }
 
     @Override
@@ -190,8 +197,7 @@ public final class BinderScreen extends Screen {
         }
         CardGrid.Entry e = grid.at(mouseX, mouseY);
         if (e != null) {
-            PacketDistributor.sendToServer(new CollectionActionPayload(Action.WITHDRAW,
-                    hand == InteractionHand.OFF_HAND, e.code(), hasShiftDown(), e.rarity()));
+            PacketDistributor.sendToServer(new CollectionActionPayload(Action.WITHDRAW, source, e.code(), hasShiftDown(), e.rarity()));
             return true;
         }
         boolean handled = super.mouseClicked(mouseX, mouseY, button);
@@ -207,7 +213,7 @@ public final class BinderScreen extends Screen {
     }
 
     private void send(Action action, int code, boolean all) {
-        PacketDistributor.sendToServer(new CollectionActionPayload(action, hand == InteractionHand.OFF_HAND, code, all));
+        PacketDistributor.sendToServer(new CollectionActionPayload(action, source, code, all));
     }
 
     @Override

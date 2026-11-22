@@ -1,6 +1,7 @@
 package io.github.zancrow321.jadm.collection;
 
 import io.github.zancrow321.jadm.JadmData;
+import io.github.zancrow321.jadm.compat.CuriosCompat;
 import io.github.zancrow321.jadm.engine.data.BoosterSets.Rarity;
 import io.github.zancrow321.jadm.engine.data.DeckRules;
 import io.github.zancrow321.jadm.item.BinderItem;
@@ -12,7 +13,7 @@ import io.github.zancrow321.jadm.item.JadmItems;
 import io.github.zancrow321.jadm.network.CollectionActionPayload;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
@@ -27,11 +28,26 @@ public final class CollectionActions {
     private CollectionActions() {
     }
 
+    /** The item at a {@link CollectionActionPayload#source}: a hand, the Curios binder slot or an inventory slot. */
+    public static ItemStack at(Player player, int source) {
+        return switch (source) {
+            case CollectionActionPayload.MAIN_HAND -> player.getMainHandItem();
+            case CollectionActionPayload.OFF_HAND -> player.getOffhandItem();
+            case CollectionActionPayload.CURIO -> CuriosCompat.find(player, JadmItems.BINDER.get());
+            default -> source >= 0 && source < player.getInventory().getContainerSize()
+                    ? player.getInventory().getItem(source) : ItemStack.EMPTY;
+        };
+    }
+
     public static void handle(ServerPlayer player, CollectionActionPayload action) {
-        ItemStack held = player.getItemInHand(action.offhand() ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
+        ItemStack held = at(player, action.source());
+        if (held.is(JadmItems.BINDER.get()) && !BinderItem.usableBy(held, player)) {
+            return;
+        }
         switch (action.action()) {
             case DEPOSIT_ALL -> {
                 if (held.is(JadmItems.BINDER.get())) {
+                    BinderItem.claim(held, player);
                     depositAll(player, held);
                 }
             }
@@ -171,11 +187,9 @@ public final class CollectionActions {
     /** The rarest copy of a card the player carries, in a binder or loose, or {@code null}. */
     private static Rarity best(ServerPlayer player, int code) {
         Rarity best = null;
-        Inventory inventory = player.getInventory();
-        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
-            ItemStack stack = inventory.getItem(slot);
+        for (ItemStack stack : carried(player)) {
             List<Rarity> have = new ArrayList<>();
-            if (stack.is(JadmItems.BINDER.get())) {
+            if (stack.is(JadmItems.BINDER.get()) && BinderItem.usableBy(stack, player)) {
                 BinderItem.copies(stack, code).forEach((r, n) -> have.add(r));
             } else if (stack.is(JadmItems.CARD.get()) && CardItem.code(stack) == code) {
                 have.add(CardItem.rarity(stack));
@@ -198,13 +212,12 @@ public final class CollectionActions {
         if (rarity == null) {
             return null;
         }
-        Inventory inventory = player.getInventory();
-        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
-            ItemStack stack = inventory.getItem(slot);
-            if (stack.is(JadmItems.BINDER.get()) && BinderItem.remove(stack, code, rarity, 1) == 1) {
+        for (ItemStack stack : binders(player)) {
+            if (BinderItem.remove(stack, code, rarity, 1) == 1) {
                 return rarity;
             }
         }
+        Inventory inventory = player.getInventory();
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
             ItemStack stack = inventory.getItem(slot);
             if (stack.is(JadmItems.CARD.get()) && CardItem.code(stack) == code && CardItem.rarity(stack) == rarity) {
@@ -215,15 +228,55 @@ public final class CollectionActions {
         return null;
     }
 
-    /** The first binder in the inventory (off hand included), or {@link ItemStack#EMPTY}. */
-    public static ItemStack findBinder(net.minecraft.world.entity.player.Player player) {
+    /**
+     * The first binder the player may use: in the inventory (off hand included), else in the Curios binder slot;
+     * {@link ItemStack#EMPTY} without one. Binders bound to someone else are passed over.
+     */
+    public static ItemStack findBinder(Player player) {
+        List<ItemStack> binders = binders(player);
+        if (binders.isEmpty()) {
+            return ItemStack.EMPTY;
+        }
+        ItemStack binder = binders.get(0);
+        // An ordinary binder that would be bound this tick anyway is bound now, so cards join the right collection.
+        BinderItem.claim(binder, player);
+        return binder;
+    }
+
+    /**
+     * Every binder the player may use, inventory first, then the Curios slot. Bound binders show one shared
+     * collection, so only the first of the player's own is listed: counting it twice would count their cards twice.
+     */
+    public static List<ItemStack> binders(Player player) {
+        List<ItemStack> binders = new ArrayList<>();
+        boolean own = false;
+        for (ItemStack stack : carried(player)) {
+            if (!stack.is(JadmItems.BINDER.get()) || !BinderItem.usableBy(stack, player)) {
+                continue;
+            }
+            if (BinderItem.owner(stack) != null) {
+                if (own) {
+                    continue;
+                }
+                own = true;
+            }
+            binders.add(stack);
+        }
+        return binders;
+    }
+
+    /** The inventory's items (off hand included), then the binder in the Curios slot if there is one. */
+    private static List<ItemStack> carried(Player player) {
+        List<ItemStack> items = new ArrayList<>();
         Inventory inventory = player.getInventory();
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
-            if (inventory.getItem(slot).is(JadmItems.BINDER.get())) {
-                return inventory.getItem(slot);
-            }
+            items.add(inventory.getItem(slot));
         }
-        return ItemStack.EMPTY;
+        ItemStack curio = CuriosCompat.find(player, JadmItems.BINDER.get());
+        if (!curio.isEmpty()) {
+            items.add(curio);
+        }
+        return items;
     }
 
     private static void give(ServerPlayer player, ItemStack card, int count) {

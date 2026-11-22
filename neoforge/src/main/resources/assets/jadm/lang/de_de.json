@@ -453,5 +453,19 @@
   "commands.jadm.quests.reloaded": "%s Aufgaben aus config/jadm/quests.json gelesen.",
   "commands.jadm.quests.reset": "%s bekommt neue Aufgaben.",
   "commands.jadm.quests.completed": "Aufgabe %s für %s erfüllt.",
-  "commands.jadm.quests.not_held": "%s hat die Aufgabe %s gerade nicht."
+  "commands.jadm.quests.not_held": "%s hat die Aufgabe %s gerade nicht.",
+  "curios.identifier.binder": "Kartenordner",
+  "item.jadm.binder.bound": "Gebunden an %s: zeigt deren Sammlung",
+  "key.jadm.binder": "Ordner öffnen (Curios-Slot oder Inventar)",
+  "message.jadm.binder.foreign": "Dieser Ordner gehört %s",
+  "message.jadm.binder.bound": "Ordner an dich gebunden: seine %s Karten sind jetzt in deiner Sammlung",
+  "message.jadm.binder.restored": "Du hast einen Ordner mit deiner Sammlung bekommen (%s Karten).",
+  "message.jadm.binder.not_bound": "Auf diesem Server werden Ordner nicht an Spieler gebunden.",
+  "message.jadm.binder.already": "Du trägst schon einen Ordner mit deiner Sammlung.",
+  "message.jadm.binder.given": "Hier ist ein Ordner mit deiner Sammlung (%s Karten).",
+  "message.jadm.binder.gave": "%s hat einen Ordner mit der eigenen Sammlung bekommen (%s Karten).",
+  "message.jadm.binder.unbind_config": "Erst bindBindersToPlayers ausschalten, sonst wird der Ordner sofort wieder gebunden.",
+  "message.jadm.binder.unbind_hold": "%s muss einen an sich gebundenen Ordner in der Haupthand halten.",
+  "message.jadm.binder.unbound": "Der Ordner von %s ist wieder ein normaler Ordner und enthält alle %s Karten; die gespeicherte Sammlung ist jetzt leer.",
+  "message.jadm.binder.none": "Du trägst keinen Ordner."
 }

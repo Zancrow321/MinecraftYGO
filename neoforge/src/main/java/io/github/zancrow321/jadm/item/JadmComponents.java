@@ -147,6 +147,20 @@ public final class JadmComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<CardFoils>> FOILS =
             COMPONENTS.registerComponentType("foils", b -> b.persistent(CardFoils.CODEC)
                     .networkSynchronized(CardFoils.STREAM_CODEC));
+    /** Whose collection a player-bound binder shows: the cards themselves are on the server, see BinderStore. */
+    public record BinderOwner(java.util.UUID id, String name) {
+        public static final Codec<BinderOwner> CODEC = RecordCodecBuilder.create(i -> i.group(
+                net.minecraft.core.UUIDUtil.CODEC.fieldOf("id").forGetter(BinderOwner::id),
+                Codec.STRING.optionalFieldOf("name", "").forGetter(BinderOwner::name)
+        ).apply(i, BinderOwner::new));
+        public static final StreamCodec<ByteBuf, BinderOwner> STREAM_CODEC = StreamCodec.composite(
+                net.minecraft.core.UUIDUtil.STREAM_CODEC, BinderOwner::id, ByteBufCodecs.STRING_UTF8,
+                BinderOwner::name, BinderOwner::new);
+    }
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<BinderOwner>> BINDER_OWNER =
+            COMPONENTS.registerComponentType("binder_owner", b -> b.persistent(BinderOwner.CODEC)
+                    .networkSynchronized(BinderOwner.STREAM_CODEC));
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<DeckList>> DECK =
             COMPONENTS.registerComponentType("deck", b -> b.persistent(DeckList.CODEC)
                     .networkSynchronized(DeckList.STREAM_CODEC));
