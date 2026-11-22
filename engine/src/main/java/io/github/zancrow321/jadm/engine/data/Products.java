@@ -55,10 +55,59 @@ public record Products(List<Product> products, Map<Integer, LocalDate> ocgOnly) 
      * @param newCards the cards this is the first TCG product for; empty for a reprint-only product
      */
     public record Product(String id, String code, String name, LocalDate date, Kind kind, List<Printing> cards,
-                          List<Integer> newCards) {
+                          List<Integer> newCards, Custom custom) {
         public Product {
             cards = List.copyOf(cards);
             newCards = List.copyOf(newCards);
+        }
+
+        /** A real TCG product. */
+        public Product(String id, String code, String name, LocalDate date, Kind kind, List<Printing> cards,
+                       List<Integer> newCards) {
+            this(id, code, name, date, kind, cards, newCards, null);
+        }
+
+        /** Whether a server's datapack defines it, see {@link CustomProducts}. */
+        public boolean isCustom() {
+            return custom != null;
+        }
+
+        /** The same product released on another day. */
+        public Product withDate(LocalDate date) {
+            return new Product(id, code, name, date, kind, cards, newCards, custom);
+        }
+
+        private Product withNewCards(List<Integer> newCards) {
+            return new Product(id, code, name, date, kind, cards, newCards, custom);
+        }
+
+        /** Whether the cards it prints can be new in it: every real product, and custom ones that unlock cards. */
+        boolean unlocks() {
+            return custom == null || custom.unlocksCards();
+        }
+    }
+
+    /**
+     * What a product from a datapack says beyond a real one's data (see {@link CustomProducts} for the format).
+     *
+     * @param source       where it came from, e.g. {@code duelmc:legends}, for messages
+     * @param dated        whether it has a release date of its own; one without comes out at the very start
+     * @param description  a line for its tooltip, or empty
+     * @param image        a picture of it: an https address or a resource pack texture, or empty for the mod's own
+     * @param pack         a booster's pack format, or {@code null} to pick one as for a real set
+     * @param counts       a deck's copies of each card (every card of {@code cards} is in it)
+     * @param tinPacks     a tin's packs, one entry per pack: product ids or set codes
+     * @param promos       how many of a tin's cards it gives
+     * @param unlocksCards whether its cards unlock with it in a progression world
+     * @param starter      whether a deck is offered as a new player's first deck
+     * @param price        its shop price before the multiplier, or -1 for the [shop] setting of its kind
+     */
+    public record Custom(String source, boolean dated, String description, String image, PackProfile pack,
+                         Map<Integer, Integer> counts, List<String> tinPacks, int promos, boolean unlocksCards,
+                         boolean starter, int price) {
+        public Custom {
+            counts = Collections.unmodifiableMap(new LinkedHashMap<>(counts));
+            tinPacks = List.copyOf(tinPacks);
         }
     }
 
@@ -109,29 +158,70 @@ public record Products(List<Product> products, Map<Integer, LocalDate> ocgOnly) 
         List<Product> moved = new ArrayList<>();
         for (Product p : products) {
             LocalDate date = dates.get(p.id());
-            moved.add(date == null ? p : new Product(p.id(), p.code(), p.name(), date, p.kind(), p.cards(),
-                    p.newCards()));
+            moved.add(date == null ? p : p.withDate(date));
         }
+        return reorder(moved);
+    }
+
+    /**
+     * These products with a server's own (see {@link CustomProducts}): one with the id of a real product takes its
+     * place, the others come out on their date (after the real products of that day), those without a date before
+     * everything else.
+     */
+    public Products withCustom(List<Product> custom) {
+        if (custom.isEmpty()) {
+            return this;
+        }
+        java.util.Set<String> ids = new java.util.HashSet<>();
+        custom.forEach(p -> ids.add(p.id()));
+        LocalDate first = products.isEmpty() ? LocalDate.of(2000, 1, 1) : products.get(0).date();
+        List<Product> list = new ArrayList<>();
+        for (Product p : custom) {
+            if (!p.custom().dated()) {
+                list.add(p.withDate(p.date().isBefore(first) ? p.date() : first));
+            }
+        }
+        for (Product p : products) {
+            if (!ids.contains(p.id())) {
+                list.add(p);
+            }
+        }
+        for (Product p : custom) {
+            if (p.custom().dated()) {
+                list.add(p);
+            }
+        }
+        return reorder(list);
+    }
+
+    /**
+     * The products in release order again: a product moved earlier comes before the ones it now precedes and brings
+     * the cards that are new in it from then on.
+     */
+    private Products reorder(List<Product> list) {
+        List<Product> moved = new ArrayList<>(list);
         // Stable, so products of one day keep their order.
         moved.sort(java.util.Comparator.comparing(Product::date));
         // Which product a card is new in depends on the order: the first one now that prints a card new in any.
         java.util.Set<Integer> introduced = new java.util.HashSet<>();
-        products.forEach(p -> introduced.addAll(p.newCards()));
+        moved.stream().filter(Product::unlocks).forEach(p -> introduced.addAll(p.newCards()));
         java.util.Set<Integer> taken = new java.util.HashSet<>();
         List<Product> out = new ArrayList<>();
         for (Product p : moved) {
             List<Integer> newCards = new ArrayList<>();
-            for (int code : p.newCards()) {
-                if (taken.add(code)) {
-                    newCards.add(code);
+            if (p.unlocks()) {
+                for (int code : p.newCards()) {
+                    if (taken.add(code)) {
+                        newCards.add(code);
+                    }
+                }
+                for (Printing printing : p.cards()) {
+                    if (introduced.contains(printing.code()) && taken.add(printing.code())) {
+                        newCards.add(printing.code());
+                    }
                 }
             }
-            for (Printing printing : p.cards()) {
-                if (introduced.contains(printing.code()) && taken.add(printing.code())) {
-                    newCards.add(printing.code());
-                }
-            }
-            out.add(new Product(p.id(), p.code(), p.name(), p.date(), p.kind(), p.cards(), newCards));
+            out.add(p.withNewCards(newCards));
         }
         return new Products(out, ocgOnly);
     }

@@ -51,8 +51,12 @@ public final class JadmData {
     private static final Lazy<io.github.zancrow321.jadm.engine.data.AltArts> ALT_ARTS =
             new Lazy<>(io.github.zancrow321.jadm.engine.data.AltArts::loadBundled);
     private static final Lazy<BoosterSets> MODELED_SETS = new Lazy<>(BoosterSets::loadBundled);
-    private static final Lazy<BoosterSets> ALL_SETS =
-            new Lazy<>(() -> BoosterSets.fromProducts(products(), everything()));
+    /** Every booster of {@link #products()}, built on first use; see {@link #allSets()}. */
+    private static volatile BoosterSets allSets;
+    /** The server's own products from its datapacks (on a client, the ones the server sent). */
+    private static volatile List<Products.Product> custom = List.of();
+    /** The bundled products with {@link #custom} in place, see {@link #bundledProducts()}. */
+    private static volatile Products withCustom;
     private static final Map<String, Banlist> CUSTOM_BANLISTS = new HashMap<>();
     /** Official lists as banlists, by id and point cap. */
     private static final Map<String, Banlist> OFFICIAL_BANLISTS = new HashMap<>();
@@ -71,6 +75,7 @@ public final class JadmData {
     /** What the server a client joined said, see {@link #joined}; unused while this JVM runs the server. */
     private static volatile PoolMode joinedMode;
     private static volatile int joinedStep = -1;
+    private static volatile String joinedProduct;
     private static volatile boolean joinedLockedInDeck = true;
     private static volatile String joinedBanlist = "auto";
     private static volatile int joinedPointCap = Banlist.GENESYS_POINT_CAP;
@@ -126,6 +131,7 @@ public final class JadmData {
             releaseDates(io.github.zancrow321.jadm.progression.ReleaseDates.decode(payload.releaseDates()));
         }
         joinedMode = PoolMode.parse(payload.mode());
+        joinedProduct = payload.product();
         joinedStep = progression().indexOf(payload.product());
         joinedLockedInDeck = payload.lockedInDeck();
         joinedBanlist = payload.banlist();
@@ -177,7 +183,7 @@ public final class JadmData {
     /** The products in release order with some dates moved, and the progression through them, built on first use. */
     private record Order(Map<String, java.time.LocalDate> dates, Products products, Lazy<Progression> progression) {
         static Order of(Map<String, java.time.LocalDate> dates) {
-            Products products = BUNDLED_PRODUCTS.get().withReleaseDates(dates);
+            Products products = bundledProducts().withReleaseDates(dates);
             return new Order(dates, products, new Lazy<>(() -> new Progression(products, cards(), everything(),
                     BUNDLED_BANLISTS.get())));
         }
@@ -247,7 +253,7 @@ public final class JadmData {
     public static BoosterSets sets() {
         return switch (poolMode()) {
             case MODELED -> MODELED_SETS.get();
-            case ALL -> ALL_SETS.get();
+            case ALL -> allSets();
             case PROGRESSION -> {
                 int step = step(null);
                 if (setsStep != step || stepSets == null) {
@@ -262,12 +268,21 @@ public final class JadmData {
     /** A booster set by id, whether or not it is unlocked, so that every pack opens to its own cards. */
     public static BoosterSets.BoosterSet set(String id) {
         BoosterSets.BoosterSet set = sets().get(id);
-        return set != null ? set : ALL_SETS.get().get(id);
+        return set != null ? set : allSets().get(id);
     }
 
-    /** Every TCG booster, for the creative tab. */
+    /** Every TCG booster and the server's own, for the creative tab. */
     public static BoosterSets allSets() {
-        return ALL_SETS.get();
+        BoosterSets sets = allSets;
+        if (sets == null) {
+            synchronized (JadmData.class) {
+                sets = allSets;
+                if (sets == null) {
+                    sets = allSets = BoosterSets.fromProducts(products(), everything());
+                }
+            }
+        }
+        return sets;
     }
 
     /**
@@ -276,13 +291,15 @@ public final class JadmData {
      */
     public static java.util.List<Products.Product> shopProducts() {
         java.util.List<Products.Product> candidates = switch (poolMode()) {
-            case MODELED -> MODELED_SETS.get().sets().keySet().stream().map(id -> products().get(id))
-                    .filter(java.util.Objects::nonNull).toList();
+            case MODELED -> java.util.stream.Stream.concat(MODELED_SETS.get().sets().keySet().stream()
+                            .map(id -> products().get(id)), custom.stream().map(p -> products().get(p.id())))
+                    .filter(java.util.Objects::nonNull).distinct().toList();
             case ALL -> products().products();
             case PROGRESSION -> products().products().subList(0, step(null) + 1);
         };
         return candidates.stream().filter(p -> p.kind() != Products.Kind.TIN && set(p.id()) != null
-                || poolMode() != PoolMode.MODELED && io.github.zancrow321.jadm.item.SealedProductItem.sealed(p))
+                || (poolMode() != PoolMode.MODELED || p.isCustom())
+                && io.github.zancrow321.jadm.item.SealedProductItem.sealed(p))
                 .toList();
     }
 
@@ -296,9 +313,52 @@ public final class JadmData {
         return order().products();
     }
 
-    /** Every TCG product in real release order. */
+    /**
+     * Every TCG product in real release order, with the server's own products from its datapacks in place (but not
+     * its {@link #releaseDates}).
+     */
     public static Products bundledProducts() {
-        return BUNDLED_PRODUCTS.get();
+        Products p = withCustom;
+        return p != null ? p : BUNDLED_PRODUCTS.get();
+    }
+
+    /** The server's own products from its datapacks (on a client, the ones the server sent), as they were read. */
+    public static List<Products.Product> customProducts() {
+        return custom;
+    }
+
+    /**
+     * Puts a server's own products to use (on the server after its datapacks load, on a client when the server
+     * sends them): every product list, booster set and progression is built again.
+     */
+    public static synchronized void customProducts(List<Products.Product> products) {
+        if (products.equals(custom)) {
+            return;
+        }
+        custom = List.copyOf(products);
+        withCustom = BUNDLED_PRODUCTS.get().withCustom(custom);
+        order = Order.of(order().dates());
+        allSets = null;
+        setsStep = -1;
+        stepSets = null;
+        if (joinedProduct != null) {
+            joinedStep = progression().indexOf(joinedProduct);
+        }
+    }
+
+    /** The server's own product with this set code, or {@code null}. */
+    public static Products.Product customByCode(String code) {
+        for (Products.Product p : custom) {
+            if (p.code().equalsIgnoreCase(code)) {
+                return products().get(p.id()) != null ? products().get(p.id()) : p;
+            }
+        }
+        return null;
+    }
+
+    /** Whether a real TCG product has this set code. */
+    public static boolean bundledCode(String code) {
+        return BUNDLED_PRODUCTS.get().products().stream().anyMatch(p -> p.code().equalsIgnoreCase(code));
     }
 
     // ---- models

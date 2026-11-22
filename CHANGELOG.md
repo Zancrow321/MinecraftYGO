@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+### Your own packs, decks and tins
+- **Custom products from datapacks:** a server can add its own booster packs, structure decks and tins, one JSON file
+  each under `data/<namespace>/jadm/products/`. Cards by name or passcode, rarities per card (several per card, as in
+  the real sets), pack formats by name or your own slots and odds, decks with exact copies, tins with their own
+  promos and packs, an optional release date for progression worlds, a tooltip line, a picture and a shop price.
+  They open, sell in the shops and unlock like the real products; a file with a real product's id replaces it.
+  `/reload` picks up changes and sends them to every player.
+- `/jadm products` lists the server's own products and what was wrong with their files; `/jadm products give`
+  hands one out.
+- **Product editor:** `tools/product-editor/jadm-product-editor.html` makes such datapacks in the browser (offline):
+  card search, rarities, pack formats with a sample pack, deck lists from `.ydk`, and the finished `.zip`.
+  Format: `docs/custom-products.md` and the Duelist's Handbook.
+- The server sends its products to every client, so servers and players need the new version.
+
 ## 1.2.11 (2026-10-26)
 
 ### Field Spell looks from resource packs

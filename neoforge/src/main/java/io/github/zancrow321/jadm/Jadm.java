@@ -65,6 +65,7 @@ public final class Jadm {
             }
         });
         io.github.zancrow321.jadm.clan.ClanParties.init();
+        io.github.zancrow321.jadm.custom.CustomProductLoader.register();
         modBus.addListener(JadmNetwork::register);
         if (FMLEnvironment.dist == Dist.CLIENT) {
             container.registerConfig(ModConfig.Type.CLIENT, JadmClientConfig.SPEC);

@@ -43,11 +43,80 @@ public final class ProductArt {
      *         starts loading it); stays {@code null} if there is no picture for the code
      */
     public static Art get(String code) {
-        if (code == null || code.isEmpty() || !JadmClientConfig.PRODUCT_IMAGES.get()) {
+        if (code == null || code.isEmpty()) {
+            return null;
+        }
+        // A datapack product shows the picture it names (whether or not real product pictures are on), and none
+        // without one, unless a real product has its set code.
+        io.github.zancrow321.jadm.engine.data.Products.Product custom = io.github.zancrow321.jadm.JadmData
+                .customByCode(code);
+        if (custom != null && !custom.custom().image().isEmpty()) {
+            String image = custom.custom().image();
+            CompletableFuture<Art> art = ART.computeIfAbsent("custom|" + image, key -> loadCustom(image));
+            return art.isDone() && !art.isCompletedExceptionally() ? art.join() : null;
+        }
+        if (custom != null && !io.github.zancrow321.jadm.JadmData.bundledCode(code)
+                || !JadmClientConfig.PRODUCT_IMAGES.get()) {
             return null;
         }
         CompletableFuture<Art> art = ART.computeIfAbsent(code, ProductArt::load);
         return art.isDone() && !art.isCompletedExceptionally() ? art.join() : null;
+    }
+
+    /**
+     * A datapack product's picture: from an https address (cached like the real ones), or a texture of a resource
+     * pack such as {@code duelmc:textures/item/legends.png}. Its backdrop is only cut away if it has no transparency.
+     */
+    private static CompletableFuture<Art> loadCustom(String image) {
+        CompletableFuture<byte[]> bytes;
+        if (image.startsWith("https://") || image.startsWith("http://")) {
+            String safe = Integer.toHexString(image.hashCode()) + "_"
+                    + image.replaceAll("^.*/", "").replaceAll("[^A-Za-z0-9_-]", "_");
+            Path file = CardArt.cacheDir().resolveSibling("product_art").resolve("custom").resolve(safe);
+            bytes = fetch(file, URI.create(image));
+        } else {
+            ResourceLocation location = ResourceLocation.tryParse(image);
+            if (location == null) {
+                return CompletableFuture.failedFuture(new IllegalArgumentException("not a picture: " + image));
+            }
+            bytes = CompletableFuture.supplyAsync(() -> {
+                try (var in = Minecraft.getInstance().getResourceManager().open(location)) {
+                    return in.readAllBytes();
+                } catch (java.io.IOException e) {
+                    throw new IllegalStateException("no " + location + " in the resource packs", e);
+                }
+            }, Minecraft.getInstance());
+        }
+        String path = "product_art/custom_" + Integer.toHexString(image.hashCode());
+        return bytes.thenApply(data -> {
+                    CardArt.Pixels pixels = CardArt.pixels(data);
+                    boolean clear = java.util.Arrays.stream(pixels.argb()).anyMatch(c -> (c >>> 24) < 255);
+                    return crop(clear ? pixels : cutBackground(pixels));
+                })
+                .thenCompose(full -> CompletableFuture.supplyAsync(() -> new Art(register(path, full),
+                        register(path + "_icon", shrink(full, ICON_SIZE)), full.width() / (float) full.height()),
+                        Minecraft.getInstance()))
+                .whenComplete((art, error) -> {
+                    if (error != null) {
+                        Jadm.LOGGER.warn("No picture {} for a custom product: {}", image, error.toString());
+                    }
+                });
+    }
+
+    /** A picture from the cache, else downloaded and cached. */
+    private static CompletableFuture<byte[]> fetch(Path file, URI uri) {
+        if (Files.isRegularFile(file)) {
+            return CompletableFuture.supplyAsync(() -> CardArt.read(file));
+        }
+        return CardArt.HTTP.sendAsync(HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(20))
+                        .header("User-Agent", "Just Another Dueling Mod").build(), HttpResponse.BodyHandlers.ofByteArray())
+                .thenApply(response -> {
+                    if (response.statusCode() != 200) {
+                        throw new IllegalStateException("HTTP " + response.statusCode() + " for " + uri);
+                    }
+                    CardArt.write(file, response.body());
+                    return response.body();
+                });
     }
 
     private static CompletableFuture<Art> load(String code) {
