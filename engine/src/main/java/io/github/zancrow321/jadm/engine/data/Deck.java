@@ -73,7 +73,7 @@ public record Deck(String name, List<Integer> main, List<Integer> extra, List<In
                 case "!side" -> current = side;
                 default -> {
                     if (!line.startsWith("#") && !line.startsWith("!")) {
-                        current.add(Integer.parseInt(line));
+                        current.add(Renumbered.current(Integer.parseInt(line)));
                     }
                 }
             }

@@ -3,6 +3,7 @@ package io.github.zancrow321.jadm.item;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.zancrow321.jadm.Jadm;
+import io.github.zancrow321.jadm.engine.data.Renumbered;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
@@ -25,10 +26,31 @@ public final class JadmComponents {
     private static final DeferredRegister.DataComponents COMPONENTS =
             DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, Jadm.MOD_ID);
 
+    /** A passcode as saved, loaded as the card's current one (see {@link Renumbered}). */
+    private static final Codec<Integer> PASSCODE = Codec.INT.xmap(Renumbered::current, c -> c);
+
+    /** A {@code "<passcode>:<rarity>"} foil key as saved, with the card's current passcode. */
+    private static String currentKey(String key) {
+        int colon = key.indexOf(':');
+        try {
+            int code = Integer.parseInt(colon < 0 ? key : key.substring(0, colon));
+            int now = Renumbered.current(code);
+            return now == code ? key : now + (colon < 0 ? "" : key.substring(colon));
+        } catch (NumberFormatException e) {
+            return key;
+        }
+    }
+
+    private static Map<String, Integer> currentKeys(Map<String, Integer> copies) {
+        Map<String, Integer> out = new HashMap<>();
+        copies.forEach((key, n) -> out.merge(currentKey(key), n, Integer::sum));
+        return out;
+    }
+
     /** A single card and the rarity it was pulled at. */
     public record CardStack(int code, String rarity) {
         public static final Codec<CardStack> CODEC = RecordCodecBuilder.create(i -> i.group(
-                Codec.INT.fieldOf("code").forGetter(CardStack::code),
+                PASSCODE.fieldOf("code").forGetter(CardStack::code),
                 Codec.STRING.optionalFieldOf("rarity", "common").forGetter(CardStack::rarity)
         ).apply(i, CardStack::new));
         public static final StreamCodec<ByteBuf, CardStack> STREAM_CODEC = StreamCodec.composite(
@@ -38,9 +60,17 @@ public final class JadmComponents {
     /** The cards in a binder: passcode to number of copies. */
     public record CardCollection(Map<Integer, Integer> counts) {
         public static final CardCollection EMPTY = new CardCollection(Map.of());
-        public static final Codec<CardCollection> CODEC = Codec.unboundedMap(
-                        Codec.STRING.xmap(Integer::parseInt, String::valueOf), Codec.INT)
-                .xmap(CardCollection::new, CardCollection::counts);
+        public static final Codec<CardCollection> CODEC = Codec.unboundedMap(Codec.STRING, Codec.INT)
+                .xmap(saved -> {
+                    Map<Integer, Integer> counts = new HashMap<>();
+                    saved.forEach((code, n) -> counts.merge(Renumbered.current(Integer.parseInt(code)), n,
+                            Integer::sum));
+                    return new CardCollection(counts);
+                }, collection -> {
+                    Map<String, Integer> saved = new HashMap<>();
+                    collection.counts().forEach((code, n) -> saved.put(String.valueOf(code), n));
+                    return saved;
+                });
         public static final StreamCodec<ByteBuf, CardCollection> STREAM_CODEC = ByteBufCodecs.<ByteBuf, Integer,
                         Integer, Map<Integer, Integer>>map(HashMap::new, ByteBufCodecs.VAR_INT, ByteBufCodecs.VAR_INT)
                 .map(CardCollection::new, CardCollection::counts);
@@ -77,7 +107,7 @@ public final class JadmComponents {
     public record CardFoils(Map<String, Integer> copies) {
         public static final CardFoils EMPTY = new CardFoils(Map.of());
         public static final Codec<CardFoils> CODEC = Codec.unboundedMap(Codec.STRING, Codec.INT)
-                .xmap(CardFoils::new, CardFoils::copies);
+                .xmap(copies -> new CardFoils(currentKeys(copies)), CardFoils::copies);
         public static final StreamCodec<ByteBuf, CardFoils> STREAM_CODEC = ByteBufCodecs.<ByteBuf, String, Integer,
                         Map<String, Integer>>map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_INT)
                 .map(CardFoils::new, CardFoils::copies);
@@ -100,10 +130,10 @@ public final class JadmComponents {
     public record DeckList(List<Integer> main, List<Integer> extra, Map<String, Integer> foils) {
         public static final DeckList EMPTY = new DeckList(List.of(), List.of());
         public static final Codec<DeckList> CODEC = RecordCodecBuilder.create(i -> i.group(
-                Codec.INT.listOf().optionalFieldOf("main", List.of()).forGetter(DeckList::main),
-                Codec.INT.listOf().optionalFieldOf("extra", List.of()).forGetter(DeckList::extra),
-                Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("foils", Map.of())
-                        .forGetter(DeckList::foils)
+                PASSCODE.listOf().optionalFieldOf("main", List.of()).forGetter(DeckList::main),
+                PASSCODE.listOf().optionalFieldOf("extra", List.of()).forGetter(DeckList::extra),
+                Codec.unboundedMap(Codec.STRING, Codec.INT).xmap(JadmComponents::currentKeys, f -> f)
+                        .optionalFieldOf("foils", Map.of()).forGetter(DeckList::foils)
         ).apply(i, DeckList::new));
         public static final StreamCodec<ByteBuf, DeckList> STREAM_CODEC = StreamCodec.composite(
                 ByteBufCodecs.VAR_INT.apply(ByteBufCodecs.list()), DeckList::main,
@@ -152,7 +182,7 @@ public final class JadmComponents {
                     .networkSynchronized(DeckList.STREAM_CODEC));
     /** The monster marked as a deck box's boss: it gets the ace shot in a duel. Its original passcode. */
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> DECK_BOSS =
-            COMPONENTS.registerComponentType("deck_boss", b -> b.persistent(Codec.INT)
+            COMPONENTS.registerComponentType("deck_boss", b -> b.persistent(PASSCODE)
                     .networkSynchronized(ByteBufCodecs.VAR_INT));
 
     /** The skin a duel disk wears; see {@code Cosmetics.SKINS}. */

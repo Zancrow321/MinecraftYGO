@@ -2,8 +2,9 @@
 --Double Spell
 local s,id=GetID()
 function s.initial_effect(c)
-	--copy spell
+	--Discard 1 Spell, then target 1 Spell in your opponent's GY; place that target in the appropriate Zone on your field, and as this card's effect resolution, follow its card text as if you had used it yourself.
 	local e1=Effect.CreateEffect(c)
+	e1:SetDescription(aux.Stringid(id,0))
 	e1:SetType(EFFECT_TYPE_ACTIVATE)
 	e1:SetCode(EVENT_FREE_CHAIN)
 	e1:SetProperty(EFFECT_FLAG_CARD_TARGET)
@@ -12,7 +13,6 @@ function s.initial_effect(c)
 	e1:SetOperation(s.operation)
 	c:RegisterEffect(e1)
 end
-s.listed_series={SET_RANK_UP_MAGIC}
 function s.cfilter(c)
 	return c:IsDiscardable() and c:IsSpell()
 end
@@ -77,7 +77,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 		if Duel.GetLocationCount(tp,LOCATION_SZONE)<=0 then return end
 		Duel.MoveToField(tc,tp,tp,LOCATION_SZONE,POS_FACEUP,true)
 	elseif (tpe&TYPE_FIELD)~=0 then
-		Duel.MoveToField(tc,tp,tp,LOCATION_FZONE,POS_FACEUP,true)
+		Duel.PlaceFieldSpell(tc,tp)
 	end
 	tc:CreateEffectRelation(te)
 	if co then co(te,tp,eg,ep,ev,re,r,rp,1) end
@@ -94,7 +94,7 @@ function s.operation(e,tp,eg,ep,ev,re,r,rp)
 	for etc in aux.Next(g) do
 		etc:CreateEffectRelation(te)
 	end
-	if op then 
+	if op then
 		if tc:IsSetCard(SET_RANK_UP_MAGIC) then
 			op(e,tp,eg,ep,ev,re,r,rp)
 		else
