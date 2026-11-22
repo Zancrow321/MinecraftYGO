@@ -1,4 +1,4 @@
 {
   "entities": ["player"],
-  "slots": ["duel_disk"]
+  "slots": ["duel_disk", "binder"]
 }

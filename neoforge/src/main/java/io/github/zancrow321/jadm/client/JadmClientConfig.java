@@ -22,6 +22,8 @@ public final class JadmClientConfig {
     public static final ModConfigSpec.BooleanValue ACE_EXTRA_DECK;
     public static final ModConfigSpec.BooleanValue LONG_SUMMON_SHOWS;
     public static final ModConfigSpec.BooleanValue FINISHER_CAMERA;
+    public static final ModConfigSpec.BooleanValue ASK_FOR_DECK;
+    public static final ModConfigSpec.BooleanValue CHAIN_DISPLAY;
 
     static {
         ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
@@ -92,6 +94,15 @@ public final class JadmClientConfig {
                 .comment("When the final blow of a duel plays in slow motion, swing the camera round to whoever it "
                         + "hits. Off, the camera stays where it is.")
                 .define("finisherCamera", true);
+        ASK_FOR_DECK = builder
+                .comment("When a duel is about to start and you carry more than one legal deck box, ask which deck to "
+                        + "play, with the last one you picked ready. Off, the last picked deck is played without asking "
+                        + "(or the first legal one, if you never picked).")
+                .define("askForDeck", true);
+        CHAIN_DISPLAY = builder
+                .comment("In a duel, show the cards of a chain as numbered chain links at the side of the screen and "
+                        + "let them resolve one by one, last link first.")
+                .define("chainDisplay", true);
         SPEC = builder.build();
     }
 

@@ -1,5 +1,78 @@
 # Changelog
 
+## 1.2.12 (2026-11-22)
+
+### New cards and sets
+- **Magnificent Maestros is complete:** all 125 cards (before only the 24 known ahead of release), and it opens
+  like Magnificent Monsters. Its 49 TCG debuts unlock with it on 2026-11-12.
+- **Ultimate Tournament Pack 2** (2026-11-05) is in the product list.
+- **About 170 new OCG cards** that came out in Japan from September to November 2026: the Zenet, Raise Moon and
+  Trirealm Rift cards, the new Legendary God Cards and Sun God monsters, Winter Raven, Reindsurm, Ars Magna,
+  Bunnillin, Rikka and Salamangreat support, the new Cubic, Marincess and Ghostrick cards and more. They carry their
+  official English names and unlock on their OCG release date.
+- **11 Beyond the Brave cards got their real passcodes** (they came with temporary ones). Cards, binders and deck
+  boxes that hold the old ones load as the new ones by themselves, and .ydk files with the old passcodes still import.
+- Card scripts and rulings updated from Project Ignis.
+
+### Five new monster models
+- **Five more monsters stand on the field as 3D models** instead of an artwork hologram: Beta the Magnet Warrior,
+  Insect Queen, Cyber-Tech Alligator, Dunames Dark Witch and Panther Warrior, the newest models from iconmaster's
+  YGOMCModels. In the `modeled` pool they are playable now too (627 monsters).
+
+### Fixes
+- **Wandering duelists spawn with fast world generation mods:** a duelist spawned while a new chunk was generated
+  picked its look, title and deck with the world's random, which belongs to the server thread. With C2ME (and similar
+  mods that generate chunks on worker threads) this threw "ThreadLocalRandom accessed from a different thread" and the
+  duelist was not spawned. Duelists now use their own random.
+
+### Binders bound to players, Curios binder slot
+- **Collections that survive a broken world:** with `bindBindersToPlayers = true` in `jadm-server.toml`, a binder is
+  bound to the first player who carries it and the cards in it join that player's collection, which the server keeps
+  in `jadm/binders/<uuid>.json` outside the world (`boundBinderStorage = "world"` keeps it in the world folder
+  instead). Every binder bound to a player shows that one collection, so a lost binder or a deleted world loses no
+  cards: `/jadm binder` gives a new one, and joining a world without one hands it out by itself. Only the owner can
+  open, use or trade a bound binder. Operators: `/jadm binder give <player>`, `/jadm binder unbind <player>`. Off by
+  default.
+- **Curios slot for the binder:** with Curios installed, the binder has its own slot. A binder there still catches
+  pulled cards (`packsIntoBinder`), feeds the deck box and counts for the Set Collection Book; **N** opens it (or the
+  first binder in the inventory).
+
+### Your own packs, decks and tins
+- **Custom products from datapacks:** a server can add its own booster packs, structure decks and tins, one JSON file
+  each under `data/<namespace>/jadm/products/`. Cards by name or passcode, rarities per card (several per card, as in
+  the real sets), pack formats by name or your own slots and odds, decks with exact copies, tins with their own
+  promos and packs, an optional release date for progression worlds, a tooltip line, a picture and a shop price.
+  They open, sell in the shops and unlock like the real products; a file with a real product's id replaces it.
+  `/reload` picks up changes and sends them to every player.
+- `/jadm products` lists the server's own products and what was wrong with their files; `/jadm products give`
+  hands one out.
+- **Product editor:** `tools/product-editor/jadm-product-editor.html` makes such datapacks in the browser (offline):
+  card search, rarities, pack formats with a sample pack, deck lists from `.ydk`, and the finished `.zip`.
+  Format: `docs/custom-products.md` and the Duelist's Handbook.
+- The server sends its products to every client, so servers and players need the new version.
+
+### Chain display
+- **See the chain:** once a second card is chained, every chain link shows as a numbered card beside the phase
+  buttons, newest on top, framed blue for yours and red for your opponent's. The links then resolve one by one from
+  the top, each with a short pause: the one resolving glows gold, a resolved one fades away, a negated one is crossed
+  out, and "Resolving: <card>" names it. Hover a link to read its card in the card panel. Single activations play as
+  fast as before. Client setting `chainDisplay`.
+
+### Pick your deck before a duel
+- **Which deck do you play?** Carry more than one legal deck box and a window asks which one to play when a duel is
+  about to start (challenges, tag and Battle City duels, the bot, NPC duelists, arena duels). Each deck shows its boss
+  monster or first card and its card count; the one you picked last is framed, so Enter (or waiting 20 seconds) plays
+  it again. Before, the first legal deck box in your hands or inventory was always played.
+- The duel starts once everyone has picked; the others are told who is still picking. Client setting `askForDeck`
+  (off: the deck you picked last plays without asking). Tournament games play the deck you picked last.
+
+### Rematch
+- **Rematch button** on the result screen: the same duel again, with the same opponents (bots and NPC duelists too),
+  ante, ranking and Battle City setting. Other players get an invitation, and the same button on their result screen
+  ("Accept rematch") says yes. `/jadm rematch` does the same from chat. A ranked rematch is only ranked if today's
+  limit for the two players allows it. NPC duelists keep their rest time after a loss.
+- The server needs the new version too (new network messages).
+
 ## 1.2.11 (2026-10-26)
 
 ### Field Spell looks from resource packs

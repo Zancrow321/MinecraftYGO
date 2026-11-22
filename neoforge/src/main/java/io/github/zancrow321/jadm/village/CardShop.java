@@ -136,6 +136,9 @@ public final class CardShop {
     /** @return the product's price before {@code priceMultiplier}, 0 if it isn't sold */
     static int price(Products.Product product) {
         JadmServerConfig.Prices prices = JadmServerConfig.PRICES;
+        if (product.isCustom() && product.custom().price() >= 0) {
+            return product.custom().price();
+        }
         if (product.kind() == Products.Kind.TIN) {
             return prices.tin.get();
         }

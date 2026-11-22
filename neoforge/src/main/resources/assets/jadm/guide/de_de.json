@@ -53,7 +53,10 @@
         "- Eine **Ranglisten-Tafel** an der Wand zeigt die zehn Besten auf einer leuchtenden Tafel, drei Blöcke breit und zwei hoch, über und neben ihr. Rechtsklick öffnet das Ranglisten-Fenster.",
         "[recipe {modid}:ranking_board]",
         "# Mit welchem Deck du spielst",
-        "Mit deiner ersten legalen Deckbox, zuerst in den Händen gesucht, dann im Inventar. Ohne eine spielst du mit Yugis Starter-Deck, außer der Server hat das abgeschaltet."
+        "Trägst du mehr als eine legale Deckbox, fragt ein Fenster vor dem Duell, welche du spielst: Jedes Deck zeigt sein Boss-Monster (oder seine erste Karte), und das zuletzt gewählte ist eingerahmt. Klick ein Deck an oder drück Enter für das eingerahmte; nach 20 Sekunden spielt das eingerahmte von selbst. Mit `askForDeck` aus spielt das zuletzt gewählte Deck ohne Nachfrage.",
+        "Mit einer legalen Deckbox spielt diese. Ohne eine spielst du mit Yugis Starter-Deck, außer der Server hat das abgeschaltet.",
+        "# Revanche",
+        "Das Ergebnisfenster hat einen Knopf **Rematch**: dasselbe Duell noch einmal, mit denselben Gegnern (auch Bots und NPC-Duellanten), Ante, Wertung und Battle-City-Einstellung. Andere Spieler bekommen eine Einladung, und derselbe Knopf in ihrem Ergebnisfenster nimmt sie an; `{cmd} rematch` macht dasselbe aus dem Chat. Eine gewertete Revanche zählt nur, wenn das Tageslimit für euch beide es erlaubt."
       ]
     },
     {
@@ -64,6 +67,7 @@
         "- **Deine Hand** liegt unten. Klick eine Karte für ihre Aktionen (Normalbeschwörung, Setzen, Aktivieren...) oder zieh sie direkt auf eine Zone.",
         "- **Phasen-Knöpfe** rechts zeigen die Phase: DP SP M1 BP M2 EP. BP, M2 und EP kann man anklicken.",
         "- **Antworten** öffnen ein eigenes Fenster, das zeigt, worauf du antwortest. Wähle eine Antwort oder \"Don't respond\"; \"-\" klappt es weg.",
+        "- **Die Kette:** Sobald eine zweite Karte angekettet wird, steht jedes Kettenglied als nummerierte Karte neben den Phasen-Knöpfen, das neueste oben, blau eingerahmt für deine und rot für die des Gegners. Dann lösen sich die Glieder von oben nach unten auf: Das gerade auflösende leuchtet gold, ein aufgelöstes verblasst, ein negiertes wird durchgestrichen. Mit der Maus über einem Glied liest du seine Karte.",
         "- **Kartendetails:** Die Karte unter der Maus steht groß links, mit Text und aktuellem ATK/DEF. Langer Text bekommt einen Scrollbalken: Mausrad drehen (überall außer über dem Duellprotokoll) oder den Balken ziehen.",
         "- **Stapel:** Friedhof, verbannte Karten oder Extra Deck anklicken (Rechtsklick, wenn dort eine Karte aktiviert werden kann), um sie durchzusehen.",
         "- **Auswahlen** auf dem Feld triffst du direkt dort und bestätigst mit Confirm; Auswahlen aus einem Stapel öffnen ein Kartenfenster.",
@@ -100,6 +104,8 @@
         "# Kartenordner",
         "Hält deine Sammlung. \"Alle Karten einlegen\" legt jede lose Karte hinein; ein Klick auf eine Karte nimmt sie wieder heraus (Shift-Klick alle Kopien). Er behält die Seltenheit jeder Karte, in der Ecke angezeigt (R, SR, UR, ScR), und eine Deckbox behält sie auch. Karten aus noch gesperrten Sets zeigen ein Schloss.",
         "**Suchen:** Einfach lostippen, sobald der Ordner offen ist. Jedes Wort muss im Namen, Kartentext, Attribut oder Typ vorkommen, also findet finsternis drache, empfänger oder schnellzauber etwas (Kartennamen und -texte sind englisch); Wörter in Anführungszeichen zählen als ein Ausdruck, etwa \"destroy all\". Rechtsklick leert das Feld. Die Knöpfe darunter filtern nach Kartentyp, Attribut, Stufe und Seltenheit (oder nur Foils) und sortieren nach Name, ATK, DEF oder Stufe; Shift-Klick geht zurück. Die Suche der Deckbox funktioniert genauso.",
+        "**Curios-Slot:** mit der Mod Curios hat der Kartenordner einen eigenen Slot im Curios-Menü. Ein Ordner dort fängt weiter die gezogenen Karten auf und versorgt die Deckbox; **N** (Steuerung: \"Ordner öffnen\") öffnet ihn, ohne Curios den ersten Ordner im Inventar.",
+        "**An dich gebunden** (wenn der Server `bindBindersToPlayers` einschaltet): der erste Ordner, den du dabei hast, wird deiner, und seine Karten kommen in deine Sammlung, die der Server für deinen Spieler speichert, außerhalb der Welt. Jeder an dich gebundene Ordner zeigt dieselbe Sammlung, also gehen mit einem verlorenen Ordner oder sogar einer kaputten Welt keine Karten verloren: `{cmd} binder` gibt dir einen neuen, und wer ohne Ordner eine Welt betritt (auch eine neue), bekommt ihn automatisch. Niemand sonst kann deinen Ordner öffnen, benutzen oder eintauschen.",
         "[recipe {modid}:binder]",
         "# Set-Sammelbuch",
         "Zeigt jedes erschienene Set (in einer Fortschritts-Welt die bisher freigeschalteten) und wie viel du davon besitzt: Jede Karte des Sets zählt einmal, egal in welcher Seltenheit. Gezählt werden die Karten in deinen Kartenordnern, Deckboxen und lose Karten in Inventar und Endertruhe, auch in Shulkerkisten dort. Öffne es mit dem Buch oder `{cmd} sets`.",
@@ -117,7 +123,9 @@
         "[recipe {modid}:card_frame]",
         "[recipe {modid}:card_showcase]",
         "[recipe {modid}:toploader_stand]",
-        "[recipe {modid}:pack_display]"
+        "[recipe {modid}:pack_display]",
+        "# Server-Produkte",
+        "Ein Server kann eigene Booster, Structure Decks und Tins verkaufen: je eine JSON-Datei in einem Datapack unter `data/<name>/jadm/products/`. Sie lassen sich öffnen, verkaufen und schalten Karten frei wie die echten, und in einer Progression-Welt erscheinen sie an ihrem eigenen Datum. `{cmd} products` listet sie und was an ihren Dateien nicht stimmt, `{cmd} products give <Produkt>` gibt eines aus. Der Produkt-Editor im GitHub-Repository (`tools/product-editor/`) baut so ein Datapack ohne JSON zu schreiben, `docs/custom-products.md` erklärt das Format."
       ]
     },
     {
@@ -307,6 +315,7 @@
         "- `{cmd} duel <player>`: jemanden herausfordern, mit `ante` als Ante-Duell.",
         "- `{cmd} accept`: eine Herausforderung annehmen.",
         "- `{cmd} forfeit`: das Duell aufgeben.",
+        "- `{cmd} rematch`: dein letztes Duell noch einmal spielen (der Rematch-Knopf im Ergebnisfenster).",
         "- `{cmd} tag <partner> <opponent1> <opponent2>`: Tag-Duell, jeder Platz kann `bot` sein.",
         "- `{cmd} battlecity <partner> <opponent1> <opponent2>`: Tag-Duell auf geteilten Hälften.",
         "- `{cmd} watch [player]` und `{cmd} unwatch`: einem Duell zuschauen (ohne Namen dem, bei dem du stehst) und aufhören.",
@@ -370,6 +379,8 @@
         "- `turnTimeLimit` = {server:turnTimeLimit}: Sekunden pro Person und Zug, 0 für keine Grenze. Danach spielt der Computer den Zug zu Ende.",
         "- `starterDecksWithoutDeckBox` = {server:starterDecksWithoutDeckBox}: Spieler ohne legale Deckbox duellieren sich mit einem Starter-Deck.",
         "- `packsIntoBinder` = {server:packsIntoBinder}: Karten aus geöffneten Packs, Tins und Decks landen direkt im Kartenordner, den du dabei hast.",
+        "- `bindBindersToPlayers` = {server:bindBindersToPlayers}: Kartenordner werden an ihren Spieler gebunden, der Server speichert die Sammlung jedes Spielers (`{cmd} binder` gibt einen neuen Ordner, Operatoren: `{cmd} binder give <Spieler>`, `{cmd} binder unbind <Spieler>`).",
+        "- `boundBinderStorage` = {server:boundBinderStorage}: wo diese Sammlungen liegen, eine JSON-Datei pro Spieler-UUID in `jadm/binders/`: server (im Serverordner, außerhalb der Welt; übersteht eine kaputte Welt) oder world (im Weltordner).",
         "- `[ai] engine` = {server:ai.engine}: windbot oder classic (die ältere KI). `npcStyle` = {server:ai.npcStyle} und `npcMistakes` = {server:ai.npcMistakes} für NPC-Duellanten, `botStyle` = {server:ai.botStyle} und `botMistakes` = {server:ai.botMistakes} für Turnier-Bots, Bot-Plätze und die Vertretung bei abgelaufener Zeit. Stile: balanced, aggressive, defensive, control oder random; Fehler: 0 bis 1.",
         "- `[pool] mode` = {server:pool.mode}: progression, modeled oder all.",
         "- `[progression] scope` = {server:progression.scope}: ein Fortschritt für den Server oder einer pro Spieler.",
@@ -414,7 +425,9 @@
         "- `displayEffects` = {client:displayEffects}: glänzende Karten in Sammler-Vitrinen leuchten und funkeln, ab Secret Rare mit Lichtstrahl.",
         "- `aceCamera` = {client:aceCamera}: wird ein großes Monster beschworen, fährt die Kamera zwei Sekunden um es herum und sein Name erscheint groß. Es zählt jedes Monster ab Stufe `aceMinLevel` = {client:aceMinLevel}, mit mindestens `aceMinAttack` = {client:aceMinAttack} ATK (0: aus) oder aus dem Extra Deck (`aceExtraDeck` = {client:aceExtraDeck}). Ein Deck mit markiertem Boss-Monster bekommt die Kamerafahrt nur für seinen Boss.",
         "- `longSummonShows` = {client:longSummonShows}: die ganze Show (etwa 2,5 Sekunden) bei Fusions-, Synchro-, Xyz-, Ritual-, Link- und Pendelbeschwörungen; aus: 1,5 Sekunden.",
-        "- `finisherCamera` = {client:finisherCamera}: die Kamera schwenkt auf den, der den letzten Treffer eines Duells abbekommt, während er in Zeitlupe läuft."
+        "- `finisherCamera` = {client:finisherCamera}: die Kamera schwenkt auf den, der den letzten Treffer eines Duells abbekommt, während er in Zeitlupe läuft.",
+        "- `askForDeck` = {client:askForDeck}: vor dem Duell fragen, welches Deck du spielst, wenn du mehr als eine legale Deckbox trägst. Aus, spielt das zuletzt gewählte.",
+        "- `chainDisplay` = {client:chainDisplay}: eine Kette als nummerierte Kettenglieder zeigen, die sich nacheinander auflösen."
       ]
     },
     {

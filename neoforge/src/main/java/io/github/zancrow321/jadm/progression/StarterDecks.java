@@ -50,8 +50,9 @@ public final class StarterDecks {
         int last = JadmData.poolMode() == PoolMode.PROGRESSION ? JadmData.step(player) : products.size() - 1;
         for (int i = 0; i <= last && i < products.size(); i++) {
             Products.Product p = products.get(i);
-            if (p.kind() == Products.Kind.DECK && DECK.matcher(p.name().toLowerCase(Locale.ROOT)).find()
-                    && !BUNDLED_CODES.contains(p.code())) {
+            boolean offered = p.isCustom() ? p.custom().starter()
+                    : DECK.matcher(p.name().toLowerCase(Locale.ROOT)).find() && !BUNDLED_CODES.contains(p.code());
+            if (p.kind() == Products.Kind.DECK && offered) {
                 Deck deck = deckOf(p, JadmData.banlist(player));
                 if (deck.main().size() >= DeckRules.MAIN_MIN && deck.main().size() <= DeckRules.MAIN_MAX) {
                     choices.add(new StarterChoicesPayload.Choice(p.id(), p.name(), deck.main().size()
@@ -82,6 +83,9 @@ public final class StarterDecks {
     }
 
     private static Deck deckOf(Products.Product product, Banlist banlist, int extraMax) {
+        if (product.isCustom()) {
+            return customDeck(product, banlist, extraMax);
+        }
         List<Integer> main = new ArrayList<>();
         List<Integer> extra = new ArrayList<>();
         List<Integer> commons = new ArrayList<>();
@@ -109,6 +113,31 @@ public final class StarterDecks {
                 }
                 if (banlist == null || banlist.limit(code) >= copy) {
                     main.add(code);
+                }
+            }
+        }
+        main.sort(null);
+        return new Deck(product.name(), main, extra, List.of());
+    }
+
+    /** A datapack deck: exactly the copies it lists (within the banlist's limits, if one is given). */
+    private static Deck customDeck(Products.Product product, Banlist banlist, int extraMax) {
+        List<Integer> main = new ArrayList<>();
+        List<Integer> extra = new ArrayList<>();
+        for (Products.Printing printing : product.cards()) {
+            CardInfo card = JadmData.cards().card(printing.code());
+            if (card == null) {
+                continue;
+            }
+            int copies = product.custom().counts().getOrDefault(printing.code(), 1);
+            if (banlist != null) {
+                copies = Math.min(copies, banlist.limit(printing.code()));
+            }
+            for (int i = 0; i < copies; i++) {
+                if (!DeckRules.isExtra(card)) {
+                    main.add(printing.code());
+                } else if (extra.size() < extraMax) {
+                    extra.add(printing.code());
                 }
             }
         }

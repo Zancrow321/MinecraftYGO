@@ -432,6 +432,12 @@ public final class DuelUi {
         if (menu != null) {
             menu(g, font, mx, my, w, h);
         }
+        int chained = ChainStack.render(g, font, view, w - PHASE_WIDTH - 16, mx, my, h);
+        if (chained != 0) {
+            hoverCode = chained;
+            hoverRarity = Rarity.COMMON;
+            hoverCard = null;
+        }
         cardPanel(g, font, w, h);
         DuelFeedback.render(g, font, w, h);
         DuelStaging.renderBanners(g, font, w, h);

@@ -2,12 +2,14 @@ package io.github.zancrow321.jadm.item;
 
 import io.github.zancrow321.jadm.JadmServerConfig;
 import io.github.zancrow321.jadm.client.ClientScreens;
+import io.github.zancrow321.jadm.collection.BinderStore;
 import io.github.zancrow321.jadm.collection.CollectionActions;
 import io.github.zancrow321.jadm.engine.data.BoosterSets.Rarity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -19,6 +21,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Holds a card collection. Right-click to browse it, put loose cards in or take cards out.
@@ -28,8 +31,116 @@ public final class BinderItem extends Item {
         super(properties);
     }
 
+    /**
+     * The cards in a binder. A binder bound to a player shows their collection, which the server keeps (see
+     * {@link BinderStore}); on the client, and on the server for binders away from their owner, it shows the copy
+     * last put on the item.
+     */
     public static JadmComponents.CardCollection collection(ItemStack stack) {
+        UUID owner = owner(stack);
+        if (owner != null && BinderStore.onServer()) {
+            return BinderStore.get(owner).cards();
+        }
         return stack.getOrDefault(JadmComponents.COLLECTION.get(), JadmComponents.CardCollection.EMPTY);
+    }
+
+    private static JadmComponents.CardFoils foilComponent(ItemStack stack) {
+        UUID owner = owner(stack);
+        if (owner != null && BinderStore.onServer()) {
+            return BinderStore.get(owner).foils();
+        }
+        return stack.getOrDefault(JadmComponents.FOILS.get(), JadmComponents.CardFoils.EMPTY);
+    }
+
+    /** The player a binder is bound to, or {@code null} for an ordinary binder. */
+    public static UUID owner(ItemStack stack) {
+        JadmComponents.BinderOwner owner = stack.get(JadmComponents.BINDER_OWNER.get());
+        return owner == null ? null : owner.id();
+    }
+
+    /** Whether the player may open and use a binder: it is theirs, or bound to nobody. */
+    public static boolean usableBy(ItemStack stack, Player player) {
+        UUID owner = owner(stack);
+        return owner == null || owner.equals(player.getUUID());
+    }
+
+    /** Replaces everything in a binder (its owner's collection, for a bound one). */
+    public static void set(ItemStack binder, JadmComponents.CardCollection cards, JadmComponents.CardFoils foils) {
+        UUID owner = owner(binder);
+        if (owner != null && BinderStore.onServer()) {
+            BinderStore.Entry entry = BinderStore.get(owner);
+            BinderStore.put(owner, new BinderStore.Entry(entry.name(), cards, foils));
+            show(binder);
+            BinderStore.changed(owner);
+            return;
+        }
+        binder.set(JadmComponents.COLLECTION.get(), cards);
+        binder.set(JadmComponents.FOILS.get(), foils);
+    }
+
+    /** Copies a bound binder's collection onto the item, so the client (and the tooltip) sees it. */
+    public static void show(ItemStack binder) {
+        UUID owner = owner(binder);
+        if (owner == null || !BinderStore.onServer()) {
+            return;
+        }
+        BinderStore.Entry entry = BinderStore.get(owner);
+        // The store hands out the same record until it changes, so this is cheap when nothing did.
+        if (binder.get(JadmComponents.COLLECTION.get()) != entry.cards()) {
+            binder.set(JadmComponents.COLLECTION.get(), entry.cards());
+        }
+        if (binder.get(JadmComponents.FOILS.get()) != entry.foils()) {
+            binder.set(JadmComponents.FOILS.get(), entry.foils());
+        }
+    }
+
+    /**
+     * Binds a binder to a player: the cards it holds join their collection, and from then on it shows that
+     * collection.
+     */
+    public static void bindTo(ItemStack binder, Player player) {
+        UUID id = player.getUUID();
+        JadmComponents.CardCollection own = collection(binder);
+        JadmComponents.CardFoils ownFoils = foilComponent(binder);
+        BinderStore.Entry entry = BinderStore.get(id);
+        Map<Integer, Integer> cards = new HashMap<>(entry.cards().counts());
+        own.counts().forEach((code, n) -> cards.merge(code, n, Integer::sum));
+        Map<String, Integer> foils = new HashMap<>(entry.foils().copies());
+        ownFoils.copies().forEach((key, n) -> foils.merge(key, n, Integer::sum));
+        BinderStore.put(id, new BinderStore.Entry(player.getGameProfile().getName(),
+                new JadmComponents.CardCollection(cards), new JadmComponents.CardFoils(foils)));
+        binder.set(JadmComponents.BINDER_OWNER.get(),
+                new JadmComponents.BinderOwner(id, player.getGameProfile().getName()));
+        show(binder);
+        if (!own.counts().isEmpty()) {
+            BinderStore.changed(id);
+            player.displayClientMessage(Component.translatable("message.jadm.binder.bound", own.total()), true);
+        }
+    }
+
+    /**
+     * Called for binders the player carries: binds an ordinary one to them if binders are bound to players, and keeps
+     * the item's copy of their collection up to date.
+     */
+    public static void claim(ItemStack binder, Player player) {
+        if (!BinderStore.onServer()) {
+            return;
+        }
+        UUID owner = owner(binder);
+        if (owner == null) {
+            if (JadmServerConfig.BIND_BINDERS.get()) {
+                bindTo(binder, player);
+            }
+        } else if (owner.equals(player.getUUID())) {
+            show(binder);
+        }
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
+        if (!level.isClientSide() && entity instanceof Player player) {
+            claim(stack, player);
+        }
     }
 
     /** Copies of one card at one rarity. */
@@ -71,7 +182,7 @@ public final class BinderItem extends Item {
     }
 
     private static Map<Integer, EnumMap<Rarity, Integer>> foils(ItemStack binder) {
-        return foils(binder.getOrDefault(JadmComponents.FOILS.get(), JadmComponents.CardFoils.EMPTY).copies());
+        return foils(foilComponent(binder).copies());
     }
 
     /** Foil counts keyed {@code "<passcode>:<rarity>"}, by passcode and rarity. */
@@ -93,16 +204,21 @@ public final class BinderItem extends Item {
     /** Puts {@code n} copies of a card at a rarity into a binder ({@code n} may be negative to take them out). */
     public static void add(ItemStack binder, int code, Rarity rarity, int n) {
         JadmComponents.CardCollection collection = collection(binder).add(code, n);
-        binder.set(JadmComponents.COLLECTION.get(), collection);
-        Map<String, Integer> foils = new HashMap<>(
-                binder.getOrDefault(JadmComponents.FOILS.get(), JadmComponents.CardFoils.EMPTY).copies());
+        Map<String, Integer> foils = new HashMap<>(foilComponent(binder).copies());
         if (rarity != Rarity.COMMON) {
             foils.merge(code + ":" + rarity.id(), n, Integer::sum);
         }
         if (collection.count(code) == 0) {
             foils.keySet().removeIf(key -> key.startsWith(code + ":"));
         }
-        binder.set(JadmComponents.FOILS.get(), new JadmComponents.CardFoils(foils));
+        set(binder, collection, new JadmComponents.CardFoils(foils));
+    }
+
+    /** Puts commons into a binder: passcode to copies. */
+    public static void addAll(ItemStack binder, Map<Integer, Integer> commons) {
+        Map<Integer, Integer> merged = new HashMap<>(collection(binder).counts());
+        commons.forEach((code, n) -> merged.merge(code, n, Integer::sum));
+        set(binder, new JadmComponents.CardCollection(merged), foilComponent(binder));
     }
 
     /** Takes up to {@code n} copies of a card at a rarity out of a binder; returns how many it took. */
@@ -134,6 +250,14 @@ public final class BinderItem extends Item {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (!usableBy(stack, player)) {
+            if (!level.isClientSide()) {
+                player.displayClientMessage(Component.translatable("message.jadm.binder.foreign",
+                        stack.get(JadmComponents.BINDER_OWNER.get()).name()), true);
+            }
+            return InteractionResultHolder.fail(stack);
+        }
         if (level.isClientSide()) {
             ClientScreens.openBinder(hand);
         }
@@ -145,5 +269,10 @@ public final class BinderItem extends Item {
         JadmComponents.CardCollection c = collection(stack);
         tooltip.add(Component.translatable("item.jadm.binder.tooltip", c.total(), c.counts().size())
                 .withStyle(ChatFormatting.GRAY));
+        JadmComponents.BinderOwner owner = stack.get(JadmComponents.BINDER_OWNER.get());
+        if (owner != null) {
+            tooltip.add(Component.translatable("item.jadm.binder.bound", owner.name())
+                    .withStyle(ChatFormatting.DARK_AQUA));
+        }
     }
 }

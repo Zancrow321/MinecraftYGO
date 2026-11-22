@@ -836,6 +836,16 @@
   ]
  },
  {
+  "code": 12493482,
+  "model": "dunames_dark_witch",
+  "folder": "DunamesDarkWitch",
+  "width": 1.938,
+  "height": 2.281,
+  "animations": [
+   "idle"
+  ]
+ },
+ {
   "code": 12829151,
   "model": "kanan_the_swordmistress",
   "folder": "KananTheSwordmistress",
@@ -2528,6 +2538,16 @@
   ]
  },
  {
+  "code": 39256679,
+  "model": "beta_the_magnet_warrior",
+  "folder": "BetaTheMagnetWarrior",
+  "width": 3.25,
+  "height": 2.5,
+  "animations": [
+   "idle"
+  ]
+ },
+ {
   "code": 40173854,
   "model": "amphibious_bugroth",
   "folder": "AmphibiousBugroth",
@@ -2721,6 +2741,16 @@
   "model": "dark_assailant",
   "folder": "DarkAssailant",
   "width": 1.0,
+  "height": 2.062,
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 42035044,
+  "model": "panther_warrior",
+  "folder": "PantherWarrior",
+  "width": 2.312,
   "height": 2.062,
   "animations": [
    "idle"
@@ -3142,6 +3172,16 @@
   "folder": "UshiOni",
   "width": 2.844,
   "height": 2.125,
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 48766543,
+  "model": "cyber_tech_alligator",
+  "folder": "CyberTechAlligator",
+  "width": 3.25,
+  "height": 2.188,
   "animations": [
    "idle"
   ]
@@ -5637,6 +5677,16 @@
   "folder": "CelticGuardian",
   "width": 2.125,
   "height": 2.188,
+  "animations": [
+   "idle"
+  ]
+ },
+ {
+  "code": 91512835,
+  "model": "insect_queen",
+  "folder": "InsectQueen",
+  "width": 6.375,
+  "height": 1.781,
   "animations": [
    "idle"
   ]

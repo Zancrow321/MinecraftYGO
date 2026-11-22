@@ -81,6 +81,9 @@ public record PackProfile(String name, int size, List<Slot> slots) {
 
     /** The pack format of a product. */
     public static PackProfile of(Products.Product product) {
+        if (product.isCustom()) {
+            return ofCustom(product);
+        }
         String name = product.name().toLowerCase(Locale.ROOT);
         if (TOURNAMENT.matcher(name).find()) {
             return new PackProfile("tournament", 3, List.of(CLASSIC));
@@ -114,6 +117,28 @@ public record PackProfile(String name, int size, List<Slot> slots) {
         // Smaller sets (Duelist Packs, Hidden Arsenal, Duel Terminal, Legendary Duelists...) come in packs of five.
         if (product.kind() != Products.Kind.BOOSTER || MINI.matcher(name).find()) {
             return new PackProfile("mini", 5, List.of(modern ? FOIL : CLASSIC));
+        }
+        return modern ? MODERN_CORE : CLASSIC_CORE;
+    }
+
+    /**
+     * A datapack booster's format: the one it names, else by its cards as for a core booster of its date (one
+     * without a date is modern): rare-only, super-and-secret or a core pack.
+     */
+    private static PackProfile ofCustom(Products.Product product) {
+        if (product.custom().pack() != null) {
+            return product.custom().pack();
+        }
+        boolean modern = !product.custom().dated() || !product.date().isBefore(MODERN_FROM);
+        List<BoosterSets.Rarity> rarities = product.cards().stream()
+                .map(p -> BoosterSets.Rarity.ofPrinted(p.rarity())).toList();
+        BoosterSets.Rarity base = BoosterSets.base(rarities);
+        if (base == BoosterSets.Rarity.RARE) {
+            return RARE_ONLY;
+        }
+        if (base == BoosterSets.Rarity.SUPER
+                && rarities.stream().anyMatch(r -> r.slot() == BoosterSets.Rarity.SECRET)) {
+            return SUPER_SECRET;
         }
         return modern ? MODERN_CORE : CLASSIC_CORE;
     }

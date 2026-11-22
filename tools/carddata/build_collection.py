@@ -21,13 +21,16 @@ oldest first: its id, set code, name, date, a rough kind (booster, deck, tin, pr
 its plainest rarity as printed (and the better ones it is also printed in, for the pack slots), and the cards it is
 the first TCG product for ("new"). Cards are listed by their original passcode, never an alternate artwork's.
 Reprint-only products have an
-empty "new". Cards never printed in the TCG are listed under "ocgOnly" with their OCG release date.
+empty "new". Cards never printed in the TCG are listed under "ocgOnly" with their OCG release date. Products that
+come out after --released-by (default today) are left out: YGOPRODeck lists only a few cards of an upcoming set, and
+their cards wait under "ocgOnly" (if out in the OCG) until a refresh after the release.
 
     curl -o ygoprodeck.json "https://db.ygoprodeck.com/api/v7/cardinfo.php?misc=yes"
     curl -o cardsets.json https://db.ygoprodeck.com/api/v7/cardsets.php
     python3 tools/carddata/build_collection.py --ygoprodeck ygoprodeck.json --cardsets cardsets.json
 """
 import argparse
+import datetime
 import html
 import json
 import re
@@ -136,9 +139,10 @@ def bundled_cards():
     return bundled
 
 
-def write_products(cards, cardsets, rarities_only=False):
+def write_products(cards, cardsets, rarities_only=False, released_by=None):
     bundled = bundled_cards()
-    dates = {s["set_name"]: s.get("tcg_date") for s in cardsets}
+    released_by = released_by or datetime.date.today().isoformat()
+    dates = {s["set_name"]: s.get("tcg_date") for s in cardsets if (s.get("tcg_date") or "") <= released_by}
     contents = defaultdict(dict)  # set name -> code -> its rarities as printed (the real ones, in listed order)
     codes = {}
     ocg_dates = {}
@@ -238,6 +242,8 @@ def main():
     parser.add_argument("--cardsets", type=Path, required=True, help="cardsets.php dump")
     parser.add_argument("--rarities-only", action="store_true",
                         help="only update the rarities of the cards products.json lists, nothing else")
+    parser.add_argument("--released-by", default=datetime.date.today().isoformat(),
+                        help="leave out products released after this day (YYYY-MM-DD, default today)")
     args = parser.parse_args()
     if args.rarities_only:
         cards = json.loads(args.ygoprodeck.read_text(encoding="utf-8"))["data"]
@@ -280,7 +286,7 @@ def main():
     limits = {str(by_name[n]): k for n, k in LIMITS.items() if by_name.get(n) in codes}
     (RESOURCES / "banlist.json").write_text(json.dumps({"name": BANLIST_NAME, "limits": limits}, indent=1),
                                             encoding="utf-8")
-    write_products(cards, json.loads(args.cardsets.read_text(encoding="utf-8")))
+    write_products(cards, json.loads(args.cardsets.read_text(encoding="utf-8")), released_by=args.released_by)
     for s in sets:
         counts = {r: sum(1 for c in s["cards"] if c["rarity"] == r) for r in ORDER}
         print(f"{s['code']} {s['name']}: {len(s['cards'])} cards {counts}")

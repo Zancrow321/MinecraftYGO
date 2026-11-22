@@ -53,7 +53,10 @@
         "- A **Ranking Board** on a wall shows the ten best on a glowing board three blocks wide and two high, above and beside it. Right-click it for the ranking window.",
         "[recipe {modid}:ranking_board]",
         "# Which deck you play",
-        "Your first legal deck box, looking in your hands first, then your inventory. Without one you duel with Yugi's starter deck, unless the server turned that off."
+        "Carry more than one legal deck box and a window asks which one to play when a duel is about to start: each deck shows its boss monster (or its first card), and the one you picked last is framed. Click a deck, or press Enter for the framed one; after 20 seconds the framed one plays by itself. With `askForDeck` off, the deck you picked last plays without asking.",
+        "With one legal deck box, that one plays. Without one you duel with Yugi's starter deck, unless the server turned that off.",
+        "# Rematch",
+        "The result screen has a **Rematch** button: the same duel again, with the same opponents (bots and NPC duelists too), ante, ranking and Battle City setting. Other players get an invitation, and the same button on their result screen accepts it; `{cmd} rematch` does the same from chat. A ranked rematch only counts if today's limit for the two of you allows it."
       ]
     },
     {
@@ -64,6 +67,7 @@
         "- **Your hand** runs along the bottom. Click a card for its actions (Normal Summon, Set, Activate...) or drag it straight onto a zone.",
         "- **Phase buttons** on the right show the phase: DP SP M1 BP M2 EP. Click BP, M2 or EP to go there.",
         "- **Responses** open their own window, showing what you respond to. Pick a response or \"Don't respond\"; \"-\" folds it away.",
+        "- **The chain:** once a second card is chained, every chain link shows as a numbered card beside the phase buttons, newest on top, framed blue for yours and red for your opponent's. The links then resolve one by one from the top: the one resolving glows gold, a resolved one fades away and a negated one is crossed out. Hover a link to read its card.",
         "- **Card details:** the card under the mouse is shown big on the left with its text and current ATK/DEF. Long text gets a scroll bar: turn the mouse wheel (anywhere but the duel log) or drag the bar.",
         "- **Piles:** click a graveyard, the banished cards or an extra deck (right-click when a card there can be activated) to look through it.",
         "- **Picks** on the field are made right there and confirmed with Confirm; picks from a pile open a card window.",
@@ -100,6 +104,8 @@
         "# Card Binder",
         "Holds your collection. \"Put all cards in\" moves every loose card into it; clicking a card takes it out again (shift-click for every copy). It keeps each card's rarity, shown in the corner (R, SR, UR, ScR), and a deck box keeps it too. Cards from sets that are still locked show a padlock.",
         "**Searching:** just start typing when the binder opens. Every word has to turn up in the card's name, text, attribute or type, so dark dragon, tuner or quick-play all work (German type names like drache too); put words in quotes to find them as one phrase, like \"destroy all\". Right-click the box to clear it. The buttons below filter by card type, attribute, level and rarity (or only foils) and sort by name, ATK, DEF or level; shift-click steps back. The deck box's search works the same way.",
+        "**Curios slot:** with the Curios mod installed, the binder has its own slot in the Curios menu. A binder there still catches the cards you pull and feeds the deck box; press **N** (Controls: \"Open binder\") to open it, or the first binder in your inventory without Curios.",
+        "**Bound to you** (when the server turns on `bindBindersToPlayers`): the first binder you carry becomes yours, and the cards in it join your collection, which the server keeps for your player, outside the world. Every binder bound to you shows that same collection, so losing a binder, or even the world, loses no cards: `{cmd} binder` gives you a new one, and joining a world (a new one, too) without one gives it to you. Nobody else can open, use or trade your binder.",
         "[recipe {modid}:binder]",
         "# Set Collection Book",
         "Shows every set that is out (in a progression world, the sets unlocked so far) with how much of it you own: each card of the set counts once, whatever its rarity. It counts the cards in your binders, deck boxes and loose cards in your inventory and ender chest, also inside shulker boxes there. Open it with the book or `{cmd} sets`.",
@@ -117,7 +123,9 @@
         "[recipe {modid}:card_frame]",
         "[recipe {modid}:card_showcase]",
         "[recipe {modid}:toploader_stand]",
-        "[recipe {modid}:pack_display]"
+        "[recipe {modid}:pack_display]",
+        "# Server products",
+        "A server can sell its own booster packs, structure decks and tins: one JSON file each in a datapack under `data/<name>/jadm/products/`. They open, sell and unlock like the real ones and come out on their own date in a progression world. `{cmd} products` lists them and what was wrong with their files; `{cmd} products give <product>` hands one out. The product editor in the GitHub repository (`tools/product-editor/`) makes such a datapack without writing JSON, and `docs/custom-products.md` explains the format."
       ]
     },
     {
@@ -307,6 +315,7 @@
         "- `{cmd} duel <player>`: challenge someone, add `ante` for an ante duel.",
         "- `{cmd} accept`: accept a challenge.",
         "- `{cmd} forfeit`: surrender the duel.",
+        "- `{cmd} rematch`: play your last duel again (the Rematch button on the result screen).",
         "- `{cmd} tag <partner> <opponent1> <opponent2>`: tag duel, any seat can be `bot`.",
         "- `{cmd} battlecity <partner> <opponent1> <opponent2>`: tag duel on split halves.",
         "- `{cmd} watch [player]` and `{cmd} unwatch`: watch a duel (without a name, the one you stand near) and stop.",
@@ -370,6 +379,8 @@
         "- `turnTimeLimit` = {server:turnTimeLimit}: seconds per person and turn, 0 for none. Afterwards the computer plays the rest of the turn.",
         "- `starterDecksWithoutDeckBox` = {server:starterDecksWithoutDeckBox}: players without a legal deck box duel with a starter deck.",
         "- `packsIntoBinder` = {server:packsIntoBinder}: cards from opened packs, tins and decks go straight into the binder you carry.",
+        "- `bindBindersToPlayers` = {server:bindBindersToPlayers}: binders are bound to their player and the server keeps each player's collection (`{cmd} binder` gives a new binder, operators: `{cmd} binder give <player>`, `{cmd} binder unbind <player>`).",
+        "- `boundBinderStorage` = {server:boundBinderStorage}: where those collections are kept, one JSON file per player UUID in `jadm/binders/`: server (in the server folder, outside the world; survives a broken world) or world (in the world folder).",
         "- `[ai] engine` = {server:ai.engine}: windbot or classic (the older AI). `npcStyle` = {server:ai.npcStyle} and `npcMistakes` = {server:ai.npcMistakes} for NPC duelists, `botStyle` = {server:ai.botStyle} and `botMistakes` = {server:ai.botMistakes} for tournament bots, bot seats and the stand-in for players out of time. Styles: balanced, aggressive, defensive, control or random; mistakes: 0 to 1.",
         "- `[pool] mode` = {server:pool.mode}: progression, modeled or all.",
         "- `[progression] scope` = {server:progression.scope}: one progress for the server, or one per player.",
@@ -414,7 +425,9 @@
         "- `displayEffects` = {client:displayEffects}: shiny cards in collector displays glow and sparkle, with a beam for Secret Rares and up.",
         "- `aceCamera` = {client:aceCamera}: when a big monster is summoned, the camera circles it for two seconds and its name shows big. Every monster of Level `aceMinLevel` = {client:aceMinLevel} or higher counts, with at least `aceMinAttack` = {client:aceMinAttack} ATK (0: off), or from the Extra Deck (`aceExtraDeck` = {client:aceExtraDeck}). A deck with a marked boss monster gets the shot for its boss only.",
         "- `longSummonShows` = {client:longSummonShows}: the full show (about 2.5 seconds) for a Fusion, Synchro, Xyz, Ritual, Link or Pendulum Summon; off, 1.5 seconds.",
-        "- `finisherCamera` = {client:finisherCamera}: swing the camera round to whoever takes the final blow of a duel while it plays in slow motion."
+        "- `finisherCamera` = {client:finisherCamera}: swing the camera round to whoever takes the final blow of a duel while it plays in slow motion.",
+        "- `askForDeck` = {client:askForDeck}: ask which deck to play before a duel when you carry more than one legal deck box. Off, the deck you picked last plays.",
+        "- `chainDisplay` = {client:chainDisplay}: show a chain as numbered chain links that resolve one by one."
       ]
     },
     {

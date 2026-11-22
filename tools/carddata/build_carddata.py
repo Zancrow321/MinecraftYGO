@@ -35,8 +35,18 @@ YGOPRODeck already lists by name are written under YGOPRODeck's passcode, their 
 the others are left out. Pass only the prerelease cdb of a set that is out (or about to be) in the TCG, e.g.
 --prerelease-cdb BabelCDB/prerelease-betb-en.cdb --ygoprodeck ygoprodeck.json; the others hold cards YGOPRODeck may
 list ahead of their release.
+
+OCG sets come out in Japan first and also sit in prerelease cdbs (prerelease-imph.cdb, ...). Their cards can be taken
+the same way: --released-by (default today) keeps out every card YGOPRODeck dates later than that day, so all
+prerelease cdbs but the Rush one can be passed at once. Where ProjectIgnis' fan translation differs from the
+official name, tools/carddata/prerelease_names.json maps it to YGOPRODeck's name, which the card then carries. Other
+cards' passcodes written in a pre-release script are rewritten to the real ones too.
+
+When a card's passcode changes between two runs (a TCG set's temporary passcodes giving way to the real ones), the
+old one goes in engine/src/main/resources/jadm/renumbered.json, which the mod reads to load cards saved under it.
 """
 import argparse
+import datetime
 import json
 import re
 import shutil
@@ -57,6 +67,9 @@ TYPE_PENDULUM = 0x1000000
 
 # Real passcode -> pre-release script of a card taken from a prerelease cdb under its temporary passcode.
 PRERELEASE_SCRIPTS = {}
+# Temporary passcode -> real passcode of every card taken from a prerelease cdb.
+TEMP_TO_REAL = {}
+NAME_MAP = Path(__file__).with_name("prerelease_names.json")
 
 
 def find_script(scripts, code):
@@ -121,25 +134,69 @@ def merged_db(cdb, releases):
     return db
 
 
-def add_prerelease(db, scripts, prerelease, passcodes):
-    """Copies the cards of a prerelease cdb that YGOPRODeck lists by name into db, under YGOPRODeck's passcode."""
+def add_prerelease(db, scripts, prerelease, passcodes, names, released):
+    """Copies the cards of a prerelease cdb that YGOPRODeck lists by name and that are out by now into db, under
+    YGOPRODeck's passcode and official name."""
     known = {code for (code,) in db.execute("select id from datas")}
     db.execute("attach database ? as pre", (str(prerelease),))
     added = []
-    for temp, name in db.execute("select d.id, t.name from pre.datas d join pre.texts t on d.id = t.id").fetchall():
-        real = passcodes.get(name)
+    for temp, name in db.execute("select d.id, t.name from pre.datas d join pre.texts t on d.id = t.id "
+                                 "order by d.id").fetchall():
+        official = names.get(name, name)
+        real = passcodes.get(official)
         source = scripts / "pre-release" / f"c{temp}.lua"
-        if real is None or real in known or not source.exists():
+        if real is None or real in known or not source.exists() or real not in released:
             continue
         db.execute("insert into datas select *, 1 from pre.datas where id = ?", (temp,))
         db.execute("insert into texts select * from pre.texts where id = ?", (temp,))
         db.execute("update datas set id = ? where id = ?", (real, temp))
-        db.execute("update texts set id = ? where id = ?", (real, temp))
+        db.execute("update texts set id = ?, name = ? where id = ?", (real, official, temp))
+        known.add(real)
         PRERELEASE_SCRIPTS[real] = source
-        added.append(f"{name} {temp}->{real}")
+        TEMP_TO_REAL[temp] = real
+        added.append(f"{official} {temp}->{real}")
     db.commit()
     db.execute("detach database pre")
     print(f"{prerelease.name}: {len(added)} cards under their real passcode: {added}")
+
+
+def release_date(card):
+    """The first day a card was out in the OCG or TCG by YGOPRODeck, or None."""
+    misc = (card.get("misc_info") or [{}])[0]
+    dates = [d for d in (misc.get("ocg_date"), misc.get("tcg_date")) if d]
+    return min(dates) if dates else None
+
+
+def script_text(source):
+    """A script's text, with the temporary passcodes of other pre-release cards replaced by their real ones."""
+    text = source.read_text(encoding="utf-8", errors="replace")
+    if source.parent.name != "pre-release" or not TEMP_TO_REAL:
+        return text
+    return re.sub(r"(?<![\w.])(\d{9})(?![\w.])", lambda m: str(TEMP_TO_REAL.get(int(m[1]), m[1])), text)
+
+
+def write_renumbered(cards):
+    """Adds the cards of the previous cards.json that now have another passcode (same name) to renumbered.json."""
+    path = RESOURCES / "renumbered.json"
+    renumbered = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    previous = RESOURCES / "cards.json"
+    codes = {card["code"] for card in cards}
+    by_name = {card["name"]: card["code"] for card in cards if not card["alias"]}
+    if previous.exists():
+        for card in json.loads(previous.read_text(encoding="utf-8")):
+            now = by_name.get(card["name"])
+            if card["code"] not in codes and now is not None and not card["alias"]:
+                renumbered[str(card["code"])] = now
+    # Follow chains (renumbered twice) to the passcode a card has now; drop codes that are a card again.
+    for old, new in list(renumbered.items()):
+        while str(new) in renumbered and new not in codes:
+            new = renumbered[str(new)]
+        renumbered[old] = new
+    renumbered = {old: new for old, new in renumbered.items() if int(old) not in codes and new in codes}
+    path.write_text(json.dumps(dict(sorted(renumbered.items(), key=lambda e: int(e[0]))), indent=1) + "\n",
+                    encoding="utf-8")
+    if renumbered:
+        print(f"{len(renumbered)} renumbered cards in {path.name}")
 
 
 def main():
@@ -153,6 +210,8 @@ def main():
     parser.add_argument("--prerelease-cdb", action="append", default=[], type=Path,
                         help="a BabelCDB prerelease-<set>.cdb whose released cards to take (repeatable)")
     parser.add_argument("--ygoprodeck", type=Path, help="cardinfo.php dump, for the real passcodes of prerelease cards")
+    parser.add_argument("--released-by", default=datetime.date.today().isoformat(),
+                        help="take prerelease cards out by this day (YYYY-MM-DD, default today)")
     args = parser.parse_args()
     if args.prerelease_cdb and not args.ygoprodeck:
         sys.exit("--prerelease-cdb needs --ygoprodeck")
@@ -161,9 +220,13 @@ def main():
     if args.prerelease_cdb:
         cards = json.loads(args.ygoprodeck.read_text(encoding="utf-8"))["data"]
         # Speed Duel skills share some names with real cards.
-        passcodes = {card["name"]: card["id"] for card in cards if card["type"] != "Skill Card"}
+        cards = [card for card in cards if card["type"] != "Skill Card"]
+        passcodes = {card["name"]: card["id"] for card in cards}
+        released = {card["id"] for card in cards if (release_date(card) or "9999") <= args.released_by}
+        names = json.loads(NAME_MAP.read_text(encoding="utf-8")) if NAME_MAP.exists() else {}
+        names = {k: v for k, v in names.items() if not k.startswith("_")}
         for prerelease in args.prerelease_cdb:
-            add_prerelease(db, args.scripts, prerelease, passcodes)
+            add_prerelease(db, args.scripts, prerelease, passcodes, names, released)
     known = {code for (code,) in db.execute("select id from datas")}
     pool = set()
     pool_file = RESOURCES / "pool.json"
@@ -193,7 +256,7 @@ def main():
             source = find_script(args.scripts, code)
             sources[code] = source
             if source is not None:
-                text = source.read_text(encoding="utf-8", errors="replace")
+                text = script_text(source)
                 found.update(int(m) for m in re.findall(r"(?<![\w.])(\d{4,9})(?![\w.])", text))
         todo = (found & known) - pool
         pool |= todo
@@ -206,6 +269,7 @@ def main():
                           + " from texts where id=?", (code,)).fetchone()
         cards.append(card_row(row, text))
 
+    write_renumbered(cards)
     # One card per line keeps the file small enough to bundle and still diffable.
     (RESOURCES / "cards.json").write_text(
         "[\n" + ",\n".join(json.dumps(c, ensure_ascii=False, separators=(",", ":")) for c in cards) + "\n]\n",
@@ -233,7 +297,10 @@ def main():
             unscripted.append(f"{card['code']} {card['name']}")
             continue
         # A pre-release script is renamed to its card's real passcode; scripts read their own passcode from the name.
-        shutil.copy(source, out / f"c{card['code']}.lua")
+        if source.parent.name == "pre-release":
+            (out / f"c{card['code']}.lua").write_text(script_text(source), encoding="utf-8")
+        else:
+            shutil.copy(source, out / f"c{card['code']}.lua")
     if unscripted:
         sys.exit(f"no script for {unscripted}")
 

@@ -2711,28 +2711,31 @@ end
 function Auxiliary.HarmonizingMagFilter(c,e,f)
 	return f and not f(e,c)
 end
+function Duel.PlaceFieldSpell(c,tp,target_p)
+	if not target_p then target_p=tp end
+	local fc=Duel.GetFieldCard(target_p,LOCATION_FZONE,0)
+	if Duel.IsDuelType(DUEL_1_FIELD) then
+		if fc then Duel.Destroy(fc,REASON_RULE) end
+	else
+		if fc and Duel.SendtoGrave(fc,REASON_RULE)==0 then
+			Duel.SendtoGrave(c,REASON_RULE)
+			return false
+		end
+	end
+	Duel.BreakEffect()
+	local res=Duel.MoveToField(c,tp,target_p,LOCATION_FZONE,POS_FACEUP,true)
+	if res and Duel.IsDuelType(DUEL_1_FIELD) then
+		fc=Duel.GetFieldCard(1-target_p,LOCATION_FZONE,0)
+		if fc and Duel.Destroy(fc,REASON_RULE)==0 then
+			Duel.SendtoGrave(c,REASON_RULE)
+			return false
+		end
+	end
+	return res
+end
 function Duel.ActivateFieldSpell(c,e,tp,eg,ep,ev,re,r,rp,target_p)
 	if not target_p then target_p=tp end
-	if c then
-		local fc=Duel.GetFieldCard(target_p,LOCATION_FZONE,0)
-		if Duel.IsDuelType(DUEL_1_FIELD) then
-			if fc then Duel.Destroy(fc,REASON_RULE) end
-			local of=Duel.GetFieldCard(1-target_p,LOCATION_FZONE,0)
-			if of and Duel.Destroy(of,REASON_RULE)==0 then
-				Duel.SendtoGrave(c,REASON_RULE)
-				return false
-			else
-				Duel.BreakEffect()
-			end
-		else
-			if fc and Duel.SendtoGrave(fc,REASON_RULE)==0 then
-				Duel.SendtoGrave(c,REASON_RULE)
-				return false
-			else
-				Duel.BreakEffect()
-			end
-		end
-		Duel.MoveToField(c,tp,target_p,LOCATION_FZONE,POS_FACEUP,true)
+	if c and Duel.PlaceFieldSpell(c,tp,target_p) then
 		local te=c:GetActivateEffect()
 		te:UseCountLimit(tp,1,true)
 		local tep=c:GetControler()
@@ -2921,7 +2924,9 @@ end
 function Auxiliary.RemoveUntil(card_or_group,pos,reason,phase,flag,e,tp,oper,cond,reset,reset_count,hint,effect_desc)
 	local g=(type(card_or_group)=="Group" and card_or_group or Group.FromCards(card_or_group))
 	if #g>0 and Duel.Remove(g,pos,reason|REASON_TEMPORARY)>0 and #g:Match(Card.IsLocation,nil,LOCATION_REMOVED)>0 then
-		return aux.DelayedOperation(g,phase,flag,e,tp,oper,cond,reset,reset_count,hint,effect_desc)
+		local re=aux.DelayedOperation(g,phase,flag,e,tp,oper,cond,reset,reset_count,hint,effect_desc)
+		g:ForEach(Card.SetReasonEffect,re)
+		return re
 	end
 end
 
@@ -2953,6 +2958,24 @@ function Auxiliary.DefaultFieldReturnOp(rg)
 	select_field_return_cards(turn_p,g0)
 	select_field_return_cards(1-turn_p,g1)
 end
+
+function Auxiliary.LimitParams(f,n)
+	n=n or 1
+	return function(...)
+		local to_unpack=math.min(n, select('#',...))
+		return f(table.unpack({...},1,to_unpack))
+	end
+end
+
+function Auxiliary.popcount(value)
+	local count=0
+	while value>0 do
+		value=value&(value-1)
+		count=count+1
+	end
+	return count
+end
+
 
 Duel.LoadScript("debug_utility.lua")
 Duel.LoadScript("chain.lua")

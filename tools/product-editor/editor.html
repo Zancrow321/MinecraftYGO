@@ -1,0 +1,778 @@
+<title>JADM Product Editor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a duel-disk workbench. Left rail = the datapack and its products, middle = the product on the bench,
+   right = what the server will see (a sample pack and the JSON file). */
+:root {
+  --bg: #eef0f5;
+  --panel: #ffffff;
+  --sunk: #e4e7ef;
+  --line: #cfd4e0;
+  --fg: #1a1d2b;
+  --muted: #5d6479;
+  --accent: #9a4b07;
+  --accent-fg: #ffffff;
+  --accent-soft: #f6e5d2;
+  --danger: #b3261e;
+  --ok: #1f7a45;
+  --r-common: #6f7485;
+  --r-rare: #3d6fb6;
+  --r-super: #0f8a8a;
+  --r-ultra: #a77405;
+  --r-secret: #a2399a;
+  --font-display: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12141c; --panel: #1b1e29; --sunk: #232735; --line: #333a4d; --fg: #e8eaf2; --muted: #9aa1b6;
+    --accent: #f0a640; --accent-fg: #1a1205; --accent-soft: #3a2a14; --danger: #ff8a80; --ok: #6fd69b;
+    --r-common: #a3a8b8; --r-rare: #7fa8ea; --r-super: #4fd1cf; --r-ultra: #f2c14e; --r-secret: #e58ce0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12141c; --panel: #1b1e29; --sunk: #232735; --line: #333a4d; --fg: #e8eaf2; --muted: #9aa1b6;
+  --accent: #f0a640; --accent-fg: #1a1205; --accent-soft: #3a2a14; --danger: #ff8a80; --ok: #6fd69b;
+  --r-common: #a3a8b8; --r-rare: #7fa8ea; --r-super: #4fd1cf; --r-ultra: #f2c14e; --r-secret: #e58ce0;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.45 var(--font-body);
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
+header.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  padding-block: 10px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center;
+}
+.brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; }
+.brand h1 { font: 700 1.25rem/1 var(--font-display); letter-spacing: .02em; margin: 0; text-wrap: balance; }
+.brand span { color: var(--muted); font-size: .85rem; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+button, .btn {
+  font: 500 .9rem var(--font-body); border: 1px solid var(--line); background: var(--panel); color: var(--fg);
+  border-radius: var(--radius); padding: 6px 12px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center;
+}
+button:hover, .btn:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); font-weight: 600; }
+button.ghost { background: transparent; border-color: transparent; color: var(--muted); padding: 4px 6px; }
+button.ghost:hover { color: var(--danger); }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .btn:focus-within {
+  outline: 2px solid var(--accent); outline-offset: 1px;
+}
+input, select, textarea {
+  font: inherit; color: var(--fg); background: var(--sunk); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 6px 8px; width: 100%; min-width: 0;
+}
+textarea { font-family: var(--font-mono); font-size: .82rem; resize: vertical; }
+label.f { display: grid; gap: 4px; align-content: start; font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; font-weight: 600; }
+label.f input, label.f select { font-weight: 400; text-transform: none; letter-spacing: 0; font-size: .9rem; }
+label.f > small { text-transform: none; letter-spacing: 0; font-weight: 400; }
+label.check { display: flex; gap: 8px; align-items: flex-start; font-size: .9rem; }
+label.check input { width: auto; margin-top: 3px; }
+main.bench {
+  display: grid; grid-template-columns: 260px minmax(0, 1fr) 340px; gap: 16px;
+  padding-block: 16px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  align-items: start;
+}
+@media (max-width: 1100px) { main.bench { grid-template-columns: 240px minmax(0, 1fr); } aside.out { grid-column: 1 / -1; } }
+@media (max-width: 720px) { main.bench { grid-template-columns: minmax(0, 1fr); } header.top { position: static; } }
+#filePath { word-break: break-all; }
+section.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; display: grid; gap: 12px; min-width: 0; }
+h2 { font: 600 .95rem var(--font-display); letter-spacing: .08em; text-transform: uppercase; margin: 0; color: var(--muted); }
+h3 { font: 600 1.05rem var(--font-display); margin: 0; }
+.rail { display: grid; gap: 16px; min-width: 0; }
+.plist { display: grid; gap: 4px; }
+.pitem {
+  display: grid; grid-template-columns: 30px minmax(0,1fr); gap: 8px; align-items: center; text-align: left; width: 100%;
+  border: 1px solid transparent; background: transparent; padding: 6px; border-radius: var(--radius);
+}
+.pitem[aria-current="true"] { background: var(--accent-soft); border-color: var(--accent); }
+.pitem .kind { font: 700 .62rem var(--font-display); letter-spacing: .05em; text-align: center; border-radius: 4px; padding: 4px 0; background: var(--sunk); color: var(--muted); }
+.pitem .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; font-weight: 500; }
+.pitem .sub { font: .75rem var(--font-mono); color: var(--muted); display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adds { display: flex; flex-wrap: wrap; gap: 6px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.tabs button[aria-pressed="true"] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+.search { position: relative; }
+.results {
+  position: absolute; left: 0; right: 0; top: 100%; z-index: 4; background: var(--panel); border: 1px solid var(--accent);
+  border-radius: var(--radius); max-height: 320px; overflow-y: auto; box-shadow: 0 8px 24px rgb(0 0 0 / .18);
+}
+.results button { width: 100%; border: 0; border-radius: 0; justify-content: space-between; text-align: left; padding: 6px 10px; }
+.results button[aria-selected="true"] { background: var(--accent-soft); }
+.results code, .mono { font-family: var(--font-mono); font-size: .78rem; color: var(--muted); }
+.cards { display: grid; gap: 2px; }
+.crow {
+  display: grid; grid-template-columns: 34px minmax(0, 1fr) auto auto; gap: 10px; align-items: center;
+  padding: 4px 6px; border-radius: var(--radius); background: var(--sunk);
+}
+.crow img { width: 34px; height: 49px; object-fit: cover; border-radius: 2px; background: var(--line); }
+.crow .thumb { width: 34px; height: 49px; border-radius: 2px; background: var(--line); display: grid; place-items: center; font: 700 .6rem var(--font-display); color: var(--muted); }
+.crow .cn { min-width: 0; }
+.crow .cn b { font-weight: 500; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rars { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.rars select { width: auto; padding: 2px 4px; font-size: .8rem; }
+.count { width: 64px; }
+.chip { font: 600 .72rem var(--font-mono); padding: 1px 6px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.s0 { color: var(--r-common); } .s1 { color: var(--r-rare); } .s2 { color: var(--r-super); } .s3 { color: var(--r-ultra); } .s4 { color: var(--r-secret); }
+.stats { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.stats b { color: var(--fg); }
+.warn { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font-size: .85rem; }
+.warn li { padding: 6px 8px; border-left: 3px solid var(--danger); background: var(--sunk); border-radius: 0 var(--radius) var(--radius) 0; }
+.warn li.okay { border-color: var(--ok); }
+.pack { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 6px; }
+.pcard { border: 1px solid var(--line); border-radius: 4px; padding: 6px; display: grid; gap: 4px; font-size: .75rem; background: var(--sunk); min-width: 0; }
+.pcard .chip { justify-self: start; }
+.pcard b { font-weight: 500; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+pre.json { margin: 0; max-height: 420px; overflow: auto; background: var(--sunk); border-radius: var(--radius); padding: 10px; font: .75rem/1.5 var(--font-mono); }
+.slots { display: grid; gap: 6px; }
+.slot { display: grid; grid-template-columns: 70px minmax(0,1fr) auto; gap: 8px; align-items: center; }
+.odds { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 6px; }
+.empty { color: var(--muted); font-size: .9rem; padding: 12px; text-align: center; border: 1px dashed var(--line); border-radius: var(--radius); }
+.toast { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); background: var(--fg); color: var(--bg); padding: 8px 14px; border-radius: var(--radius); z-index: 20; }
+.hint { color: var(--muted); font-size: .85rem; margin: 0; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.packrow { display: grid; grid-template-columns: minmax(0,1fr) 70px auto; gap: 8px; align-items: center; }
+details summary { cursor: pointer; font-weight: 500; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<header class="top">
+  <div class="brand"><h1>JADM Product Editor</h1><span data-t="tagline"></span></div>
+  <div class="toolbar">
+    <label class="btn" for="importFile"><span data-t="import"></span><input id="importFile" type="file" accept=".zip,.json" multiple hidden></label>
+    <button id="newPack" type="button" data-t="newPack"></button>
+    <button id="exportZip" class="primary" type="button" data-t="export"></button>
+    <select id="lang" aria-label="Language" style="width:auto"><option value="de">Deutsch</option><option value="en">English</option></select>
+  </div>
+</header>
+
+<main class="bench">
+  <div class="rail">
+    <section class="panel" id="metaPanel"></section>
+    <section class="panel">
+      <h2 data-t="products"></h2>
+      <div class="plist" id="plist"></div>
+      <div class="adds">
+        <button type="button" data-add="booster" data-t="addBooster"></button>
+        <button type="button" data-add="deck" data-t="addDeck"></button>
+        <button type="button" data-add="tin" data-t="addTin"></button>
+      </div>
+    </section>
+  </div>
+  <section class="panel" id="editor"></section>
+  <aside class="out rail">
+    <section class="panel" id="checks"></section>
+    <section class="panel" id="sample"></section>
+    <section class="panel"><div class="row" style="justify-content:space-between"><h2 data-t="file"></h2><button type="button" id="copyJson" data-t="copy"></button></div><div class="mono" id="filePath"></div><pre class="json" id="json"></pre></section>
+  </aside>
+</main>
+
+<script>
+const CARD_LIST = /*CARDS*/[];
+const BOOSTERS = /*BOOSTERS*/[];
+const RARITIES = [["Common","C",0,1],["Normal Parallel Rare","NPR",0,1],["Rare","R",1,1],["Rare Parallel Rare","RPR",1,1],["Starfoil Rare","SFR",1,1],["Shatterfoil Rare","SHR",1,1],["Mosaic Rare","MSR",1,1],["Super Rare","SR",2,1],["Super Parallel Rare","SPR",2,1],["Ultra Rare","UR",3,1],["Ultra Parallel Rare","UPR",3,1],["Ultra Rare (Pharaoh's Rare)","PhR",3,1],["Gold Rare","GR",3,1],["Premium Gold Rare","PGR",3,1],["Platinum Rare","PlR",3,1],["Ultimate Rare","UtR",3,0.5],["Secret Rare","ScR",4,1],["Ultra Secret Rare","UScR",4,1],["Prismatic Secret Rare","PScR",4,1],["Platinum Secret Rare","PlScR",4,1],["Gold Secret Rare","GScR",4,1],["Extra Secret Rare","EScR",4,1],["Ghost Rare","GhR",4,0.25],["Ghost/Gold Rare","GGR",4,0.25],["Collector's Rare","CR",4,0.5],["Quarter Century Secret Rare","QCScR",4,0.5],["Grand Master Rare","GMR",4,0.25],["Starlight Rare","StR",4,0.2],["10000 Secret Rare","10000ScR",4,1]];
+// Pack slots and whole-pack formats, as the mod reads them (engine CustomProducts).
+const SLOT = { classic:[1/24,1/12,1/6], rare:[0,0,0], foil:[1/12,1/6,1-1/12-1/6], premium:[1/4,1/2,1/4], secret:[1,0,0], ultra:[0,1,0], super:[0,0,1] };
+const FORMATS = { classic:[9,["classic"]], modern:[9,["rare","foil"]], rare_only:[7,["foil"]], super_secret:[5,["secret"]], mini:[5,["foil"]], mini_classic:[5,["classic"]], premium:[5,["premium","premium","premium","premium","premium"]], tournament:[3,["classic"]], battle:[5,["classic"]] };
+const MODERN_FROM = "2014-08-14";
+
+const T = {
+  de: {
+    tagline: "Eigene Booster, Structure Decks und Tins als Datapack", import: "Datapack öffnen", newPack: "Neues Datapack", export: "Datapack herunterladen (.zip)",
+    datapack: "Datapack", packName: "Name des Datapacks", namespace: "Namespace", namespaceHint: "Kleinbuchstaben, z. B. duelmc", packDesc: "Beschreibung",
+    products: "Produkte", addBooster: "+ Booster", addDeck: "+ Deck", addTin: "+ Tin", booster: "Booster", deck: "Deck", tin: "Tin",
+    noProducts: "Noch keine Produkte. Lege unten einen Booster, ein Deck oder ein Tin an.", choose: "Wähle links ein Produkt oder lege eines an.",
+    name: "Name", id: "ID (Dateiname)", idHint: "Gleiche ID wie ein echtes Produkt ersetzt es", code: "Set-Code", date: "Erscheinungsdatum",
+    dateHint: "Leer = ab Start verfügbar (Progression)", desc: "Tooltip-Zeile", image: "Bild", imageHint: "https-Adresse oder Resourcepack-Textur (namespace:textures/…png)",
+    price: "Preis im Shop", priceHint: "Leer = Preis aus der Server-Config", unlocks: "Schaltet seine Karten frei (Progression)", starter: "Als Startdeck für neue Spieler anbieten",
+    pack: "Pack-Format", auto: "Automatisch", custom: "Eigenes", size: "Karten pro Pack", slots: "Slots über Common", addSlot: "+ Slot", odds: "Eigene Chancen",
+    oddsHint: "Chance auf Secret / Ultra / Super, der Rest ist Rare", cards: "Karten", promos: "Karten pro Tin", promosHint: "So viele der Tin-Karten bekommt man beim Öffnen",
+    tinCards: "Tin-Karten (Promos)", tinPacks: "Packs im Tin", tinPacksHint: "Leer = die drei neuesten Booster zum Datum des Tins", addPackRow: "+ Pack",
+    search: "Karte suchen (Name oder Passcode)…", bulk: "Viele Karten auf einmal (Liste oder .ydk)", bulkHint: "Eine Karte pro Zeile: Name oder Passcode, optional „3x“ davor und „| Ultra Rare“ dahinter. Eine .ydk-Deckliste geht auch.",
+    bulkAdd: "Hinzufügen", ydkFile: ".ydk-Datei laden", remove: "Entfernen", addRarity: "+ Seltenheit", del: "Produkt löschen", dup: "Duplizieren",
+    checks: "Prüfung", allGood: "Alles in Ordnung, das Produkt kann so ins Datapack.", sample: "Beispiel-Pack", reroll: "Neu öffnen", sampleNone: "Ein Beispiel-Pack gibt es nur für Booster mit Karten.",
+    file: "Datei", copy: "JSON kopieren", copied: "JSON kopiert", saved: "Datapack gespeichert", imported: "Importiert: {n} Produkte",
+    importFail: "Diese Datei enthält keine Produkte (data/<namespace>/jadm/products/*.json).", main: "Main", extra: "Extra", total: "Karten",
+    wName: "Das Produkt braucht einen Namen.", wId: "Die ID darf nur a-z, 0-9, _ - . enthalten.", wIdDup: "Zwei Produkte haben die ID „{id}“; nur eines wird geladen.",
+    wCards: "Es hat noch keine Karten.", wStarter: "Als Startdeck braucht es 40–60 Main-Deck-Karten (jetzt {n}); so wird es nur als Deck verkauft.",
+    wExtra: "Mehr als 15 Extra-Deck-Karten: im Startdeck kommen nur 15 mit.", wPack: "Pack „{p}“ gibt es weder als echtes Set noch in diesem Datapack.",
+    wTin: "Das Tin hat weder Karten noch Packs.", wSlots: "Mehr Slots als Karten im Pack.", wFoil: "Keine Karte ist besser als die Grundseltenheit; alle Slots fallen auf sie zurück.",
+    wNs: "Der Namespace darf nur a-z, 0-9, _ - . enthalten.", example: "Beispiel", exampleNote: "Das ist ein Beispiel-Datapack zum Ausprobieren. „Neues Datapack“ fängt leer an.",
+    confirmNew: "Wirklich alles verwerfen? Klick nochmal zum Bestätigen.", howTo: "So kommt es auf den Server",
+    howToText: "Zip in den Ordner <code>world/datapacks/</code> legen (Einzelspieler: Welt → Datapacks) und <code>/reload</code>. <code>/jadm products</code> zeigt, was geladen wurde und was nicht passt.",
+    base: "Grundseltenheit", perPack: "pro Pack", from: "ab",
+  },
+  en: {
+    tagline: "Your own boosters, structure decks and tins as a datapack", import: "Open datapack", newPack: "New datapack", export: "Download datapack (.zip)",
+    datapack: "Datapack", packName: "Datapack name", namespace: "Namespace", namespaceHint: "Lower case, e.g. duelmc", packDesc: "Description",
+    products: "Products", addBooster: "+ Booster", addDeck: "+ Deck", addTin: "+ Tin", booster: "Booster", deck: "Deck", tin: "Tin",
+    noProducts: "No products yet. Add a booster, deck or tin below.", choose: "Pick a product on the left or add one.",
+    name: "Name", id: "ID (file name)", idHint: "The id of a real product replaces it", code: "Set code", date: "Release date",
+    dateHint: "Empty = out from the start (progression)", desc: "Tooltip line", image: "Picture", imageHint: "https address or resource pack texture (namespace:textures/…png)",
+    price: "Shop price", priceHint: "Empty = the server config's price", unlocks: "Unlocks its cards (progression)", starter: "Offer as a new player's first deck",
+    pack: "Pack format", auto: "Automatic", custom: "Own", size: "Cards per pack", slots: "Slots above common", addSlot: "+ Slot", odds: "Own odds",
+    oddsHint: "Chance of secret / ultra / super; the rest is a rare", cards: "Cards", promos: "Cards per tin", promosHint: "How many of the tin's cards opening it gives",
+    tinCards: "Tin cards (promos)", tinPacks: "Packs in the tin", tinPacksHint: "Empty = the three newest boosters by the tin's date", addPackRow: "+ Pack",
+    search: "Search a card (name or passcode)…", bulk: "Many cards at once (list or .ydk)", bulkHint: "One card per line: name or passcode, optionally \"3x\" in front and \"| Ultra Rare\" after. A .ydk deck list works too.",
+    bulkAdd: "Add", ydkFile: "Load .ydk file", remove: "Remove", addRarity: "+ Rarity", del: "Delete product", dup: "Duplicate",
+    checks: "Checks", allGood: "All good, the product can go into the datapack as it is.", sample: "Sample pack", reroll: "Open another", sampleNone: "Sample packs are for boosters with cards.",
+    file: "File", copy: "Copy JSON", copied: "JSON copied", saved: "Datapack saved", imported: "Imported {n} products",
+    importFail: "This file holds no products (data/<namespace>/jadm/products/*.json).", main: "Main", extra: "Extra", total: "Cards",
+    wName: "The product needs a name.", wId: "The id may only hold a-z, 0-9, _ - .", wIdDup: "Two products have the id \"{id}\"; only one is loaded.",
+    wCards: "It has no cards yet.", wStarter: "A first deck needs 40–60 main deck cards (now {n}); until then it is only sold as a deck.",
+    wExtra: "More than 15 extra deck cards: a first deck takes only 15.", wPack: "Pack \"{p}\" is neither a real set nor in this datapack.",
+    wTin: "The tin has neither cards nor packs.", wSlots: "More slots than cards in a pack.", wFoil: "No card is better than the base rarity; every slot falls back to it.",
+    wNs: "The namespace may only hold a-z, 0-9, _ - .", example: "Example", exampleNote: "This is an example datapack to try things out. \"New datapack\" starts empty.",
+    confirmNew: "Discard everything? Click again to confirm.", howTo: "Getting it onto the server",
+    howToText: "Put the zip into <code>world/datapacks/</code> (single player: world → Data Packs) and run <code>/reload</code>. <code>/jadm products</code> lists what loaded and what didn't fit.",
+    base: "Base rarity", perPack: "per pack", from: "from",
+  },
+};
+
+let lang = "de";
+const t = (k, vars) => { let s = (T[lang] && T[lang][k]) || T.en[k] || k; if (vars) for (const [a, b] of Object.entries(vars)) s = s.replace("{" + a + "}", b); return s; };
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const $ = s => document.querySelector(s);
+
+// ---- cards
+let CARDS = CARD_LIST;
+let byCode = new Map(), byName = new Map();
+function indexCards() {
+  byCode = new Map(); byName = new Map();
+  for (const c of CARDS) { byCode.set(c[0], c); byName.set(c[1].toLowerCase(), c); }
+}
+const cardName = code => byCode.get(code)?.[1] ?? ("#" + code);
+const cardCat = code => byCode.get(code)?.[2] ?? "m";
+function findCard(ref) {
+  if (typeof ref === "number") return byCode.has(ref) ? ref : null;
+  const s = String(ref ?? "").trim();
+  if (/^\d{1,9}$/.test(s) && byCode.has(+s)) return +s;
+  const c = byName.get(s.toLowerCase().replace(/’/g, "'"));
+  return c ? c[0] : null;
+}
+function searchCards(q) {
+  q = q.trim().toLowerCase();
+  if (q.length < 2) return [];
+  if (/^\d+$/.test(q)) return CARDS.filter(c => String(c[0]).startsWith(q)).slice(0, 30);
+  const starts = [], has = [];
+  for (const c of CARDS) {
+    const n = c[1].toLowerCase();
+    if (n.startsWith(q)) starts.push(c); else if (n.includes(q)) has.push(c);
+    if (starts.length >= 30) break;
+  }
+  return starts.concat(has).slice(0, 30);
+}
+
+// ---- rarities
+const rarityInfo = name => RARITIES.find(r => r[0] === name);
+function ofPrinted(printed) {
+  const known = rarityInfo(printed); if (known) return known;
+  const r = printed.toLowerCase(), f = n => rarityInfo(n);
+  if (r.includes("short print")) return f("Common");
+  if (r.includes("10000")) return f("10000 Secret Rare");
+  if (r.includes("starlight")) return f("Starlight Rare");
+  if (r.includes("quarter century")) return f("Quarter Century Secret Rare");
+  if (r.includes("collector")) return f("Collector's Rare");
+  if (r.includes("grand master")) return f("Grand Master Rare");
+  if (r.includes("ghost")) return f(r.includes("gold") ? "Ghost/Gold Rare" : "Ghost Rare");
+  if (r.includes("secret")) return f("Secret Rare");
+  if (r.includes("ultra")) return f("Ultra Rare");
+  if (r.includes("super")) return f("Super Rare");
+  return f(r.includes("rare") ? "Rare" : "Common");
+}
+const slotOf = name => ofPrinted(name)[2];
+function normalRarity(text, fallback) {
+  const s = String(text ?? "").trim();
+  for (const r of RARITIES) if ([r[0], r[1], r[0].replace(/ /g, "_")].some(x => x.toLowerCase() === s.toLowerCase())) return r[0];
+  return s || fallback;
+}
+
+// ---- state
+const STORE = "jadm-product-editor-v1";
+let state;
+let selected = 0;
+let uid = 1;
+function blankProduct(type) {
+  return { uid: uid++, type, id: "", name: "", code: "", date: "", description: "", image: "", price: "", unlocks: true, starter: true,
+    pack: { mode: "auto", preset: "modern", size: 9, slots: ["rare", "foil"] }, cards: [], promos: 1, packs: [] };
+}
+function example() {
+  const b = blankProduct("booster");
+  Object.assign(b, { id: "server_legends", name: "Server Legends", code: "SVLG", description: "Only on our server",
+    cards: [[89631139, ["Ultra Rare", "Starlight Rare"]], [46986414, ["Secret Rare"]], [74677422, ["Super Rare"]], [70781052, ["Rare"]],
+      [5318639, ["Common"]], [53129443, ["Common"]], [12580477, ["Common"]], [83764718, ["Common"]], [44095762, ["Common"]], [4206964, ["Common"]], [15025844, ["Common"]], [40374923, ["Common"]]]
+      .filter(([c]) => byCode.has(c)).map(([code, rarities]) => ({ code, rarities, count: 1 })) });
+  const d = blankProduct("deck");
+  Object.assign(d, { id: "server_starter", name: "Structure Deck: Server Starter", code: "SVSD",
+    cards: [[89631139, 3], [46986414, 3], [74677422, 2], [70781052, 3], [5318639, 3], [53129443, 1], [12580477, 1], [83764718, 1], [44095762, 2], [4206964, 3], [15025844, 3], [40374923, 3]]
+      .filter(([c]) => byCode.has(c)).map(([code, count]) => ({ code, rarities: ["Common"], count })) });
+  const tin = blankProduct("tin");
+  Object.assign(tin, { id: "server_tin", name: "Server Legends Tin", code: "SVTN", promos: 1,
+    cards: [[89631139, ["Ultra Rare"]], [46986414, ["Ultra Rare"]]].filter(([c]) => byCode.has(c)).map(([code, rarities]) => ({ code, rarities, count: 1 })),
+    packs: [{ product: "server_legends", count: 2 }, { product: "LOB", count: 1 }] });
+  return { name: "Server Products", namespace: "myserver", description: "Our own packs, decks and tins", products: [b, d, tin], example: true };
+}
+function save() { try { localStorage.setItem(STORE, JSON.stringify({ state, selected, lang })); } catch (e) { /* storage may be blocked */ } }
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE);
+    if (raw) { const s = JSON.parse(raw); state = s.state; selected = s.selected || 0; lang = s.lang || lang; for (const p of state.products) { p.uid = uid++; p.pack ??= blankProduct("booster").pack; } return; }
+  } catch (e) { /* fall through */ }
+  state = example();
+}
+const current = () => state.products[selected];
+const slug = s => s.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 60);
+const idOf = p => p.id || slug(p.name) || ("product_" + p.uid);
+
+// ---- JSON as the mod reads it
+function productJson(p) {
+  const o = { type: p.type, name: p.name };
+  if (p.code) o.code = p.code;
+  if (p.date) o.date = p.date;
+  if (p.description) o.description = p.description;
+  if (p.image) o.image = p.image;
+  if (p.price !== "" && p.price != null) o.price = Math.max(0, Math.min(64, parseInt(p.price, 10) || 0));
+  if (!p.unlocks) o.unlocks_cards = false;
+  if (p.type === "deck" && !p.starter) o.starter = false;
+  if (p.type === "booster" && p.pack.mode === "preset") o.pack = p.pack.preset;
+  if (p.type === "booster" && p.pack.mode === "custom") o.pack = { size: p.pack.size, slots: p.pack.slots.map(s => typeof s === "string" ? s : { secret: +s.secret || 0, ultra: +s.ultra || 0, super: +s.super || 0 }) };
+  if (p.type === "tin") o.promos = p.promos;
+  o.cards = p.cards.map(c => {
+    const e = { card: c.code, name: cardName(c.code) };
+    if (p.type === "deck") { if (c.count > 1) e.count = c.count; }
+    else e.rarity = c.rarities.length === 1 ? c.rarities[0] : c.rarities.slice();
+    return e;
+  });
+  if (p.type === "tin" && p.packs.length) o.packs = p.packs.filter(x => x.product).map(x => x.count > 1 ? { product: x.product, count: x.count } : x.product);
+  return o;
+}
+function fromJson(id, o) {
+  const type = ({ pack: "booster", booster_pack: "booster", structure_deck: "deck", starter_deck: "deck" })[o.type || o.kind] || o.type || o.kind || "booster";
+  const p = blankProduct(["booster", "deck", "tin"].includes(type) ? type : "booster");
+  Object.assign(p, { id, name: o.name || "", code: o.code || "", date: o.date || "", description: o.description || "", image: o.image || "",
+    price: o.price ?? "", unlocks: o.unlocks_cards !== false, starter: o.starter !== false, promos: o.promos ?? 1 });
+  if (typeof o.pack === "string") p.pack = { ...p.pack, mode: "preset", preset: o.pack.toLowerCase().replace(/[- ]/g, "_") };
+  else if (o.pack && typeof o.pack === "object") p.pack = { mode: "custom", preset: "modern", size: o.pack.size || 9, slots: (o.pack.slots || []).map(s => typeof s === "string" ? s : { secret: s.secret || 0, ultra: s.ultra || 0, super: s.super || 0 }) };
+  const fallback = p.type === "tin" ? "Ultra Rare" : "Common";
+  const seen = new Map();
+  for (const e of o.cards || []) {
+    const ref = typeof e === "object" ? (e.card ?? e.code ?? e.name) : e;
+    const code = findCard(ref);
+    if (code == null) continue;
+    const rr = typeof e === "object" && e.rarity != null ? (Array.isArray(e.rarity) ? e.rarity : [e.rarity]) : [fallback];
+    const count = typeof e === "object" && e.count ? e.count : 1;
+    const known = seen.get(code);
+    if (known) { known.count += count; for (const r of rr) if (!known.rarities.includes(normalRarity(r, fallback))) known.rarities.push(normalRarity(r, fallback)); }
+    else { const c = { code, rarities: rr.map(r => normalRarity(r, fallback)), count }; seen.set(code, c); p.cards.push(c); }
+  }
+  for (const x of o.packs || []) {
+    if (typeof x === "string") p.packs.push({ product: x, count: 1 });
+    else if (x && x.product) p.packs.push({ product: x.product, count: x.count || 1 });
+  }
+  return p;
+}
+
+// ---- packs, as the mod opens them (engine BoosterSets.BoosterSet.open)
+function profileOf(p) {
+  if (p.pack.mode === "preset" && FORMATS[p.pack.preset]) return { size: FORMATS[p.pack.preset][0], slots: FORMATS[p.pack.preset][1].map(s => SLOT[s]) };
+  if (p.pack.mode === "custom") return { size: Math.max(p.pack.size, p.pack.slots.length), slots: p.pack.slots.map(s => typeof s === "string" ? SLOT[s] : [+s.secret || 0, +s.ultra || 0, +s.super || 0]) };
+  const rarities = p.cards.map(c => slotOf(c.rarities.slice().sort((a, b) => RARITIES.indexOf(rarityInfo(a)) - RARITIES.indexOf(rarityInfo(b)))[0]));
+  const base = baseSlot(rarities);
+  if (base === 1) return { size: 7, slots: [SLOT.foil], name: "rare_only" };
+  if (base === 2 && rarities.some(r => r === 4)) return { size: 5, slots: [SLOT.secret], name: "super_secret" };
+  const modern = !p.date || p.date >= MODERN_FROM;
+  return modern ? { size: 9, slots: [SLOT.rare, SLOT.foil], name: "modern" } : { size: 9, slots: [SLOT.classic], name: "classic" };
+}
+function baseSlot(slots) {
+  for (let s = 0; s < 5; s++) { const n = slots.filter(x => x === s).length; if (n > 0 && n * 10 >= slots.length) return s; }
+  return 0;
+}
+function setCards(p) {
+  const list = [];
+  for (const c of p.cards) for (const r of c.rarities) { const info = ofPrinted(r); list.push({ code: c.code, rarity: info[0], slot: info[2], weight: info[3] }); }
+  const base = baseSlot(list.map(c => c.slot));
+  for (const c of list) if (c.slot < base) { c.slot = base; c.rarity = RARITIES.find(r => r[2] === base)[0]; c.weight = 1; }
+  return { list, base };
+}
+function openPack(p) {
+  const { list, base } = setCards(p);
+  if (!list.length) return [];
+  const prof = profileOf(p);
+  const bySlot = [0, 1, 2, 3, 4].map(s => list.filter(c => c.slot === s));
+  const pick = pool => { const total = pool.reduce((a, c) => a + c.weight, 0); let r = Math.random() * total; for (const c of pool) { r -= c.weight; if (r < 0) return c; } return pool[pool.length - 1]; };
+  const roll = s => { const r = Math.random(); return r < s[0] ? 4 : r < s[0] + s[1] ? 3 : r < s[0] + s[1] + s[2] ? 2 : 1; };
+  const poolFor = rolled => {
+    if (rolled > base) {
+      for (let i = rolled; i > base; i--) if (bySlot[i].length) return bySlot[i];
+      for (let i = rolled + 1; i < 5; i++) if (bySlot[i].length) return bySlot[i];
+    }
+    return bySlot[base];
+  };
+  const pack = [];
+  for (let i = 0; i < prof.size - prof.slots.length; i++) pack.push(pick(bySlot[base]));
+  for (const s of prof.slots) pack.push(pick(poolFor(roll(s))));
+  return pack;
+}
+
+// ---- checks
+function boosterKeys() {
+  const keys = new Set();
+  for (const b of BOOSTERS) { keys.add(b[0]); keys.add(b[1].toLowerCase()); }
+  for (const p of state.products) if (p.type === "booster") { keys.add(idOf(p)); if (p.code) keys.add(p.code.toLowerCase()); }
+  return keys;
+}
+function problems(p) {
+  const out = [];
+  if (!p.name.trim()) out.push(t("wName"));
+  if (!/^[a-z0-9_.\-]+$/.test(idOf(p))) out.push(t("wId"));
+  if (state.products.filter(x => idOf(x) === idOf(p)).length > 1) out.push(t("wIdDup", { id: idOf(p) }));
+  if (p.type !== "tin" && !p.cards.length) out.push(t("wCards"));
+  if (p.type === "tin" && !p.cards.length && !p.packs.length) out.push(t("wTin"));
+  if (p.type === "deck" && p.cards.length) {
+    const main = p.cards.filter(c => cardCat(c.code) !== "x").reduce((a, c) => a + c.count, 0);
+    const extra = p.cards.filter(c => cardCat(c.code) === "x").reduce((a, c) => a + c.count, 0);
+    if (p.starter && (main < 40 || main > 60)) out.push(t("wStarter", { n: main }));
+    if (p.starter && extra > 15) out.push(t("wExtra"));
+  }
+  if (p.type === "booster" && p.pack.mode === "custom" && p.pack.slots.length > p.pack.size) out.push(t("wSlots"));
+  if (p.type === "booster" && p.cards.length) { const { list, base } = setCards(p); if (!list.some(c => c.slot > base)) out.push(t("wFoil")); }
+  if (p.type === "tin") { const keys = boosterKeys(); for (const x of p.packs) if (x.product && !keys.has(x.product.toLowerCase()) && !keys.has(x.product)) out.push(t("wPack", { p: x.product })); }
+  return out;
+}
+
+// ---- rendering
+function applyStatic() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-t]").forEach(el => { el.textContent = t(el.dataset.t); });
+  $("#lang").value = lang;
+}
+function renderMeta() {
+  const ok = /^[a-z0-9_.\-]+$/.test(state.namespace);
+  $("#metaPanel").innerHTML = `<h2>${t("datapack")}</h2>
+    ${state.example ? `<p class="hint">${t("exampleNote")}</p>` : ""}
+    <label class="f" for="mName">${t("packName")}<input id="mName" data-meta="name" value="${esc(state.name)}"></label>
+    <label class="f" for="mNs">${t("namespace")}<input id="mNs" data-meta="namespace" value="${esc(state.namespace)}" spellcheck="false"><small>${ok ? t("namespaceHint") : `<span style="color:var(--danger)">${t("wNs")}</span>`}</small></label>
+    <label class="f" for="mDesc">${t("packDesc")}<input id="mDesc" data-meta="description" value="${esc(state.description)}"></label>
+    <details><summary>${t("howTo")}</summary><p class="hint">${t("howToText")}</p></details>`;
+}
+function renderList() {
+  const el = $("#plist");
+  if (!state.products.length) { el.innerHTML = `<div class="empty">${t("noProducts")}</div>`; return; }
+  el.innerHTML = state.products.map((p, i) => `<button type="button" class="pitem" data-select="${i}" aria-current="${i === selected}">
+      <span class="kind">${{ booster: "PACK", deck: "DECK", tin: "TIN" }[p.type]}</span>
+      <span><span class="nm">${esc(p.name || "—")}</span><span class="sub">${esc(idOf(p))}${problems(p).length ? " · ⚠" : ""}</span></span></button>`).join("");
+}
+function rarityChip(r) { return `<span class="chip s${slotOf(r)}">${esc(ofPrinted(r)[1])}</span>`; }
+function raritySelect(value, ci, ri) {
+  return `<select data-rar="${ci}:${ri}" aria-label="Rarity">${RARITIES.map(r => `<option ${r[0] === value ? "selected" : ""}>${esc(r[0])}</option>`).join("")}${rarityInfo(value) ? "" : `<option selected>${esc(value)}</option>`}</select>`;
+}
+function thumb(code) {
+  return `<img src="https://images.ygoprodeck.com/images/cards_small/${code}.jpg" alt="" loading="lazy" onerror="this.outerHTML='<span class=thumb>${cardCat(code).toUpperCase()}</span>'">`;
+}
+function renderCards(p) {
+  if (!p.cards.length) return `<div class="empty">${t("wCards")}</div>`;
+  return p.cards.map((c, i) => `<div class="crow">${thumb(c.code)}
+      <div class="cn"><b title="${esc(cardName(c.code))}">${esc(cardName(c.code))}</b><span class="mono">${c.code}${cardCat(c.code) === "x" ? " · Extra" : ""}</span></div>
+      ${p.type === "deck" ? `<input class="count" type="number" min="1" max="60" value="${c.count}" data-count="${i}" aria-label="Copies">`
+        : `<div class="rars">${c.rarities.map((r, ri) => raritySelect(r, i, ri) + (ri > 0 ? `<button type="button" class="ghost" data-unrar="${i}:${ri}" aria-label="${t("remove")}">×</button>` : "")).join("")}<button type="button" class="ghost" data-addrar="${i}" title="${t("addRarity")}">+</button></div>`}
+      <button type="button" class="ghost" data-remove="${i}" aria-label="${t("remove")}">✕</button></div>`).join("");
+}
+function stats(p) {
+  if (p.type === "deck") {
+    const main = p.cards.filter(c => cardCat(c.code) !== "x").reduce((a, c) => a + c.count, 0);
+    const extra = p.cards.filter(c => cardCat(c.code) === "x").reduce((a, c) => a + c.count, 0);
+    return `<div class="stats"><span>${t("main")} <b>${main}</b></span><span>${t("extra")} <b>${extra}</b></span></div>`;
+  }
+  const counts = [0, 0, 0, 0, 0];
+  for (const c of p.cards) for (const r of c.rarities) counts[slotOf(r)]++;
+  const names = ["C", "R", "SR", "UR", "ScR"];
+  return `<div class="stats"><span>${t("total")} <b>${p.cards.length}</b></span>${counts.map((n, i) => n ? `<span class="s${i}">${names[i]} <b>${n}</b></span>` : "").join("")}</div>`;
+}
+function renderPack(p) {
+  if (p.type !== "booster") return "";
+  const mode = p.pack.mode;
+  const prof = profileOf(p);
+  const slotSelect = (s, i) => `<div class="slot"><span class="mono">#${i + 1}</span>
+      <select data-slot="${i}">${Object.keys(SLOT).map(k => `<option value="${k}" ${s === k ? "selected" : ""}>${k}</option>`).join("")}<option value="odds" ${typeof s === "object" ? "selected" : ""}>${t("odds")}</option></select>
+      <button type="button" class="ghost" data-unslot="${i}" aria-label="${t("remove")}">✕</button>
+      ${typeof s === "object" ? `<div class="odds" style="grid-column:1/-1">${["secret", "ultra", "super"].map(k => `<label class="f" for="odd${i}${k}">${k}<input id="odd${i}${k}" type="number" step="0.01" min="0" max="1" value="${s[k]}" data-odd="${i}:${k}"></label>`).join("")}</div>` : ""}</div>`;
+  return `<div class="grid2">
+      <label class="f" for="pMode">${t("pack")}<select id="pMode" data-packmode>
+        <option value="auto" ${mode === "auto" ? "selected" : ""}>${t("auto")}${mode === "auto" ? ` (${prof.size} ${t("perPack")})` : ""}</option>
+        ${Object.keys(FORMATS).map(k => `<option value="preset:${k}" ${mode === "preset" && p.pack.preset === k ? "selected" : ""}>${k} (${FORMATS[k][0]})</option>`).join("")}
+        <option value="custom" ${mode === "custom" ? "selected" : ""}>${t("custom")}</option></select></label>
+      ${mode === "custom" ? `<label class="f" for="pSize">${t("size")}<input id="pSize" type="number" min="1" max="30" value="${p.pack.size}" data-packsize></label>` : ""}
+    </div>
+    ${mode === "custom" ? `<div class="slots"><span class="hint">${t("slots")} · ${t("oddsHint")}</span>${p.pack.slots.map(slotSelect).join("")}<div><button type="button" data-addslot>${t("addSlot")}</button></div></div>` : ""}`;
+}
+function renderTinPacks(p) {
+  if (p.type !== "tin") return "";
+  return `<h3>${t("tinPacks")}</h3><p class="hint">${t("tinPacksHint")}</p>
+    <datalist id="boosterList">${state.products.filter(x => x.type === "booster").map(x => `<option value="${esc(idOf(x))}">${esc(x.name)}</option>`).join("")}${BOOSTERS.map(b => `<option value="${esc(b[1])}">${esc(b[2])} (${b[3].slice(0, 4)})</option>`).join("")}</datalist>
+    ${p.packs.map((x, i) => `<div class="packrow"><input list="boosterList" value="${esc(x.product)}" data-packprod="${i}" aria-label="Pack" spellcheck="false"><input type="number" min="1" max="24" value="${x.count}" data-packcount="${i}" aria-label="Count"><button type="button" class="ghost" data-unpack="${i}" aria-label="${t("remove")}">✕</button></div>`).join("")}
+    <div><button type="button" data-addpack>${t("addPackRow")}</button></div>
+    <label class="f" for="pPromos">${t("promos")}<input id="pPromos" type="number" min="0" max="10" value="${p.promos}" data-field="promos"><small>${t("promosHint")}</small></label>`;
+}
+function renderEditor() {
+  const p = current();
+  const el = $("#editor");
+  if (!p) { el.innerHTML = `<div class="empty">${t("choose")}</div>`; return; }
+  el.innerHTML = `<div class="row" style="justify-content:space-between"><h2>${t(p.type)}</h2>
+      <div class="row"><button type="button" data-dup>${t("dup")}</button><button type="button" data-del>${t("del")}</button></div></div>
+    <div class="grid2">
+      <label class="f" for="fName">${t("name")}<input id="fName" data-field="name" value="${esc(p.name)}"></label>
+      <label class="f" for="fId">${t("id")}<input id="fId" data-field="id" value="${esc(p.id)}" placeholder="${esc(idOf(p))}" spellcheck="false"><small>${t("idHint")}</small></label>
+      <label class="f" for="fCode">${t("code")}<input id="fCode" data-field="code" value="${esc(p.code)}" placeholder="${esc(idOf(p).toUpperCase())}" spellcheck="false"></label>
+      <label class="f" for="fDate">${t("date")}<input id="fDate" type="date" data-field="date" value="${esc(p.date)}"><small>${t("dateHint")}</small></label>
+      <label class="f" for="fDesc">${t("desc")}<input id="fDesc" data-field="description" value="${esc(p.description)}"></label>
+      <label class="f" for="fPrice">${t("price")}<input id="fPrice" type="number" min="0" max="64" data-field="price" value="${esc(p.price)}"><small>${t("priceHint")}</small></label>
+      <label class="f" for="fImage" style="grid-column:1/-1">${t("image")}<input id="fImage" data-field="image" value="${esc(p.image)}" spellcheck="false"><small>${t("imageHint")}</small></label>
+    </div>
+    <div class="row" style="gap:16px">
+      <label class="check" for="fUnlocks"><input id="fUnlocks" type="checkbox" data-check="unlocks" ${p.unlocks ? "checked" : ""}>${t("unlocks")}</label>
+      ${p.type === "deck" ? `<label class="check" for="fStarter"><input id="fStarter" type="checkbox" data-check="starter" ${p.starter ? "checked" : ""}>${t("starter")}</label>` : ""}
+    </div>
+    ${renderPack(p)}
+    ${renderTinPacks(p)}
+    <div class="row" style="justify-content:space-between"><h3>${p.type === "tin" ? t("tinCards") : t("cards")}</h3><span id="statLine">${stats(p)}</span></div>
+    <div class="search"><input id="cardSearch" type="search" placeholder="${t("search")}" autocomplete="off" aria-label="${t("search")}"><div class="results" id="results" hidden></div></div>
+    <div class="cards" id="cardList">${renderCards(p)}</div>
+    <details><summary>${t("bulk")}</summary><div style="display:grid;gap:8px;margin-top:8px"><p class="hint">${t("bulkHint")}</p>
+      <textarea id="bulkText" rows="6" aria-label="${t("bulk")}"></textarea>
+      <div class="row"><button type="button" data-bulk class="primary">${t("bulkAdd")}</button><label class="btn" for="ydkFile">${t("ydkFile")}<input id="ydkFile" type="file" accept=".ydk,.txt" hidden></label><span id="bulkMsg" class="hint"></span></div></div></details>`;
+}
+let samplePack = null;
+function renderOut() {
+  const p = current();
+  const probs = p ? problems(p) : [];
+  $("#checks").innerHTML = `<h2>${t("checks")}</h2><ul class="warn">${p ? (probs.length ? probs.map(x => `<li>${esc(x)}</li>`).join("") : `<li class="okay">${t("allGood")}</li>`) : ""}</ul>`;
+  if (p && p.type === "booster" && p.cards.length) {
+    if (!samplePack || samplePack.uid !== p.uid) samplePack = { uid: p.uid, cards: openPack(p) };
+    const prof = profileOf(p);
+    const { base } = setCards(p);
+    $("#sample").innerHTML = `<div class="row" style="justify-content:space-between"><h2>${t("sample")}</h2><button type="button" data-reroll>${t("reroll")}</button></div>
+      <div class="stats"><span><b>${prof.size}</b> ${t("perPack")}</span><span>${t("base")} <b class="s${base}">${["Common", "Rare", "Super Rare", "Ultra Rare", "Secret Rare"][base]}</b></span></div>
+      <div class="pack">${samplePack.cards.map(c => `<div class="pcard"><b>${esc(cardName(c.code))}</b>${rarityChip(c.rarity)}</div>`).join("")}</div>`;
+  } else {
+    $("#sample").innerHTML = `<h2>${t("sample")}</h2><p class="hint">${t("sampleNone")}</p>`;
+  }
+  $("#filePath").textContent = p ? `data/${state.namespace}/jadm/products/${idOf(p)}.json` : "";
+  $("#json").textContent = p ? JSON.stringify(productJson(p), null, 2) : "";
+}
+function renderAll() { applyStatic(); renderMeta(); renderList(); renderEditor(); renderOut(); }
+function changed(full) { state.example = state.example && !full; save(); renderList(); renderOut(); if (full) renderEditor(); }
+
+// ---- zip (stored files for writing; stored or deflated for reading)
+const CRC = (() => { const tb = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; tb[n] = c >>> 0; } return tb; })();
+function crc32(b) { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; }
+function zip(files) {
+  const enc = new TextEncoder(), parts = [], central = []; let offset = 0;
+  for (const [name, text] of files) {
+    const n = enc.encode(name), d = enc.encode(text), crc = crc32(d);
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, 0, true);
+    h.setUint16(10, 0, true); h.setUint16(12, 0x21, true); h.setUint32(14, crc, true); h.setUint32(18, d.length, true); h.setUint32(22, d.length, true);
+    h.setUint16(26, n.length, true); h.setUint16(28, 0, true);
+    parts.push(new Uint8Array(h.buffer), n, d);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(10, 0, true);
+    c.setUint16(12, 0, true); c.setUint16(14, 0x21, true); c.setUint32(16, crc, true); c.setUint32(20, d.length, true); c.setUint32(24, d.length, true);
+    c.setUint16(28, n.length, true); c.setUint32(42, offset, true);
+    central.push(new Uint8Array(c.buffer), n);
+    offset += 30 + n.length + d.length;
+  }
+  const size = central.reduce((a, b) => a + b.length, 0);
+  const e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, size, true); e.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, new Uint8Array(e.buffer)], { type: "application/zip" });
+}
+async function unzip(buf) {
+  const v = new DataView(buf), out = [];
+  let eocd = -1;
+  for (let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 65557); i--) if (v.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  if (eocd < 0) throw new Error("not a zip");
+  let p = v.getUint32(eocd + 16, true); const count = v.getUint16(eocd + 10, true); const dec = new TextDecoder();
+  for (let i = 0; i < count; i++) {
+    const method = v.getUint16(p + 10, true), csize = v.getUint32(p + 20, true), nlen = v.getUint16(p + 28, true), xlen = v.getUint16(p + 30, true), clen = v.getUint16(p + 32, true), local = v.getUint32(p + 42, true);
+    const name = dec.decode(new Uint8Array(buf, p + 46, nlen));
+    p += 46 + nlen + xlen + clen;
+    if (name.endsWith("/")) continue;
+    const start = local + 30 + v.getUint16(local + 26, true) + v.getUint16(local + 28, true);
+    let data = new Uint8Array(buf, start, csize);
+    if (method === 8) data = new Uint8Array(await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer());
+    else if (method !== 0) continue;
+    out.push([name, dec.decode(data)]);
+  }
+  return out;
+}
+async function saveFile(name, blob) {
+  try {
+    const downloads = window.claude?.use ? await window.claude.use("downloads") : null;
+    if (downloads) { await downloads.save({ filename: name, data: blob }); toast(t("saved")); return; }
+  } catch (e) { if (e && e.code === "declined") return; }
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+}
+function exportZip() {
+  const ns = /^[a-z0-9_.\-]+$/.test(state.namespace) ? state.namespace : "myserver";
+  const files = [["pack.mcmeta", JSON.stringify({ pack: { pack_format: 48, description: state.description || state.name } }, null, 2)]];
+  for (const p of state.products) files.push([`data/${ns}/jadm/products/${idOf(p)}.json`, JSON.stringify(productJson(p), null, 2)]);
+  saveFile((slug(state.name) || "jadm_products") + ".zip", zip(files));
+}
+async function importFiles(list) {
+  const found = [];
+  let meta = null;
+  for (const file of list) {
+    if (file.name.toLowerCase().endsWith(".zip")) {
+      for (const [name, text] of await unzip(await file.arrayBuffer())) {
+        const m = name.match(/(?:^|\/)data\/([^/]+)\/jadm\/products\/(.+)\.json$/);
+        if (m) { try { found.push([m[1], m[2].replace(/\//g, "_"), JSON.parse(text)]); } catch (e) { /* skip broken file */ } }
+        else if (name.endsWith("pack.mcmeta")) { try { meta = JSON.parse(text); } catch (e) { /* ignore */ } }
+      }
+      if (!meta || !state.example) meta = meta || {};
+      meta.fileName = file.name.replace(/\.zip$/i, "");
+    } else {
+      try { const o = JSON.parse(await file.text()); found.push([null, slug(file.name.replace(/\.json$/i, "")), o]); } catch (e) { /* skip */ }
+    }
+  }
+  if (!found.length) { toast(t("importFail")); return; }
+  const fresh = state.example || !state.products.length;
+  if (fresh) state = { name: meta?.fileName || "Imported", namespace: found.find(f => f[0])?.[0] || "myserver", description: (typeof meta?.pack?.description === "string" ? meta.pack.description : "") || "", products: [] };
+  for (const [, id, o] of found) {
+    const p = fromJson(id, o), at = state.products.findIndex(x => idOf(x) === id);
+    if (at >= 0) state.products[at] = p; else state.products.push(p);
+  }
+  selected = Math.max(0, state.products.findIndex(x => idOf(x) === found[0][1]));
+  save(); renderAll(); toast(t("imported", { n: found.length }));
+}
+function toast(msg) { const el = document.createElement("div"); el.className = "toast"; el.textContent = msg; document.body.appendChild(el); setTimeout(() => el.remove(), 2400); }
+
+// ---- adding cards
+function addCard(code, opts = {}) {
+  const p = current(); if (!p) return;
+  const fallback = p.type === "tin" ? "Ultra Rare" : "Common";
+  const known = p.cards.find(c => c.code === code);
+  const rarity = opts.rarity ? normalRarity(opts.rarity, fallback) : fallback;
+  if (known) { if (p.type === "deck") known.count = Math.min(60, known.count + (opts.count || 1)); else if (opts.rarity && !known.rarities.includes(rarity)) known.rarities.push(rarity); }
+  else p.cards.push({ code, rarities: [rarity], count: Math.min(60, opts.count || 1) });
+}
+function bulkAdd(text) {
+  let added = 0, missing = [], side = false;
+  for (let line of text.split(/\r?\n/)) {
+    line = line.trim();
+    if (!line) continue;
+    if (/^!side/i.test(line)) { side = true; continue; }
+    if (/^[#!]/.test(line)) { if (/^#(main|extra)/i.test(line)) side = false; continue; }
+    if (side) continue;
+    let rarity = null, count = 1;
+    const bar = line.split(/\s*[|;]\s*/); line = bar[0]; if (bar[1]) rarity = bar[1];
+    let code = findCard(line);
+    const m = line.match(/^(\d{1,2})\s*x?\s+(.+)$/i);
+    if (code == null && m) { code = findCard(m[2]); count = +m[1]; }
+    if (code == null) { missing.push(line); continue; }
+    addCard(code, { rarity, count }); added++;
+  }
+  $("#bulkMsg").textContent = `+${added}` + (missing.length ? ` · ✕ ${missing.slice(0, 5).join(", ")}${missing.length > 5 ? " …" : ""}` : "");
+  return added;
+}
+
+// ---- events
+let results = [], resultIndex = 0;
+function showResults() {
+  const el = $("#results");
+  if (!results.length) { el.hidden = true; return; }
+  el.hidden = false;
+  el.innerHTML = results.map((c, i) => `<button type="button" data-pick="${c[0]}" aria-selected="${i === resultIndex}"><span>${esc(c[1])}</span><code>${c[0]}${c[2] === "x" ? " · Extra" : ""}</code></button>`).join("");
+}
+document.addEventListener("input", e => {
+  const el = e.target, p = current();
+  if (el.dataset.meta) { state[el.dataset.meta] = el.dataset.meta === "namespace" ? el.value.trim().toLowerCase() : el.value; state.example = false; save(); renderOut(); return; }
+  if (!p) return;
+  if (el.id === "cardSearch") { results = searchCards(el.value); resultIndex = 0; showResults(); return; }
+  if (el.dataset.field) {
+    const k = el.dataset.field;
+    p[k] = k === "promos" ? Math.max(0, Math.min(10, parseInt(el.value, 10) || 0)) : k === "id" ? el.value.trim().toLowerCase() : el.value;
+    if (k === "date" || k === "name") samplePack = null;
+    changed(false); return;
+  }
+  if (el.dataset.count != null) { p.cards[+el.dataset.count].count = Math.max(1, Math.min(60, parseInt(el.value, 10) || 1)); $("#statLine").innerHTML = stats(p); changed(false); return; }
+  if (el.dataset.odd) { const [i, k] = el.dataset.odd.split(":"); p.pack.slots[+i][k] = Math.max(0, Math.min(1, parseFloat(el.value) || 0)); samplePack = null; changed(false); return; }
+  if (el.dataset.packsize != null) { p.pack.size = Math.max(1, Math.min(30, parseInt(el.value, 10) || 1)); samplePack = null; changed(false); return; }
+  if (el.dataset.packprod != null) { p.packs[+el.dataset.packprod].product = el.value.trim(); changed(false); return; }
+  if (el.dataset.packcount != null) { p.packs[+el.dataset.packcount].count = Math.max(1, Math.min(24, parseInt(el.value, 10) || 1)); changed(false); return; }
+});
+document.addEventListener("change", async e => {
+  const el = e.target, p = current();
+  if (el.id === "lang") { lang = el.value; save(); renderAll(); return; }
+  if (el.id === "importFile") { await importFiles([...el.files]); el.value = ""; return; }
+  if (el.id === "ydkFile" && el.files[0]) { bulkAdd(await el.files[0].text()); el.value = ""; changed(true); return; }
+  if (!p) return;
+  if (el.dataset.check) { p[el.dataset.check] = el.checked; changed(false); return; }
+  if (el.dataset.rar) { const [ci, ri] = el.dataset.rar.split(":").map(Number); p.cards[ci].rarities[ri] = el.value; samplePack = null; $("#statLine").innerHTML = stats(p); changed(false); return; }
+  if (el.dataset.packmode != null) {
+    const v = el.value;
+    if (v.startsWith("preset:")) { p.pack.mode = "preset"; p.pack.preset = v.slice(7); }
+    else if (v === "custom") { const prof = profileOf(p); p.pack.mode = "custom"; if (!p.pack.slots.length) p.pack.slots = ["rare", "foil"]; p.pack.size = p.pack.size || prof.size; }
+    else p.pack.mode = "auto";
+    samplePack = null; changed(true); return;
+  }
+  if (el.dataset.slot != null) { const i = +el.dataset.slot; p.pack.slots[i] = el.value === "odds" ? { secret: 0.1, ultra: 0.2, super: 0.3 } : el.value; samplePack = null; changed(true); return; }
+});
+let confirmNewUntil = 0;
+document.addEventListener("click", e => {
+  const el = e.target.closest("button"); if (!el) return;
+  const p = current(), d = el.dataset;
+  if (el.id === "exportZip") return exportZip();
+  if (el.id === "copyJson") { const text = $("#json").textContent; navigator.clipboard?.writeText(text).then(() => toast(t("copied")), () => { const r = document.createRange(); r.selectNodeContents($("#json")); getSelection().removeAllRanges(); getSelection().addRange(r); }); return; }
+  if (el.id === "newPack") {
+    if (Date.now() > confirmNewUntil && !state.example) { confirmNewUntil = Date.now() + 4000; toast(t("confirmNew")); return; }
+    state = { name: "My Products", namespace: "myserver", description: "", products: [] }; selected = 0; save(); renderAll(); return;
+  }
+  if (d.add) { state.products.push(blankProduct(d.add)); selected = state.products.length - 1; state.example = false; save(); renderAll(); $("#fName")?.focus(); return; }
+  if (d.select != null) { selected = +d.select; samplePack = null; save(); renderList(); renderEditor(); renderOut(); return; }
+  if (d.pick) { addCard(+d.pick); results = []; samplePack = null; changed(true); $("#cardSearch")?.focus(); return; }
+  if (!p) return;
+  if (d.remove != null) { p.cards.splice(+d.remove, 1); samplePack = null; changed(true); return; }
+  if (d.addrar != null) { const c = p.cards[+d.addrar]; const next = RARITIES.find(r => r[2] > Math.max(...c.rarities.map(slotOf))) || RARITIES[RARITIES.length - 2]; c.rarities.push(next[0]); samplePack = null; changed(true); return; }
+  if (d.unrar) { const [ci, ri] = d.unrar.split(":").map(Number); p.cards[ci].rarities.splice(ri, 1); samplePack = null; changed(true); return; }
+  if (d.addslot != null) { p.pack.slots.push("foil"); samplePack = null; changed(true); return; }
+  if (d.unslot != null) { p.pack.slots.splice(+d.unslot, 1); samplePack = null; changed(true); return; }
+  if (d.addpack != null) { p.packs.push({ product: "", count: 1 }); changed(true); return; }
+  if (d.unpack != null) { p.packs.splice(+d.unpack, 1); changed(true); return; }
+  if (d.reroll != null) { samplePack = null; renderOut(); return; }
+  if (d.bulk != null) { if (bulkAdd($("#bulkText").value)) { const msg = $("#bulkMsg").textContent; samplePack = null; changed(true); $("#bulkMsg").textContent = msg; } return; }
+  if (d.dup != null) { const copy = JSON.parse(JSON.stringify(p)); copy.uid = uid++; copy.id = ""; copy.name = p.name + " (2)"; state.products.splice(selected + 1, 0, copy); selected++; save(); renderAll(); return; }
+  if (d.del != null) { state.products.splice(selected, 1); selected = Math.max(0, selected - 1); samplePack = null; save(); renderAll(); return; }
+});
+document.addEventListener("keydown", e => {
+  if (e.target.id !== "cardSearch" || !results.length) return;
+  if (e.key === "ArrowDown") { resultIndex = (resultIndex + 1) % results.length; showResults(); e.preventDefault(); }
+  else if (e.key === "ArrowUp") { resultIndex = (resultIndex - 1 + results.length) % results.length; showResults(); e.preventDefault(); }
+  else if (e.key === "Enter") { addCard(results[resultIndex][0]); results = []; samplePack = null; changed(true); $("#cardSearch")?.focus(); e.preventDefault(); }
+  else if (e.key === "Escape") { results = []; showResults(); }
+});
+document.addEventListener("click", e => { if (!e.target.closest(".search")) { const r = $("#results"); if (r) r.hidden = true; } });
+
+async function start() {
+  if (!CARDS.length) { try { CARDS = await (await fetch("cards.json")).json(); } catch (e) { CARDS = []; } }
+  indexCards();
+  lang = (navigator.language || "en").toLowerCase().startsWith("de") ? "de" : "en";
+  load();
+  if (selected >= state.products.length) selected = 0;
+  renderAll();
+}
+start();
+</script>

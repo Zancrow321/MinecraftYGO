@@ -541,13 +541,7 @@ final class Limited {
                 }
                 continue;
             }
-            ItemStack binder = ItemStack.EMPTY;
-            for (ItemStack stack : player.getInventory().items) {
-                if (stack.is(JadmItems.BINDER.get())) {
-                    binder = stack;
-                    break;
-                }
-            }
+            ItemStack binder = io.github.zancrow321.jadm.collection.CollectionActions.findBinder(player);
             for (Draft.Card c : pool) {
                 BoosterSets.Rarity rarity = rarity(c.rarity);
                 if (!binder.isEmpty()) {

@@ -73,8 +73,10 @@ public final class DuelistNpc extends PathfinderMob {
     public DuelistNpc(EntityType<? extends PathfinderMob> type, Level level) {
         super(type, level);
         // A fresh duelist gets a look, a title and a deck; one loaded from disk overwrites them with its own.
+        // Use the entity's own random, never level.getRandom(): natural spawning during chunk generation builds
+        // duelists on worldgen worker threads (C2ME and similar), and the level's random belongs to the server thread.
         if (!level.isClientSide()) {
-            RandomSource random = level.getRandom();
+            RandomSource random = getRandom();
             entityData.set(SKIN, random.nextInt(SKINS));
             deckSeed = random.nextLong();
             entityData.set(DISK_SKIN, Cosmetics.SKINS.get(random.nextInt(Cosmetics.SKINS.size())).id());

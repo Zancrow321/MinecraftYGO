@@ -47,6 +47,7 @@ public final class Progress {
     public static void stopped() {
         server = null;
         JadmData.releaseDates(java.util.Map.of());
+        JadmData.customProducts(java.util.List.of());
     }
 
     /** Whether a server runs in this JVM (a dedicated server, or the integrated one of a single player world). */
