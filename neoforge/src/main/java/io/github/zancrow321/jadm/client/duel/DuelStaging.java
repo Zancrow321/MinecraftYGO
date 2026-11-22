@@ -80,6 +80,7 @@ public final class DuelStaging {
         tradePending = false;
         rematchFrom = null;
         rematchAsked = false;
+        ChainStack.reset();
     }
 
     /** {@code from} asked to play this duel again; the Rematch button says yes. */
