@@ -14,6 +14,11 @@
   boxes that hold the old ones load as the new ones by themselves, and .ydk files with the old passcodes still import.
 - Card scripts and rulings updated from Project Ignis.
 
+### Five new monster models
+- **Five more monsters stand on the field as 3D models** instead of an artwork hologram: Beta the Magnet Warrior,
+  Insect Queen, Cyber-Tech Alligator, Dunames Dark Witch and Panther Warrior, the newest models from iconmaster's
+  YGOMCModels. In the `modeled` pool they are playable now too (627 monsters).
+
 ### Fixes
 - **Wandering duelists spawn with fast world generation mods:** a duelist spawned while a new chunk was generated
   picked its look, title and deck with the world's random, which belongs to the server thread. With C2ME (and similar
