@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Fixes
+- **Wandering duelists spawn with fast world generation mods:** a duelist spawned while a new chunk was generated
+  picked its look, title and deck with the world's random, which belongs to the server thread. With C2ME (and similar
+  mods that generate chunks on worker threads) this threw "ThreadLocalRandom accessed from a different thread" and the
+  duelist was not spawned. Duelists now use their own random.
+
 ## 1.2.11 (2026-10-26)
 
 ### Field Spell looks from resource packs
