@@ -66,8 +66,20 @@ def plastic(colour):
 def main():
     disk = Image.open(ASSETS / "disk/duel_disk.png").convert("RGBA")
     glow = Image.open(ASSETS / "disk/duel_disk_e.png").convert("RGBA")
+    lit = glow.load()
     for skin, (colour, hue, sat) in SKINS.items():
-        recolor(disk, plastic(colour)).save(ASSETS / f"disk/duel_disk_{skin}.png")
+        # Pixels that glow (card zones, markers, display) take the skin's glow colour in the base texture too, so
+        # the zones don't turn grey where a shifted glow is added onto the original blue.
+        shell = plastic(colour)
+        out = disk.copy()
+        px = out.load()
+        for y in range(out.height):
+            for x in range(out.width):
+                r, g, b, a = px[x, y]
+                if a:
+                    rgb = shift(r, g, b, hue, sat, 1) if lit[x, y][3] else shell(r, g, b)
+                    px[x, y] = rgb + (a,)
+        out.save(ASSETS / f"disk/duel_disk_{skin}.png")
         recolor(glow, lambda r, g, b: shift(r, g, b, hue, sat, 1)).save(ASSETS / f"disk/duel_disk_{skin}_e.png")
         print("wrote skin", skin)
     back = Image.open(ASSETS / "field/card_back.png").convert("RGBA")

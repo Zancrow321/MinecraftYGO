@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+### New duel disk
+- **The duel disk is the mod's own model now**, made after the Battle City disk: a round hub on the forearm with a
+  red centre and a red arm that holds the blade, an LP counter, a deck holder with a deck in it, a graveyard tray,
+  lamps round the rim and a padded cuff, and a bevelled blade with three plus two light-blue card zones and red
+  markers. The zones, markers, LP counter and lamps glow in the dark, and every disk skin recolours it.
+- **Standby and duel:** when not dueling the two wings sit along the arm in front of and behind the hub. When a duel
+  starts the 3-zone wing slides into place and the 2-zone wing swings round under the hub onto its end, which gives
+  the bent 5-zone blade; after the duel it folds back.
+- The old disk was someone else's model under a non-commercial license; the new one is part of the mod and GPL-3.0
+  like the rest, so the disk no longer limits how the mod may be used.
+
 ## 1.2.11 (2026-10-26)
 
 ### Field Spell looks from resource packs
