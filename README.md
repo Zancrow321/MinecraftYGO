@@ -322,10 +322,12 @@ python3 tools/carddata/build_banlists.py --lists yaml-yugi-limit-regulation --lf
 
 ## Updating the duel disk model
 
-The disk is the blocky Battle City duel disk by burning-icecream (see Licenses and credits), kept as the original
-glTF in `tools/disk/source/`. `python3 tools/disk/import_gltf.py` puts it on the arm, packs its textures and writes
-the standby pose and the `deploy`/`fold` animations into `tools/disk/duel_disk.bbmodel`; after that, run
-`python3 tools/disk/convert_disk.py` and `python3 tools/textures/make_cosmetic_textures.py` (disk skins).
+The disk is the mod's own model, built from code by `python3 tools/disk/build_disk.py`: it shapes the hub, LP
+counter, deck holder, cuff and the two blade wings (Blockbench meshes), paints the texture atlas and its glowing `_e`
+layer, and writes the standby pose and the `deploy`/`fold` animations into `tools/disk/duel_disk.bbmodel`. Sizes,
+colours and the bend of the blade are constants at the top of that script. After it, run
+`python3 tools/disk/convert_disk.py` and `python3 tools/textures/make_cosmetic_textures.py` (disk skins). The game
+shows Blockbench space mirrored, so text on the disk (the LP counter) reads backwards in Blockbench.
 
 To edit it by hand instead, save the model from Blockbench with textures embedded as `tools/disk/duel_disk.bbmodel`,
 then run `python3 tools/disk/convert_disk.py`. Only the `LeftArm` group is exported, in Figura's coordinates: the pivot on
@@ -343,12 +345,7 @@ becomes an Xyz material, and `LOCATION_EMZONE` and `LOCATION_PZONE` reach the Ex
 
 - This mod: GPL-3.0.
 - OCG-Core: AGPL-3.0-or-later, © Project Ignis contributors. Because the mod bundles it, the mod's source must stay public.
-- Duel disk model: "duel disk from Yu-Gi-Oh Duel Monsters (blocky)" by
-  [burning-icecream](https://sketchfab.com/burning-icecream), from
-  [Sketchfab](https://sketchfab.com/3d-models/duel-disk-from-yu-gi-oh-duel-monsters-blocky-14d4cc46e53a46ad903a9aa5f64e681c),
-  [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). Placed on the arm, given straps, a glowing layer,
-  recolored skins and a standby pose with deploy/fold animations. Not for commercial use; the rest of the mod stays
-  GPL-3.0. The notice ships as `assets/jadm/DuelDisk-LICENSE.md`.
+- Duel disk model: made for this mod (`tools/disk/build_disk.py`), GPL-3.0 like the rest of the mod.
 - Duel AI: a Java port of [WindBot](https://github.com/IceYGO/windbot), MIT, © 2015-2017 IceYGO, with the Astra
   executor; the license ships as `assets/jadm/WindBot-LICENSE.md`.
 - Monster models: MIT, © iconmaster ([YGOMCModels](https://github.com/iconmaster5326/YGOMCModels)); the license ships as `assets/jadm/YGOMCModels-LICENSE.md`.
